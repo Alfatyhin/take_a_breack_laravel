@@ -9,7 +9,7 @@ class Orders extends Controller
     public function getIcreditPaymentUrl()
     {
         echo "<pre>";
-        
+
         if (!empty($_POST)) {
             var_dump($_POST);
         } else {

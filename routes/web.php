@@ -23,4 +23,5 @@ Route::get('/dashboard', function () {
 
 require __DIR__.'/auth.php';
 
-Route::post('/orders/icredit', [\App\Http\Controllers\Orders::class, '']);
+Route::post('/orders/icredit', [\App\Http\Controllers\Orders::class, 'getIcreditPaymentUrl'])
+    ->name('getpaymenturl');
