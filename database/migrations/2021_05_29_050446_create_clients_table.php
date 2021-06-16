@@ -18,6 +18,7 @@ class CreateClientsTable extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('phone')->nullable();
+            $table->string('amoId')->nullable();
             $table->json('data')->nullable();
             $table->timestamps();
         });
