@@ -9,7 +9,7 @@ class Clients extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'email',
-    ];
+
+    protected $guarded = [];
+
 }
