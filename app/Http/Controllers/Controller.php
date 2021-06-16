@@ -97,7 +97,7 @@ class Controller extends BaseController
             ->sum('orderPrice');
 
         $priceMonthAwaiting = Orders::where('paymentStatus', '3')
-            ->whereBetween('paymentDate', [$date_start, $date_end->addDay()])
+            ->whereBetween('created_at', [$date_start, $date_end->addDay()])
             ->sum('orderPrice');
 
 
