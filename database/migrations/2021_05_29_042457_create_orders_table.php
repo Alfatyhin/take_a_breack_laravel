@@ -15,14 +15,19 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('ecwidId')->unique();
+            $table->string('ecwidId')->unique()->index();
             $table->string('ecwidStatus')->default('AWAITING_PROCESSING');
-            $table->string('amoId')->nullable();
+            $table->string('amoId')->nullable()->index();
             $table->string('amoStatus')->nullable();
+            $table->integer('clientId')->nullable()->index();
             $table->smallInteger('paymentMethod')->default(0);
             $table->smallInteger('paymentStatus')->default(0);
+            $table->dateTime('paymentDate')->nullable();
             $table->boolean('invoiceStatus')->default(false);
-            $table->float('orderPrice');
+            $table->json('invoiceData')->nullable();
+            $table->float('orderPrice')->default(0);
+            $table->json('orderData')->nullable();
+            $table->json('amoData')->nullable();
             $table->timestamps();
         });
     }

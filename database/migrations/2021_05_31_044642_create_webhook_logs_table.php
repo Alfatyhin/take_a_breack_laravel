@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateIcreditLogsTable extends Migration
+class CreateWebhookLogsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateIcreditLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('icredit_logs', function (Blueprint $table) {
+        Schema::create('webhook_logs', function (Blueprint $table) {
             $table->id();
-            $table->string('ecwidId')->unique()->index();
-            $table->smallInteger('payStatus')->default(0);
-            $table->json('payResponse')->nullable();
+            $table->string('name')->default('webhook');
+            $table->json('data');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateIcreditLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('icredit_logs');
+        Schema::dropIfExists('webhook_logs');
     }
 }

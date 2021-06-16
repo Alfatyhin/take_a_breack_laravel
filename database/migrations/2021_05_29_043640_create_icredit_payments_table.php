@@ -15,6 +15,9 @@ class CreateIcreditPaymentsTable extends Migration
     {
         Schema::create('icredit_payments', function (Blueprint $table) {
             $table->id();
+            $table->string('orderId');
+            $table->string('paymentStatus')->default('none');
+            $table->json('data');
             $table->timestamps();
         });
     }

@@ -12,6 +12,12 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        '/orders/*'
+        'orders/webecwid',
+        'orders/thanks',
+        'orders/response',
+        'orders/icredit',
+        'amocrm/callback',
+        'amocrm/amowebhok',
+        'api/*'
     ];
 }
