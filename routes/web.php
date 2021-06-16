@@ -72,7 +72,7 @@ Route::get('/users', [Controller::class, 'allUsers'])
 
 
 Route::get('/ecwid-store', [EcwidStore::class, 'EcwidShop'])
-    ->middleware(['isAdmin'])->name('ecwid.shop');
+    ->name('ecwid.shop');
 
 // test servise container
 Route::get('/ecwid-store/index', [EcwidStore::class, 'index'])
