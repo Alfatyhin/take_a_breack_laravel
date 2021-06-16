@@ -47,7 +47,7 @@
            @if(isset($orders))
                @foreach($orders as $item)
                    <tr>
-                       <td>
+                       <td>( {{ $item->id }} ) <br>
                            {{ $item->created_at }} <br>
                            <a class="hide button" href="{{ route('delete_order', ['id' => $item->ecwidId]) }}" >delete</a>
                        </td>
