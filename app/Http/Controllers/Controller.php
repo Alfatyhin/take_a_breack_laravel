@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AppErrors;
 use App\Models\Clients;
+use App\Models\IcreditPayments;
 use App\Models\Orders;
 use App\Models\User;
 use App\Models\WebhookLog;
@@ -46,8 +47,8 @@ class Controller extends BaseController
 
 
 
-        $date_from = new Carbon('first day of last month');
-        $date_to = new Carbon('last day of last month');
+        $date_from = new Carbon('first day of this month');
+        $date_to = new Carbon('last day of this month');
 
 
         if (!empty($request->get('date-from')) && !empty($request->get('date-to'))) {
@@ -82,8 +83,9 @@ class Controller extends BaseController
                 $paydPeriodInfo[$paymethodName] += $item->orderPrice;
             }
             $paydPeriodInfo['totall'] += $item->orderPrice;
+
         }
-        $paydPeriodInfo['средний чек'] = $paydPeriodInfo['totall'] / sizeof($orderPayd);
+        $paydPeriodInfo['средний чек'] = round($paydPeriodInfo['totall'] / sizeof($orderPayd), 2);
         $paydPeriodInfo = array_reverse($paydPeriodInfo);
 
 
@@ -107,6 +109,7 @@ class Controller extends BaseController
             ->whereYear('paymentDate', $date_start->format('Y'))
             ->sum('orderPrice');
 
+        echo "</pre>";
 
         return view('orders.index', [
             'orders' => $orders,
@@ -240,14 +243,53 @@ class Controller extends BaseController
     }
 
 
-    public function importDB(Request $request, array $data)
+    public function importDB()
     {
+        $dump = Storage::get('/data/damp_db.json');
+        $dump = json_decode($dump, true);
 
+        foreach ($dump as $tbName => $value) {
+            var_dump($tbName);
+            foreach ($value as $item) {
+                if ($tbName == 'users') {
+                    $user = new User();
+                    $user->fill($item);
+                    $user->save();
+                }
+
+                if ($tbName == 'clients') {
+                    $data = new Clients();
+                    $data->fill($item);
+                    $data->save();
+                }
+
+                if ($tbName == 'icredit_payments') {
+                    $data = new IcreditPayments();
+                    $data->fill($item);
+                    $data->save();
+                }
+
+                if ($tbName == 'orders') {
+                    $data = new Orders();
+                    $data->fill($item);
+                    $data->save();
+                }
+            }
+        }
     }
 
-    public function exportDB(Request $request, array $data)
+    public function exportDB()
     {
+        $tables = array ('users', 'clients', 'icredit_payments', 'orders');
 
+        foreach ($tables as $tableName) {
+            $data = DB::table($tableName)->get()->toArray();
+            $dump[$tableName] = $data;
+        }
+        echo "<pre>";
+
+        $res = Storage::disk('local')->put('/data/damp_db.json', json_encode($dump));
+        var_dump($res);
     }
 
 
