@@ -51,7 +51,12 @@
                            {{ $item->created_at }} <br>
                            <a class="hide button" href="{{ route('delete_order', ['id' => $item->ecwidId]) }}" >delete</a>
                        </td>
-                       <td>{{ $item->ecwidId }}</td>
+                       <td>
+                           <a class="border-bottom" href="https://my.ecwid.com/store/48198100#order:id={{ $item->ecwidId }}&return=orders" target="_blank">
+                               {{ $item->ecwidId }}
+                           </a>
+
+                       </td>
                        <td>{{ $item->ecwidStatus }}</td>
                        <td>
                            @if(empty($item->amoId))
@@ -59,7 +64,13 @@
                                    create amo lead
                                </a>
                            @endif
-                           {{ $item->amoId }}
+                           <a class="border-bottom" href="{{ 'https://takebreak.amocrm.ru/leads/detail/'.$item->amoId }}" target="_blank">
+                               {{ $item->amoId }}
+                           </a>
+                           <br>
+                               <a class="hide button" href="{{ route('amo.create.lead', ['id' => $item->ecwidId]) }}" >
+                                   new amo lead
+                               </a>
                        </td>
                        <td>{{ $item->amoStatus }}</td>
                        <td>{{ $paymentMethod[$item->paymentMethod] }}</td>
@@ -68,7 +79,18 @@
                            {{ $item->paymentDate }}
                        </td>
                        <td>{{ $item->orderPrice }}</td>
-                       <td>{{ $invoiceStatus[$item->invoiceStatus] }}</td>
+                       <td>
+                           {{ $invoiceStatus[$item->invoiceStatus] }} <br>
+
+                           @if (!empty($item->invoiceData))
+                               @php
+                               ($invoicedata = json_decode($item->invoiceData))
+                               @endphp
+
+                               <a class="button" href="{{ $invoicedata->url->en }}" >invoice</a>
+                           @endif
+
+                       </td>
                        <td>
                            {{ $item->name }} <br>
                            {{ $item->email }}
