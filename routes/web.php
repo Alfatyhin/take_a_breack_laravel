@@ -49,6 +49,8 @@ Route::get('/amocrm', [Amocrm::class, 'integrationAmoCrm'])
     ->middleware(['isAdmin'])->name('amocrm');
 Route::get('/amocrm/create-lead', [Amocrm::class, 'createAmoLeadBuEcwidId'])
     ->middleware(['isAdmin'])->name('amo.create.lead');
+Route::get('/amocrm/order', [Amocrm::class, 'getOrderById'])
+    ->middleware(['isAdmin'])->name('amo.get_order');
 
 
 
@@ -67,6 +69,12 @@ Route::get('/orders/ecwid-log', [Controller::class, 'getEcwidOrderLog'])
 
 Route::get('/users', [Controller::class, 'allUsers'])
     ->middleware(['isAdmin'])->name('users');
+
+Route::get('/export-db', [Controller::class, 'exportDB'])
+    ->middleware(['isAdmin']);
+
+Route::get('/import-db', [Controller::class, 'importDB'])
+    ->middleware(['isAdmin']);
 
 
 
