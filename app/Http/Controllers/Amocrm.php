@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Storage;
 
 class Amocrm extends Controller
 {
+    private $amoService;
+    public function __construct(AmoCrmServise $service) {
+        $this->amoService = $service;
+    }
 
     public function integrationAmoCrm()
     {
@@ -210,4 +214,17 @@ class Amocrm extends Controller
         }
     }
 
+    public function getOrderById(Request $request)
+    {
+        $id = $request->get('id');
+
+        if ($id) {
+
+            $res = $this->amoService->getOrderById($id);
+
+            echo "<pre>";
+            var_dump($res);
+        }
+
+    }
 }

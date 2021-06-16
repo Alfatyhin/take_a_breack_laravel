@@ -605,8 +605,12 @@ class AmoCrmServise
     // получение заказа с амо по его ид, (для отладки)
     public function getOrderById($id)
     {
-        $apiClient     = $this->getApiClient();
-
+        // инициализация апи клиента
+        $apiClient    = $this->apiClient;
+        $accessToken = $this->getTokens();
+        $apiClient->setAccessToken($accessToken)
+            ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
+        /////////////////////////////////////////////////////////////////////////
 
         try {
             $lead = $apiClient->leads()->getOne($id, [LeadModel::CONTACTS, LeadModel::CATALOG_ELEMENTS]);
