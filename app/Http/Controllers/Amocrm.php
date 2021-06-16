@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AppErrors;
+use App\Models\Clients;
 use App\Models\Orders;
 use App\Models\WebhookLog;
 use App\Services\AmoCrmServise;
@@ -189,6 +190,13 @@ class Amocrm extends Controller
             $amoCrmServise = new AmoCrmServise();
             $res = $amoCrmServise->NewOrder($amoDataEcwid);
 
+            $client = Clients::firstOrNew([
+                'email' => $orderEcwid['email']
+            ]);
+            $client->name = $orderEcwid['billingPerson']['name'];
+            $client->phone = $orderEcwid['billingPerson']['phone'];
+            $client->save();
+
             if (!empty($res['amo_id'])) {
 
                 echo "amo order create - " . $res['amo_id'];
@@ -198,6 +206,10 @@ class Amocrm extends Controller
                 ]);
                 $order->amoId = $res['amo_id'];
                 $order->save();
+
+                $client->amoId = $res['client_id'];
+                $client->save();
+
 
                 $amoNotes = EcwidService::getAmoNotes($orderEcwid);
                 $amoCrmServise->addTextNotesToLead($order->amoId, $amoNotes);

@@ -219,6 +219,9 @@ class Orders extends Controller
                     $order->amoId = $res['amo_id'];
                     $order->save();
 
+                    $client->amoId = $res['client_id'];
+                    $client->save();
+
                     $amoNotes = EcwidService::getAmoNotes($orderEcwid);
                     $amoCrmServise->addTextNotesToLead($order->amoId, $amoNotes);
 
