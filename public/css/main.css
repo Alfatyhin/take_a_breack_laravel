@@ -18,7 +18,7 @@ th, td {
 }
 .button {
     display: inline-block;
-    padding: 5px 10px;
+    padding: 0 5px;
     white-space: nowrap;
     box-shadow: 2px 2px 5px #aaa;
     border: 1px solid #c5c5c5;
@@ -26,7 +26,9 @@ th, td {
     background: #d5d7f1;
 }
 .button:hover {
+    cursor: pointer;
     background: #e2e3f5;
+    box-shadow: 1px 1px 4px #aaa;
 }
 .close {
     position: absolute;
@@ -49,4 +51,17 @@ th, td {
 .border-bottom {
     border-bottom: 1px solid #689afa;
 }
+.position-absolute {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 3px;
+}
+.text-small {
+    font-size: 70%;
+    line-height: 1;
+}
+
+
+
 

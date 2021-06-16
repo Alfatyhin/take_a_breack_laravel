@@ -47,7 +47,9 @@
            @if(isset($orders))
                @foreach($orders as $item)
                    <tr>
-                       <td>( {{ $item->id }} ) <br>
+                       <td>
+                           <span class="position-absolute text-small button show-hide"></span>
+                           ( {{ $item->id }} ) <br>
                            {{ $item->created_at }} <br>
                            <a class="hide button" href="{{ route('delete_order', ['id' => $item->ecwidId]) }}" >delete</a>
                        </td>
@@ -59,6 +61,7 @@
                        </td>
                        <td>{{ $item->ecwidStatus }}</td>
                        <td>
+                           <span class="position-absolute text-small button show-hide"></span>
                            @if(empty($item->amoId))
                                <a class="button" href="{{ route('amo.create.lead', ['id' => $item->ecwidId]) }}" >
                                    create amo lead

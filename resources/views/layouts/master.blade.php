@@ -13,12 +13,12 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/main.css?v1.01.05') }}">
+    <link rel="stylesheet" href="{{ asset('css/main.css?v1.01.06') }}">
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/jquery-3.5.1.min.js') }}" defer></script>
-    <script src="{{ asset('js/main.js') }}" defer></script>
+    <script src="{{ asset('js/main.js?v1.0.0') }}" defer></script>
 </head>
 <body class="antialiased min-h-screen">
 @section('sidebar')
