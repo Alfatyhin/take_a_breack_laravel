@@ -1,5 +1,7 @@
 <?php
 
+use App\Providers\EcwidProvider;
+
 return [
 
     /*
@@ -172,9 +174,9 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\EcwidProvider::class,
+        App\Providers\TranslitServiceProvider::class,
 
     ],
 
@@ -189,7 +191,7 @@ return [
     |
     */
 
-    'aliases' => [
+    'aliases' => array(
 
         'App' => Illuminate\Support\Facades\App::class,
         'Arr' => Illuminate\Support\Arr::class,
@@ -229,6 +231,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-    ],
+        'TranslitTextService' => App\Facades\TranslitTextService::class,
+
+    ),
 
 ];
