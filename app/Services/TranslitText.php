@@ -41,7 +41,7 @@ class TranslitText
         $str = strip_tags($str); // убираем HTML-теги
         $str = str_replace(array("\n", "\r"), " ", $str); // убираем перевод каретки
         $str = $this->Translit($str);
-        $str = preg_replace("/[^0-9a-z-_ ]/i", "", $str); // очищаем строку от недопустимых символов
+        $str = preg_replace("/[^0-9a-z-_. ]/i", "", $str); // очищаем строку от недопустимых символов
         $str = preg_replace("/\s+/", ' ', $str); // удаляем повторяющие пробелы
         $str = str_replace(' ', '_', $str);
 
