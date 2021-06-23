@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\TranslitTextService;
 use App\Models\AppErrors;
 use App\Models\Clients;
 use App\Models\IcreditPayments;
@@ -9,6 +10,7 @@ use App\Models\Orders;
 use App\Models\User;
 use App\Models\WebhookLog;
 use App\Services\AppServise;
+use App\Services\Contracts\OrderServiceInterface;
 use App\Services\EcwidService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -290,6 +292,17 @@ class Controller extends BaseController
 
         $res = Storage::disk('local')->put('/data/damp_db.json', json_encode($dump));
         var_dump($res);
+    }
+
+    public function testServiceProvider()
+    {
+        $str = 'шла  Саша по шоссе честь $% йод + -  яд ёжики';
+        $strtr = TranslitTextService::Translit($str);
+        echo "test str - $str" . '<br>'
+            . "translit - $strtr <br> retranslit - "
+            . TranslitTextService::ReTranslit($strtr)
+            . "<br> fileName translit - " . TranslitTextService::TranslitFileName($str);
+
     }
 
 
