@@ -85,6 +85,12 @@
                        <td>
                            {{ $invoiceStatus[$item->invoiceStatus] }} <br>
 
+                           <span class="position-absolute text-small button show-hide"></span>
+                               <a class="hide button" href="{{ route('invoice_test', ['orderId' => $item->ecwidId]) }}" >
+                                   test invoice
+                               </a>
+                           <br>
+
                            @if (!empty($item->invoiceData))
                                @php
                                ($invoicedata = json_decode($item->invoiceData))

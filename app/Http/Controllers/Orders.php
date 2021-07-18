@@ -97,22 +97,32 @@ class Orders extends Controller
 
     public function ecwidWebHook(Request $request)
     {
-        $Data = $request->all();
+
+        $testData = $request->post('data-test');
+        if (!empty($testData)) {
+            $data = json_decode($testData, true);
+            $header = $data['header'];
+            $Data = $data['data'];
+
+        } else {
+            $Data = $request->all();
+            $header = request()->header('x-ecwid-webhook-signature');
+
+            if (!empty($Data)) {
+                $webhoock['ip'] = $this->getIp();
+                $webhoock['data'] = $Data;
+                $webhoock['header'] = $header;
+
+                WebhookLog::addLog('ecwid webhook new', $webhoock);
+            }
+
+        }
+
         // Reply with 200OK to Ecwid
         http_response_code(200);
 
-        $header = request()->header('x-ecwid-webhook-signature');
-
-        if (!empty($Data)) {
-            $webhoock['data'] = $Data;
-            $webhoock['header'] = $header;
-            WebhookLog::addLog('ecwid webhook new', $webhoock);
-        }
-
         $ecwidService = new EcwidService();
         $headerHash = $ecwidService->getHeaderHash($Data);
-
-        $header = request()->header('x-ecwid-webhook-signature');
         if ($header != $headerHash) {
             echo "error header \n";
             WebhookLog::addLog('error ecwid webhook header', $header);
@@ -124,6 +134,7 @@ class Orders extends Controller
 
 
         if ($Data['eventType'] == 'order.created') {
+
             $data = $Data['data'];
 
             $orderId = $data['orderId'];
@@ -152,8 +163,11 @@ class Orders extends Controller
             $client = Clients::firstOrNew([
                 'email' => $orderEcwid['email']
             ]);
+
             $client->name = $orderEcwid['billingPerson']['name'];
-            $client->phone = $orderEcwid['billingPerson']['phone'];
+            if (!empty($orderEcwid['billingPerson']['phone'])) {
+                $client->phone = $orderEcwid['billingPerson']['phone'];
+            }
             $client->save();
 
             $order = OrdersModel::firstOrCreate([
@@ -192,6 +206,17 @@ class Orders extends Controller
 
                 $invoice = new GreenInvoiceService();
 
+                // настройки аккаунта для инвойса
+                // для PayPal
+                if ($order->paymentMethod == 3) {
+
+                    $dataJson = Storage::disk('local')->get('data/app-setting.json');
+                    $settingData = json_decode($dataJson, true);
+
+                    $invoice = $invoice->setMode($settingData['invoice_mode_paypal']);
+                }
+
+
                 try {
                     $res = $invoice->newDoc($invoiceDada);
 
@@ -213,14 +238,21 @@ class Orders extends Controller
                 // пролучаем массив для амо
                 $amoDataEcwid = EcwidService::getAmoDataLead($orderEcwid);
                 $amoCrmServise = new AmoCrmServise();
+                // создаем сделку
+                if (!empty($client->amoId)) {
+                    $amoDataEcwid['clientAmoId'] = $client->amoId;
+                }
                 $res = $amoCrmServise->NewOrder($amoDataEcwid);
 
                 if (!empty($res['amo_id'])) {
                     $order->amoId = $res['amo_id'];
                     $order->save();
 
-                    $client->amoId = $res['client_id'];
-                    $client->save();
+                    if (empty($client->amoId)) {
+                        $client->amoId = $res['client_id'];
+                        $client->save();
+                    }
+
 
                     $amoNotes = EcwidService::getAmoNotes($orderEcwid);
                     $amoCrmServise->addTextNotesToLead($order->amoId, $amoNotes);
@@ -234,9 +266,10 @@ class Orders extends Controller
                     AppErrors::addError('error create amo lead', $res);
                 }
             }
-            // end eventType - 'order.created'
+            // end eventType - 'order.created' end
         } elseif ($Data['eventType'] == 'product.updated') {
 
+            echo "<pre>";
             $productId = $Data['entityId'];
             $product = $ecwidService->getProduct($productId);
             $ecwidService->inStockUpdate($product);
@@ -244,7 +277,22 @@ class Orders extends Controller
         }
     }
 
+    public function getIp() {
 
+        $keys = [
+            'REMOTE_ADDR'
+        ];
+        foreach ($keys as $key) {
+            if (!empty($_SERVER[$key])) {
+                $ip = trim($_SERVER[$key]);
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                } else {
+                    return '0.0.0';
+                }
+            }
+        }
+    }
 
 
 

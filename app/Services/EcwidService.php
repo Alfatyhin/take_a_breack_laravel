@@ -5,12 +5,12 @@ namespace App\Services;
 
 
 use App\Models\AppErrors;
+use App\Models\WebhookLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class EcwidService
 {
-    private $action;
     private $secret_key;
     private $shop_id;
     private $secret_token;
@@ -19,9 +19,8 @@ class EcwidService
     private $category_set_id = '82971920';
     private $category_in_stock_id = '109788705';
 
-    public function __construct($action)
+    public function __construct()
     {
-        $this->action = $action;
         $this->secret_key = $_ENV['ECWID_APP_SECRET'];
         $this->shop_id = $_ENV['ECWID_SHOP_ID'];
         $this->secret_token = $_ENV['ECWID_SECRET_TOKEN'];
@@ -75,6 +74,8 @@ class EcwidService
 
     public function inStockUpdate($product)
     {
+//        var_dump($product);
+
         $inStockProducts = $this->getProductsByCategoryId($this->category_in_stock_id);
 
         foreach ($inStockProducts['items'] as $item) {
@@ -82,7 +83,7 @@ class EcwidService
             $inStock[$id] = $id;
 
         }
-        print_r($inStock);
+//        print_r($inStock);
 
         $inStockAdd = false;
 
@@ -103,12 +104,36 @@ class EcwidService
 
                 if (!empty($item['quantity'])) {
 
+
                     $count = $item['quantity'];
                     $variateInStock = true;
                     echo "count = $count variate to stock $productId variateid - $variateId \n";
+                    var_dump($item['defaultDisplayedPrice']);
+
+                    foreach ($item['options'] as $option) {
+                        if ($option['name'] == 'Size') {
+
+
+                            if (!isset($defaultDisplayedPrice)) {
+                                $defaultDisplayedPrice = $item['defaultDisplayedPrice'];
+                                $defaultDisplaySize = $option['value'];
+                            } else {
+                                if ($defaultDisplayedPrice >= $item['defaultDisplayedPrice']) {
+                                    $defaultDisplayedPrice = $item['defaultDisplayedPrice'];
+                                    $defaultDisplaySize = $option['value'];
+                                }
+                            }
+
+                            $sizes[] = $option['value'];
+
+                        }
+                    }
+
+
 
                 } else {
                     echo "no add to stock $productId variateid - $variateId \n";
+
                 }
 
             }
@@ -121,6 +146,67 @@ class EcwidService
 
         }
 
+        echo "<hr><hr> действия <hr><hr>";
+
+        if (isset($sizes)) {
+
+            echo " sizes test <hr>";
+
+//            $productDataNew['showOnFrontpage'] = -1;
+            // default ddisplay size
+            foreach ($product['options'] as $optionKey => $items) {
+
+                if ($items['name'] == 'Size') {
+
+                    foreach ($items['choices'] as $k => $item) {
+
+                        if ($item['text'] == $defaultDisplaySize) {
+
+                            echo "<hr>";
+//                            var_dump($k, $item['text']);
+                            echo "<hr>";
+
+                            $productDataNew['options'] = $product['options'];
+                            $productDataNew['options'][$optionKey]['defaultChoice'] = $k;
+                        }
+
+                    }
+
+                }
+
+            }
+
+            $sizeStr = implode(' & ', $sizes);
+            $productDataNew['ribbon'] = [
+                "text" => "in Stock Size " . $sizeStr,
+                "color" => "#7091DA"
+            ];
+            $productDataNew['ribbonTranslated'] = [
+                'ru' => "В наличии размер " . $sizeStr,
+                'en' => "in Stock Size " . $sizeStr,
+                'he' => $sizeStr . " ". "גודל זמין",
+            ];
+
+            echo "<hr>";
+//            var_dump($productDataNew);
+
+            echo "<hr>";
+
+            if ($product['ribbon']['text'] == $productDataNew['ribbon']['text']) {
+                echo "laibel isset <hr>";
+            } else {
+                echo "new laibel <hr>";
+                $res = $this->updateProduct($productId, $productDataNew);
+                var_dump($res);
+
+                $webhoock['productId'] = $id;
+                $webhoock['new laibel'] = $productDataNew['ribbon']['text'];
+
+                WebhookLog::addLog('ecwid webhook', $webhoock);
+            }
+
+
+        }
 
         if (!empty($inStock[$productId]) && empty($product['quantity']) && $variateInStock == false) {
             unset($inStock[$productId]);
@@ -129,10 +215,16 @@ class EcwidService
         }
 
         if ($inStockAdd) {
+            echo "add in stock";
             $data['productIds'] = array_values($inStock);
             print_r($data);
             $res = $this->updateProductsCategory($this->category_in_stock_id, $data);
             var_dump($res);
+
+            $webhoock['productId'] = $id;
+            $webhoock['add in stock'] = $id;
+
+            WebhookLog::addLog('ecwid webhook', $webhoock);
         }
 
     }
@@ -149,6 +241,16 @@ class EcwidService
         $token = $this->secret_token;
         $url ="https://app.ecwid.com/api/v3/$shopId/categories/$categoryId?token=$token";
         $res = $this->putQuest($url, $categoryData);
+
+        return $res;
+    }
+
+    private function updateProduct($productId, array $data)
+    {
+        $shopId = $this->shop_id;
+        $token = $this->secret_token;
+        $url ="https://app.ecwid.com/api/v3/$shopId/products/$productId?token=$token";
+        $res = $this->putQuest($url, $data);
 
         return $res;
     }
@@ -452,7 +554,7 @@ class EcwidService
 
 
 
-        if ($orderEcwid['globalReferer']) {
+        if (!empty($orderEcwid['globalReferer'])) {
             $globalReferer = $orderEcwid['globalReferer'];
 
         } elseif ($orderEcwid['refererUrl']) {
@@ -482,11 +584,16 @@ class EcwidService
         }
 
         if (empty($orderEcwid['shippingPerson']['phone'])) {
-            $phone = $orderEcwid['billingPerson']['phone'];
+            if (!empty($orderEcwid['billingPerson']['phone'])) {
+                $phone = $orderEcwid['billingPerson']['phone'];
+            }
         } else {
             $phone = $orderEcwid['shippingPerson']['phone'];
         }
 
+        if (!empty($phone)) {
+            $dataOrderAmo['phone'] = $phone;
+        }
 
         $dataOrderAmo = [
             'order name'  => 'Ecwid' . $present . ' #' . $orderEcwid['id'],
@@ -498,7 +605,6 @@ class EcwidService
             'refer_URL'   => $globalReferer,
             'name'        => $name,
             'email'       => $orderEcwid['email'],
-            'phone'       => $phone,
             'address'     => $address,
             'payment'     => $payment,
             'date'        => $dateOrder,
@@ -576,6 +682,15 @@ class EcwidService
             }
         }
 
+        if (!empty($orderEcwid['couponDiscount'])) {
+            $discount = $orderEcwid['couponDiscount'];
+            $total = $orderEcwid['subtotal'];
+            $rateDiscount = 100 / ($total / $discount);
+            $discount = "скидка - $discount ($rateDiscount%) \n";
+        } else {
+            $discount = '';
+        }
+
 
 
         if (!empty($orderComments)) {
@@ -586,7 +701,7 @@ class EcwidService
                 . "Нет комментария " . "\n ---------------------- \n";
         }
 
-        $notes = $orderComments . $shipping . $ordersNotes;
+        $notes = $orderComments . $discount . $shipping . $ordersNotes;
 
         return $notes;
     }
@@ -730,6 +845,7 @@ class EcwidService
         $name = trim($data['billingPerson']['name']);
         $name = AppServise::TransLit($name);
         $orderData['name'] = $name;
+        $orderData['lang'] = $data['extraFields']['gustom_lang'];
         $orderData['phone'] = $data['billingPerson']['phone'];
         $orderData['city'] = AppServise::TransLit($data['billingPerson']['city']);
         $orderData['address'] = AppServise::TransLit($data['billingPerson']['street']);

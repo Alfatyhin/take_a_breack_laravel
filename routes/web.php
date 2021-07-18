@@ -39,7 +39,7 @@ Route::post('/orders/icredit', [Orders::class, 'getIcreditPaymentUrl'])
     ->name('order.paymenturl');
 Route::get('/orders/thanks', [Orders::class, 'orderThanksIcredit']);
 Route::post('/orders/response', [Orders::class, 'orderRequestIcredit']);
-Route::any('/orders/webecwid', [Orders::class, 'ecwidWebHook']);
+Route::any('/orders/webecwid', [Orders::class, 'ecwidWebHook'])->name('ecwid.webhook');
 Route::get('/amocrm/callback', [Amocrm::class, 'callBack']);
 Route::any('/amocrm/amowebhok', [Amocrm::class, 'amoWebhook']);
 
@@ -72,6 +72,15 @@ Route::get('/orders/ecwid-log', [Controller::class, 'getEcwidOrderLog'])
 Route::get('/users', [Controller::class, 'allUsers'])
     ->middleware(['isAdmin'])->name('users');
 
+Route::get('/clients', [Controller::class, 'allClients'])
+    ->middleware(['isAdmin'])->name('clients');
+
+Route::get('/invoice-setting', [Controller::class, 'appInvoiceSetting'])
+    ->middleware(['isAdmin'])->name('invoice_setting');
+
+Route::get('/invoice-test', [Controller::class, 'testInvoice'])
+    ->middleware(['isAdmin'])->name('invoice_test');
+
 Route::get('/export-db', [Controller::class, 'exportDB'])
     ->middleware(['isAdmin']);
 
@@ -94,6 +103,9 @@ Route::get('/ecwid-store/index', [EcwidStore::class, 'index'])
 Route::get('/ecwid-store/products', [EcwidStore::class, 'getEcwidProducts'])
     ->name('ecwid.products');
 
+Route::get('/ecwid-store/categories', [EcwidStore::class, 'allCategories'])
+    ->name('ecwid.categories');
+
 Route::get('/ecwid-store/product', [EcwidStore::class, 'getEcwidProductById'])
     ->middleware(['isAdmin'])->name('ecwid.product');
 
@@ -104,4 +116,5 @@ Route::get('/create-order/ecwid-order', [Controller::class, 'createOrderByEcwidI
     ->middleware(['isAdmin'])->name('order.create_by_ecwid_id');
 
 Route::get('/api/category', [ApiRest::class, 'getEcwidProductBuCategoryId']);
+Route::get('/api/categoryes', [ApiRest::class, 'getEcwidCategories']);
 

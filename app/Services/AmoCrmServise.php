@@ -57,7 +57,6 @@ class AmoCrmServise
     private $tokenFile = 'data/amo-assets.json';
     private static $tokensFile = 'data/amo-assets.json';
     private $apiClient;
-    private $accessToken;
 
     public function __construct()
     {
@@ -204,15 +203,23 @@ class AmoCrmServise
         }
     }
 
-    // создание сделки на амо для прода
-    public function NewOrder(array $amoData)
+    private function getApiClient()
     {
-        // инициализация апи клиента
-        $apiClient    = $this->apiClient;
+        $oAuthConfig = new OAuthConfig();
+        $oAuthService = new OAuthService();
+        $apiClientFactory = new AmoCRMApiClientFactory($oAuthConfig, $oAuthService);
+        $apiClient = $apiClientFactory->make();
         $accessToken = $this->getTokens();
         $apiClient->setAccessToken($accessToken)
             ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
 
+        return $apiClient;
+    }
+
+    // создание сделки на амо для прода
+    public function NewOrder(array $amoData)
+    {
+        $apiClient = $this->getApiClient();
         ///////////////////////////////////////////////////////////////////////////
 
         // текстовый тип кастомного поля
@@ -259,7 +266,9 @@ class AmoCrmServise
 
         } else {
             $name = $amoData['name'];
-            $phone =  $amoData['phone'];
+            if (!empty($amoData['phone'])) {
+                $phone =  $amoData['phone'];
+            }
         }
 
         $textCustomFieldValueModel = new TextCustomFieldValuesModel();
@@ -271,13 +280,15 @@ class AmoCrmServise
         $leadCustomFieldsValues->add($textCustomFieldValueModel);
 
 
-        $textCustomFieldValueModel = new TextCustomFieldValuesModel();
-        $textCustomFieldValueModel->setFieldId(308401);
-        $textCustomFieldValueModel->setValues(
-            (new TextCustomFieldValueCollection())
-                ->add((new TextCustomFieldValueModel())->setValue($phone))
-        );
-        $leadCustomFieldsValues->add($textCustomFieldValueModel);
+        if (!empty($phone)) {
+            $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+            $textCustomFieldValueModel->setFieldId(308401);
+            $textCustomFieldValueModel->setValues(
+                (new TextCustomFieldValueCollection())
+                    ->add((new TextCustomFieldValueModel())->setValue($phone))
+            );
+            $leadCustomFieldsValues->add($textCustomFieldValueModel);
+        }
 
 
         // тип поля список
@@ -344,52 +355,67 @@ class AmoCrmServise
             ->setPrice($amoData['order price'])
             ->setCustomFieldsValues($leadCustomFieldsValues) // прикрепление к сделке значений из полей выше
             ->setStatusId($amoData['statusId'])
-            ->setContacts( // добавляем к сделке контакт с данными
-                (new ContactsCollection())
-                    ->add(
-                        (new ContactModel())
-                            ->setFirstName($amoData['name'])
-//                            ->setLastName($amoData['last name'])
-                            ->setIsMain(true)
-                            ->setCustomFieldsValues(
-                                (new CustomFieldsValuesCollection())
-                                    ->add(
-                                        (new MultitextCustomFieldValuesModel())
-                                            ->setFieldCode('PHONE')
-                                            ->setValues(
-                                                (new MultitextCustomFieldValueCollection())
-                                                    ->add(
-                                                        (new MultitextCustomFieldValueModel())
-                                                            ->setValue($amoData['phone'])
-                                                    )
-                                            )
-                                    )
-                                    ->add(
-                                        (new MultitextCustomFieldValuesModel())
-                                            ->setFieldCode('EMAIL')
-                                            ->setValues(
-                                                (new MultitextCustomFieldValueCollection())
-                                                    ->add(
-                                                        (new MultitextCustomFieldValueModel())
-                                                            ->setValue($amoData['email'])
-                                                    )
-                                            )
-                                    )
-                                    ->add( // кастомное поле для языка
-                                        (new SelectCustomFieldValuesModel())
-                                            ->setFieldId(490441)
-                                            ->setValues(
-                                                (new SelectCustomFieldValueCollection())
-                                                    ->add(
-                                                        (new SelectCustomFieldValueModel())
-                                                            ->setValue($amoData['lang'])
-                                                    )
-                                            )
-                                    )
-                            )
-                    )
-            )
             ->setRequestId($amoData['ekwidId']);
+
+        if (empty($amoData['clientAmoId'])) {
+
+            $contactsCollection = new ContactsCollection();
+            $contact = new ContactModel();
+            $contact->setFirstName($amoData['name'])
+                ->setIsMain(true);
+
+                $contact->setCustomFieldsValues(
+                    (new CustomFieldsValuesCollection())
+                        ->add(
+                            (new MultitextCustomFieldValuesModel())
+                                ->setFieldCode('EMAIL')
+                                ->setValues(
+                                    (new MultitextCustomFieldValueCollection())
+                                        ->add(
+                                            (new MultitextCustomFieldValueModel())
+                                                ->setValue($amoData['email'])
+                                        )
+                                )
+                        )
+                        ->add( // кастомное поле для языка
+                            (new SelectCustomFieldValuesModel())
+                                ->setFieldId(490441)
+                                ->setValues(
+                                    (new SelectCustomFieldValueCollection())
+                                        ->add(
+                                            (new SelectCustomFieldValueModel())
+                                                ->setValue($amoData['lang'])
+                                        )
+                                )
+                        )
+                );
+
+                if (!empty($amoData['phone'])) {
+                    $customFields = $contact->getCustomFieldsValues();
+                    $phoneField = (new MultitextCustomFieldValuesModel())->setFieldCode('PHONE');
+                    $customFields->add($phoneField);
+                    //Установим значение поля
+                    $phoneField->setValues(
+                        (new MultitextCustomFieldValueCollection())
+                            ->add(
+                                (new MultitextCustomFieldValueModel())
+                                    ->setValue($amoData['phone'])
+                            )
+                    );
+                    $contact->setCustomFieldsValues($customFields);
+                    $contactsCollection->add($contact);
+                }
+
+            // добавляем к сделке контакт с данными
+            $lead->setContacts($contactsCollection);
+
+        } else {
+
+            $contactsCollection = new ContactsCollection();
+            $contact = $apiClient->contacts()->getOne($amoData['clientAmoId']);
+            $contactsCollection->add($contact);
+            $lead->setContacts($contactsCollection);
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -438,10 +464,7 @@ class AmoCrmServise
     public function getCatalogElementBuName(string $name)
     {
         // инициализация апи клиента
-        $apiClient    = $this->apiClient;
-        $accessToken = $this->getTokens();
-        $apiClient->setAccessToken($accessToken)
-            ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
+        $apiClient = $this->getApiClient();
         /////////////////////////////////////////////////////////////////////////
 
         $catalogsCollection = $apiClient->catalogs()->get();
@@ -464,11 +487,7 @@ class AmoCrmServise
 
     public function setCatalogElement(array $data)
     {
-        // инициализация апи клиента
-        $apiClient    = $this->apiClient;
-        $accessToken = $this->getTokens();
-        $apiClient->setAccessToken($accessToken)
-            ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
+        $apiClient = $this->getApiClient();
         /////////////////////////////////////////////////////////////////////////
 
         $catalogsCollection = $apiClient->catalogs()->get();
@@ -526,11 +545,7 @@ class AmoCrmServise
 
     public function setCatalogElementByOrderId(CatalogElementModel $element, $orderId, $quantity)
     {
-        // инициализация апи клиента
-        $apiClient    = $this->apiClient;
-        $accessToken = $this->getTokens();
-        $apiClient->setAccessToken($accessToken)
-            ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
+        $apiClient = $this->getApiClient();
         /////////////////////////////////////////////////////////////////////////
 
         $element->setQuantity($quantity);
@@ -563,7 +578,6 @@ class AmoCrmServise
             }
 
             if (!empty($catalogElement)) {
-                $amoCrmServise = $this->apiClient;
                 $res = $this->setCatalogElementByOrderId($catalogElement, $amoId, $item['quantity']);
 
                 if (!$res) {
@@ -577,11 +591,7 @@ class AmoCrmServise
     // добавление текстового примечания в сделку
     public function addTextNotesToLead($id, $notes)
     {
-        // инициализация апи клиента
-        $apiClient    = $this->apiClient;
-        $accessToken = $this->getTokens();
-        $apiClient->setAccessToken($accessToken)
-            ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
+        $apiClient = $this->getApiClient();
         /////////////////////////////////////////////////////////////////////////
 
         $notesCollection = new NotesCollection();
@@ -605,11 +615,7 @@ class AmoCrmServise
     // получение заказа с амо по его ид, (для отладки)
     public function getOrderById($id)
     {
-        // инициализация апи клиента
-        $apiClient    = $this->apiClient;
-        $accessToken = $this->getTokens();
-        $apiClient->setAccessToken($accessToken)
-            ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
+        $apiClient = $this->getApiClient();
         /////////////////////////////////////////////////////////////////////////
 
         try {
@@ -632,12 +638,7 @@ class AmoCrmServise
 
     public function getAccount()
     {
-        $apiClient = $this->apiClient;
-
-        $accessToken = $this->getTokens();
-
-        $apiClient->setAccessToken($accessToken)
-            ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
+        $apiClient = $this->getApiClient();
 
         try {
             $ownerDetails = $apiClient->account()->getCurrent(AccountModel::getAvailableWith());
@@ -653,6 +654,14 @@ class AmoCrmServise
         }
 
         return $ownerDetails;
+    }
+
+    public function getConacts()
+    {
+        $apiClient = $this->getApiClient();
+        $contacts = $apiClient->contacts();
+
+        return $contacts;
     }
 
 
@@ -676,11 +685,8 @@ EOF;
         $timeToken = $accessToken->getExpires();
         $time = time();
 
-        if ($timeToken < $time) {
-            echo ' - timeToken < time <br>';
-        } else {
-            echo ' - timeToken > time <br>';
-        }
     }
+
+
 
 }

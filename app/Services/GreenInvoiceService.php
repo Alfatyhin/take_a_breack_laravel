@@ -6,12 +6,36 @@ namespace App\Services;
 
 class GreenInvoiceService
 {
+
     private $appId;
     private $secret;
     private $appUrl;
 
     private $token;
     private $timeOut;
+
+    public function __construct()
+    {
+
+        $this->secret = $_ENV['GREENINVOICE_APP_SECRET'];
+        $this->appId  = $_ENV['GREENINVOICE_APP_ID'];
+
+        $this->appUrl = $_ENV['GREENINVOICE_APP_URL'];
+    }
+
+    public function setMode($mode) : self
+    {
+
+        if ($mode == 2) {
+            $this->secret = $_ENV['GREENINVOICE_APP_SECRET_2'];
+            $this->appId  = $_ENV['GREENINVOICE_APP_ID_2'];
+        } else {
+            $this->secret = $_ENV['GREENINVOICE_APP_SECRET'];
+            $this->appId  = $_ENV['GREENINVOICE_APP_ID'];
+        }
+
+        return $this;
+    }
 
     private static $errors = [
         '401'  =>' В доступе отказано, подключитесь снова.',
@@ -256,12 +280,7 @@ class GreenInvoiceService
         '3405' => 'Тип расходов, связанный с расходами, удалить нельзя.',
     ];
 
-    public function __construct()
-    {
-        $this->secret = $_ENV['GREENINVOICE_APP_SECRET'];
-        $this->appId  = $_ENV['GREENINVOICE_APP_ID'];
-        $this->appUrl = $_ENV['GREENINVOICE_APP_URL'];
-    }
+
     public function __clone()
     {
         // TODO: Implement __clone() method.
@@ -333,6 +352,12 @@ class GreenInvoiceService
             $remarks .= $orderData['tips'];
         }
 
+        $lang = $orderData['lang'];
+
+        if ($lang != 'he' && $lang != 'en') {
+            $lang = 'en';
+        }
+
         $data = [
             "description"  => $orderData['orderNames'],
             "remarks"      => $remarks,
@@ -340,7 +365,7 @@ class GreenInvoiceService
             "emailContent" => "Email content",
             "type"         => 400,
             "date"         => $orderData['payDate'],
-            "lang"         => "en",
+            "lang"         => $lang,
             "currency"     => "ILS",
             "vatType"      => 0,
             "rounding"     => true,

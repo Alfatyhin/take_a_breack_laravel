@@ -21,7 +21,13 @@
                     <tr>
                         <td>{{ $item->id }}</td>
                         <td>{{ $item->name }}</td>
-                        <td>{{ $item->data }}</td>
+                        <td>
+                            {{ $item->data }} <br>
+                            <form action="{{ route('ecwid.webhook') }}" method="post">
+                                <input type="hidden" name="data-test" value="{{$item->data}}">
+                                <input type="submit" name="test data">
+                            </form>
+                        </td>
                         <td>{{ $item->created_at->format('Y-m-d H-i-s') }}</td>
                     </tr>
                 @endforeach

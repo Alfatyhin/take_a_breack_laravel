@@ -79,6 +79,15 @@ class EcwidStore extends Controller
 
         }
 
+        if (!empty($ecwidOrder['couponDiscount'])) {
+            $discount = $ecwidOrder['couponDiscount'];
+            $total = $ecwidOrder['subtotal'];
+            $rateDiscount = 100 / ($total / $discount);
+            var_dump("скидка - $discount ($rateDiscount%)");
+        } else {
+            echo 'no discount';
+        }
+
         return view('ecwid.order', [
             'ecwidOrder' => $ecwidOrder,
             'order'      => $order,
@@ -86,6 +95,33 @@ class EcwidStore extends Controller
 
     }
 
+    public function allCategories()
+    {
+        $categories = $this->ecwidService->getCategories();
+
+        echo "<pre>";
+       foreach ($categories['items'] as $item) {
+
+           $img = $item['thumbnailUrl'];
+           $name = $item['name'];
+           echo "<img src='$img'><br> $name <br>";
+
+           foreach ($item['nameTranslated'] as $k => $v) {
+               echo "$k - $v <br>";
+           }
+
+           $desc = $item['description'];
+
+           echo "<hr> Описание <br> $desc <br>";
+
+           foreach ($item['descriptionTranslated'] as $k => $v) {
+               echo "$k - $v <br>";
+           }
+
+
+       }
+
+    }
 
 
 

@@ -14,8 +14,9 @@ class EcwidProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(EcwidService::class, function ($app) {
-            return new EcwidService(config('EcwidService'));
+
+        $this->app->singleton('App\Services\EcwidService', function ($app) {
+            return new EcwidService();
         });
     }
 

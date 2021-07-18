@@ -12,6 +12,7 @@ use App\Models\WebhookLog;
 use App\Services\AppServise;
 use App\Services\Contracts\OrderServiceInterface;
 use App\Services\EcwidService;
+use App\Services\GreenInvoiceService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -20,6 +21,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+
+use League\OAuth2\Client\Token\AccessTokenInterface;
 
 class Controller extends BaseController
 {
@@ -79,7 +82,7 @@ class Controller extends BaseController
             $x = $item->paymentMethod;
             $paymethodName = $paymentMethod[$x];
 
-            if (empty($paydPeriodInfo[$x])) {
+            if (empty($paydPeriodInfo[$paymethodName])) {
                 $paydPeriodInfo[$paymethodName] = $item->orderPrice;
             } else {
                 $paydPeriodInfo[$paymethodName] += $item->orderPrice;
@@ -87,8 +90,12 @@ class Controller extends BaseController
             $paydPeriodInfo['totall'] += $item->orderPrice;
 
         }
-        $paydPeriodInfo['средний чек'] = round($paydPeriodInfo['totall'] / sizeof($orderPayd), 2);
-        $paydPeriodInfo = array_reverse($paydPeriodInfo);
+        if (!empty(sizeof($orderPayd))) {
+            $paydPeriodInfo['средний чек'] = round($paydPeriodInfo['totall'] / sizeof($orderPayd), 2);
+            $paydPeriodInfo = array_reverse($paydPeriodInfo);
+        }
+
+
 
 
         $date_start = new Carbon('first day of this month');
@@ -104,11 +111,11 @@ class Controller extends BaseController
 
 
         $priceYear = Orders::where('paymentStatus', '4')
-            ->whereYear('paymentDate', $date_start->format('Y'))
+            ->whereYear('created_at', $date_start->format('Y'))
             ->sum('orderPrice');
 
         $priceYearAwaiting = Orders::where('paymentStatus', '3')
-            ->whereYear('paymentDate', $date_start->format('Y'))
+            ->whereYear('created_at', $date_start->format('Y'))
             ->sum('orderPrice');
 
         echo "</pre>";
@@ -244,6 +251,61 @@ class Controller extends BaseController
         ]);
     }
 
+    public function allClients(Request $request)
+    {
+        $clients = Clients::latest('id')->paginate(10);
+
+        return view('clients.index', [
+            'clients' => $clients,
+        ]);
+    }
+
+
+    public function appInvoiceSetting(Request $request)
+    {
+        $dataJson = Storage::disk('local')->get('data/app-setting.json');
+        $settingData = json_decode($dataJson, true);
+
+        $invoice_mode_paypal = $request->get('invoice_mode_paypal');
+
+        if ($invoice_mode_paypal) {
+            $settingData['invoice_mode_paypal'] = $invoice_mode_paypal;
+            Storage::disk('local')->put('data/app-setting.json', json_encode($settingData));
+        }
+
+        return view('app.invoice_setting', [
+            'settingData' => $settingData,
+        ]);
+    }
+
+    public function testInvoice(Request $request)
+    {
+        $orderId = $request->get('orderId');
+
+        $ecwidService = new EcwidService();
+        $orderEcwid = $ecwidService->getOrderBuId($orderId);
+
+        $invoice = new GreenInvoiceService();
+        $invoice = $invoice->setMode(2);
+
+
+
+        $orderEcwid['extraFields']['gustom_lang'] = 'he';
+        $invoiceDada = EcwidService::getDataToGreenInvoice($orderEcwid);
+        echo "<pre>";
+
+        $res = $invoice->newDoc($invoiceDada);
+
+        if (isset($res['errorCode'])) {
+            AppErrors::addError("invoice create error to " . $orderId, json_encode($res));
+
+        } else {
+           var_dump($res);
+        }
+
+
+    }
+
 
     public function importDB()
     {
@@ -302,6 +364,7 @@ class Controller extends BaseController
             . "translit - $strtr <br> retranslit - "
             . TranslitTextService::ReTranslit($strtr)
             . "<br> fileName translit - " . TranslitTextService::TranslitFileName($str);
+
 
     }
 

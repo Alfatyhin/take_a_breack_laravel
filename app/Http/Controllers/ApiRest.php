@@ -22,4 +22,14 @@ class ApiRest extends Controller
 
         return json_encode($productList);
     }
+
+    public function getEcwidCategories(Request $request)
+    {
+        header('Access-Control-Allow-Origin: *');
+
+        $ecwidService = new EcwidService();
+        $categories = $ecwidService->getCategories();
+
+        return json_encode($categories);
+    }
 }

@@ -3,19 +3,20 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class ExampleTest extends TestCase
+class GetIcreditUrlTest extends TestCase
 {
     /**
-     * A basic test example.
+     * A basic feature test example.
      *
      * @return void
      */
     /** @test */
-    public function test_example()
+    public function test_getIcreditUrl()
     {
-        $response = $this->get('/');
+        $response = $this->post('orders/icredit');
 
         $response->assertStatus(200);
     }
