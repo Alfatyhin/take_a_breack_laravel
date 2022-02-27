@@ -6,12 +6,13 @@ namespace App\Services;
 
 use App\Models\AppErrors;
 use App\Models\IcreditLogs;
+use App\Models\WebhookLog;
 
 class IcreditServise
 {
     private $payToken;
-    private $testURL = "https://icredit.rivhit.co.il/API/PaymentPageRequest.svc/GetUrl";
-    private $prodURL = "https://testicredit.rivhit.co.il/API/PaymentPageRequest.svc/GetUrl";
+    private $testURL = "https://testicredit.rivhit.co.il/API/PaymentPageRequest.svc/GetUrl";
+    private $prodURL = "https://icredit.rivhit.co.il/API/PaymentPageRequest.svc/GetUrl";
 
     public function __construct()
     {
@@ -36,27 +37,37 @@ class IcreditServise
 
     public function getUrl($data)
     {
+        // default prod url
+        $url = $this->prodURL;
+
+
+        if ($data['name'] == 'test') {
+            $data['lang'] = 'test';
+            $url = $this->testURL;
+        }
+
         $token = $this->setPayToken($data['lang']);
 
-        // default prod url
-        $url = $this->testURL;
-
-        if ($data['lang'] == 'test') {
-            // change to test url
-            $url = $this->prodURL;
-        }
 
         $newData = array(
             "GroupPrivateToken" => $token,
             "Items" => $data['items'],
             "Custom1" => $data['orderId'],
             "Custom2" => $data['custom2'],
-            "RedirectURL" => $_ENV['ICREDIT_THANKS'],
+            "RedirectURL" => $_ENV['ICREDIT_THANKS'] . '/?id=' . $data['orderId'],
             "IPNURL" => $_ENV['ICREDIT_RESPONSE_PAY'],
             "EmailAddress" => $data['email'],
-            "PhoneNumber" => $data["phone"],
-            "CustomerFirstName" => $data["name"]
+            "CustomerFirstName" => $data["name"],
+            "CustomerLastName" => $data["name"]
         );
+        WebhookLog::addLog('iCredit backUrl', $newData['RedirectURL']);
+
+        if (!empty($data["phone"])) {
+            $newData['PhoneNumber'] = $data["phone"];
+        }
+        if (!empty($data["discount"])) {
+            $newData['Discount'] = $data["discount"];
+        }
 
 
         $post = json_encode($newData);
@@ -69,7 +80,6 @@ class IcreditServise
         //curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, 0);// prevent ssl error on localhost
         $result = curl_exec($ch);
         curl_close($ch);
-
         $result = json_decode($result, true);
 
         if ($result['URL']) {

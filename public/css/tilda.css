@@ -1,0 +1,335 @@
+
+html#ecwid_html body#ecwid_body .ec-size .ec-store .grid-product__title-inner,
+html#ecwid_html body#ecwid_body .ec-size .ec-store h1, html#ecwid_html body#ecwid_body .ec-size .ec-store .ec-header-h1,
+html#ecwid_html body#ecwid_body .ec-size .ec-store * {
+    color: #111111 !important;
+}
+html#ecwid_html body#ecwid_body .horizontal-menu-container.horizontal-desktop .horizontal-menu-parent {
+    width: 100%;
+}
+html#ecwid_html body#ecwid_body .horizontal-menu-container.horizontal-desktop .horizontal-menu-parent>.horizontal-menu-item {
+    display: inline-block;
+    width: 16.65%;
+    border: 2px solid #cf679f;
+    border-right: none;
+    padding: 18px 0;
+}
+
+html#ecwid_html body#ecwid_body .horizontal-menu-container.horizontal-desktop .horizontal-menu-parent>.horizontal-menu-item:first-child {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+html#ecwid_html body#ecwid_body .horizontal-menu-container.horizontal-desktop .horizontal-menu-parent>.horizontal-menu-item:last-child {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-right: 2px solid #cf679f;
+}
+
+html#ecwid_html body#ecwid_body .horizontal-menu-container.horizontal-desktop .horizontal-menu-parent>.horizontal-menu-item--active {
+    background-color: #cf679f;
+}
+
+
+html#ecwid_html body#ecwid_body .horizontal-menu-container.horizontal-desktop .horizontal-menu-item>a {
+    text-align: center;
+    color: #cf679f;
+    font-weight: 400;
+    font-family: 'Circe';
+    font-size: 16px;
+}
+html#ecwid_html body#ecwid_body .horizontal-menu-container.horizontal-desktop .horizontal-menu-item--hover>a {
+    color: #cf679f !important;
+    font-weight: 600;
+    background: none !important;
+}
+html#ecwid_html body#ecwid_body .horizontal-menu-container.horizontal-desktop .horizontal-menu-item--active>a {
+    color: #ffffff;
+    font-weight: 600;
+}
+html#ecwid_html body#ecwid_body .horizontal-menu-container.horizontal-desktop .horizontal-menu-item>a span {
+    display: block;
+    float: none;
+}
+html#ecwid_html body#ecwid_body .horizontal-menu-container.horizontal-desktop nav.horizontal-menu {
+    border: none;
+}
+html#ecwid_html body#ecwid_body #ProductBrowser-1.popap_active .ecwid-productBrowser {
+    background-color: #ffffff;
+    padding: 20px;
+    overflow: scroll;
+}
+html#ecwid_html body#ecwid_body .ec-size.ec-size--m .ec-store .product-details--layout-columns-three.product-details--layout-sidebar-right .product-details__sidebar .product-details__product-title {
+    display: block;
+}
+html#ecwid_html body#ecwid_body INPUT[type="number"]#qty-field {
+    color: #000000 !important;
+}
+html#ecwid_html body#ecwid_body .ec-size.ec-size--m .ec-store .product-details--layout-columns-three .product-details__gallery {
+    order: 1;
+    width: 50%;
+}
+html#ecwid_html body#ecwid_body .ec-size.ec-size--m .ec-store .product-details--layout-columns-three .product-details__sidebar {
+    order: 2 !important;
+    width: 50%;
+}
+html#ecwid_html body#ecwid_body .ec-size.ec-size--m .ec-store .product-details--layout-columns-three .product-details__description {
+    order: 3;
+    width: 100%;
+}
+html#ecwid_html body#ecwid_body .ec-size.ec-size--m .ec-store .product-details--layout-columns-three .product-details__description .product-details__product-title {
+    display: none !important;
+}
+html#ecwid_html body#ecwid_body .ec-size.ec-size--m .ec-store .product-details--layout-columns-three .product-details__description .box p {
+    display: inline-block;
+    width: 50%;
+}
+html#ecwid_html body#ecwid_body .ec-size.ec-size--m .ec-store .product-details--layout-columns-three .product-details__description .box {
+    display: inline-block;
+    width: 49%;
+}
+html#ecwid_html body#ecwid_body .ec-size.ec-size--m .ec-store .product-details--layout-columns-three .product-details__description .box p {
+
+}
+html#ecwid_html body#ecwid_body .ec-size .ec-store .grid-category--dark .grid-category__title-inner {
+    color: #fff !important;
+    text-shadow: 0 0px 10px rgba(0,0,0,0.5);
+}
+
+html#ecwid_html body#ecwid_body .ec-size .ec-store .form-control--primary .form-control__button {
+    background: #DE145B;
+    color: #000000 !important;
+    border-radius: 5px;
+}
+
+html#ecwid_html body#ecwid_body .ec-size .ec-store .ec-cart__sidebar .ec-cart-item__image .ec-cart-item__picture-inner {
+    display: block !important;
+}
+
+
+html#ecwid_html body#ecwid_body .ec-minicart--fixed.ec-minicart--bottom {
+    bottom: unset;
+}
+html#ecwid_html body#ecwid_body .ec-minicart--fixed.ec-minicart--bottom.ec-minicart--bottom__shift-aside-fbmessages-bubble {
+    top: 90px;
+    bottom: auto;
+    border-radius: 50%;
+}
+
+.dey_offer > div {
+    display: inline-block;
+    width: 45%;
+    vertical-align: top;
+    padding: 0 20px;
+}
+#allrecords .dey_offer a.t-btntext {
+    color: #de145b;
+}
+.dey_offer > div img {
+    width: 100%;
+}
+.dey_offer .desc {
+    margin-top: 40px;    font-family: 'Circe',Arial,sans-serif;
+    font-weight: 300;
+    color: #000;
+    font-size: 18px;
+
+}
+
+.hidden {
+    display: none;
+}
+#ProductBrowser-1.popap_active {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999999;
+    height: 100%;
+    overflow: scroll;
+    padding: 40px;
+    background: #a09999;
+}
+
+#ProductBrowser-1 .close:hover {
+    cursor: pointer;
+}
+#ProductBrowser-1 .close {
+    position: absolute !important;
+    top: 45px;
+    right: 45px;
+    display: none;
+    width: 30px;
+    height: 30px;
+}
+#ProductBrowser-1.popap_active .close {
+    display: block;
+}
+#ProductBrowser-1 .close:before,
+#ProductBrowser-1 .close:after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: brown;
+    transform: rotate(45deg);
+    position: absolute;
+    top: 50%;
+}
+#ProductBrowser-1 .close:before {
+    transform: rotate(-45deg);
+}
+#ProductBrowser-1 .product-details__description .box {
+    display: inline-block;
+    width: 48%;
+    vertical-align: top;
+}
+#ProductBrowser-1 .product-details__description .box p {
+    display: block;
+}
+
+html#ecwid_html body#ecwid_body .ec-size.ec-size--m .ec-store .product-details--layout-columns-three .product-details__description .box p {
+    width: 100%;
+    position: relative;
+    margin: 18px 20px;
+    vertical-align: top;
+    padding-left: 60px;
+    padding-right: 10px;
+}
+html#ecwid_html body#ecwid_body .ec-cart-step--delivery .ec-text-muted {
+    display: block !important;
+}
+
+#ProductBrowser-1 .product-details__description .box p:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+}
+
+#ProductBrowser-1 .product-details__description .box p.footer1:after {
+    background: url("https://takeabreak.website/img/icons1.png");
+}
+#ProductBrowser-1 .product-details__description .box p.footer2:after {
+    background: url("https://takeabreak.website/img/icons2.png");
+}
+#ProductBrowser-1 .product-details__description .box p.footer3:after {
+    background: url("https://takeabreak.website/img/icons3.png");
+}
+#ProductBrowser-1 .product-details__description .box p.footer4:after {
+    background: url("https://takeabreak.website/img/icons4.png");
+}
+#ProductBrowser-1 .product-details__description .box p.footer5:after {
+    background: url("https://takeabreak.website/img/icons5.png");
+}
+
+#ProductBrowser-1 .product-details__description .box p.footer1:after,
+#ProductBrowser-1 .product-details__description .box p.footer2:after,
+#ProductBrowser-1 .product-details__description .box p.footer3:after,
+#ProductBrowser-1 .product-details__description .box p.footer4:after,
+#ProductBrowser-1 .product-details__description .box p.footer5:after {
+    background-size: cover;
+}
+html#ecwid_html body#ecwid_body .ec-size .ec-store .label--custom .label__text {
+    color: #fff !important;
+}
+.dey_offer .sale_label {
+    margin: 10px 0;
+    position: relative;
+}
+.dey_offer .sale_label:before,
+.dey_offer .sale_label:after {
+    content: '';
+    position: absolute;
+    right: -.375em;
+    width: 0;
+    height: 0;
+    border-top: .75em solid currentColor;
+    border-left: .375em solid transparent;
+    color: #fe9800;
+}
+.dey_offer .sale_label:before {
+    top: 0;
+    transform: rotate(180deg) scale(1, -1);
+}
+.dey_offer .sale_label:after {
+    bottom: 0;
+    transform: rotate(-180deg);
+}
+.sale_label {
+    background: #fe9800;
+    color: #000000;
+    width: fit-content;
+    padding: 5px;
+}
+#allrecords a.product-button, a.product-button {
+    color: #ffffff;
+    background-color: #de145b;
+    border-radius: 20px;
+    font-family: Circe;
+    font-weight: 300;
+    padding: 5px 20px;
+    display: inline-block;
+    width: max-content;
+}
+
+#ProductBrowser-1 .image-info span {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    transform: rotate(180deg) !important;
+    background-image: url(https://takeabreak.website/img/icons1.png) !important;
+    background-size: cover !important;
+    position: relative !important;
+    top: 3px;
+    right: 5px;
+}
+#ProductBrowser-1 a.go_back {
+    position: absolute !important;
+    top: 34px;
+    left: 59px;
+    color: #de145b !important;
+    transform: rotate(180deg);
+    font-size: 44px !important;
+}
+#ProductBrowser-1 .go_back:after {
+    content: "\00a0→";
+    font-family: Arial,Helvetica,sans-serif;
+}
+
+
+@media screen and (max-width: 960px) {
+    html#ecwid_html body#ecwid_body .horizontal-menu-container.horizontal-desktop .horizontal-menu-parent.horizontal-menu-parent--dropDown {
+        margin-bottom: 94px;
+    }
+    .dey_offer > div {
+        width: 100%;
+    }
+}
+@media screen and (max-width: 560px) {
+    #ProductBrowser-1.popap_active {
+        padding: 5px;
+    }
+    .dey_offer > div {
+        width: 90%;
+        padding: 0 5%;
+    }
+    #ProductBrowser-1.popap_active .close {
+        top: 0;
+        right: 0;
+    }
+    #ProductBrowser-1 .product-details__description .box p {
+        position: relative;
+        padding-left: 47px !important;
+        font-size: 12px;
+        min-height: 66px !important;
+    }
+    #ProductBrowser-1 .product-details__description .box {
+        width: 100%;
+    }
+    #ProductBrowser-1 a.go_back {
+        top: -7px;
+        left: 20px;
+    }
+}

@@ -18,6 +18,7 @@ class EcwidService
     private static $payModyle = 'CUSTOM_PAYMENT_APP-custom-app-48198100-1';
     private $category_set_id = '82971920';
     private $category_in_stock_id = '109788705';
+    private $always_write_off = ['123457253'=> true, '123633263' => true];
 
     public function __construct()
     {
@@ -72,9 +73,28 @@ class EcwidService
         return $res;
     }
 
+
+
+    public function getAbondoneBascets($showHidden, $dateFrom, $dateTo)
+    {
+
+        $shopId = $this->shop_id;
+        $token = $this->secret_token;
+        $url = "https://app.ecwid.com/api/v3/$shopId/carts?token=$token&showHidden=$showHidden&createdFrom=$dateFrom&createdTo=$dateTo";
+        $res = $this->getQuest($url);
+
+        var_dump($url);
+        return $res;
+
+    }
+
     public function inStockUpdate($product)
     {
 //        var_dump($product);
+
+        if ($product['defaultCategoryId'] == 105517392) {
+            die;
+        }
 
         $inStockProducts = $this->getProductsByCategoryId($this->category_in_stock_id);
 
@@ -83,7 +103,6 @@ class EcwidService
             $inStock[$id] = $id;
 
         }
-//        print_r($inStock);
 
         $inStockAdd = false;
 
@@ -96,7 +115,9 @@ class EcwidService
         }
 
         $variateInStock = false;
+        $productVariate = false;
         if (!empty($product['combinations'])) {
+            $productVariate = true;
 
             foreach ($product['combinations'] as $item) {
 
@@ -108,7 +129,6 @@ class EcwidService
                     $count = $item['quantity'];
                     $variateInStock = true;
                     echo "count = $count variate to stock $productId variateid - $variateId \n";
-                    var_dump($item['defaultDisplayedPrice']);
 
                     foreach ($item['options'] as $option) {
                         if ($option['name'] == 'Size') {
@@ -130,9 +150,8 @@ class EcwidService
                     }
 
 
-
                 } else {
-                    echo "no add to stock $productId variateid - $variateId \n";
+
 
                 }
 
@@ -141,16 +160,48 @@ class EcwidService
             if ($variateInStock && empty($inStock[$productId])) {
                 $inStockAdd = true;
                 $inStock[$productId] = $productId;
-                echo "add variate to stock $productId \n";
+
             }
 
         }
 
-        echo "<hr><hr> действия <hr><hr>";
+
+        if ($productVariate) {
+
+            if (!empty($product['ribbon']['text'])) {
+
+                $str = $product['ribbon']['text'];
+
+                $newStr = preg_replace('/in Stock Size ([MSL& ])*/', '', $str);
+                $newStr = trim($newStr);;
+
+                $strRu = $product['ribbonTranslated']['ru'];
+
+                $newStrRu = preg_replace('/В наличии размер ([MSXL& ])*/', '', $strRu);
+                $newStrRu = trim($newStrRu);
+
+                $strHe = $product['ribbonTranslated']['he'];
+
+                $newStrHe = preg_replace('/([MSL& ])*גודל זמין/', '', $strHe);
+                $newStrHe = trim($newStrHe);
+
+//                $productDataRibbon['ribbon'] = [
+//                    "text" => $newStr,
+//                    "color" => "#7091DA"
+//                ];
+//                $productDataRibbon['ribbonTranslated'] = [
+//                    'ru' => $newStrRu,
+//                    'en' => $newStr,
+//                    'he' => $newStrHe,
+//                ];
+
+            }
+        }
+
+
 
         if (isset($sizes)) {
 
-            echo " sizes test <hr>";
 
 //            $productDataNew['showOnFrontpage'] = -1;
             // default ddisplay size
@@ -162,9 +213,6 @@ class EcwidService
 
                         if ($item['text'] == $defaultDisplaySize) {
 
-                            echo "<hr>";
-//                            var_dump($k, $item['text']);
-                            echo "<hr>";
 
                             $productDataNew['options'] = $product['options'];
                             $productDataNew['options'][$optionKey]['defaultChoice'] = $k;
@@ -177,49 +225,63 @@ class EcwidService
             }
 
             $sizeStr = implode(' & ', $sizes);
-            $productDataNew['ribbon'] = [
-                "text" => "in Stock Size " . $sizeStr,
-                "color" => "#7091DA"
-            ];
-            $productDataNew['ribbonTranslated'] = [
-                'ru' => "В наличии размер " . $sizeStr,
-                'en' => "in Stock Size " . $sizeStr,
-                'he' => $sizeStr . " ". "גודל זמין",
-            ];
 
-            echo "<hr>";
-//            var_dump($productDataNew);
+//            $productDataNew['ribbon'] = [
+//                "text" => "in Stock Size " . $sizeStr,
+//                "color" => "#7091DA"
+//            ];
+//            $productDataNew['ribbonTranslated'] = [
+//                'ru' => "В наличии размер " . $sizeStr,
+//                'en' => "in Stock Size " . $sizeStr,
+//                'he' => $sizeStr . " ". "גודל זמין",
+//            ];
 
-            echo "<hr>";
 
-            if ($product['ribbon']['text'] == $productDataNew['ribbon']['text']) {
-                echo "laibel isset <hr>";
+
+            if (!empty($product['ribbon']) &&
+                ($product['ribbon']['text'] == $productDataNew['ribbon']['text'])) {
             } else {
-                echo "new laibel <hr>";
-                $res = $this->updateProduct($productId, $productDataNew);
-                var_dump($res);
-
-                $webhoock['productId'] = $id;
-                $webhoock['new laibel'] = $productDataNew['ribbon']['text'];
-
-                WebhookLog::addLog('ecwid webhook', $webhoock);
+//                echo "new laibel <hr>";
+//                $res = $this->updateProduct($productId, $productDataNew);
+//                var_dump($res);
+//
+//                $webhoock['productId'] = $id;
+//                $webhoock['new laibel'] = $productDataNew['ribbon']['text'];
+//
+//                WebhookLog::addLog('ecwid webhook', $webhoock);
             }
 
+
+        } else {
+            if (!empty($productDataNew['ribbon']['text'])) {
+//                $productDataNew['ribbon'] = [
+//                    "text" => "",
+//                ];
+//                $productDataNew['ribbonTranslated'] = [
+//                    'ru' => "",
+//                    'en' => "",
+//                    'he' => "",
+//                ];
+//                echo "delete laibel <hr>";
+//                $res = $this->updateProduct($productId, $productDataNew);
+//                var_dump($res);
+//
+//                $webhoock['productId'] = $id;
+//                $webhoock['delete laibel'] = $productDataNew['ribbon']['text'];
+//
+//                WebhookLog::addLog('ecwid webhook', $webhoock);
+            }
 
         }
 
         if (!empty($inStock[$productId]) && empty($product['quantity']) && $variateInStock == false) {
             unset($inStock[$productId]);
             $inStockAdd = true;
-            echo "delete to stock $productId \n";
         }
 
         if ($inStockAdd) {
-            echo "add in stock";
             $data['productIds'] = array_values($inStock);
-            print_r($data);
             $res = $this->updateProductsCategory($this->category_in_stock_id, $data);
-            var_dump($res);
 
             $webhoock['productId'] = $id;
             $webhoock['add in stock'] = $id;
@@ -287,7 +349,7 @@ class EcwidService
 
 
     // подготовка запроса для получения урл
-    public function getIcreditUrl()
+    public function getIcreditDataOrder()
     {
         $data = $this->data;
 
@@ -309,9 +371,6 @@ class EcwidService
 
             $total = $total + ($item['quantity'] * $item['price']);
 
-            if ($email == 'virikidorhom@gmail.com') {
-                $ecwidItems[$key]['UnitPrice'] = 1;
-            }
         }
 
         if (!empty($data['cart']['order']['shippingOption']['shippingRate'])) {
@@ -339,9 +398,6 @@ class EcwidService
                         $ecwidItems[$key]['UnitPrice'] = $total * $tips;
                         $ecwidItems[$key]['Description'] = 'tips ' . $item['value'];
 
-                        if ($email == 'virikidorhom@gmail.com') {
-                            $ecwidItems[$key]['UnitPrice'] = 1;
-                        }
 
                     }
                 }
@@ -354,14 +410,34 @@ class EcwidService
         $order['orderId'] = $data['cart']['order']['id'];
         $order['custom2'] = 'Ecwid';
         $order['email']   = $data['cart']['order']['email'];
-        $order["phone"]   = $data["cart"]["order"]["billingPerson"]["phone"];
+
+        if (!empty($data["cart"]["order"]["billingPerson"]["phone"])) {
+            $order["phone"]   = $data["cart"]["order"]["billingPerson"]["phone"];
+        }
         $order["name"]    = $data["cart"]["order"]["billingPerson"]["name"];
-        /////////////////////////////////////////////////////////////////////////
 
-        $icreditServise = new IcreditServise();
-        $res = $icreditServise->getUrl($order);
+        if (!empty($data['cart']['order']['discountCoupon'])) {
 
-        return $res;
+            if ($data['cart']['order']['discountCoupon']['status'] == 'ACTIVE') {
+                $discount = $data['cart']['order']['discountCoupon']['discount'];
+
+                foreach ($order['items'] as $k => $item) {
+                    $prise = $item['UnitPrice'];
+
+                    $order['items'][$k]['UnitPrice'] = $prise - ($prise * $discount / 100);
+                }
+
+            }
+
+        }
+
+
+        if ($email == 'virikidorhom@gmail.com') {
+//            echo '<pre>';
+//            dd($order['items']);
+        }
+
+        return $order;
     }
 
     public function getOrderBuId($orderId)
@@ -412,7 +488,7 @@ class EcwidService
     {
         $shopId = $this->shop_id;
         $token = $this->secret_token;
-        $url = "https://app.ecwid.com/api/v3/$shopId/products?token=$token&&category=$id";
+        $url = "https://app.ecwid.com/api/v3/$shopId/products?token=$token&category=$id";
         $res = $this->getQuest($url);
 
         return $res;
@@ -480,7 +556,8 @@ class EcwidService
     public static function getAmoDataLead($orderEcwid)
     {
         // формируем массив данных для амо
-        $statusId = '34990069'; // заказ согласован
+        $pipelineId = '4651807'; // воронка
+        $statusId = '43924885'; // статус
 
         if ($orderEcwid['paymentMethod'] == 'Сash payment') {
             $payment = 'Оплата наличными по факту';
@@ -493,19 +570,33 @@ class EcwidService
         if (!empty($orderEcwid['shippingPerson']['city'])) {
             $address = $orderEcwid['shippingPerson']['city']
                 . ' ' . $orderEcwid['shippingPerson']['street'];
+        } else {
+
+            if (!empty($orderEcwid['shippingOption'])) {
+                if (!empty($orderEcwid['shippingOption']['shippingMethodName'])) {
+                    $address = $orderEcwid['shippingOption']['shippingMethodName'];
+                }
+            }
+
         }
 
         if(isset($orderEcwid['orderComments'])) {
             $orderComments = $orderEcwid['orderComments'];
+        } else {
+            $orderComments = '';
         }
 
         // date time order
         if (!empty($orderEcwid['shippingOption'])) {
+
             if ($orderEcwid['shippingOption']['fulfillmentType'] == 'PICKUP') {
                 $dateTimeStart = $orderEcwid['extraFields']['ecwid_order_pickup_time'];
-            } else {
+            } elseif (!empty($orderEcwid['extraFields']['ecwid_order_delivery_time_interval_start'])) {
                 $dateTimeStart = $orderEcwid['extraFields']['ecwid_order_delivery_time_interval_start'];
+            } else {
+                $dateTimeStart = $orderEcwid['createDate'];
             }
+
         } else {
             $dateTimeStart = $orderEcwid['createDate'];
         }
@@ -566,8 +657,14 @@ class EcwidService
             $globalReferer = $maches[1];
         }
 
-        // язык витрины
-        $ecwidLang = $orderEcwid['extraFields']['gustom_lang'];
+
+        if (!empty($orderEcwid['extraFields']['gustom_lang'])) {
+            // язык витрины
+            $ecwidLang = $orderEcwid['extraFields']['gustom_lang'];
+        } else {
+            $ecwidLang = 'he';
+        }
+
 
         if ($ecwidLang == 'ru') {
             $ecwidLang = 'Русский';
@@ -583,22 +680,13 @@ class EcwidService
             $name = $orderEcwid['shippingPerson']['name'];
         }
 
-        if (empty($orderEcwid['shippingPerson']['phone'])) {
-            if (!empty($orderEcwid['billingPerson']['phone'])) {
-                $phone = $orderEcwid['billingPerson']['phone'];
-            }
-        } else {
-            $phone = $orderEcwid['shippingPerson']['phone'];
-        }
 
-        if (!empty($phone)) {
-            $dataOrderAmo['phone'] = $phone;
-        }
 
         $dataOrderAmo = [
             'order name'  => 'Ecwid' . $present . ' #' . $orderEcwid['id'],
             'ekwidId'     => $orderEcwid['id'],
             'order price' => $orderEcwid['total'],
+            'pipelineId'  => $pipelineId,
             'statusId'    => $statusId,
             'notes'       => $orderComments,
             'lang'        => $ecwidLang,
@@ -611,6 +699,23 @@ class EcwidService
             'time'        => $timeDelivery,
             'tags'        => $tags
         ];
+
+        if (empty($orderEcwid['shippingPerson']['phone'])) {
+            if (!empty($orderEcwid['billingPerson']['phone'])) {
+                $phone = $orderEcwid['billingPerson']['phone'];
+            }
+        } else {
+            $phone = $orderEcwid['shippingPerson']['phone'];
+        }
+
+        if (!empty($phone)) {
+            $dataOrderAmo['phone'] = $phone;
+        }
+
+        if (!empty($orderEcwid['utmData'])) {
+            $dataOrderAmo['utmData'] = $orderEcwid['utmData'];
+        }
+
 
         //////////////////////////////////////
         // заказ в подарок
@@ -647,8 +752,10 @@ class EcwidService
         if (!empty($orderEcwid['shippingOption'])) {
             if ($orderEcwid['shippingOption']['fulfillmentType'] == 'PICKUP') {
                 $dateTimeStart = $orderEcwid['extraFields']['ecwid_order_pickup_time'];
-            } else {
+            } elseif (!empty($orderEcwid['extraFields']['ecwid_order_delivery_time_interval_start'])) {
                 $dateTimeStart = $orderEcwid['extraFields']['ecwid_order_delivery_time_interval_start'];
+            } else {
+                $dateTimeStart = $orderEcwid['createDate'];
             }
         } else {
             $dateTimeStart = $orderEcwid['createDate'];
@@ -691,6 +798,12 @@ class EcwidService
             $discount = '';
         }
 
+        if(isset($orderEcwid['orderComments'])) {
+            $orderComments = $orderEcwid['orderComments'];
+        } else {
+            $orderComments = '';
+        }
+
 
 
         if (!empty($orderComments)) {
@@ -730,6 +843,72 @@ class EcwidService
         }
 
         return $data;
+    }
+
+    // уменьшение товаров при новом заказе
+    public function productsUpdateCount($data)
+    {
+        $testDate = false;
+        $always_write_off = $this->always_write_off;
+
+        $date = $data['option']['delivery_date'];
+        $delivery_date = new Carbon();
+        $delivery_date->parse($date);
+        $date = new Carbon();
+        $test_date = $date->addDays(5);
+
+        if ($delivery_date <= $test_date) {
+            $testDate = true;
+        }
+
+        foreach ($data['Cart']['items'] as $item) {
+            $id = $item['id'];
+            $variable_id = (int) $item['variable_id'];
+            $count = 0 - (int) $item['count'];
+            $product = $this->getProduct($id);
+            $product_cetegury = $product['defaultCategoryId'];
+
+            if ($testDate || isset($always_write_off[$product_cetegury])) {
+
+                $log = [
+                    'product name' => $product['name'],
+                    'product id'   => $product['id'],
+                    'product update count' => $count
+                ];
+                WebhookLog::addLog('new create order (update count) 3 '.$data['Cart']['order_id'], $log);
+
+                if ($variable_id > 0) {
+                    $res = $this->productVariationInventory($id, $variable_id, $count);
+                    if (isset($res['errorMessage'])) {
+                        AppErrors::addError("error product update count", $item);
+                    }
+                } else {
+                    if (empty($product['combinations'])) {
+                        $res = $this->productInventory($id, $count);
+                        if (isset($res['errorMessage'])) {
+                            AppErrors::addError("error product update count", $item);
+                        }
+                    } else {
+                        $size = sizeof($product['combinations']);
+                        if ($size == 2) {
+                            if (isset($product['combinations'][0]['quantity'])) {
+                                $variable_id = $product['combinations'][0]['id'];
+                            } else {
+                                $variable_id = $product['combinations'][1]['id'];
+                            }
+                            $res = $this->productVariationInventory($id, $variable_id, $count);
+                            if (isset($res['errorMessage'])) {
+                                AppErrors::addError("error product update count", $item);
+                            }
+                        } else {
+                            AppErrors::addError("error product update count (combinations size > 2)", $item);
+                        }
+
+                    }
+                }
+            }
+
+        }
     }
 
     // функция обработки деталей заказа для взаимодействия с платформой еквида
@@ -832,26 +1011,68 @@ class EcwidService
         return $res;
     }
 
+    private function productVariationInventory($productId, $variable_id, $count)
+    {
+
+        $shopId = $this->shop_id;
+        $token = $this->secret_token;
+        $url ="https://app.ecwid.com/api/v3/$shopId/products/$productId/combinations/$variable_id/inventory?token=$token";
+
+        $data = array(
+            'quantityDelta'=> $count
+        );
+
+        $res = $this->putQuest($url, $data);
+
+        return $res;
+    }
+
 
     // эта функция подготавливает массив для создания документа в GreenInvoice
     public static function getDataToGreenInvoice(array $data)
     {
-
+        $lang = 'he';
         $dateStr = $data['updateDate'];
         $dates = explode(' ', $dateStr);
         $date = $dates[0];
 
+
         $orderData['email'] = $data['email'];
-        $name = trim($data['billingPerson']['name']);
+
+        if (!empty($data['billingPerson']['name'])) {
+            $name = trim($data['billingPerson']['name']);
+        } elseif (!empty($data['shippingPerson']['name'])) {
+            $name = trim($data['shippingPerson']['name']);
+        }
+
         $name = AppServise::TransLit($name);
         $orderData['name'] = $name;
-        $orderData['lang'] = $data['extraFields']['gustom_lang'];
-        $orderData['phone'] = $data['billingPerson']['phone'];
-        $orderData['city'] = AppServise::TransLit($data['billingPerson']['city']);
-        $orderData['address'] = AppServise::TransLit($data['billingPerson']['street']);
 
-        $orderData['remarks'] = " Details - Order number: " . $data['id'];
-        $orderData['orderNames'] = " Order number: " . $data['id'];
+        if (!empty($data['extraFields']['gustom_lang'])) {
+            $orderData['lang'] = $data['extraFields']['gustom_lang'];
+        } else {
+            $orderData['lang'] = 'he';
+        }
+
+
+
+        if (!empty($data['billingPerson']['phone'])) {
+            $orderData['phone'] = $data['billingPerson']['phone'];
+        } elseif (!empty($data['shippingPerson']['phone'])) {
+            $orderData['phone'] = $data['shippingPerson']['phone'];
+        }
+
+        if (!empty($data['billingPerson']['city'])) {
+            $orderData['city'] = AppServise::TransLit($data['billingPerson']['city']);
+            $orderData['address'] = AppServise::TransLit($data['billingPerson']['street']);
+        } elseif (!empty($data['shippingPerson']['city'])) {
+            $orderData['city'] = AppServise::TransLit($data['shippingPerson']['city']);
+            $orderData['address'] = AppServise::TransLit($data['shippingPerson']['street']);
+        }
+
+
+        $orderData['remarks'] = $data['id'] . " פרטים - מספר הזמנה: " ;
+        $orderData['orderNames'] =  $data['id'] . " מספר הזמנה: ";
 
         foreach ($data['items'] as $item) {
             $items[] =  [
@@ -866,14 +1087,15 @@ class EcwidService
 
             $size = '';
             if (!empty($item['selectedOptions'])) {
-                $size = $item['selectedOptions'][0]['name'] . '-' . $item['selectedOptions'][0]['value'];
+//                if ($item['selectedOptions'][0]['name'] == 'size')
+                $size = $item['selectedOptions'][0]['nameTranslated'][$lang] . '-' . $item['selectedOptions'][0]['valueTranslated'][$lang];
             }
 
             $total = $item['quantity'] * $item['price'];
 
-            $orderData['remarks'] .= "\n {$item['name']} $size : {$item['price']} ILS x {$item['quantity']} = $total ILS";
+            $orderData['remarks'] .= "\n ILS $total = {$item['quantity']} x ILS {$item['price']} : $size {$item['nameTranslated'][$lang]}";
 
-            $orderData['orderNames'] .= "\n {$item['name']} $size ({$item['quantity']}) ";
+            $orderData['orderNames'] .= "\n {$item['nameTranslated'][$lang]} $size ({$item['quantity']}) ";
         }
         $orderData['items'] = $items;
 
@@ -881,12 +1103,13 @@ class EcwidService
             $delivery = "\n delivery: ";
 
             foreach ($data['shippingPerson'] as $key => $val) {
+                $val = AppServise::TransLit($val);
                 $delivery = $delivery . "\n $key : $val ";
             }
             $orderData['delivery'] = $delivery;
 
             // стоимоссть доставки
-            $orderData['delivery'] = $orderData['delivery'] . "\n  ............... {$data['shippingOption']['shippingRate']} ILS";
+            $orderData['delivery'] = "\n ILS {$data['shippingOption']['shippingRate']} ..............." . $orderData['delivery'];
 
         }
 
@@ -896,10 +1119,9 @@ class EcwidService
 
                 $tips = (int) $item['value'] / 100;
 
-                $orderData['tips'] = "\n ___________________ \n tips: " . $item['value'] . "% \n ........... " . $item['total'] . ' ILS';
+                $orderData['tips'] = "\n ___________________\n טיפים: " . $item['value'] . "%\n" . 'ILS '  . $item['total']." ...........";
             }
         }
-
 
 
         if (isset($data['externalTransactionId'])) {
@@ -937,6 +1159,15 @@ class EcwidService
         return $orderData;
     }
 
+    public function getDiscountCoupons($code)
+    {
+        $shopId = $this->shop_id;
+        $token = $this->secret_token;
+        $url = "https://app.ecwid.com/api/v3/$shopId/discount_coupons?code=$code&token=$token";
+        $res = $this->getQuest($url);
+
+        return $res;
+    }
 
     // обновление статусов на еквиде
     public function orderInAmoStatusUpdate($orderId, $amoStatus, $statusPay)
@@ -945,7 +1176,7 @@ class EcwidService
             case 34990069:
                 $orderStatus = 'AWAITING_PROCESSING';
                 break;
-            case 35584273:
+            case 43471420:
                 $orderStatus = 'PROCESSING';
                 break;
             case 35584276:
@@ -982,6 +1213,46 @@ class EcwidService
 
         return $res;
     }
+
+    public function paymentStatusUpdate($orderId, $statusPay)
+    {
+        $storeId = $this->shop_id;
+        $token = $this->secret_token;
+        $url = "https://app.ecwid.com/api/v3/$storeId/orders/$orderId" . "?token=$token";
+
+        $data = array(
+            'paymentStatus'=> $statusPay
+        );
+
+        $res = $this->putQuest($url, $data);
+        $res['data'] = $data;
+
+        return $res;
+    }
+
+    public function createNewOrder($data)
+    {
+        $storeId = $this->shop_id;
+        $token = $this->secret_token;
+        $url = "https://app.ecwid.com/api/v3/$storeId/orders?token=$token";
+
+        $data_json = json_encode($data);
+        $res = $this->postQuest($url, $data_json);
+        return $res;
+    }
+
+    public function deleteOrder($id)
+    {
+
+        $storeId = $this->shop_id;
+        $token = $this->secret_token;
+        $url = "https://app.ecwid.com/api/v3/$storeId/orders/$id?token=$token";
+
+        $res = $this->deleteQuest($url);
+
+        return $res;
+    }
+
 
     // загрузка файлов
     private function uploadFile($url, $filePatch)
@@ -1022,6 +1293,47 @@ class EcwidService
 
         if ($err) {
             var_dump($err);
+        }
+
+        return json_decode($response, true);
+    }
+
+    private function postQuest($url, $data)
+    {
+
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => "$data",
+            CURLOPT_HTTPHEADER => [
+                "Accept: application/json",
+                "Content-type: application/json"
+            ],
+
+        ]);
+
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        $errno = curl_errno($curl);
+        $http_code  = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        $error = [
+            'err' => $err,
+            'errno' => $errno,
+            'http_code' => $http_code
+        ];
+        if ($http_code > 200) {
+            print_r($response);
+            dd($error);
         }
 
         return json_decode($response, true);

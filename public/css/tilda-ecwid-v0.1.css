@@ -1,0 +1,63 @@
+
+#popap-shot {
+    display: none;
+}
+#popap-shot.active {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999999;
+    height: 100%;
+    overflow: hidden;
+    padding-top: 3vw;
+    background: #a09999;
+    width: 100%;
+}
+
+#popap-shot .content {
+    width: 68%;
+    margin: auto;
+    padding: 10%;
+    background: #fff;
+}
+#popap-shot .content p.he {
+    direction: rtl;
+}
+#popap-shot .content p.en {
+    text-align: center;
+}
+#popap-shot .content p {
+    margin: 20px 0;
+}
+#popap-shot .close:hover {
+    cursor: pointer;
+}
+#popap-shot .close {
+    position: absolute !important;
+    top: 5px;
+    right: 1%;
+    display: none;
+    width: 30px;
+    height: 30px;
+}
+#popap-shot.active .close {
+    display: block;
+}
+#popap-shot .close:before,
+#popap-shot .close:after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: brown;
+    transform: rotate(45deg);
+    position: absolute;
+    top: 50%;
+}
+#popap-shot .close:before {
+    transform: rotate(-45deg);
+}
+.cartwin {
+    display: none !important;
+}

@@ -4,6 +4,9 @@
 namespace App\Services;
 
 
+use App\Models\Orders;
+use Illuminate\Support\Facades\Storage;
+
 class GreenInvoiceService
 {
 
@@ -14,11 +17,21 @@ class GreenInvoiceService
     private $token;
     private $timeOut;
 
-    public function __construct()
+    public function __construct(Orders $order)
     {
+        // настройки аккаунта для инвойса
+        $dataJson = Storage::disk('local')->get('data/app-setting.json');
+        $invoiceSettingData = json_decode($dataJson, true);
+        // для PayPal
+        if ($order->paymentMethod == 3) {
+            $this->setMode($invoiceSettingData['invoice_mode_paypal']);
+        } elseif ($order->paymentMethod == 2) {
+            $this->setMode($invoiceSettingData['invoice_mode_cache']);
 
-        $this->secret = $_ENV['GREENINVOICE_APP_SECRET'];
-        $this->appId  = $_ENV['GREENINVOICE_APP_ID'];
+        } else {
+            $this->setMode(1);
+        }
+
 
         $this->appUrl = $_ENV['GREENINVOICE_APP_URL'];
     }
@@ -358,6 +371,14 @@ class GreenInvoiceService
             $lang = 'en';
         }
 
+        if (!empty($orderData['phone'])) {
+            $phone = $orderData['phone'];
+        } else {
+            $phone = '';
+        }
+        $name = AppServise::TransLit($orderData['name']);
+        $name = AppServise::TranslitIvrit($name);
+
         $data = [
             "description"  => $orderData['orderNames'],
             "remarks"      => $remarks,
@@ -373,8 +394,8 @@ class GreenInvoiceService
             "attachment"   => true,
             "maxPayments"  => 1,
             "client"       => [
-                "name"     => $orderData['name'],
-                "phone"    => $orderData['phone'],
+                "name"     => $name,
+                "phone"    => $phone,
                 "city"     => $orderData['city'],
                 "address"  => $orderData['address'],
                 "emails"   => [$email],

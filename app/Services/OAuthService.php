@@ -14,7 +14,7 @@ class OAuthService implements OAuthServiceInterface
     public function saveOAuthToken(AccessTokenInterface $accessToken, string $baseDomain): void
     {
 
-        var_dump($accessToken);
+        var_dump($accessToken->hasExpired());
         if ($accessToken->hasExpired()) {
            var_dump('refresh token');
             $data = [

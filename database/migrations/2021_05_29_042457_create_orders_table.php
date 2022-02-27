@@ -15,8 +15,8 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('ecwidId')->unique()->index();
-            $table->string('ecwidStatus')->default('AWAITING_PROCESSING');
+            $table->string('order_id')->unique()->index();
+            $table->string('order_status')->default('AWAITING_PROCESSING');
             $table->string('amoId')->nullable()->index();
             $table->string('amoStatus')->nullable();
             $table->integer('clientId')->nullable()->index();

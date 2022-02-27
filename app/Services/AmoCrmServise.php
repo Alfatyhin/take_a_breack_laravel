@@ -14,10 +14,12 @@ use AmoCRM\Collections\TagsCollection;
 use AmoCRM\Exceptions\AmoCRMApiException;
 use AmoCRM\Exceptions\AmoCRMMissedTokenException;
 use AmoCRM\Exceptions\AmoCRMoAuthApiException;
+use AmoCRM\Filters\ContactsFilter;
 use AmoCRM\Helpers\EntityTypesInterface;
 use AmoCRM\Models\AccountModel;
 use AmoCRM\Models\CatalogElementModel;
 use AmoCRM\Models\ContactModel;
+use AmoCRM\Models\CustomFields\TextareaCustomFieldModel;
 use AmoCRM\Models\CustomFieldsValues\CheckboxCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\DateTimeCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\MultiselectCustomFieldValuesModel;
@@ -216,6 +218,8 @@ class AmoCrmServise
         return $apiClient;
     }
 
+
+
     // создание сделки на амо для прода
     public function NewOrder(array $amoData)
     {
@@ -225,36 +229,141 @@ class AmoCrmServise
         // текстовый тип кастомного поля
         $leadCustomFieldsValues = new CustomFieldsValuesCollection();
 
-        $textCustomFieldValueModel = new TextCustomFieldValuesModel();
-        $textCustomFieldValueModel->setFieldId(352111);
-        $textCustomFieldValueModel->setValues(
-            (new TextCustomFieldValueCollection())
-                ->add((new TextCustomFieldValueModel())->setValue($amoData['notes']))
-        );
-        $leadCustomFieldsValues->add($textCustomFieldValueModel);
+        if (!empty($amoData['ekwidId'])) {
+            $notes = $amoData['ekwidId'] . ': ' .  $amoData['notes'];
+            var_dump($notes);
+            if (strlen($notes) < 255) {
+                $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+                $textCustomFieldValueModel->setFieldId(352111);
+                $textCustomFieldValueModel->setValues(
+                    (new TextCustomFieldValueCollection())
+                        ->add((new TextCustomFieldValueModel())->setValue($notes))
+                );
+                $leadCustomFieldsValues->add($textCustomFieldValueModel);
+            }
 
 
-        $textCustomFieldValueModel = new TextCustomFieldValuesModel();
-        $textCustomFieldValueModel->setFieldId(489653);
-        $textCustomFieldValueModel->setValues(
-            (new TextCustomFieldValueCollection())
-                ->add((new TextCustomFieldValueModel())->setValue($amoData['ekwidId']))
-        );
-        $leadCustomFieldsValues->add($textCustomFieldValueModel);
+            $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+            $textCustomFieldValueModel->setFieldId(489653);
+            $textCustomFieldValueModel->setValues(
+                (new TextCustomFieldValueCollection())
+                    ->add((new TextCustomFieldValueModel())->setValue($amoData['ekwidId']))
+            );
+            $leadCustomFieldsValues->add($textCustomFieldValueModel);
+
+            $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+            $textCustomFieldValueModel->setFieldId(511579);
+            $textCustomFieldValueModel->setValues(
+                (new TextCustomFieldValueCollection())
+                    ->add((new TextCustomFieldValueModel())->setValue('Ecwid'))
+            );
+            $leadCustomFieldsValues->add($textCustomFieldValueModel);
+
+            $order_id = $amoData['ekwidId'];
+
+        } else {
+
+            $notes = $amoData['notes'];
+            if (strlen($notes) < 255) {
+                $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+                $textCustomFieldValueModel->setFieldId(352111);
+                $textCustomFieldValueModel->setValues(
+                    (new TextCustomFieldValueCollection())
+                        ->add((new TextCustomFieldValueModel())->setValue($notes))
+                );
+                $leadCustomFieldsValues->add($textCustomFieldValueModel);
+            }
+
+            $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+            $textCustomFieldValueModel->setFieldId(489653);
+            $textCustomFieldValueModel->setValues(
+                (new TextCustomFieldValueCollection())
+                    ->add((new TextCustomFieldValueModel())->setValue($amoData['order_id']))
+            );
+            $leadCustomFieldsValues->add($textCustomFieldValueModel);
+
+            $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+            $textCustomFieldValueModel->setFieldId(511579);
+            $textCustomFieldValueModel->setValues(
+                (new TextCustomFieldValueCollection())
+                    ->add((new TextCustomFieldValueModel())->setValue($amoData['api_mode']))
+            );
+
+            $leadCustomFieldsValues->add($textCustomFieldValueModel);
+
+            if (!empty($amoData['room_number'])) {
+                $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+                $textCustomFieldValueModel->setFieldId(511647);
+                $textCustomFieldValueModel->setValues(
+                    (new TextCustomFieldValueCollection())
+                        ->add((new TextCustomFieldValueModel())->setValue($amoData['room_number']))
+                );
+
+                $leadCustomFieldsValues->add($textCustomFieldValueModel);
+            }
 
 
-        $textCustomFieldValueModel = new TextCustomFieldValuesModel();
-        $textCustomFieldValueModel->setFieldId(338459);
-        $textCustomFieldValueModel->setValues(
-            (new TextCustomFieldValueCollection())
-                ->add((new TextCustomFieldValueModel())->setValue($amoData['refer_URL']))
-        );
-        $leadCustomFieldsValues->add($textCustomFieldValueModel);
+            $order_id = $amoData['order_id'];
+        }
+
+
+
+//        $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+//        $textCustomFieldValueModel->setFieldId(338459);
+//        $textCustomFieldValueModel->setValues(
+//            (new TextCustomFieldValueCollection())
+//                ->add((new TextCustomFieldValueModel())->setValue($amoData['refer_URL']))
+//        );
+//        $leadCustomFieldsValues->add($textCustomFieldValueModel);
+
+        if (!empty($amoData['utmData'])) {
+
+
+            foreach ($amoData['utmData'] as $key => $item) {
+                if ($key == 'source') {
+                    $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+                    $textCustomFieldValueModel->setFieldId(492029);
+                    $textCustomFieldValueModel->setValues(
+                        (new TextCustomFieldValueCollection())
+                            ->add((new TextCustomFieldValueModel())->setValue($item))
+                    );
+                    $leadCustomFieldsValues->add($textCustomFieldValueModel);
+                }
+                if ($key == 'campaign') {
+                    $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+                    $textCustomFieldValueModel->setFieldId(492033);
+                    $textCustomFieldValueModel->setValues(
+                        (new TextCustomFieldValueCollection())
+                            ->add((new TextCustomFieldValueModel())->setValue($item))
+                    );
+                    $leadCustomFieldsValues->add($textCustomFieldValueModel);
+                }
+                if ($key == 'medium') {
+                    $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+                    $textCustomFieldValueModel->setFieldId(492031);
+                    $textCustomFieldValueModel->setValues(
+                        (new TextCustomFieldValueCollection())
+                            ->add((new TextCustomFieldValueModel())->setValue($item))
+                    );
+                    $leadCustomFieldsValues->add($textCustomFieldValueModel);
+                }
+
+            }
+        }
 
 
         if (!empty($amoData['to_presents'])) {
-            $name = $amoData['to_presents']['presents_name'];
-            $phone =  $amoData['to_presents']['presents_phone'];
+
+            if (!empty($amoData['to_presents']['presents_name'])) {
+                $name = $amoData['to_presents']['presents_name'];
+            } else {
+                $name = 'noname';
+            }
+            if (!empty($amoData['to_presents']['presents_phone'])) {
+                $phone =  $amoData['to_presents']['presents_phone'];
+            } else {
+                $phone = 000000000;
+            }
 
             $checkboxCustomFieldValueModel = new CheckboxCustomFieldValuesModel();
             $checkboxCustomFieldValueModel->setFieldId(352113);
@@ -279,6 +388,13 @@ class AmoCrmServise
         );
         $leadCustomFieldsValues->add($textCustomFieldValueModel);
 
+        $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+        $textCustomFieldValueModel->setFieldId(512455);
+        $textCustomFieldValueModel->setValues(
+            (new TextCustomFieldValueCollection())
+                ->add((new TextCustomFieldValueModel())->setValue($amoData['text_note']))
+        );
+        $leadCustomFieldsValues->add($textCustomFieldValueModel);
 
         if (!empty($phone)) {
             $textCustomFieldValueModel = new TextCustomFieldValuesModel();
@@ -309,6 +425,14 @@ class AmoCrmServise
                 ->add((new DateCustomFieldValueModel())->setValue($amoData['date']))
         );
         $leadCustomFieldsValues->add($dateCustomFieldValueModel);
+        // тип поля дата-время
+        $dateCustomFieldValueModel = new DateTimeCustomFieldValuesModel();
+        $dateCustomFieldValueModel->setFieldId(508997);
+        $dateCustomFieldValueModel->setValues(
+            (new DateCustomFieldValueCollection())
+                ->add((new DateCustomFieldValueModel())->setValue($amoData['date']))
+        );
+        $leadCustomFieldsValues->add($dateCustomFieldValueModel);
 
 
         // тип поля список с мульти выбором
@@ -322,13 +446,21 @@ class AmoCrmServise
 
 
         // тип поля адрес
-        $adressCustomFeeldValueModel = new StreetAddressCustomFieldValuesModel();
-        $adressCustomFeeldValueModel->setFieldId(308403);
-        $adressCustomFeeldValueModel->setValues(
-            (new StreetAddressCustomFieldValueCollection())
-                ->add((new StreetAdressCustomFieldValueModel())->setValue($amoData['address']))
+//        $adressCustomFeeldValueModel = new StreetAddressCustomFieldValuesModel();
+//        $adressCustomFeeldValueModel->setFieldId(308403);
+//        $adressCustomFeeldValueModel->setValues(
+//            (new StreetAddressCustomFieldValueCollection())
+//                ->add((new StreetAdressCustomFieldValueModel())->setValue($amoData['address']))
+//        );
+//        $leadCustomFieldsValues->add($adressCustomFeeldValueModel);
+        // new
+        $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+        $textCustomFieldValueModel->setFieldId(509001);
+        $textCustomFieldValueModel->setValues(
+            (new TextCustomFieldValueCollection())
+                ->add((new TextCustomFieldValueModel())->setValue($amoData['address']))
         );
-        $leadCustomFieldsValues->add($adressCustomFeeldValueModel);
+        $leadCustomFieldsValues->add($textCustomFieldValueModel);
 
         //// добавление наименований заказа в теги
         $lead = new LeadModel();
@@ -350,75 +482,278 @@ class AmoCrmServise
         }
         ///
 
-        // комнлексное создание сделки
+        // комнплексное создание сделки
         $lead->setName($amoData['order name'])
             ->setPrice($amoData['order price'])
             ->setCustomFieldsValues($leadCustomFieldsValues) // прикрепление к сделке значений из полей выше
+            ->setPipelineId($amoData['pipelineId'])
             ->setStatusId($amoData['statusId'])
-            ->setRequestId($amoData['ekwidId']);
+            ->setRequestId($order_id);
 
         if (empty($amoData['clientAmoId'])) {
 
-            $contactsCollection = new ContactsCollection();
-            $contact = new ContactModel();
-            $contact->setFirstName($amoData['name'])
-                ->setIsMain(true);
-
-                $contact->setCustomFieldsValues(
-                    (new CustomFieldsValuesCollection())
-                        ->add(
-                            (new MultitextCustomFieldValuesModel())
-                                ->setFieldCode('EMAIL')
-                                ->setValues(
-                                    (new MultitextCustomFieldValueCollection())
-                                        ->add(
-                                            (new MultitextCustomFieldValueModel())
-                                                ->setValue($amoData['email'])
-                                        )
-                                )
-                        )
-                        ->add( // кастомное поле для языка
-                            (new SelectCustomFieldValuesModel())
-                                ->setFieldId(490441)
-                                ->setValues(
-                                    (new SelectCustomFieldValueCollection())
-                                        ->add(
-                                            (new SelectCustomFieldValueModel())
-                                                ->setValue($amoData['lang'])
-                                        )
-                                )
-                        )
-                );
+            $lead->setContacts(
+                (new ContactsCollection())
+                    ->add(
+                        (new ContactModel())
+                            ->setFirstName($amoData['name'])
+                            ->setCustomFieldsValues(
+                                (new CustomFieldsValuesCollection())
+                                    ->add(
+                                        (new MultitextCustomFieldValuesModel())
+                                            ->setFieldCode('EMAIL')
+                                            ->setValues(
+                                                (new MultitextCustomFieldValueCollection())
+                                                    ->add(
+                                                        (new MultitextCustomFieldValueModel())
+                                                            ->setValue($amoData['email'])
+                                                    )
+                                            )
+                                    )
+                                    ->add( // кастомное поле для языка
+                                        (new SelectCustomFieldValuesModel())
+                                            ->setFieldId(490441)
+                                            ->setValues(
+                                                (new SelectCustomFieldValueCollection())
+                                                    ->add(
+                                                        (new SelectCustomFieldValueModel())
+                                                            ->setValue($amoData['lang'])
+                                                    )
+                                            )
+                                    )
+//                                    ->add(
+//                                        (new TextCustomFieldValuesModel())
+//                                            ->setFieldId(226599)
+//                                            ->setFieldName('Адрес клиента')
+//                                            ->setValues(
+//                                                (new TextCustomFieldValueCollection())
+//                                                    ->add(
+//                                                        (new TextCustomFieldValueModel())
+//                                                            ->setValue($amoData['address'])
+//                                                    )
+//                                            )
+//                                    )
+                            )
+                    )
+            );
 
                 if (!empty($amoData['phone'])) {
-                    $customFields = $contact->getCustomFieldsValues();
-                    $phoneField = (new MultitextCustomFieldValuesModel())->setFieldCode('PHONE');
-                    $customFields->add($phoneField);
-                    //Установим значение поля
-                    $phoneField->setValues(
-                        (new MultitextCustomFieldValueCollection())
+                    $lead->setContacts(
+                        (new ContactsCollection())
                             ->add(
-                                (new MultitextCustomFieldValueModel())
-                                    ->setValue($amoData['phone'])
+                                (new ContactModel())
+                                    ->setFirstName($amoData['name'])
+                                    ->setCustomFieldsValues(
+                                        (new CustomFieldsValuesCollection())
+                                            ->add(
+                                                (new MultitextCustomFieldValuesModel())
+                                                    ->setFieldCode('PHONE')
+                                                    ->setValues(
+                                                        (new MultitextCustomFieldValueCollection())
+                                                            ->add(
+                                                                (new MultitextCustomFieldValueModel())
+                                                                    ->setValue($amoData['phone'])
+                                                            )
+                                                    )
+                                            )
+                                            ->add(
+                                                (new MultitextCustomFieldValuesModel())
+                                                    ->setFieldCode('EMAIL')
+                                                    ->setValues(
+                                                        (new MultitextCustomFieldValueCollection())
+                                                            ->add(
+                                                                (new MultitextCustomFieldValueModel())
+                                                                    ->setValue($amoData['email'])
+                                                            )
+                                                    )
+                                            )
+                                            ->add( // кастомное поле для языка
+                                                (new SelectCustomFieldValuesModel())
+                                                    ->setFieldId(490441)
+                                                    ->setValues(
+                                                        (new SelectCustomFieldValueCollection())
+                                                            ->add(
+                                                                (new SelectCustomFieldValueModel())
+                                                                    ->setValue($amoData['lang'])
+                                                            )
+                                                    )
+                                            )
+//                                            ->add(
+//                                                (new TextCustomFieldValuesModel())
+//                                                    ->setFieldId(226599)
+//                                                    ->setFieldName('Адрес клиента')
+//                                                    ->setValues(
+//                                                        (new TextCustomFieldValueCollection())
+//                                                            ->add(
+//                                                                (new TextCustomFieldValueModel())
+//                                                                    ->setValue($amoData['address'])
+//                                                            )
+//                                                    )
+//                                            )
+                                    )
                             )
                     );
-                    $contact->setCustomFieldsValues($customFields);
-                    $contactsCollection->add($contact);
+
+                } else {
+                    $lead->setContacts(
+                        (new ContactsCollection())
+                            ->add(
+                                (new ContactModel())
+                                    ->setFirstName($amoData['name'])
+                                    ->setCustomFieldsValues(
+                                        (new CustomFieldsValuesCollection())
+                                            ->add(
+                                                (new MultitextCustomFieldValuesModel())
+                                                    ->setFieldCode('EMAIL')
+                                                    ->setValues(
+                                                        (new MultitextCustomFieldValueCollection())
+                                                            ->add(
+                                                                (new MultitextCustomFieldValueModel())
+                                                                    ->setValue($amoData['email'])
+                                                            )
+                                                    )
+                                            )
+                                            ->add(
+                                                (new MultitextCustomFieldValuesModel())
+                                                    ->setFieldCode('PHONE')
+                                                    ->setValues(
+                                                        (new MultitextCustomFieldValueCollection())
+                                                            ->add(
+                                                                (new MultitextCustomFieldValueModel())
+                                                                    ->setValue($amoData['phone'])
+                                                            )
+                                                    )
+                                            )
+                                            ->add( // кастомное поле для языка
+                                                (new SelectCustomFieldValuesModel())
+                                                    ->setFieldId(490441)
+                                                    ->setValues(
+                                                        (new SelectCustomFieldValueCollection())
+                                                            ->add(
+                                                                (new SelectCustomFieldValueModel())
+                                                                    ->setValue($amoData['lang'])
+                                                            )
+                                                    )
+                                            )
+//                                            ->add(
+//                                                (new TextCustomFieldValuesModel())
+//                                                    ->setFieldId(226599)
+//                                                    ->setFieldName('Адрес клиента')
+//                                                    ->setValues(
+//                                                        (new TextCustomFieldValueCollection())
+//                                                            ->add(
+//                                                                (new TextCustomFieldValueModel())
+//                                                                    ->setValue($amoData['address'])
+//                                                            )
+//                                                    )
+//                                            )
+                                    )
+                            )
+                    );
                 }
 
-            // добавляем к сделке контакт с данными
-            $lead->setContacts($contactsCollection);
+
 
         } else {
 
+            var_dump('test 2');
+            var_dump($amoData['clientAmoId']);
             $contactsCollection = new ContactsCollection();
-            $contact = $apiClient->contacts()->getOne($amoData['clientAmoId']);
-            $contactsCollection->add($contact);
-            $lead->setContacts($contactsCollection);
+            try {
+//                $contact = $apiClient->contacts()->getOne(17689361);
+//                dd($contact);
+                var_dump('test 3');
+                $contact = $apiClient->contacts()->getOne($amoData['clientAmoId']);
+                $customFields = $contact->getCustomFieldsValues();
+//                $addressField = $customFields->getBy('fieldId', '226599');
+//                if (empty($addressField)) {
+//
+//                    $customFields->add(
+//                        (new TextCustomFieldValuesModel())
+//                            ->setFieldId(226599)
+//                            ->setFieldName('Адрес клиента')
+//                            ->setValues(
+//                                (new TextCustomFieldValueCollection())
+//                                    ->add(
+//                                        (new TextCustomFieldValueModel())
+//                                            ->setValue($amoData['address'])
+//                                    )
+//                            )
+//                    );
+//
+////                    dd($customFields);
+//                    $apiClient->contacts()->updateOne($contact);
+//                }
+                $contactsCollection->add($contact);
+                $lead->setContacts($contactsCollection);
+
+            } catch (AmoCRMApiException $e) {
+
+                $code = $e->getCode();
+                if ($code == 204) {
+
+                    $lead->setContacts(
+                        (new ContactsCollection())
+                            ->add(
+                                (new ContactModel())
+                                    ->setFirstName($amoData['name'])
+                                    ->setCustomFieldsValues(
+                                        (new CustomFieldsValuesCollection())
+                                            ->add(
+                                                (new MultitextCustomFieldValuesModel())
+                                                    ->setFieldCode('EMAIL')
+                                                    ->setValues(
+                                                        (new MultitextCustomFieldValueCollection())
+                                                            ->add(
+                                                                (new MultitextCustomFieldValueModel())
+                                                                    ->setValue($amoData['email'])
+                                                            )
+                                                    )
+                                            )
+                                            ->add( // кастомное поле для языка
+                                                (new SelectCustomFieldValuesModel())
+                                                    ->setFieldId(490441)
+                                                    ->setValues(
+                                                        (new SelectCustomFieldValueCollection())
+                                                            ->add(
+                                                                (new SelectCustomFieldValueModel())
+                                                                    ->setValue($amoData['lang'])
+                                                            )
+                                                    )
+                                            )
+                                            ->add(
+                                                (new TextCustomFieldValuesModel())
+                                                    ->setFieldId(226599)
+                                                    ->setFieldName('Адрес клиента')
+                                                    ->setValues(
+                                                        (new TextCustomFieldValueCollection())
+                                                            ->add(
+                                                                (new TextCustomFieldValueModel())
+                                                                    ->setValue($amoData['address'])
+                                                            )
+                                                    )
+                                            )
+                                    )
+                            )
+                    );
+
+                } else {
+                    $this->printError($e);
+                    die;
+                }
+
+
+            }
+
+
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        if (isset($amoData['test'])) {
+            var_dump('test lead');
+            dd($lead);
+        }
         $leadsCollection = new LeadsCollection();
         $leadsCollection->add($lead);
 
@@ -427,17 +762,17 @@ class AmoCrmServise
             $addedLeadsCollection = $apiClient->leads()->addComplex($leadsCollection);
         } catch (AmoCRMMissedTokenException $e) {
             echo 'AmoCRMMissedTokenException <hr>';
-            AppErrors::addError('AmoCRMMissedTokenException', $e);
+            AppErrors::addError('AmoCRMMissedTokenException ' . $amoData['order_id'], $e);
             $this->printError($e);
             die;
         } catch (AmoCRMoAuthApiException $e) {
             echo 'AmoCRMoAuthApiException <hr>';
-            AppErrors::addError('AmoCRMoAuthApiException', $e);
+            AppErrors::addError('AmoCRMoAuthApiException ' . $amoData['order_id'], $e);
             $this->printError($e);
             die;
         } catch (AmoCRMApiException $e) {
             echo 'AmoCRMApiException <hr>';
-            AppErrors::addError('AmoCRMApiException', $e);
+            AppErrors::addError('AmoCRMApiException  ' . $amoData['order_id'], $e);
             $this->printError($e);
             die;
         }
@@ -459,6 +794,53 @@ class AmoCrmServise
 
         return $res;
 
+    }
+
+
+    // доработать
+    public function searchContactByEmail($email) {
+        // инициализация апи клиента
+        $apiClient = $this->getApiClient();
+        /////////////////////////////////////////////////////////////////////////
+
+        var_dump($email);
+
+        $filter = new ContactsFilter();;
+        $filter->setQuery($email);
+
+        $contacts = $apiClient->contacts()->get($filter);
+
+        foreach ($contacts as $contact) {
+
+            $customFields = $contact->getCustomFieldsValues();
+            //Получим значение поля по его ID
+            if ($customFields) {
+                $emailField = $customFields->getBy('fieldCode', 'EMAIL');
+
+                if ($emailField) {
+                    $values = $emailField->getValues();
+                    if ($values) {
+                        foreach ($values as $value) {
+                            $val = $value->getValue();
+                            var_dump($val);
+                            if (($email == $val) && empty($contactID)) {
+                                $contactID = $contact->getId();
+                            }
+                        }
+                    }
+                }
+
+
+            }
+
+        }
+
+        if (empty($contactID)) {
+            $test = $contacts->next();
+            var_dump($test);
+        }
+
+        die;
     }
 
     public function getCatalogElementBuName(string $name)

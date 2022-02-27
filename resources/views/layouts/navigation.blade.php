@@ -29,6 +29,10 @@
                         Orders
                     </x-nav-link>
 
+                    <x-nav-link :href="route('icredit_index')" >
+                        iCredit
+                    </x-nav-link>
+
 
                 <x-dropdown align="left" width="48">
                     <x-slot name="trigger">
@@ -81,11 +85,19 @@
                             </x-nav-link>
 
                             <x-nav-link :href="route('ecwid.order')" >
-                                Order by id
+                                Order view/(create)
                             </x-nav-link>
 
                             <x-nav-link :href="route('ecwid_order_log')" >
                                 Order create log
+                            </x-nav-link>
+
+                            <x-nav-link :href="route('ecwid_abandone_baskets')" >
+                                Брошенные корзины
+                            </x-nav-link>
+
+                            <x-nav-link :href="route('ecwid_settings')" >
+                                Settings
                             </x-nav-link>
                         </div>
                     </x-slot>
@@ -115,8 +127,14 @@
                             <x-nav-link :href="route('clients')" >
                                 Clients
                             </x-nav-link>
+
                             <x-nav-link :href="route('invoice_setting')" >
-                                Invoice Setting
+                                Invoice settings
+                            </x-nav-link>
+                        </div>
+
+                            <x-nav-link :href="route('app_errors')" >
+                                App Errors
                             </x-nav-link>
                         </div>
                     </x-slot>

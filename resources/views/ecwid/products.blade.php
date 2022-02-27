@@ -15,7 +15,14 @@
             @foreach($products['items'] as $k => $product)
                 <div class="product">
                     ({{ $k + 1 }}) <br>
-                    <img class="d-inline" src="{{ $product['smallThumbnailUrl'] }}" style="height:50px;" />
+
+
+                    @if (!empty($product['thumbnailUrl']))
+                    <img class="d-inline" src="{{ $product['thumbnailUrl'] }}"
+                          />
+                    @endif
+
+
                     name - {{ $product['name'] }}
                     <a href="{{ route('ecwid.product', ['id' => $product['id'] ]) }}" >
                         id - {{ $product['id'] }}
@@ -23,9 +30,7 @@
                     sku - {{ $product['sku'] }}
 
                     <pre>
-                        @php
-                        (var_dump($product))
-                        @endphp
+
 
                     </pre>
 
@@ -36,7 +41,7 @@
                         </p>
 
                         @foreach($product['galleryImages'] as $image)
-                            <img class="d-inline" src="{{ $image['smallThumbnailUrl'] }}" style="height:50px;" />
+                            <img class="d-inline" src="{{ $image['thumbnailUrl'] }}" style="height:150px;" />
                         @endforeach
                     @endif
                     <hr />
