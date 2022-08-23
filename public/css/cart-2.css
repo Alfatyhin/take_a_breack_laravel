@@ -1,0 +1,24 @@
+.order__comment {
+    margin: 20px 0;
+    width: 98%;
+}
+.city_out p {
+    padding: 3px 10px;
+}
+.city_out {
+    font-size: 20px;
+    background: #feedd6;
+    width: max-content;
+    position: absolute;
+    z-index: 1000;
+}
+
+.city_out span.add_city {
+    display: inline-block;
+    width: 100%;
+    padding: 5px 10px;
+}
+.city_out span.add_city:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}

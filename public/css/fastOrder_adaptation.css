@@ -1,0 +1,149 @@
+@media (max-width: 768px) {
+  .fastOrder {
+    padding: 150px 0 100px;
+  }
+
+  .fastOrder__title {
+    line-height: 1;
+  }
+
+  .fastOrder__form .blockTextField {
+    min-height: 60px;
+    padding: 15px;
+  }
+
+  .fastOrder__formItem {
+    margin-bottom: 20px;
+  }
+  .fastOrder__formItem:last-of-type {
+    margin-top: 20px;
+  }
+
+  .fastOrder__formItem--text {
+    margin-bottom: 60px;
+  }
+  .fastOrder__formItem--text:nth-child(2) {
+    margin-bottom: 32px;
+  }
+
+  .fastOrder__sendBtn {
+    margin-top: 40px;
+  }
+}
+@media (max-width: 480px) {
+  .fastOrder {
+    padding: 125px 0 70px;
+  }
+
+  .fastOrder__form .blockTextField {
+    min-height: 50px;
+  }
+
+  .fastOrder__formItem {
+    margin-bottom: 15px;
+  }
+
+  .fastOrder__selectTitle {
+    font-size: 1.8rem;
+  }
+
+  .fastOrder__selectNote {
+    font-size: 1.8rem;
+  }
+
+  .fastOrder__formItem--text {
+    margin-bottom: 55px;
+  }
+  .fastOrder__formItem--text:nth-child(2) {
+    margin-bottom: 27px;
+  }
+
+  .fastOrder__inputWrapper.showBlock + .fastOrder__selectList {
+    padding: 16px 0;
+  }
+
+  .fastOrder__selectList li a {
+    font-size: 1.8rem;
+    padding: 8px 18px;
+  }
+
+  .fastOrder__radioWrapper {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .fastOrder__radioWrapper .blockRadio {
+    margin: 0 0 20px 0;
+  }
+  .fastOrder__radioWrapper .blockRadio:last-child {
+    margin-bottom: 0;
+  }
+  .fastOrder__radioWrapper .blockRadio label {
+    font-size: 1.8rem;
+  }
+
+  .fastOrder__sendBtn {
+    margin-top: 40px;
+  }
+}
+@media (max-width: 375px) {
+  .fastOrder {
+    padding: 100px 0 45px;
+  }
+
+  .fastOrder__form .blockTextField {
+    font-size: 1.7rem;
+    min-height: 40px;
+    padding: 10px 15px;
+  }
+
+  .fastOrder__formItem {
+    margin-bottom: 10px;
+  }
+
+  .fastOrder__formItem--text {
+    margin-bottom: 50px;
+  }
+  .fastOrder__formItem--text:nth-child(2) {
+    margin-bottom: 22px;
+  }
+
+  .fastOrder__selectTitle {
+    font-size: 1.7rem;
+  }
+
+  .fastOrder__selectNote {
+    font-size: 1.7rem;
+  }
+
+  .fastOrder__selectList li a {
+    font-size: 1.6rem;
+  }
+
+  .fastOrder__radioWrapper .blockRadio {
+    margin-bottom: 15px;
+  }
+
+  .fastOrder__sendBtn {
+    margin-top: 30px;
+  }
+}
+@media (max-width: 320px) {
+  .fastOrder__form .blockTextField {
+    font-size: 1.6rem;
+  }
+
+  .fastOrder__inputWrapper.showBlock + .fastOrder__selectList {
+    padding: 13px 0;
+  }
+
+  .fastOrder__selectList li a {
+    font-size: 1.5rem;
+    padding: 5px 15px;
+  }
+
+  .fastOrder__selectNote {
+    font-size: 1.6rem;
+  }
+}
+
+/*# sourceMappingURL=fastOrder_adaptation.css.map */

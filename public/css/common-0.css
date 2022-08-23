@@ -1,0 +1,30 @@
+.amo-brand__link-holder,
+.amo-button:hover .amo-button__title {
+    display: none !important;
+    opacity: 0 !important;
+
+}
+.breadcrumbs {
+
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 21px;
+    /* identical to box height */
+    text-transform: uppercase;
+    color: #AD7D80;
+}
+.breadcrumbs span a {
+    color: #AD7D80;
+}
+.breadcrumbs span:hover a {
+    text-decoration: underline;
+    color: #905357;
+}
+.breadcrumbs span:after {
+    content: '/';
+}
+.breadcrumbs span:last-child:after {
+    content: '';
+}

@@ -42,46 +42,18 @@ class IcreditController extends Controller
 
     public function orderThanksIcredit(Request $request)
     {
-        $orderPay = session('orderPay');
-
-        WebhookLog::addLog('iCredit thanks', $orderPay);
         $all = $request->all();
         WebhookLog::addLog('iCredit thanks all', $all);
+
+        $orderPay = session('orderPay');
         if (!empty($orderPay)) {
             WebhookLog::addLog('iCredit pay step 2', $orderPay);
         }
 
-        $test_mode = false;
-        if ($request->post('data-test')) {
-            $dataTest = $request->post('data-test');
-            $dataTest = json_decode($dataTest, true);
-            $orderId = $dataTest['id'];
-
-            return redirect("https://takeabreak.website/orders/thanks?id=$orderId&test_mode=1");
-        }
-
-        if (isset($all['test_mode'])) {
-            if ($all['test_mode'] == 1) {
-                $test_mode = true;
-            }
-        }
-
-
-        if (isset($orderPay['referer_url']) && $orderPay['referer_url'] != 'https://takeabreak.website/orders/webhooks') {
-            session()->forget('orderPay');
-        }
-
-
-        if (empty($orderPay)) {
-            $orderId = $request->get('id');
-            WebhookLog::addLog('iCredit pay step 3', $orderId);
-        }
+        $orderId = $all['id'];
 
         if (!empty($orderId)) {
-
             $icreditPay = IcreditPayments::where('orderId', $orderId)->first();
-
-
             $x = 1;
             while ($x <= 5) {
                 sleep(1);
@@ -94,115 +66,45 @@ class IcreditController extends Controller
             }
 
 
-
-            if (!empty($icreditPay) && $icreditPay['paymentStatus'] == 'VERIFIED') {
-
-                $data = json_decode($icreditPay['data'], true);
-
-                if ($data['Custom2'] == 'ServerTB') {
-
-                    $paymentDate = new Carbon();
-                    $paymentDateString = $paymentDate->format('Y-m-d H:i:s');
-                    $order = Orders::where('order_id', $orderId)->first();
-                    $order->paymentStatus = 4;
-                    $order->paymentDate = $paymentDateString;
-                    $order->save();
-
-                    if ($test_mode) {
-//                        dd($paymentDateString);
-                    } else {
-                        AppServise::getQuest("https://takeabreak.website/api/create_amo_order?id=" . $order->order_id);
-                    }
-
-
-                    $orderData = json_decode($order->orderData, true);
-
-                    $invoiceDada = OrderService::getOrderDataToGinvoice($orderData);
-
-
-
-                    if ($orderData['Cart']['person']['name'] == 'test') {
-                        $invoiceDada['email'] = 'virikidorhom@gmail.com';
-                    }
-
-                    if ($test_mode) {
-//                        dd($invoiceDada);
-                        echo "<h2> test mode - invoice not create </h2>";
-                    } else {
-                        if ($order->invoiceStatus != 1) {
-
-//                            $invoiceDada['payDate'] = $paymentDate->format('Y-m-d');
-//                            $invoice = new GreenInvoiceService($order);
-
-//                            $res = $invoice->newDoc($invoiceDada);
-//                            if (isset($res['errorCode'])) {
-//                                AppErrors::addError("invoice create error to " . $orderId, $res);
-//
-//                            } else {
-//                                $order->invoiceStatus = 1;
-//                                $order->invoiceData = json_encode($res);
-//                                $order->save();
-//
-//                                echo "<h2> invoice created </h2>";
-//                            }
-
-                        }
-
-
-
-                        $ecwidService = new EcwidService();
-                        $ecwidService->productsUpdateCount($orderData);
-
-                    }
-
-
-                    return redirect("https://takeabreak.website/api/orders/view_mail?id=$order->order_id");
-                }
-
-                if ($data['Custom2'] == 'Ecwid') {
-                    $ecwidService = new EcwidService();
-                    $ecwidService->payStatusUpdate($orderPay['transaction'], 4);
-                    $log['order_id'] = $data['Custom1'];
-                    $log['status'] = $icreditPay['paymentStatus'];
-                    WebhookLog::addLog('iCredit pay step 3', $log);
-                }
-
-                sleep(2);
-
-                if (isset($orderPay['referer_url']) && $orderPay['referer_url'] != 'https://takeabreak.website/orders/webhooks') {
-                    dd($order->toArray());
-                }
-                if ($data['Custom2'] == 'Ecwid') {
-                    if ($orderPay['test_mode']) {
-                        echo "<pre>";
-                        print_r($icreditPay->toArray());
-                    }
-                    return redirect($orderPay['returnUrl']);
-                } else {
-                    if ($data['Custom2'] != 'ServerTB') {
-                        return redirect($orderPay['referer_url']);
-                    }
-                }
-
-
+            $order = Orders::where('order_id', $orderId)->first();
+            if ($icreditPay->paymentStatus == 'VERIFIED') {
+                $order->paymentStatus = 4;
             } else {
+                $order->paymentStatus = 3;
+            }
+            $order->save();
 
-                echo "<h2> you paid no success </h2>";
-                sleep(5);
-                if (isset($orderPay['referer_url']) && $orderPay['referer_url'] != 'https://takeabreak.website/orders/webhooks') {
-                   dd('test end');
+            if ($order->invoiceStatus == 0) {
+                $invoiceDada = OrderService::getShopOrderDataToGinvoice($order);
+                try {
+
+                    $invoiceService = new GreenInvoiceService($order);
+                    $res = $invoiceService->newDoc($invoiceDada);
+
+                    if (isset($res['errorCode'])) {
+
+                        AppErrors::addError("invoice create error to " . $orderId, $res);
+
+                    } else {
+
+                        $order->invoiceStatus = 1;
+                        $order->invoiceData = json_encode($res);
+                        $order->save();
+
+                    }
+
+                } catch (\Exception $e) {
+
+                    AppErrors::addError("error invoice newDoc to " . $orderId, $invoiceDada);
+
                 }
-
-
-                return redirect($orderPay['returnUrl']);
-
-
             }
 
-        } else {
-            echo "<h2> Thanck You..";
-        }
+            $orderData = json_decode($order->orderData, true);
+            $lang = $orderData['lang'];
 
+            return redirect(route("order_thanks_$lang"));
+        }
     }
 
 
@@ -259,6 +161,60 @@ class IcreditController extends Controller
             } else {
                 AppErrors::addError('iCredit', $res);
             }
+        }
+    }
+
+    public function testGetPaymentUrl(Request $request)
+    {
+        $id = $request->all('order_id');
+        $order = Orders::Where('id', $id)->first();
+        $orderData = json_decode($order->orderData, true);
+
+        $orderService = new OrderService();
+        $icreditService = new IcreditServise();
+
+        if (isset($orderData['Cart'])) {
+            $orderData = $orderService->getIcreditDataOrder($orderData);
+        }
+
+        if (isset($orderData['order_data'])) {
+            $orderData = $orderService::getShopIcreditOrderData($order);
+        }
+        $orderData['name'] = 'test';
+        $res = $icreditService->getUrl($orderData);
+        session('orderPay', $res);
+
+        if (isset($res['URL'])) {
+            return redirect($res['URL']);
+        } else {
+            dd($orderData, $res);
+        }
+    }
+
+    public function getIcreditPaymentUrl(Request $request)
+    {
+        $id = $request->all('order_id');
+        $order = Orders::Where('id', $id)->first();
+        $orderData = json_decode($order->orderData, true);
+
+        $orderService = new OrderService();
+        $icreditService = new IcreditServise();
+
+        if (isset($orderData['Cart'])) {
+            $orderData = $orderService->getIcreditDataOrder($orderData);
+        }
+
+        if (isset($orderData['order_data'])) {
+            $orderData = $orderService::getShopIcreditOrderData($order);
+        }
+
+        $res = $icreditService->getUrl($orderData);
+        session('orderPay', $res);
+
+        if (isset($res['URL'])) {
+            return redirect($res['URL']);
+        } else {
+            dd($orderData, $res);
         }
     }
 

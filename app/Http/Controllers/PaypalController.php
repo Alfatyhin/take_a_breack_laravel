@@ -23,10 +23,12 @@ class PaypalController extends Controller
 
     public function getButton(Request $request)
     {
-        $order_id = $request->get('id');
+
+        $order_id = $request->get('order_id');
         $order = false;
         $paypalService = new PayPalService('live');
         $client_id = $paypalService->getClientId();
+
 
         if ($order_id) {
             $order = Orders::where('order_id', $order_id)->first();
@@ -34,14 +36,18 @@ class PaypalController extends Controller
 
         $orderData = json_decode($order->orderData, true);
 
-        if ($orderData['Cart']['person']['name'] == 'test') {
-            $orderData['option']['total_price'] = 1;
+        if (isset($orderData['order_data'])) {
+            if ($orderData['clientName'] == 'test') {
+                $orderData['order_data']['order_total'] = 1;
+            }
         }
+        $lang = $orderData['lang'];
 
         return view('paypal.button', [
             'client_id'  => $client_id,
             'orderData'  => $orderData,
-            'order_id'   => $order_id
+            'order_id'   => $order_id,
+            'lang'       => $lang
         ]);
     }
 
@@ -56,14 +62,14 @@ class PaypalController extends Controller
             $id = $post['data']['id'];
             echo "<pre>";
 
-            dd($post);
+//            dd($post);
         } else {
             $id = $post['data']['id'];
             WebhookLog::addLog('PayPal payd '.$id, $post);
         }
 
-        header('Access-Control-Allow-Origin: *');
-        http_response_code(200);
+//        header('Access-Control-Allow-Origin: *');
+//        http_response_code(200);
 
         $res_order = $paypalService->checkoutOrder($id);
 
@@ -75,6 +81,7 @@ class PaypalController extends Controller
                     $order_id = $item['custom_id'];
                     $order = Orders::where('order_id', $order_id)->first();
                     $order->paymentStatus = 4;
+                    $order->invoiceStatus = 1;
                     $order->paymentDate = new Carbon();
                     $order->save();
 
@@ -82,14 +89,8 @@ class PaypalController extends Controller
                     $payment->orderId = $order_id;
                     $payment->paymentStatus = $status;
                     $payment->data = json_encode($res_order);
+                    $payment->save();
 
-
-                    $ecwidService = new EcwidService();
-                    $data = $order->orderData;
-                    $data = json_decode($data, true);
-                    $ecwidService->productsUpdateCount($data);
-
-                    AppServise::getQuest("https://takeabreak.website/api/create_amo_order?id=" . $order_id);
                 }
             }
         }
@@ -106,4 +107,8 @@ class PaypalController extends Controller
         echo json_encode($res);
     }
 
+    public function alexpayd(Request $request)
+    {
+        return view("paypal.alex");
+    }
 }

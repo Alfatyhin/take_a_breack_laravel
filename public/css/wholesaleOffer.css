@@ -1,0 +1,90 @@
+.main {
+  padding: 210px 0 100px;
+}
+
+.wholesale__body {
+  position: relative;
+}
+
+.wholesale__title {
+  margin-bottom: 70px;
+  line-height: 0.7;
+}
+
+.wholesale__content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  overflow: hidden;
+  padding-bottom: 10px;
+}
+
+.wholesale__img {
+  border-radius: 10px;
+  display: block;
+  flex-grow: 1;
+  margin-right: 20px;
+  max-width: 600px;
+  object-fit: cover;
+  width: 48%;
+}
+
+.wholesale__text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  width: 48%;
+}
+
+.wholesale__subtitle {
+  font-family: Roboto-Light, sans-serif;
+  font-size: 2.2rem;
+  line-height: 1.18;
+  margin-bottom: 30px;
+}
+
+.wholesale__offer {
+  margin-bottom: 30px;
+}
+
+.wholesale__offerTitle {
+  font-family: Roboto-Regular, sans-serif;
+  font-size: 2.2rem;
+  margin-bottom: 25px;
+}
+
+.wholesale__offerItem {
+  margin-bottom: 20px;
+}
+.wholesale__offerItem span {
+  font-family: Roboto-Regular, sans-serif;
+}
+.wholesale__offerItem:last-child {
+  margin-bottom: 0;
+}
+
+.wholesale__contact {
+  font-family: Roboto-Light, sans-serif;
+  font-size: 2.6rem;
+  line-height: 1.15;
+}
+
+.wholesale__contactTitle {
+  margin-bottom: 20px;
+}
+
+.wholesale__contactItem {
+  margin-bottom: 10px;
+}
+.wholesale__contactItem:last-child {
+  margin-bottom: 0;
+}
+.wholesale__contactItem span {
+  font-family: Roboto-Regular, sans-serif;
+}
+.wholesale__contactItem a {
+  color: #121212;
+}
+
+/*# sourceMappingURL=wholesaleOffer.css.map */

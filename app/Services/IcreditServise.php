@@ -19,9 +19,9 @@ class IcreditServise
 
     }
 
-    private function setPayToken($lang) {
+    private function setPayToken($mod) {
 
-        switch ($lang) {
+        switch ($mod) {
             case 'he':
                 $this->payToken = $_ENV['ICREDIT_PAY_TOKEN_HE'];
                 break;
@@ -40,14 +40,14 @@ class IcreditServise
         // default prod url
         $url = $this->prodURL;
 
-
         if ($data['name'] == 'test') {
-            $data['lang'] = 'test';
+            $mod = 'test';
             $url = $this->testURL;
+        } else {
+            $mod = $data['lang'];
         }
 
-        $token = $this->setPayToken($data['lang']);
-
+        $token = $this->setPayToken($mod);
 
         $newData = array(
             "GroupPrivateToken" => $token,

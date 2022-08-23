@@ -5,10 +5,8 @@
 @section('head')
     <script src="{{ asset('js/server-ecwid-setting.js?v0.0.9') }}" defer></script>
     <script>
-        var products = @json($products);
-        var all_products = @json($all_products);
+
         var cityes = @json($cityes['citys_all']);
-        var cityes_en = @json($cityes['en']);
     </script>
     <style>
         textarea {
@@ -37,27 +35,7 @@
         </div>
     @endif
 
-    <form action="{{ route('ecwid_settings') }}" method="GET" >
-        <h3>
-            Dey Offer:
-            @if (!empty($dey_offer))
-                {{ $dey_offer['nameTranslated'] ['ru']}}
-            @endif
-        </h3>
-        <p> Categories:
 
-            <select class="categories_list" >
-                @foreach($categories['items'] as $k => $item)
-                    <option value="{{ $item['id'] }}">{{ $item{'name'} }}</option>
-                @endforeach
-            </select>
-
-            Products:
-            <span class="prodicts_list"></span>
-        </p>
-
-        <input class="button" type="submit" value="save">
-    </form>
 
 
     <br> <hr>
@@ -120,17 +98,17 @@
                                     <p> Categories:
 
                                         <select class="categories_list_2 key_{{ $key }}" data_key="{{ $key }}" >
-                                            @foreach($categories['items'] as $k => $category)
-                                                <option value="{{ $category['id'] }}">{{ $category['name'] }}</option>
-                                            @endforeach
+{{--                                            @foreach($categories['items'] as $k => $category)--}}
+{{--                                                <option value="{{ $category['id'] }}">{{ $category['name'] }}</option>--}}
+{{--                                            @endforeach--}}
                                         </select>
                                         <br>
                                         Products:
-                                        @if (isset($item['product_id']))
-                                            <span class="products_list_2 key_{{ $key }} product_key" data_key="{{ $key }}" data_id="{{ $item['product_id'] }}">{{ $item['product_id'] }}</span>
-                                            @else
-                                            <span class="products_list_2 key_{{ $key }}"></span>
-                                        @endif
+{{--                                        @if (isset($item['product_id']))--}}
+{{--                                            <span class="products_list_2 key_{{ $key }} product_key" data_key="{{ $key }}" data_id="{{ $item['product_id'] }}">{{ $item['product_id'] }}</span>--}}
+{{--                                            @else--}}
+{{--                                            <span class="products_list_2 key_{{ $key }}"></span>--}}
+{{--                                        @endif--}}
 
                                     </p>
                                 </div>
@@ -185,9 +163,9 @@
                             <p> Categories:
 
                                 <select class="categories_list_2 key_{{ $key }}" data_key="{{ $key }}" >
-                                    @foreach($categories['items'] as $k => $category)
-                                        <option value="{{ $category['id'] }}">{{ $category['name'] }}</option>
-                                    @endforeach
+{{--                                    @foreach($categories['items'] as $k => $category)--}}
+{{--                                        <option value="{{ $category['id'] }}">{{ $category['name'] }}</option>--}}
+{{--                                    @endforeach--}}
                                 </select>
                                 <br>
                                 Products:
@@ -594,23 +572,23 @@
                         <hr>
                         только для категорий:
                         <select class="categories" name="delivery[{{ $xk }}][only_categories][]" multiple >
-                            @foreach($categories['items'] as $item)
-                                @if (isset($value['only_categories']))
-                                    @php
-                                        $selected = '';
-                                    @endphp
-                                    @foreach($value['only_categories'] as $delivery_cat_id)
-                                        @if ($delivery_cat_id == $item['id'])
-                                            @php
-                                                $selected = 'selected';
-                                            @endphp
-                                        @endif
-                                    @endforeach
-                                    <option {{ $selected }} value="{{ $item['id'] }}">{{ $item{'name'} }}</option>
-                                @else
-                                    <option value="{{ $item['id'] }}">{{ $item{'name'} }}</option>
-                                @endif
-                            @endforeach
+{{--                            @foreach($categories['items'] as $item)--}}
+{{--                                @if (isset($value['only_categories']))--}}
+{{--                                    @php--}}
+{{--                                        $selected = '';--}}
+{{--                                    @endphp--}}
+{{--                                    @foreach($value['only_categories'] as $delivery_cat_id)--}}
+{{--                                        @if ($delivery_cat_id == $item['id'])--}}
+{{--                                            @php--}}
+{{--                                                $selected = 'selected';--}}
+{{--                                            @endphp--}}
+{{--                                        @endif--}}
+{{--                                    @endforeach--}}
+{{--                                    <option {{ $selected }} value="{{ $item['id'] }}">{{ $item['name'] }}</option>--}}
+{{--                                @else--}}
+{{--                                    <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>--}}
+{{--                                @endif--}}
+{{--                            @endforeach--}}
                         </select>
                     </td>
                     <td>

@@ -40,9 +40,9 @@
                                 $data = json_decode($item->data, true);
                             @endphp
 
-                            @foreach($data as $key => $itemData)
-                                ( {{ $key }} = {{ $itemData }} ) &nbsp; &nbsp; &nbsp;
-                            @endforeach
+{{--                            @foreach($data as $key => $itemData)--}}
+{{--                                ( {{ $key }} = {{ $itemData }} ) &nbsp; &nbsp; &nbsp;--}}
+{{--                            @endforeach--}}
                         </td>
 
 

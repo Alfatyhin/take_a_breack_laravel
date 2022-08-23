@@ -1,2 +1,16 @@
+# Example 1: Block only Googlebot
+User-agent: Googlebot
+Disallow: /crm/
+Disallow: /api/
+Disallow: /*.php$
+Disallow: /*.html$
+Disallow: /*?*
+
 User-agent: *
-Disallow:
+Disallow: /crm/
+Disallow: /api/
+Disallow: /*.php$
+Disallow: /*.html$
+Disallow: /*?*
+
+Sitemap: https://takeabreak.co.il/site_map.xml

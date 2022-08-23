@@ -1,0 +1,80 @@
+
+.calendar_box {
+    position: relative;
+}
+.calendar_box div.calendar_table {
+    position: absolute;
+    top: -40px;
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px #000000;
+    padding: 3px;
+    z-index: 10;
+}
+table.calendar {
+    width: 100%;
+}
+table.calendar td:hover {
+    background: #dedede;
+}
+table.calendar td.today_date  {
+}
+table.calendar td.today_date div {
+    border: 1px solid #5a9205;
+    border-radius: 3px;
+    background: #ddffaa;
+    color: #8c0404;
+}
+table.calendar td {
+    min-width: 20px;
+    height: 20px;
+    text-align: center;
+    padding: 0 !important;
+    border: none !important;
+    font-size: 16px;
+}
+
+table.calendar .data_change {
+    padding: 0 10px;
+    margin: auto;
+    height: min-content;
+    background: #ddd;
+    border-radius: 5px;
+    border: 1px solid#aaa;
+}
+table.calendar .data_change:hover {
+    cursor: pointer;
+}
+table.calendar .header {
+    position: relative;
+}
+table.calendar .header span {
+    display: inline-block;
+}
+table.calendar .activmon {
+    color: #000;
+}
+table.calendar .unactivmon {
+    color: #888787;
+}
+
+td.close_date {
+    color: #afadad !important;
+}
+td.close_date:hover {
+    cursor: not-allowed;
+}
+td.open_date {
+    cursor: pointer;
+}
+td.open_date:hover {
+    cursor: pointer;
+}
+table.calendar td.select_date div {
+    background: #cece0a;
+    border-radius: 3px;
+}
+
+.showBlock.show_calendar {
+    border: none;
+}

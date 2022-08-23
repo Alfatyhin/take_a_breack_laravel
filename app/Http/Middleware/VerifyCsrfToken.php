@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
+use Illuminate\Session\TokenMismatchException;
 
 class VerifyCsrfToken extends Middleware
 {
@@ -12,7 +14,6 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        'orders/webecwid',
         'orders/thanks',
         'orders/response',
         'orders/icredit',
@@ -20,4 +21,23 @@ class VerifyCsrfToken extends Middleware
         'amocrm/amowebhok',
         'api/*'
     ];
+
+    public function handle($request, Closure $next)
+    {
+        if (
+            $this->isReading($request) ||
+            $this->runningUnitTests() ||
+            $this->inExceptArray($request) ||
+            $this->tokensMatch($request)
+        ) {
+            return tap($next($request), function ($response) use ($request) {
+                if ($this->shouldAddXsrfTokenCookie()) {
+                    $this->addCookieToResponse($request, $response);
+                }
+            });
+        }
+
+        return redirect()->back();
+    }
+
 }

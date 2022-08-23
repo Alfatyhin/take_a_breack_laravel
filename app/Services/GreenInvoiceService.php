@@ -28,6 +28,9 @@ class GreenInvoiceService
         } elseif ($order->paymentMethod == 2) {
             $this->setMode($invoiceSettingData['invoice_mode_cache']);
 
+        } elseif ($order->paymentMethod == 4) {
+            $this->setMode($invoiceSettingData['invoice_mode_bit']);
+
         } else {
             $this->setMode(1);
         }
@@ -355,6 +358,7 @@ class GreenInvoiceService
         $this->createToken();
 
         $email = $orderData['email'];
+        $email = str_replace(' ', '', $email);
         $url = $this->appUrl . 'documents';
 
         $remarks = $orderData['remarks'];
@@ -377,7 +381,7 @@ class GreenInvoiceService
             $phone = '';
         }
         $name = AppServise::TransLit($orderData['name']);
-        $name = AppServise::TranslitIvrit($name);
+//        $name = AppServise::TranslitIvrit($name);
 
         $data = [
             "description"  => $orderData['orderNames'],

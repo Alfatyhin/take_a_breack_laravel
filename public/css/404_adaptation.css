@@ -1,0 +1,86 @@
+@media (max-width: 768px) {
+  .page404__title {
+    font-size: 32rem;
+  }
+
+  .page404__subtitle {
+    font-size: 2.8rem;
+    max-width: 550px;
+  }
+
+  .page404__text {
+    font-size: 2.2rem;
+  }
+
+  .page404__btn {
+    min-height: 60px;
+    min-width: 350px;
+  }
+}
+@media (max-width: 480px) {
+  .page404__title {
+    font-size: 22rem;
+    line-height: 1;
+    margin-bottom: 50px;
+  }
+
+  .page404__subtitle {
+    font-size: 2.2rem;
+    max-width: 430px;
+    margin-bottom: 50px;
+  }
+
+  .page404__text {
+    font-size: 2rem;
+    margin-bottom: 50px;
+  }
+
+  .page404__btn {
+    font-size: 1.8rem;
+    min-height: 55px;
+    min-width: 300px;
+  }
+}
+@media (max-width: 375px) {
+  .page404__title {
+    font-size: 18rem;
+    margin-bottom: 30px;
+  }
+
+  .page404__subtitle {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+  }
+
+  .page404__text {
+    font-size: 1.7rem;
+    margin-bottom: 30px;
+  }
+
+  .page404__btn {
+    font-size: 1.6rem;
+    min-height: 50px;
+    min-width: 250px;
+  }
+}
+@media (max-width: 320px) {
+  .page404__title {
+    font-size: 15rem;
+  }
+
+  .page404__subtitle {
+    font-size: 1.6rem;
+  }
+
+  .page404__text {
+    font-size: 1.6rem;
+  }
+
+  .page404__btn {
+    font-size: 1.6rem;
+    min-height: 45px;
+    min-width: 250px;
+  }
+}
+
+/*# sourceMappingURL=404_adaptation.css.map */

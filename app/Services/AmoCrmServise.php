@@ -11,35 +11,51 @@ use AmoCRM\Collections\Leads\LeadsCollection;
 use AmoCRM\Collections\LinksCollection;
 use AmoCRM\Collections\NotesCollection;
 use AmoCRM\Collections\TagsCollection;
+use AmoCRM\Enum\InvoicesCustomFieldsEnums;
 use AmoCRM\Exceptions\AmoCRMApiException;
 use AmoCRM\Exceptions\AmoCRMMissedTokenException;
 use AmoCRM\Exceptions\AmoCRMoAuthApiException;
+use AmoCRM\Filters\CatalogElementsFilter;
+use AmoCRM\Filters\CatalogsFilter;
 use AmoCRM\Filters\ContactsFilter;
+use AmoCRM\Filters\LeadsFilter;
 use AmoCRM\Helpers\EntityTypesInterface;
 use AmoCRM\Models\AccountModel;
 use AmoCRM\Models\CatalogElementModel;
 use AmoCRM\Models\ContactModel;
 use AmoCRM\Models\CustomFields\TextareaCustomFieldModel;
+use AmoCRM\Models\CustomFieldsValues\BirthdayCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\CheckboxCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\DateTimeCustomFieldValuesModel;
+use AmoCRM\Models\CustomFieldsValues\ItemsCustomFieldValuesModel;
+use AmoCRM\Models\CustomFieldsValues\LinkedEntityCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\MultiselectCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\MultitextCustomFieldValuesModel;
+use AmoCRM\Models\CustomFieldsValues\NumericCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\PriceCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\SelectCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\StreetAddressCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\TextCustomFieldValuesModel;
+use AmoCRM\Models\CustomFieldsValues\ValueCollections\BirthdayCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\CheckboxCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\DateCustomFieldValueCollection;
+use AmoCRM\Models\CustomFieldsValues\ValueCollections\ItemsCustomFieldValueCollection;
+use AmoCRM\Models\CustomFieldsValues\ValueCollections\LinkedEntityCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\MultiselectCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\MultitextCustomFieldValueCollection;
+use AmoCRM\Models\CustomFieldsValues\ValueCollections\NumericCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\PriceCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\SelectCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\StreetAddressCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\TextCustomFieldValueCollection;
+use AmoCRM\Models\CustomFieldsValues\ValueModels\BaseCustomFieldValueModel;
 use AmoCRM\Models\CustomFieldsValues\ValueModels\CheckboxCustomFieldValueModel;
 use AmoCRM\Models\CustomFieldsValues\ValueModels\DateCustomFieldValueModel;
+use AmoCRM\Models\CustomFieldsValues\ValueModels\ItemsCustomFieldValueModel;
+use AmoCRM\Models\CustomFieldsValues\ValueModels\LinkedEntityCustomFieldValueModel;
 use AmoCRM\Models\CustomFieldsValues\ValueModels\MultiselectCustomFieldValueModel;
 use AmoCRM\Models\CustomFieldsValues\ValueModels\MultitextCustomFieldValueModel;
+use AmoCRM\Models\CustomFieldsValues\ValueModels\NumericCustomFieldValueModel;
 use AmoCRM\Models\CustomFieldsValues\ValueModels\PriceCustomFieldValueModel;
 use AmoCRM\Models\CustomFieldsValues\ValueModels\SelectCustomFieldValueModel;
 use AmoCRM\Models\CustomFieldsValues\ValueModels\StreetAdressCustomFieldValueModel;
@@ -49,16 +65,20 @@ use AmoCRM\Models\NoteType\CommonNote;
 use AmoCRM\Models\NoteType\ServiceMessageNote;
 use AmoCRM\Models\TagModel;
 use App\Models\AppErrors;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
+use Mockery\Exception;
 
 class AmoCrmServise
 {
     private $tokenFile = 'data/amo-assets.json';
     private static $tokensFile = 'data/amo-assets.json';
     private $apiClient;
+    private $url = 'https://www.amocrm.com';
+    private $open_stages = ['42684658' => 1, '42684652' => 1];
 
     public function __construct()
     {
@@ -86,6 +106,7 @@ class AmoCrmServise
             ]
         );
     }
+
     public static function getTokens()
     {
         $accessTokens = Storage::disk('local')->get(self::$tokensFile);
@@ -721,18 +742,18 @@ class AmoCrmServise
                                                             )
                                                     )
                                             )
-                                            ->add(
-                                                (new TextCustomFieldValuesModel())
-                                                    ->setFieldId(226599)
-                                                    ->setFieldName('Адрес клиента')
-                                                    ->setValues(
-                                                        (new TextCustomFieldValueCollection())
-                                                            ->add(
-                                                                (new TextCustomFieldValueModel())
-                                                                    ->setValue($amoData['address'])
-                                                            )
-                                                    )
-                                            )
+//                                            ->add(
+//                                                (new TextCustomFieldValuesModel())
+//                                                    ->setFieldId(226599)
+//                                                    ->setFieldName('Адрес клиента')
+//                                                    ->setValues(
+//                                                        (new TextCustomFieldValueCollection())
+//                                                            ->add(
+//                                                                (new TextCustomFieldValueModel())
+//                                                                    ->setValue($amoData['address'])
+//                                                            )
+//                                                    )
+//                                            )
                                     )
                             )
                     );
@@ -796,54 +817,432 @@ class AmoCrmServise
 
     }
 
-
-    // доработать
-    public function searchContactByEmail($email) {
-        // инициализация апи клиента
+    public function addContactToLead($contact, $lead)
+    {
         $apiClient = $this->getApiClient();
-        /////////////////////////////////////////////////////////////////////////
+        $leadsService = $apiClient->leads();
+        ///////////////////////////////////////////////////////////////////////////
 
-        var_dump($email);
+        $links = new LinksCollection();
+        $links->add($contact);
+        try {
+            $leadsService->link($lead, $links);
+        } catch (AmoCRMApiException $e) {
+            $this->printError($e);
+            die;
+        }
 
-        $filter = new ContactsFilter();;
-        $filter->setQuery($email);
+        return $lead;
+    }
 
-        $contacts = $apiClient->contacts()->get($filter);
+    public function createNewLead($amoData)
+    {
+        $apiClient = $this->getApiClient();
+        $leadsService = $apiClient->leads();
+        ///////////////////////////////////////////////////////////////////////////
+        $lead = new LeadModel();
+        $lead = $this->setLeadData($lead, $amoData);
 
-        foreach ($contacts as $contact) {
+        try {
+            $leadsService->addOne($lead);
+        } catch (AmoCRMApiException $e) {
+            $this->printError($e);
+            die;
+        }
 
-            $customFields = $contact->getCustomFieldsValues();
-            //Получим значение поля по его ID
-            if ($customFields) {
-                $emailField = $customFields->getBy('fieldCode', 'EMAIL');
+        return $lead;
+    }
 
-                if ($emailField) {
-                    $values = $emailField->getValues();
-                    if ($values) {
-                        foreach ($values as $value) {
-                            $val = $value->getValue();
-                            var_dump($val);
-                            if (($email == $val) && empty($contactID)) {
-                                $contactID = $contact->getId();
-                            }
-                        }
-                    }
+    public function updateLead($lead, $amoData)
+    {;
+        $apiClient = $this->getApiClient();
+        $leadsService = $apiClient->leads();
+        ///////////////////////////////////////////////////////////////////////////
+        $lead = $this->setLeadData($lead, $amoData);
+
+        try {
+            $leadsService->updateOne($lead);
+        } catch (AmoCRMApiException $e) {
+//            $this->printError($e);
+//            die;
+        }
+
+        return $lead;
+    }
+
+    //
+    public function setLeadData($lead, $amoData)
+    {
+
+        // текстовый тип кастомного поля
+        $leadCustomFieldsValues = new CustomFieldsValuesCollection();
+
+        if (!empty($amoData['notes'])) {
+            $notes = $amoData['notes'];
+            if (strlen($notes) < 255) {
+                $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 352111, $notes);
+            }
+        }
+
+        if (!empty($amoData['order_id'])) {
+            $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 489653, $amoData['order_id']);
+        }
+
+        if (!empty($amoData['api_mode'])) {
+            $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 511579, $amoData['api_mode']);
+        }
+
+        if (!empty($amoData['room_number'])) {
+            $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 511647, $amoData['room_number']);
+        }
+
+        if (!empty($amoData['floor'])) {
+            $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 514141, $amoData['floor']);
+        }
+
+        if (!empty($amoData['refer_URL'])) {
+            $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 338459, $amoData['refer_URL']);
+        }
+
+
+        if (!empty($amoData['utmData'])) {
+
+            foreach ($amoData['utmData'] as $key => $item) {
+
+                if ($key == 'utm_referrer') {
+                    $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 514567, $item);
                 }
 
+                if ($key == 'utm_content') {
+                    $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 514569, $item);
+                }
+
+                if ($key == 'utm_source') {
+                    $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 514571, $item);
+                }
+
+                if ($key == 'utm_medium') {
+                    $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 514573, $item);
+                }
+
+                if ($key == 'utm_campaign') {
+                    $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 514575, $item);
+                }
+
+            }
+        }
+
+
+        if (!empty($amoData['to_presents'])) {
+
+            if (!empty($amoData['to_presents']['presents_name'])) {
+                $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 308397, $amoData['to_presents']['presents_name']);
+            }
+
+            if (!empty($amoData['to_presents']['presents_phone'])) {
+                $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 308401, $amoData['to_presents']['presents_phone']);
+            }
+//            $leadCustomFieldsValues = $this->addCheckboxCustomFieldValuesModel($leadCustomFieldsValues, 352113, true);
+
+        }
+
+        if (!empty($amoData['name'])) {
+            $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 514563, $amoData['name']);
+        }
+
+        if (!empty($amoData['phone'])) {
+            $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 514565, $amoData['phone']);
+        }
+
+        if (!empty($amoData['text_note'])) {
+            $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 512455, $amoData['text_note']);
+        }
+
+        if (!empty($amoData['address'])) {
+            $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 509001, $amoData['address']);
+        }
+
+        if (!empty($amoData['lang'])) {
+            $leadCustomFieldsValues = $this->addSelectCustomFieldValuesModel($leadCustomFieldsValues, 516743, $amoData['lang']);
+        }
+
+        if (!empty($amoData['payment'])) {
+            $leadCustomFieldsValues = $this->addSelectCustomFieldValuesModel($leadCustomFieldsValues, 308363, $amoData['payment']);
+        }
+
+        if (!empty($amoData['date'])) {
+            $leadCustomFieldsValues = $this->addDateTimeCustomFieldValuesModel($leadCustomFieldsValues, 508997, $amoData['date']);
+        }
+
+        if (!empty($amoData['time'])) {
+            $leadCustomFieldsValues = $this->addMultiselectCustomFieldValuesModel($leadCustomFieldsValues, 462331, $amoData['time']);
+        }
+
+        if (!empty($amoData['tags'])) {
+            $lead->getTags($amoData['tags']);
+        }
+
+        // комнплексное создание сделки
+        $lead->setName($amoData['order name'])
+            ->setPrice($amoData['order price'])
+            ->setCustomFieldsValues($leadCustomFieldsValues) // прикрепление к сделке значений из полей выше
+            ->setPipelineId($amoData['pipelineId'])
+            ->setStatusId($amoData['statusId'])
+            ->setRequestId($amoData['order_id']);
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        return $lead;
+    }
+
+    public function addTextCustomFieldValuesModel($leadCustomFieldsValues, $field_id, $value)
+    {
+        $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+        $textCustomFieldValueModel->setFieldId($field_id);
+        $textCustomFieldValueModel->setValues(
+            (new TextCustomFieldValueCollection())
+                ->add((new TextCustomFieldValueModel())->setValue($value))
+        );
+        $leadCustomFieldsValues->add($textCustomFieldValueModel);
+
+        return $leadCustomFieldsValues;
+    }
+
+    public function addCheckboxCustomFieldValuesModel($leadCustomFieldsValues, $field_id, $value)
+    {
+        $checkboxCustomFieldValueModel = new CheckboxCustomFieldValuesModel();
+        $checkboxCustomFieldValueModel->setFieldId($field_id);
+        $checkboxCustomFieldValueModel->setValues(
+            (new CheckboxCustomFieldValueCollection())
+                ->add((new CheckboxCustomFieldValueModel())->setValue($value))
+        );
+        $leadCustomFieldsValues->add($checkboxCustomFieldValueModel);
+
+        return $leadCustomFieldsValues;
+    }
+
+    public function addSelectCustomFieldValuesModel($leadCustomFieldsValues, $field_id, $value)
+    {
+        // тип поля список
+        $selectCustomFieldValueModel = new SelectCustomFieldValuesModel();
+        $selectCustomFieldValueModel->setFieldId($field_id);
+        $selectCustomFieldValueModel->setValues(
+            (new SelectCustomFieldValueCollection())
+                ->add((new SelectCustomFieldValueModel())->setValue($value))
+        );
+        $leadCustomFieldsValues->add($selectCustomFieldValueModel);
+
+        return $leadCustomFieldsValues;
+    }
+
+    public function addDateTimeCustomFieldValuesModel($leadCustomFieldsValues, $field_id, $value)
+    {
+        // тип поля дата-время
+        $dateCustomFieldValueModel = new DateTimeCustomFieldValuesModel();
+        $dateCustomFieldValueModel->setFieldId($field_id);
+        $dateCustomFieldValueModel->setValues(
+            (new DateCustomFieldValueCollection())
+                ->add((new DateCustomFieldValueModel())->setValue($value))
+        );
+        $leadCustomFieldsValues->add($dateCustomFieldValueModel);
+
+        return $leadCustomFieldsValues;
+    }
+
+    public function addMultiselectCustomFieldValuesModel($leadCustomFieldsValues, $field_id, $value)
+    {
+        // тип поля список с мульти выбором
+        $timeCustomFieldValueModel = new MultiselectCustomFieldValuesModel();
+        $timeCustomFieldValueModel->setFieldId($field_id);
+        $timeCustomFieldValueModel->setValues(
+            (new MultiselectCustomFieldValueCollection())
+                ->add((new MultiselectCustomFieldValueModel())->setValue($value))
+        );
+        $leadCustomFieldsValues->add($timeCustomFieldValueModel);
+
+        return $leadCustomFieldsValues;
+    }
+
+    public function getTagsCollection($tags)
+    {
+        //Создадим тег
+        $tagsCollection = new TagsCollection();
+        foreach ($tags as $item) {
+            if ($item) {
+                $tag = new TagModel();
+                $tag->setName($item);
+                $tagsCollection->add($tag);
 
             }
 
         }
 
-        if (empty($contactID)) {
-            $test = $contacts->next();
-            var_dump($test);
-        }
-
-        die;
+        return $tagsCollection;
     }
 
-    public function getCatalogElementBuName(string $name)
+    public function newLeadBuContactForm($amoData)
+    {
+        $pipelineId = '4651807'; // воронка
+        $statusId = '43924885'; // статус
+        $apiClient = $this->getApiClient();
+        ///////////////////////////////////////////////////////////////////////////
+
+
+        $leadCustomFieldsValues = new CustomFieldsValuesCollection();
+
+        $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+        $textCustomFieldValueModel->setFieldId(308397);
+        $textCustomFieldValueModel->setValues(
+            (new TextCustomFieldValueCollection())
+                ->add((new TextCustomFieldValueModel())->setValue($amoData['clientName']))
+        );
+        $leadCustomFieldsValues->add($textCustomFieldValueModel);
+
+
+        $textCustomFieldValueModel = new TextCustomFieldValuesModel();
+        $textCustomFieldValueModel->setFieldId(308401);
+        $textCustomFieldValueModel->setValues(
+            (new TextCustomFieldValueCollection())
+                ->add((new TextCustomFieldValueModel())->setValue($amoData['phone']))
+        );
+        $leadCustomFieldsValues->add($textCustomFieldValueModel);
+
+
+        $lead = new LeadModel();
+        // комнплексное создание сделки
+        $lead->setName('contact form')
+            ->setCustomFieldsValues($leadCustomFieldsValues) // прикрепление к сделке значений из полей выше
+//            ->setStatusId($statusId)
+            ->setPipelineId($pipelineId);
+
+        $lead->setContacts(
+            (new ContactsCollection())
+                ->add(
+                    (new ContactModel())
+                        ->setFirstName($amoData['clientName'])
+                        ->setCustomFieldsValues(
+                            (new CustomFieldsValuesCollection())
+                                ->add(
+                                    (new MultitextCustomFieldValuesModel())
+                                        ->setFieldCode('PHONE')
+                                        ->setValues(
+                                            (new MultitextCustomFieldValueCollection())
+                                                ->add(
+                                                    (new MultitextCustomFieldValueModel())
+                                                        ->setValue($amoData['phone'])
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+
+        $leadsCollection = new LeadsCollection();
+        $leadsCollection->add($lead);
+
+
+        try {
+            $addedLeadsCollection = $apiClient->leads()->addComplex($leadsCollection);
+        } catch (AmoCRMMissedTokenException $e) {
+            echo 'AmoCRMMissedTokenException <hr>';
+            $this->printError($e);
+            die;
+        } catch (AmoCRMoAuthApiException $e) {
+            echo 'AmoCRMoAuthApiException <hr>';
+            $this->printError($e);
+            die;
+        } catch (AmoCRMApiException $e) {
+            echo 'AmoCRMApiException <hr>';
+            $this->printError($e);
+            die;
+        }
+
+
+
+        /** @var LeadModel $addedLead */
+        foreach ($addedLeadsCollection as $addedLead) {
+            //Пройдемся по добавленным сделкам и выведем результат
+            $leadId = $addedLead->getId();
+            $contactId = $addedLead->getContacts()->first()->getId();
+
+            $res = [
+                'amo_id'    => $leadId,
+                'client_id' => $contactId
+            ];
+        }
+
+
+        return $res;
+
+    }
+
+
+    //
+    public function searchContactFilter($filter_value)
+    {
+
+        $contacts = $this->getContactDoubles($filter_value);
+
+        if ($contacts) {
+            $amo_clones_rev = array_reverse($contacts);
+            $amoId = $amo_clones_rev[0]['id'];
+
+            $contact = $this->getContactBuId($amoId);
+        } else {
+            return false;
+        }
+
+        return $contact;
+    }
+
+    public function getContactDoubles($filter_value)
+    {
+        // инициализация апи клиента
+        $apiClient = $this->getApiClient();
+        /////////////////////////////////////////////////////////////////////////
+
+        $filter = new ContactsFilter();
+        $filter->setQuery($filter_value);
+
+        try {
+            $contacts = $apiClient->contacts()->get($filter);
+        } catch (AmoCRMApiException $e) {
+            return false;
+        }
+
+        $x = 0;
+        foreach ($contacts as $contact) {
+
+            $data[$x]['id'] = $contact->id;
+            $data[$x]['name'] = $contact->name;
+            $data[$x]['firstName'] = $contact->firstName;
+            $data[$x]['lastName'] = $contact->name;
+            $customFields = $contact->getCustomFieldsValues();
+            foreach ($customFields as $field)
+            {
+                $field_data = $field->values;
+                foreach ($field_data as $k => $v) {
+                    $data[$x]['fields'][$field->fieldName][$k] = $v->value;
+                }
+            }
+
+            $x++;
+        }
+
+        return $data;
+    }
+
+    public function getCustomers()
+    {
+        // инициализация апи клиента
+        $apiClient = $this->getApiClient();
+        /////////////////////////////////////////////////////////////////////////
+        ///
+        $customersService = $apiClient->customers();
+    }
+
+
+    public function getCatalogElementBuName(string $name, $catalog_name)
     {
         // инициализация апи клиента
         $apiClient = $this->getApiClient();
@@ -851,30 +1250,51 @@ class AmoCrmServise
 
         $catalogsCollection = $apiClient->catalogs()->get();
         //Получим каталог по названию
-        $catalog = $catalogsCollection->getBy('name', 'Ecwid витрина');
+        $catalog = $catalogsCollection->getBy('name', $catalog_name);
 
-        //Получим элементы из нужного нам катагола, где в названии или полях есть слово кросовки
-        $catalogElementsService = $apiClient->catalogElements($catalog->getId());
+        try {
 
-        $catalogElementsCollection = $catalogElementsService->get();
-        $catalogElement = $catalogElementsCollection->getBy('name', $name);
+            //Получим элементы из нужного нам катагола по названию
+            $catalogElementsService = $apiClient->catalogElements($catalog->getId());
+            $catalogElementsCollection = $catalogElementsService->get();
+            $catalogElement = $catalogElementsCollection->getBy('name', $name);
+        } catch (AmoCRMApiException $e) {
 
-        if ($catalogElement) {
-            return $catalogElement;
-        } else {
             return false;
         }
 
+        return $catalogElement;
     }
 
-    public function setCatalogElement(array $data)
+    public function getCatalogElementBuSku(string $sku, $catalog_name)
+    {
+        // инициализация апи клиента
+        $apiClient = $this->getApiClient();
+        /////////////////////////////////////////////////////////////////////////
+
+        $catalogsCollection = $apiClient->catalogs()->get();
+        //Получим каталог по названию
+        $catalog = $catalogsCollection->getBy('name', $catalog_name);
+        $catalogElementsService = $apiClient->catalogElements($catalog->getId());
+        $catalogElementsFilter = new CatalogElementsFilter();
+        $catalogElementsFilter->setQuery($sku);
+        try {
+            $catalogElement = $catalogElementsService->get($catalogElementsFilter)->first();
+        } catch (AmoCRMApiException $e) {
+            return false;
+        }
+
+        return $catalogElement;
+    }
+
+    public function setCatalogElement(array $data, $catalog_name)
     {
         $apiClient = $this->getApiClient();
         /////////////////////////////////////////////////////////////////////////
 
         $catalogsCollection = $apiClient->catalogs()->get();
         //Получим каталог по названию
-        $catalog = $catalogsCollection->getBy('name', 'Ecwid витрина');
+        $catalog = $catalogsCollection->getBy('name', $catalog_name);
 
         //Добавим элемент в каталог (Список)
         $catalogElementsCollection = new CatalogElementsCollection();
@@ -904,26 +1324,59 @@ class AmoCrmServise
                                     )
                             )
                     )
+//                    ->add(
+//                        (new TextCustomFieldValuesModel())
+//                            ->setFieldId(488441)
+//                            ->setValues(
+//                                (new TextCustomFieldValueCollection())
+//                                    ->add(
+//                                        (new TextCustomFieldValueModel())
+//                                            ->setValue($data['description'])
+//                                    )
+//                            )
+//                    )
+            );
+
+        $catalogElementsCollection->add($catalogElement);
+        $catalogElementsService = $apiClient->catalogElements($catalog->getId());
+        $catalogElementsService->add($catalogElementsCollection);
+
+        return $catalogElement;
+    }
+
+    public function updateCatalogElement($catalogElement, array $data, $catalog_name)
+    {
+        $apiClient = $this->getApiClient();
+        /////////////////////////////////////////////////////////////////////////
+
+        $catalogsCollection = $apiClient->catalogs()->get();
+        //Получим каталог по названию
+        $catalog = $catalogsCollection->getBy('name', $catalog_name);
+
+        $catalogElement->setName($data['name'])
+            ->setCustomFieldsValues(
+                (new CustomFieldsValuesCollection())
                     ->add(
-                        (new TextCustomFieldValuesModel())
-                            ->setFieldId(488441)
+                        (new PriceCustomFieldValuesModel())
+                            ->setFieldCode('PRICE')
                             ->setValues(
-                                (new TextCustomFieldValueCollection())
+                                (new PriceCustomFieldValueCollection())
                                     ->add(
-                                        (new TextCustomFieldValueModel())
-                                            ->setValue($data['description'])
+                                        (new PriceCustomFieldValueModel())
+                                            ->setValue($data['price'])
                                     )
                             )
                     )
             );
 
-        $catalogElementsCollection->add($catalogElement);
 
         $catalogElementsService = $apiClient->catalogElements($catalog->getId());
+        $catalogElementsService->updateOne($catalogElement);
 
-        $catalogElementsService->add($catalogElementsCollection);
-
+        return $catalogElement;
     }
+
+
 
     public function setCatalogElementByOrderId(CatalogElementModel $element, $orderId, $quantity)
     {
@@ -1046,6 +1499,327 @@ class AmoCrmServise
         return $contacts;
     }
 
+    public function getContactBuId($contact_id)
+    {
+        $apiClient = $this->getApiClient();
+        try {
+            $contact = $apiClient->contacts()->getOne($contact_id);
+        } catch (AmoCRMApiException $e) {
+            $contact = false;
+        }
+
+
+        return $contact;
+    }
+
+    public function createContact($contactData)
+    {
+        $apiClient = $this->getApiClient();
+        //Создадим контакт
+        $contact = new ContactModel();
+
+
+        $contact->setFirstName($contactData['name'])
+            ->setCustomFieldsValues((new CustomFieldsValuesCollection()));
+
+        try {
+            $contactModel = $apiClient->contacts()->addOne($contact);
+            $contactModel = $this->syncContactData($contactModel, $contactData);
+        } catch (AmoCRMApiException $e) {
+            $this->printError($e);
+            die;
+        }
+
+        return $contactModel;
+
+    }
+
+    public function searchOpenLeadByContactId($contact_id)
+    {
+        $apiClient = $this->getApiClient();
+        $open_lead = false;
+
+        $contact = $apiClient->contacts()->getOne($contact_id, ['leads']); //Получаете контакт, при этом указав параметр with
+        $rawLeads = $contact->getLeads(); //Тут у нас будут коллекция сделок либо null. Но при этом следки будут без информации, только id
+
+        if($rawLeads) { //проверим, что сделки все таки есть у контакта
+            $leadIds = $rawLeads->pluck('id'); //Получим массив id сделок из коллекции
+            $filter = (new LeadsFilter())->setIds($leadIds)->setLimit(250); //Создадим фильтр
+            $leads = $apiClient->leads()->get($filter); //Получим уже полноценные сделки со всем содержимым
+
+            foreach ($leads as $lead) {
+                if (!$lead->closedAt && !$open_lead && isset($this->open_stages[$lead->statusId])) {
+                    $open_lead = $lead;
+                }
+            }
+        }
+
+        return $open_lead;
+    }
+
+    public function syncContactData($contact, $clientData)
+    {
+        $apiClient = $this->getApiClient();
+        $contact_update = false;
+
+        $customFields = $contact->getCustomFieldsValues();
+
+        if (isset($clientData['email'])) {
+            //эмейл
+            $emailField = $customFields->getBy('fieldCode', 'EMAIL');
+            //Если значения нет, то создадим новый объект поля и добавим его в коллекцию значений
+            if (empty($emailField)) {
+                $emailField = (new MultitextCustomFieldValuesModel())->setFieldCode('EMAIL');
+                $customFields->add($emailField);
+
+                //Установим значение поля
+                $emailField->setValues(
+                    (new MultitextCustomFieldValueCollection())
+                        ->add(
+                            (new MultitextCustomFieldValueModel())
+                                ->setEnum('WORK')
+                                ->setValue($clientData['email'])
+                        )
+                );
+                $contact_update = true;
+            }
+        }
+
+        if (isset($clientData['phone'])) {
+            //телефон
+            $phoneField = $customFields->getBy('fieldCode', 'PHONE');
+            //Если значения нет, то создадим новый объект поля и добавим его в коллекцию значений
+            if (empty($phoneField)) {
+                $phoneField = (new MultitextCustomFieldValuesModel())->setFieldCode('PHONE');
+                $customFields->add($phoneField);
+
+                //Установим значение поля
+                $phoneField->setValues(
+                    (new MultitextCustomFieldValueCollection())
+                        ->add(
+                            (new MultitextCustomFieldValueModel())
+                                ->setEnum('WORK')
+                                ->setValue($clientData['phone'])
+                        )
+                );
+                $contact_update = true;
+            }
+        }
+
+        if (isset($clientData['lang'])) {
+            //язык
+            $langField = $customFields->getBy('fieldId', '490441');
+            //Если значения нет, то создадим новый объект поля и добавим его в коллекцию значений
+            if (empty($langField)) {
+                $langField = (new SelectCustomFieldValuesModel())->setFieldId('490441');
+                $customFields->add($langField);
+
+                //Установим значение поля
+                $langField->setValues(
+                    (new SelectCustomFieldValueCollection())
+                        ->add(
+                            (new SelectCustomFieldValueModel())
+                                ->setValue($clientData['lang'])
+                        )
+                );
+                $contact_update = true;
+            }
+        }
+
+        if (isset($clientData['birthday'])) {
+            //birthday
+            $birthdayField = $customFields->getBy('fieldId', '230445');
+            //Если значения нет, то создадим новый объект поля и добавим его в коллекцию значений
+            if (empty($birthdayField)) {
+                $birthdayField = (new BirthdayCustomFieldValuesModel())->setFieldId('230445');
+                $customFields->add($birthdayField);
+
+                //Установим значение поля
+                $birthdayField->setValues(
+                    (new BirthdayCustomFieldValueCollection())
+                        ->add(
+                            (new BaseCustomFieldValueModel())
+                                ->setValue($clientData['birthday'])
+                        )
+                );
+                $contact_update = true;
+            }
+        }
+
+        if ($contact_update) {
+            try {
+                $apiClient->contacts()->updateOne($contact);
+            } catch (AmoCRMApiException $e) {
+                $this->printError($e);
+                die;
+            }
+        }
+
+        return $contact;
+    }
+
+    public function createLeadBirthday($clientData)
+    {
+//        $clientData['email'] = 'test_1@mail.ru';
+        $email = $clientData['email'];
+
+        $contact = $this->searchContactFilter($email);
+
+        if ($contact) {
+            $contact = $this->syncContactData($contact, $clientData);
+        } else {
+            $clientData['name'] = 'new client';
+            $contact = $this->createContact($clientData);
+        }
+
+        dd('test', $contact->toArray());
+
+    }
+
+
+    public function getLeads()
+    {
+        $apiClient = $this->getApiClient();
+        $leadsService = $apiClient->leads();
+
+        //Получим сделки и следующую страницу сделок
+        try {
+            $leadsCollection = $leadsService->get();
+        //$leadsCollection = $leadsService->nextPage($leadsCollection);
+        } catch (AmoCRMApiException $e) {
+            return false;
+        }
+        return $leadsCollection;
+    }
+
+    public function addSopProductsToLead($amoId, $amoProducts)
+    {
+        foreach ($amoProducts as $item) {
+            $this->setCatalogElementByOrderId($item['amo_model'], $amoId, (int) $item['count']);
+        }
+    }
+
+
+    public function addInvoiceToLead($contact_id, $order_id, $lead_id, $order_price, $payment_status)
+    {
+
+        $apiClient = $this->getApiClient();
+
+        $catalogsFilter = new CatalogsFilter();
+        $catalogsFilter->setType(EntityTypesInterface::INVOICES_CATALOG_TYPE_STRING);
+        $invoicesCatalog = $apiClient->catalogs()->get($catalogsFilter)->first();
+
+        //Создадим новый счет
+        //Обязательно должно быть название и заполнено поле статус
+        $newInvoice = new CatalogElementModel();
+        //Зададим Имя
+        $newInvoice->setName('Заказ #' . $order_id);
+        //Зададим дату создания
+        $creationDate = new DateTime();
+        $newInvoice->setCreatedAt($creationDate->getTimestamp());
+
+        $invoiceCustomFieldsValues = new CustomFieldsValuesCollection();
+        //Зададим статус
+        if ($payment_status == 4) {
+            $status = 'Оплачен';
+        } else {
+            $status = 'Создан';
+        }
+        $statusCustomFieldValueModel = new SelectCustomFieldValuesModel();
+        $statusCustomFieldValueModel->setFieldCode(InvoicesCustomFieldsEnums::STATUS);
+        $statusCustomFieldValueModel->setValues(
+            (new SelectCustomFieldValueCollection())
+                ->add((new SelectCustomFieldValueModel())->setValue($status)) //Текст должен совпадать с одним из значений поля статус
+        );
+        $invoiceCustomFieldsValues->add($statusCustomFieldValueModel);
+
+        //Зададим комментарий
+        $commentCustomFieldValueModel = new TextCustomFieldValuesModel();
+        $commentCustomFieldValueModel->setFieldCode(InvoicesCustomFieldsEnums::COMMENT);
+        $commentCustomFieldValueModel->setValues(
+            (new TextCustomFieldValueCollection())
+                ->add((new TextCustomFieldValueModel())->setValue('Оплата заказа'))
+        );
+        $invoiceCustomFieldsValues->add($commentCustomFieldValueModel);
+        //Зададим плательщика (до поле связанная сущность, может хранить в себе связь с сущностью (контакт или компания))
+        $payerCustomFieldValueModel = new LinkedEntityCustomFieldValuesModel();
+        $payerCustomFieldValueModel->setFieldCode(InvoicesCustomFieldsEnums::PAYER);
+        $payerCustomFieldValueModel->setValues(
+            (new LinkedEntityCustomFieldValueCollection())
+                ->add(
+                    (new LinkedEntityCustomFieldValueModel())
+//                        ->setName($contact_id) //Можно передать или название сущности, или ID сущности, чтобы заполнить это поле
+                        ->setEntityId($contact_id)
+                        ->setEntityType(EntityTypesInterface::CONTACTS)
+                )
+        );
+
+        //Зададим товары в счете
+        $itemsCustomFieldValueModel = new ItemsCustomFieldValuesModel();
+        $itemsCustomFieldValueModel->setFieldCode(InvoicesCustomFieldsEnums::ITEMS);
+        $itemsCustomFieldValueModel->setValues(
+            (new ItemsCustomFieldValueCollection())
+                ->add(
+                    (new ItemsCustomFieldValueModel())
+                        ->setDescription('Оплата заказа')
+                        ->setExternalUid($order_id)
+                        //->setProductId('ID товара в списке товаров в amoCRM') //Необзятальное поле
+                        ->setQuantity(1) //количество
+//                        ->setSku('Артикул товара')
+                        ->setUnitPrice($order_price) //цена за единицу товара
+                        ->setUnitType('шт') //единица измерения товвара
+//                        ->setVatRateValue(20) //НДС 20%
+//                        ->setDiscount([
+//                            'type' => ItemsCustomFieldValueModel::FIELD_DISCOUNT_TYPE_AMOUNT, //amount - скидка абсолютная, percentage - скидка в процентах от стоимости товара
+//                            'value' => 15.15 //15 рублей 15 копеек
+//                        ])
+//                        ->setBonusPointsPerPurchase(20) //Сколько бонусных баллов будет начислено за покупку
+                )
+        );
+        $invoiceCustomFieldsValues->add($itemsCustomFieldValueModel);
+
+
+        //Зададим значение поля Итоговая сумма к оплате
+        //Отображается в списке счетов,
+        //при заходе в карточку счета, стоимость счета будет рассчитана с учетом товаров, ндс и отображена в карточке счета
+        //Если передать некорректную сумму, то до редактирования в интерфейсе, через API будет возвращаться некорректная сумма
+        $priceCustomFieldValueModel = new NumericCustomFieldValuesModel();
+        $priceCustomFieldValueModel->setFieldCode(InvoicesCustomFieldsEnums::PRICE);
+        $priceCustomFieldValueModel->setValues(
+            (new NumericCustomFieldValueCollection())
+                ->add(
+                    (new NumericCustomFieldValueModel())
+                        ->setValue($order_price)
+                )
+        );
+        $invoiceCustomFieldsValues->add($priceCustomFieldValueModel);
+
+        //Установим значения в модель и сохраним
+        $newInvoice->setCustomFieldsValues($invoiceCustomFieldsValues);
+        $catalogElementsService = $apiClient->catalogElements($invoicesCatalog->getId());
+        try {
+            $newInvoice = $catalogElementsService->addOne($newInvoice);
+        } catch (AmoCRMApiException $e) {
+            $this->printError($e);
+            die;
+        }
+        //Свяжем счет со сделкой
+        $leadsService = $apiClient->leads();
+        $lead = (new LeadModel())
+            ->setId($lead_id);
+        try {
+            $leadsService->link($lead, (new LinksCollection())->add($newInvoice));
+        } catch (AmoCRMApiException $e) {
+            $this->printError($e);
+            die;
+        }
+
+        return $newInvoice->getId();
+    }
+
+
+
+
 
     public function printError(AmoCRMApiException $e): void
     {
@@ -1070,5 +1844,13 @@ EOF;
     }
 
 
+    public function getPipelines()
+    {
+        $apiClient = $this->getApiClient();
+        $pipelinesService = $apiClient->pipelines();
+        $pipelinesCollection = $pipelinesService->get();
+
+        return $pipelinesCollection;
+    }
 
 }

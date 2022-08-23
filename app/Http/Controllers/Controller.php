@@ -37,31 +37,6 @@ class Controller extends BaseController
     }
 
 
-    public function orderDelete(Request $request)
-    {
-        $orderId = $request->get('id');
-
-        if ($orderId) {
-            $order = Orders::where('order_id', $orderId)->first();
-
-            if ($order) {
-                $res = $order->delete();
-                if ($res) {
-                    $message[] = "order $orderId delete";
-                }
-            } else {
-                $message[] = "order $orderId not found";
-            }
-
-        }
-
-        return view('message', [
-            'title' => 'order-delete',
-            'messages' => $message,
-        ]);
-
-    }
-
 
 
     public function getEcwidOrderLog()
@@ -74,46 +49,42 @@ class Controller extends BaseController
 
     public function allUsers(Request $request)
     {
-        $users = User::latest('id')->paginate(10);
+        if (!empty($request->post('user_change'))) {
+            $post = $request->post();
+            $user_id = $request->get('user_id');
+            $user = User::find($user_id);
+            if (isset($post['user_role'])) {
+                if ($post['user_role'] == 'delete') {
+                    $user->delete();
+                } else {
+                    $user->user_role = $post['user_role'];
+                    $user->save();
+                }
+            }
+            return back();
+        }
+
+        $users = User::latest('id')->paginate(50);
+        $user_roles = ['user', 'admin', 'content manager'];
+
 
         return view('users.index', [
             'users' => $users,
+            'user_roles' => $user_roles
         ]);
     }
+
 
     public function allClients(Request $request)
     {
         $clients = Clients::latest('id')->paginate(10);
+
 
         return view('clients.index', [
             'clients' => $clients,
         ]);
     }
 
-
-    public function appInvoiceSetting(Request $request)
-    {
-        $dataJson = Storage::disk('local')->get('data/app-setting.json');
-        $settingData = json_decode($dataJson, true);
-
-        $invoice_mode_paypal = $request->get('invoice_mode_paypal');
-        if ($invoice_mode_paypal) {
-            $settingData['invoice_mode_paypal'] = $invoice_mode_paypal;
-        }
-
-        $invoice_mode_cache = $request->get('invoice_mode_cache');
-        if ($invoice_mode_cache) {
-            $settingData['invoice_mode_cache'] = $invoice_mode_cache;
-        }
-
-        if ($invoice_mode_paypal) {
-            Storage::disk('local')->put('data/app-setting.json', json_encode($settingData));
-        }
-
-        return view('app.invoice_setting', [
-            'settingData' => $settingData,
-        ]);
-    }
 
 
 

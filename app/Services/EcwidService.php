@@ -1159,11 +1159,11 @@ class EcwidService
         return $orderData;
     }
 
-    public function getDiscountCoupons($code)
+    public function getDiscountCoupons()
     {
         $shopId = $this->shop_id;
         $token = $this->secret_token;
-        $url = "https://app.ecwid.com/api/v3/$shopId/discount_coupons?code=$code&token=$token";
+        $url = "https://app.ecwid.com/api/v3/$shopId/discount_coupons?token=$token";
         $res = $this->getQuest($url);
 
         return $res;

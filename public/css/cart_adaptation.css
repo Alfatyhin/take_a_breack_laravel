@@ -1,0 +1,746 @@
+@media (max-width: 1024px) {
+  .listProduct__itemHead {
+    min-width: 380px;
+  }
+
+  .listProduct__itemBodyText {
+    font-size: 2.2rem;
+  }
+
+  .productCount__countNumber {
+    font-size: 2.9rem;
+  }
+
+  .listProduct__promo {
+    max-width: none;
+  }
+
+  .additional__text {
+    font-size: 3rem;
+  }
+
+  .order__comment {
+    width: 97%;
+  }
+
+  .order__premium {
+    padding: 0 10px;
+    width: 100%;
+  }
+}
+@media (max-width: 768px) {
+  .main {
+    padding: 169px 0 68px;
+  }
+
+  .listProduct {
+    margin-bottom: 80px;
+  }
+
+  .listProduct__title {
+    margin-bottom: 60px;
+  }
+
+  .listProduct__tableWrapper {
+    padding-bottom: 10px;
+  }
+
+  .listProduct__table {
+    min-width: auto;
+  }
+  .listProduct__table thead tr {
+    height: 65px;
+  }
+  .listProduct__table thead tr th:first-child {
+    width: 54%;
+  }
+
+  .listProduct__table tbody tr:first-child td:first-child {
+    padding-top: 15px;
+  }
+
+  .listProduct__table tbody tr:last-child td:first-child {
+    padding-bottom: 15px;
+  }
+
+  .listProduct__itemHead {
+    min-width: auto;
+    padding: 15px 0;
+  }
+
+  .listProduct__itemImg {
+    margin-right: 10px;
+  }
+
+  .listProduct__itemCount {
+    width: 90px;
+  }
+
+  .productCount__countNumber {
+    font-size: 2.5rem;
+  }
+
+  .productCount__countBtn {
+    height: 19px;
+    margin-top: 6px;
+    width: 19px;
+  }
+
+  .listProduct__itemBodyText {
+    font-size: 2rem;
+  }
+
+  .productCount__countMin::before,
+.productCount__countMax::before {
+    left: 4px;
+    top: 8px;
+    width: 9px;
+  }
+  .productCount__countMin::after,
+.productCount__countMax::after {
+    height: 9px;
+    left: 8px;
+    top: 4px;
+  }
+
+  .listProduct__delBtn {
+    height: 19px;
+    width: 19px;
+  }
+  .listProduct__delBtn::before, .listProduct__delBtn::after {
+    left: 4px;
+    top: 8px;
+  }
+
+  .listProduct__table tfoot tr td:nth-child(2) {
+    padding: 15px 0;
+  }
+
+  .listProduct__itemFooterText {
+    font-size: 2rem;
+  }
+
+  .listProduct__promoContainer {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .listProduct__promoWrapper {
+    justify-content: space-between;
+  }
+
+  .listProduct__promoFail {
+    height: 50px;
+    margin-bottom: 0;
+  }
+
+  .listProduct__promoWrapper {
+    flex-wrap: wrap;
+    margin: -10px;
+  }
+
+  .listProduct__promoCode {
+    flex-grow: 1;
+    margin: 10px;
+    max-width: none;
+    min-height: 60px;
+    width: 47%;
+  }
+
+  .listProduct__promoBtn {
+    flex-grow: 1;
+    margin: 10px;
+    max-width: none;
+    width: 47%;
+  }
+
+  .additional {
+    margin-bottom: 80px;
+  }
+
+  .additional__sliderPagWrapper {
+    margin-bottom: 50px;
+  }
+
+  .additional__text {
+    font-size: 2.6rem;
+    margin-bottom: 50px;
+  }
+
+  .additional__btns {
+    align-items: center;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  .additional__btn {
+    margin: 0 0 20px 0;
+  }
+  .additional__btn:last-child {
+    margin-bottom: 0;
+  }
+
+  .order__title {
+    margin-bottom: 50px;
+  }
+
+  .order__table tr:nth-child(2n) td {
+    padding: 20px 0;
+  }
+
+  .order__tableTitle {
+    font-size: 2.5rem;
+    margin: 12px 0;
+  }
+
+  .order__deliveryMethodField {
+    margin-bottom: 10px;
+  }
+  .order__deliveryMethodField label[for=idSelf] {
+    width: 95%;
+  }
+
+  .order__deliveryMethodNote {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  .order__clientInfo .blockTextField.showBlock {
+    padding: 7px 0;
+  }
+  .order__clientInfo .order__clientInfoFields {
+    flex-wrap: wrap;
+    margin: 0 -10px;
+  }
+  .order__clientInfo .order__clientInfoFields .order__clientInfoInputWrapper {
+    margin: 5px 10px;
+    width: 44%;
+  }
+
+  .order__clientInfoField label {
+    margin-top: 13px;
+  }
+
+  .order__clientInfoNote.showBlock {
+    margin-top: 20px;
+  }
+
+  .order__clientInfoPrice .order__price {
+    margin-top: 46px;
+  }
+
+  .order__methodPayField {
+    margin-bottom: 10px;
+  }
+
+  .order__comment {
+    margin: -10px 0;
+  }
+
+  .order__blockTitle {
+    font-size: 2rem;
+  }
+
+  .order__premium {
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+
+  .order__premiumField {
+    margin: 0 0 10px 0;
+  }
+  .order__premiumField:last-child {
+    margin-bottom: 0;
+  }
+
+  .order__totalTitle {
+    font-size: 2.7rem;
+    padding: 12px 0;
+  }
+
+  .order__total {
+    padding: 12px 0;
+  }
+
+  .order__message {
+    height: 60px;
+  }
+  .order__message .warningMessage {
+    font-size: 1.6rem;
+    text-align: right;
+  }
+}
+@media (max-width: 480px) {
+  .main {
+    padding: 145px 0 67px;
+  }
+
+  .listProduct {
+    margin-bottom: 70px;
+  }
+
+  .listProduct__title {
+    margin-bottom: 50px;
+  }
+
+  .listProduct__promoWrapper {
+    margin: 0;
+  }
+
+  .listProduct__table thead tr th {
+    display: none;
+    width: auto;
+    opacity: 0;
+  }
+  .listProduct__table thead tr th:first-child {
+    display: table-cell;
+    border-right: none;
+    width: 100%;
+  }
+  .listProduct__table tfoot tr {
+    display: block;
+    height: 65px;
+    position: relative;
+  }
+  .listProduct__table tfoot tr:last-child {
+    background-color: transparent;
+  }
+  .listProduct__table tfoot tr:last-child td {
+    background-color: #FEEDD6;
+  }
+  .listProduct__table tfoot tr td:first-child {
+    border-right: none;
+  }
+  .listProduct__table tfoot tr td:nth-child(2) .listProduct__itemFooterText {
+    left: 0;
+  }
+  .listProduct__table tfoot tr td:nth-child(3) .listProduct__itemAllTotal, .listProduct__table tfoot tr td:nth-child(3) .listProduct__itemAllTotalPromo {
+    margin-right: 15px;
+  }
+  .listProduct__table tfoot tr td:nth-child(3) .listProduct__itemFooterText {
+    right: 0;
+  }
+  .listProduct__table tfoot tr td:nth-child(3) .listProduct__itemPromoUnit {
+    margin-right: 25px;
+    right: 5px;
+  }
+  .listProduct__table tfoot tr td:nth-child(3) .listProduct__itemPromoPrice {
+    margin-right: 40px;
+    right: 5px;
+  }
+  .listProduct__table tfoot tr td .listProduct__itemBodyText {
+    left: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .listProduct__table tfoot .listProduct__promoDelBtn {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .listProduct__table tbody tr {
+    display: block;
+    position: relative;
+  }
+  .listProduct__table tbody tr:first-child .listProduct__itemDelBtn {
+    top: 30px;
+  }
+  .listProduct__table tbody tr:last-child .listProduct__itemCountWrapper {
+    bottom: 30px;
+  }
+  .listProduct__table tbody tr:last-child .listProduct__itemTotal {
+    bottom: 30px;
+  }
+  .listProduct__table tbody tr:last-child .listProduct__itemPriceUnit {
+    bottom: 30px;
+  }
+  .listProduct__table tbody tr td:nth-child(3) {
+    display: none;
+  }
+  .listProduct__table tbody tr td:first-child {
+    border-right: none;
+  }
+  .listProduct__table .listProduct__itemTotal {
+    bottom: 14px;
+    margin-right: 15px;
+    right: 0;
+    position: absolute;
+  }
+  .listProduct__table .listProduct__itemPriceUnit {
+    bottom: 14px;
+    right: 0;
+    position: absolute;
+  }
+  .listProduct__table .listProduct__itemDelBtn {
+    top: 16px;
+  }
+
+  .listProduct__itemHead {
+    align-items: flex-start;
+  }
+
+  .listProduct__itemContainer {
+    width: 71vw;
+  }
+
+  .listProduct__itemTitle,
+.listProduct__itemText,
+.listProduct__itemSize {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .listProduct__itemImg {
+    height: 90px;
+    width: 90px;
+  }
+
+  .listProduct__itemFooterText {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .listProduct__itemCountWrapper {
+    bottom: 14px;
+    left: 100px;
+    position: absolute;
+  }
+
+  .productCount__countNumber {
+    font-size: 2.2rem;
+  }
+
+  .listProduct__delBtn {
+    right: 0;
+    position: absolute;
+  }
+
+  .listProduct__promoCode {
+    min-height: 50px;
+    margin: 0 0 20px 0;
+    width: 100%;
+  }
+
+  .listProduct__promoBtn {
+    margin: 0;
+    width: 100%;
+  }
+
+  .additional {
+    margin-bottom: 70px;
+  }
+
+  .additional__sliderPagWrapper {
+    margin-bottom: 40px;
+  }
+
+  .additional__text {
+    font-size: 1.8rem;
+    margin-bottom: 40px;
+  }
+
+  .additional__btn {
+    margin-bottom: 15px;
+  }
+
+  .order__tableTitle {
+    font-size: 2rem;
+  }
+
+  .order__title {
+    margin-bottom: 40px;
+  }
+
+  .order__deliveryMethodNote {
+    font-size: 1.6rem;
+  }
+
+  .order__clientInfoField label {
+    font-size: 1.6rem;
+  }
+  .order__clientInfoField label:before {
+    margin-right: 7px;
+  }
+
+  .order__clientInfoNote {
+    font-size: 1.7rem;
+  }
+  .order__clientInfoNote.showBlock {
+    margin-top: 15px;
+  }
+  .order__clientInfoNote .blockText {
+    font-size: 1.7rem;
+  }
+
+  .order__comment {
+    width: 98%;
+  }
+
+  .order__price {
+    font-size: 2.2rem;
+  }
+
+  .order__totalTitle {
+    font-size: 2.1rem;
+  }
+
+  .order__total {
+    font-size: 2.2rem;
+  }
+}
+@media (max-width: 375px) {
+  .main {
+    padding: 110px 0 55px;
+  }
+
+  .btnBack {
+    height: 20px;
+    width: 20px;
+  }
+
+  .listProduct {
+    margin-bottom: 60px;
+  }
+
+  .listProduct__title {
+    margin-bottom: 40px;
+  }
+
+  .listProduct__table thead tr {
+    height: 50px;
+  }
+  .listProduct__table thead tr th {
+    font-size: 1.7rem;
+  }
+  .listProduct__table tfoot .listProduct__itemBodyText {
+    font-size: 1.6rem;
+  }
+  .listProduct__table tbody tr:first-child .listProduct__itemDelBtn {
+    top: 33px;
+  }
+  .listProduct__table tbody .listProduct__itemTotal, .listProduct__table tbody .listProduct__itemPriceUnit {
+    bottom: 14px;
+  }
+  .listProduct__table tbody .listProduct__itemDelBtn {
+    top: 18px;
+  }
+
+  .listProduct__itemImg {
+    height: 82px;
+    width: 82px;
+  }
+
+  .listProduct__itemContainer {
+    width: 67vw;
+  }
+
+  .listProduct__itemBodyText {
+    font-size: 1.7rem;
+  }
+
+  .listProduct__itemFooterText {
+    font-size: 1.7rem;
+  }
+
+  .listProduct__itemCountWrapper {
+    bottom: 14px;
+    left: 93px;
+  }
+
+  .listProduct__itemCount {
+    width: 70px;
+  }
+
+  .productCount__countBtn {
+    height: 15px;
+    margin-top: 4px;
+    width: 15px;
+  }
+
+  .productCount__countNumber {
+    font-size: 1.9rem;
+  }
+
+  .productCount__countMin::before,
+.productCount__countMax::before {
+    left: 3px;
+    top: 6px;
+    width: 7px;
+  }
+  .productCount__countMin::after,
+.productCount__countMax::after {
+    height: 7px;
+    left: 6px;
+    top: 3px;
+  }
+
+  .listProduct__delBtn {
+    height: 15px;
+    width: 15px;
+  }
+  .listProduct__delBtn::before, .listProduct__delBtn::after {
+    left: 3px;
+    top: 6px;
+  }
+
+  .listProduct__promoCode {
+    min-height: 45px;
+  }
+
+  .additional {
+    margin-bottom: 60px;
+  }
+
+  .additional__sliderPagWrapper {
+    margin-bottom: 30px;
+  }
+
+  .additional__text {
+    font-size: 1.6rem;
+    margin-bottom: 30px;
+  }
+
+  .additional__btn {
+    margin-bottom: 15px;
+  }
+
+  .order__table tr:nth-child(2n) td {
+    padding: 10px 0;
+  }
+
+  .order__tableTitle {
+    font-size: 1.6rem;
+  }
+
+  .order__title {
+    margin-bottom: 30px;
+  }
+
+  .order__deliveryMethodNote {
+    font-size: 1.3rem;
+  }
+
+  .order__clientInfoField label {
+    font-size: 1.3rem;
+  }
+
+  .order__clientInfoNote {
+    font-size: 1.4rem;
+  }
+  .order__clientInfoNote .blockText {
+    font-size: 1.4rem;
+  }
+
+  .order__clientInfoPrice .order__price {
+    margin-top: 37px;
+  }
+
+  .order__comment {
+    height: 115px;
+    margin: -5px 0;
+  }
+
+  .blockTextField {
+    font-size: 1.3rem;
+  }
+
+  .order__totalTitle {
+    font-size: 1.6rem;
+    padding: 8px;
+  }
+
+  .order__blockTitle {
+    font-size: 1.7rem;
+  }
+
+  .order__price {
+    font-size: 1.7rem;
+  }
+
+  .order__total {
+    font-size: 1.7rem;
+    padding: 8px 0;
+  }
+
+  .order__message {
+    height: 50px;
+  }
+  .order__message .warningMessage {
+    font-size: 1.4rem;
+  }
+
+  .order__sendForm {
+    max-width: none;
+    width: 100%;
+  }
+}
+@media (max-width: 320px) {
+  .main {
+    padding: 108px 0 50px;
+  }
+
+  .listProduct {
+    margin-bottom: 50px;
+  }
+
+  .listProduct__table tbody tr:first-child .listProduct__itemDelBtn {
+    top: 32px;
+  }
+  .listProduct__table tbody .listProduct__itemDelBtn {
+    top: 17px;
+  }
+
+  .listProduct__itemContainer {
+    width: 62vw;
+  }
+
+  .listProduct__itemCount {
+    width: 65px;
+  }
+
+  .productCount__countBtn {
+    margin-top: 2px;
+  }
+
+  .productCount__countNumber {
+    font-size: 1.8rem;
+  }
+
+  .listProduct__itemBodyText {
+    font-size: 1.6rem;
+  }
+
+  .listProduct__itemFooterText {
+    font-size: 1.6rem;
+  }
+
+  .additional {
+    margin-bottom: 50px;
+  }
+
+  .additional__btn {
+    font-size: 1.2rem;
+  }
+
+  .order__tableTitle {
+    font-size: 1.4rem;
+  }
+
+  .order__deliveryMethodNote {
+    font-size: 1.2rem;
+  }
+
+  .order__blockTitle {
+    font-size: 1.5rem;
+  }
+
+  .order__message .warningMessage {
+    font-size: 1.2rem;
+  }
+}
+
+/*# sourceMappingURL=cart_adaptation.css.map */

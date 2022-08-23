@@ -449,34 +449,7 @@ class EcwidStore extends Controller
             }
         }
         ///////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
-        $all_products = $this->ecwidService
-            ->getAllProducts();
-        $all_products = $all_products['items'];
-        foreach ($all_products as $product) {
-            $id = $product['id'];
-            $category_id = $product['defaultCategoryId'];
 
-            if (isset($stockCategories[$category_id])) {
-                $product['only_in_stock'] = true;
-            } else {
-                $product['only_in_stock'] = false;
-            }
-
-            if ($product['unlimited'] == false) {
-
-                if (isset($product['quantity'])) {
-                    if ($product['quantity'] > 0) {
-                        $products[$id] = $product;
-                    }
-                }
-
-            } else {
-                $products[$id] = $product;
-            }
-
-        }
-        $all_products = $products;
         /////////////////////////////////////////////////
 
         $shop_setting = $request->get('shop');
@@ -574,18 +547,7 @@ class EcwidStore extends Controller
         $dey_offer_id = Storage::disk('local')->get('data/dey_offer_id.txt');
         $dey_offer = $this->ecwidService->getProduct($dey_offer_id);
 
-        $productsAll = $this->ecwidService->getAllProducts();
-        $categories = $this->ecwidService->getCategories();
 
-        foreach ($productsAll['items'] as $product) {
-
-            foreach ($product['categories'] as $category) {
-                if ($category['enabled']) {
-                    $id = $category['id'];
-                    $products[$id][] = $product;
-                }
-            }
-        }
 
         $cityes = Storage::disk('local')->get('js/israel-city.json');
         $cityes = json_decode($cityes, true);
@@ -616,8 +578,6 @@ class EcwidStore extends Controller
 
 
         return view('ecwid.shop_settings', [
-            'categories' => $categories,
-            'products'   => $products,
             'dey_offer'  => $dey_offer,
             'cityes'     => $cityes,
             'delivery'   => $delivery,
@@ -625,7 +585,6 @@ class EcwidStore extends Controller
             'shop_translit' => $shop_translit_json,
             'shop_setting' => $shop_setting,
             'order_calc' => $order_calc,
-            'all_products' => $all_products
         ]);
 
     }

@@ -13,16 +13,16 @@ class NewOrder extends Mailable
     use Queueable, SerializesModels;
 
     public $order;
-    public $shop_setting;
+    public $lang;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(Orders $order, $shop_setting)
+    public function __construct(Orders $order)
     {
         $this->order = $order;
-        $this->shop_setting = $shop_setting;
+        $this->lang = $order->orderData['lang'];
     }
 
     /**
@@ -32,6 +32,6 @@ class NewOrder extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.new_order');
+        return $this->view('mail.new_order_'.$this->lang);
     }
 }

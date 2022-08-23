@@ -4,18 +4,72 @@
 namespace App\Services;
 
 
+use AmoCRM\Models\CustomFieldsValues\ValueCollections\PriceCustomFieldValueCollection;
+use AmoCRM\Models\CustomFieldsValues\ValueModels\PriceCustomFieldValueModel;
+use App\Mail\NewOrder;
 use App\Models\AppErrors;
 use App\Models\Clients;
+use App\Models\Coupons;
 use App\Models\Orders;
+use App\Models\Orders as OrdersModel;
+use App\Models\Product;
+use App\Models\UtmModel;
+use App\Models\WebhookLog;
 use App\Services\EcwidService;
 use Carbon\Carbon;
+use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use phpDocumentor\Reflection\Types\Self_;
 
 class OrderService
 {
+    private $amoCrmService;
+    private $shop_select_name = 'Сайт витрина';
 
     public function __construct()
     {
+        $this->amoCrmService = new AmoCrmServise();
+    }
+
+    private function getShopAmoProducts($orderData)
+    {
+        $select_name = $this->shop_select_name;
+        if (isset($orderData['order_data']['products']) && !empty($orderData['order_data']['products'])) {
+            $products = $orderData['order_data']['products'];
+            foreach ($products as &$item)
+            {
+                if (isset($item['name']['ru'])) {
+                    $name = $item['name']['ru'];
+                } else {
+                    $name = $item['name']['en'];
+                }
+                $data = [
+                    'name' => $name,
+                    'sku' => $item['sku'],
+                    'price' => $item['price']
+                ];
+
+                $product_amo = $this->amoCrmService->getCatalogElementBuSku($item['sku'], $select_name);
+                if (!$product_amo) {
+                    $product_amo = $this->amoCrmService->setCatalogElement($data, $select_name);
+                }
+
+                $customFields = $product_amo->getCustomFieldsValues();
+                $fieldPrice = $customFields->getBy('fieldCode', 'PRICE');
+                $price_amo = $fieldPrice->getValues()->first()->value;
+
+                if ($name != $product_amo->name || $item['price'] != $price_amo) {
+                    $product_amo = $this->amoCrmService->updateCatalogElement($product_amo, $data, $select_name);
+                }
+
+                $item['amo_model'] = $product_amo;
+            }
+        } else {
+            return false;
+        }
+
+        return $products;
     }
 
     public function sendInvoice(Orders $order, $orderEcwid) : array
@@ -61,232 +115,94 @@ class OrderService
         }
     }
 
-    public function getOrderDataToEcwid($data) {
-
-        $ecwidService = new EcwidService();
-
-        $ip = $_SERVER['REMOTE_ADDR'];
-        $date = new Carbon();
-        $order_date = $date->format("Y-m-d H:i:s");
-        $discount = 0;
-        $delivery_date = $data['option']['delivery_date'];
-        $delivery_time = $data['option']['delivery_time'];
-        $time = str_replace('-', ':', $delivery_time);
-        $delivery_date_time = $delivery_date . ' ' . $time . ':00 +0200';
-        if ($data['option']['delivery_method'] == 'delivery') {
-            $address = $data['Cart']['person']['address']['street']
-                . ' ' . $data['Cart']['person']['address']['house_number'];
-            $city = $data['Cart']['person']['city'];
-        } else {
-            $address = '';
-            $city = '';
-        }
 
 
-        $newEcwidOrderData = [
-            'subtotal'           => (float) $data['option']['products_price'],
-            'total'              => (float) $data['option']['total_price'],
-            'email'              => $data['Cart']['person']['email'],
-            'paymentMethod'      => $data['option']['payment_method'],
-            'paymentModule'      => 'server',
-            'paymentStatus'      => 'AWAITING_PAYMENT',
-            'fulfillmentStatus'  => 'AWAITING_PROCESSING',
-            'createDate'         => $order_date . " +0200",
-            'ipAddress'          => $ip,
-            'refererUrl'         => $data['option']['refererUrl'],
-            'pickupTime'         => $delivery_date_time,
-            'orderComments'      => $data['option']['comment'],
-            'shippingPerson'     => [
-                'name'        => $data['Cart']['person']['name'],
-                'phone'       => $data['Cart']['person']['phone'],
-                'street'      => $address,
-                'city'        => $city,
-            ],
-            'billingPerson'      => [
-                'name'        => $data['Cart']['person']['name'],
-                'phone'       => $data['Cart']['person']['phone'],
-                'street'      => $address,
-                'city'        => $city,
-                'countryCode' => 'IL',
-                'postalCode'  => '1029200'
-            ],
-            'extraFields'        => [
-                'delivery_date' => $delivery_date,
-                'delivery_time' => $delivery_time,
-                'gustom_lang'   => $data['option']['lang'],
-                'server_order'  => 'true'
-            ]
 
-        ];
-
-
-        if (!empty($data['option']['promo_code'])) {
-            $code = $data['option']['promo_code'];
-            $discounts = $ecwidService->getDiscountCoupons($code);
-            foreach ($discounts['items'] as $item) {
-                if ($item['code'] == $code && $item['status'] == 'ACTIVE') {
-                    $summ = (int) $data['option']['products_price'];
-                    $newEcwidOrderData['discountCoupon'] = $item;
-                    if ($item['discountType'] == 'PERCENT') {
-                        $discount = $summ * $item['discount'] / 100;
-                        $discount = round($discount, 2);
-                        $newEcwidOrderData['couponDiscount'] = $discount;
-                    }
-                    if ($item['discountType'] == 'ABS') {
-                        $discount = $item['discount'];
-                        $newEcwidOrderData['couponDiscount'] = $discount;
-                    }
-                }
-            }
-
-        }
-
-        if (!empty($data['option']['tips_price'] > 0)) {
-            $tips = ((int) $data['option']['products_price'] + (int) $data['option']['delivery_price'] - $discount) * (int) $data['option']['tips_price'] / 100;
-            $tips = round($tips, 2);
-            $newEcwidOrderData['customSurcharges'][] = [
-                'id' => 'tips',
-                "value" => (int) $data['option']['tips_price'],
-                "type" => "PERCENT",
-                "total" => $tips,
-                "totalWithoutTax" => $tips,
-                "description" => "Tip ({$data['option']['tips_price']}%)",
-                "descriptionTranslated" => "Чаевые ({$data['option']['tips_price']}%)",
-                "taxable" => false,
-                "taxes" => [],
-            ];
-
-            $newEcwidOrderData['extraFields']['tips'] = "{$data['option']['tips_price']}%";
-        }
-
-
-        if ($data['option']['delivery_method'] == 'pickup') {
-            $newEcwidOrderData['shippingOption'] = [
-                'shippingMethodName' => 'Take a way / Самовывоз',
-                'shippingRate' => (int) $data['option']['delivery_price'],
-                "fulfillmentType" => "PICKUP"
-            ];
-        }
-        if ($data['option']['delivery_method'] == 'delivery') {
-            $newEcwidOrderData['shippingOption'] = [
-                'shippingMethodName' => $data['option']['delivery_variant'],
-                'shippingRate' => (int) $data['option']['delivery_price'],
-                "fulfillmentType" => "DELIVERY"
-            ];
-            $newEcwidOrderData['extraFields']['room_number'] = $data['Cart']['person']['address']['room_number'];
-        }
-
-        foreach ($data['Cart']['items'] as $k => $item) {
-            $id = $item['id'];
-            $count = $item['count'];
-            $variable_id = $item['variable_id'];
-            $product = $ecwidService->getProduct($id);
-            $sel_options = false;
-
-            if ($variable_id != 0) {
-                foreach ($product['combinations'] as $combination) {
-                    if ($combination['id'] == $variable_id) {
-                        $sku = $combination['sku'];
-                        foreach ($combination['options'] as $option) {
-                            if ($option['name'] == 'Size') {
-                                $option['type'] = 'TEXT';
-                                $sel_options[] = $option;
-                            }
-                        }
-                        $price = $combination['defaultDisplayedPrice'];
-                    }
-                }
-            } else {
-                $sku = $product['sku'];
-                $price = $product['price'];
-            }
-
-            $item_product = [
-                'price'           => (int) $price,
-                'sku'             => $sku,
-                'quantity'        => (int) $count,
-                'name'            => $product['name']
-            ];
-
-            if ($sel_options) {
-                $item_product['selectedOptions'] = $sel_options;
-            }
-
-            $newEcwidOrderData['items'][$k] = $item_product;
-        }
-
-        return $newEcwidOrderData;
-    }
-
-    public static function getAmoNotes($data)
+    public static function getShopAmoNotes($data)
     {
-        $ordersNotes = 'Детали заказа: #' . $data['Cart']['order_id'];
-//
-//        echo "<pre>";
-//        print_r($data);
+        $ordersNotes = 'Детали заказа: #' . $data['order_id'];
 
-        $items = $data['Cart']['items'];
+        $items = $data['order_data']['products'];
         foreach ($items as $key => $item) {
-            $id = $item['id'];
-            $varieble_id = $item['variable_id'];
-            $product_name = $item['name'];
+            $product_name = $item['name']['ru'];
 
-            if ($varieble_id > 0 ) {
-                $product_name .= ' ' . $item['option']['name'] . ' ' . $item['option']['value'];
+            if (!empty($item['options'])) {
+                foreach ($item['options'] as $option) {
+                    $name = $option['name']['en'];
+                    $value = $option['value']['textTranslated']['en'];
+                    $product_name .= " $name $value";
+                }
             }
+
             $ordersNotes .= "\n" . $item['count'] . "x - {$item['price']} шек " . $product_name . ' ';
         }
 
 
-        $ordersNotes .= "\n ---------------------- \n Итого: {$data['Cart']['total_price']} шек (без скидки)";
+        if (isset($data['order_data']['products_total'])) {
+            $ordersNotes .= "\n ---------------------- \n Итого: {$data['order_data']['products_total']} шек (без скидки)";
+        }
         $ordersNotes .= "\n ---------------------- \n";
         $ordersNotes .= "способ оплаты - {$data['paymentMethod']} \n ---------------------- \n";
 
-        $timeDelivery = $data['option']['delivery_date'] . ' время ' . $data['option']['delivery_time'];
+        if (isset($data['otherPerson'])) {
+            if (empty($data['otherPerson'])) {
+                $data['otherPerson'] = 'неизвестно';
+            }
+            $ordersNotes .= "\n ---------------------- \n
+            Доставка в подарок: для {$data['nameOtherPerson']} tel {$data['phoneOtherPerson']}
+            \n ---------------------- \n";
+        }
+
+        if (isset($data['date']) && isset($data['time'])) {
+
+            $timeDelivery = $data['date'] . ' время ' . $data['time'];
+        } else {
+            $timeDelivery = '';
+        }
 
         $shipping = '';
-        if ($data['option']['delivery_method'] == 'pickup') {
-            $shipping = 'Доставка: ' . "\n"
-                . 'Самовывоз ' . $timeDelivery . "\n ---------------------- \n";
+        if (isset($data['delivery'])) {
+            if ($data['delivery'] == 'pickup') {
+                $shipping = 'Самовывоз ' . $timeDelivery . "\n ---------------------- \n";
 
-        } else {
-            $address = $data['Cart']['person']['address']['city']
-                . ' ' . $data['Cart']['person']['address']['street']
-                . ' ' . $data['Cart']['person']['address']['house_number'];
-
-            if (!empty($data['Cart']['person']['address']['room_number'])) {
-                $address .= ' ' . $data['Cart']['person']['address']['room_number'];
-            }
-            if (!empty($data['option']['delivery_variant'])) {
-                $delivery_variant = $data['option']['delivery_variant'];
             } else {
-                $delivery_variant = 'неизвестно';
+                $address = $data['city']
+                    . ' ' . $data['street']
+                    . ' ' . $data['house'];
+
+                if (!empty($data['flat'])) {
+                    $address .= ' ' . $data['flat'];
+                }
+                if (!empty($data['floor'])) {
+                    $address .= ' эт-' . $data['floor'];
+                }
+
+                $shipping = 'Доставка: '
+                    . "\n Адрес - " . $address
+                    . "\n дата - " . $timeDelivery
+                    . "\n стоимость - " . $data['order_data']['delivery_price'] . 'шек'
+                    . "\n ---------------------- \n";
+
             }
-
-
-            $shipping = 'Доставка: ' . "\n Служба доставки - "
-                . $delivery_variant
-                . "\n Адрес - " . $address
-                . "\n дата - " . $timeDelivery
-                . "\n стоимость - " . $data['option']['delivery_price'] . 'шек'
-                . "\n ---------------------- \n";
 
         }
 
-        if (!empty($data['Cart']['discount']) && $data['Cart']['discount'] != "false") {
-            $code = $data['option']['promo_code'];
-            $discount = "скидка {$data['Cart']['discount']['display']} ({$data['Cart']['discount']['total_discount']}шек) code - $code  \n";
+
+
+        if (!empty($data['order_data']['discount'])) {
+            $code = $data['order_data']['discount']['code'];
+            $discount = "скидка {$data['order_data']['discount']['text']} coupon - $code  \n";
         } else {
             $discount = '';
         }
-        if (!empty($data['option']['tips_price'])) {
-            $tips = "Чаевые {$data['option']['tips_price']}% \n";
+        if (!empty($data['order_data']['tips'])) {
+            $tips = "Чаевые {$data['order_data']['tips']} \n";
         } else {
             $tips = '';
         }
 
-        if(isset($data['option']['comment'])) {
-            $orderComments = $data['option']['comment'];
+        if(isset($data['client_comment'])) {
+            $orderComments = $data['client_comment'];
         } else {
             $orderComments = '';
         }
@@ -302,14 +218,15 @@ class OrderService
 
         $notes = $ordersNotes . $orderComments . $discount . $tips . $shipping;
 
-        $notes = $notes . "\n                    Итого: {$data['option']['total_price']} шек";
+        $notes = $notes . "\n                    Итого: {$data['order_data']['order_total']} шек";
 
         return $notes;
     }
 
 
-    public static function getAmoDataLead($data)
+    public static function getShopAmoDataLead($data)
     {
+
         // формируем массив данных для амо
         $pipelineId = '4651807'; // воронка
         $statusId = '43924885'; // статус
@@ -321,71 +238,99 @@ class OrderService
         }
 
 
-        $items = $data['Cart']['items'];
-//        dd($items);
+        $items = $data['order_data']['products'];
         foreach ($items as $key => $item) {
-            $id = $item['id'];
-            $varieble_id = $item['variable_id'];
-            $product_name = $item['name'];
+            $product_name = $item['name']['ru'];
 
-            if ($varieble_id > 0 ) {
-                $product_name .= ' ' . $item['option']['name'] . ' ' . $item['option']['value'];
+            if (!empty($item['options'])) {
+                foreach ($item['options'] as $option) {
+                    $name = $option['name']['en'];
+                    $value = $option['value']['textTranslated']['en'];
+                    $product_name .= " $name $value";
+                }
             }
+
             $tags[] = $product_name;
         }
-//        dd($data);
 
         if ($data['paymentMethod'] == 'Сash payment') {
             $payment = 'Оплата наличными по факту';
         } elseif ($data['paymentStatus'] == 'PAID') {
             $payment = 'Оплачен';
+        } elseif ($data['paymentMethod'] == 'Bit') {
+            $payment = 'Ожидает оплату по Bit';
+        } else {
         }
 
         // deliwery adress
         $address = '';
-        if ($data['option']['delivery_method'] == 'pickup') {
-            $address = 'Самовывоз';
-        } elseif ($data['option']['delivery_method'] == 'delivery') {
-            $delivery = $data['Cart']['person']['address'];
-            $address = $delivery['city']
-                . ' ' . $delivery['street']
-                . ' ' . $delivery['house_number'];
-        }
-        if (empty($data['option']['comment'])) {
-            $data['option']['comment'] = '';
+        if (isset($data['delivery'])) {
+            if ($data['delivery'] == 'pickup') {
+                $address = 'Самовывоз';
+            } elseif ($data['delivery'] == 'delivery') {
+                $address = $data['city']
+                    . ' ' . $data['street']
+                    . ' ' . $data['house'];
+            }
         }
 
-        $timeDelivery = $data['option']['delivery_time'];
 
-        if ($data['option']['lang'] == 'ru') {
+
+
+        if ($data['lang'] == 'ru') {
             $lang = 'Русский';
-        } elseif ($data['option']['lang'] == 'en') {
+        } elseif ($data['lang'] == 'en') {
             $lang = 'Английский';
         } else {
             $lang = 'Иврит';
         }
         $tags[] = $lang;
+        if (isset($data['time'])) {
+            if ($data['time'] == 'Время доставки') {
+                $data['time'] = '11:00-14:00';
+            }
 
-        $delivery_time = $data['option']['delivery_time'];
+        } else {
+            $data['time'] = '11:00-14:00';
+        }
+
+        $timeDelivery = $data['time'];
+
+        if (!isset($data['date'])) {
+            $date = new Carbon();
+            $data['date'] = $date->format('Y-m-d');
+        }
+
+        $delivery_time = $data['time'];
         $time = str_replace(':00', '', $delivery_time);
         $time = str_replace('-', ':', $time);
-        $delivery_date_time = $data['option']['delivery_date'] . ' ' . $time . ':00 +0000';
+        $delivery_date_time = $data['date'] . ' ' . $time . ':00 +0000';
         $date = Carbon::parse($delivery_date_time);
         $dateOrder = strtotime($date->format('Y-m-d H:i:s'));
 
+
+        if (!isset($data['client_comment'])) {
+            $data['client_comment'] = '';
+        }
+
+        $phone = false;
+        if (isset($data['phone'])) {
+            $phone = self::phoneAmoFormater($data['phone']);
+        }
+
         $dataOrderAmo = [
-            'order name'  => 'ServerTB #' . $data['order_id'],
+            'order name'  => '#' . $data['order_id'],
             'order_id'    => $data['order_id'],
-            'api_mode'    => 'ServerTB',
-            'order price' => $data['option']['total_price'],
+            'api_mode'    => 'ShopTB',
+            'order price' => $data['order_data']['order_total'],
             'pipelineId'  => $pipelineId,
             'statusId'    => $statusId,
-            'notes'       => $data['option']['comment'],
+            'notes'       => $data['client_comment'],
             'lang'        => $lang,
-            'refer_URL'   => $data['option']['refererUrl'],
-            'name'        => $data['Cart']['person']['name'],
-            'email'       => $data['Cart']['person']['email'],
-            'phone'       => $data['Cart']['person']['phone'],
+//            'refer_URL'   => $data['option']['refererUrl'],
+            'name'        => $data['clientName'],
+            'email'       => $data['email'],
+            'phone'       => $phone,
             'address'     => $address,
             'payment'     => $payment,
             'date'        => $dateOrder,
@@ -393,8 +338,34 @@ class OrderService
             'tags'        => $tags
         ];
 
-        if (!empty($delivery['room_number'])) {
-            $dataOrderAmo['room_number'] = $delivery['room_number'];
+        if (!empty($data['flat'])) {
+            $dataOrderAmo['room_number'] = $data['flat'];
+        }
+
+
+        if (!empty($data['floor'])) {
+            $dataOrderAmo['floor'] = $data['floor'];
+        }
+
+        if (isset($data['otherPerson'])) {
+            if (isset($data['nameOtherPerson'])) {
+                $dataOrderAmo['to_presents']['presents_name'] = $data['nameOtherPerson'];
+            }
+            if (isset($data['phoneOtherPerson'])) {
+                $dataOrderAmo['to_presents']['presents_phone'] = $data['phoneOtherPerson'];
+            }
+
+        }
+
+
+        $utmData = UtmModel::where('order_id', $data['order_id'])->first();
+        if ($utmData) {
+            $utmData = $utmData->toArray();
+            unset($utmData['id']);
+            unset($utmData['order_id']);
+            unset($utmData['created_at']);
+            unset($utmData['updated_at']);
+            $dataOrderAmo['utmData'] = $utmData;
         }
 
         return $dataOrderAmo;
@@ -580,45 +551,685 @@ class OrderService
         return $orderData;
     }
 
-    public function sendMailNewOrder($order_id)
+    public static function getShopOrderDataToGinvoice(Orders $order)
     {
-        $ecwidService = new EcwidService();
-        $order = Orders::where('order_id', $order_id)->first();
-        $client_id = $order->clientId;
-        $client = Clients::where('id', $client_id)->first();
-        $client->email = 'virikidorhom@gmail.com';
+        $order_data = $order->toArray();
+        $data = json_decode($order_data['orderData'], true);
+        $lang = 'he';
+        $dateObj = new Carbon();
+        $date = $dateObj->format('Y-m-d');
 
-        $orderData = json_decode($order->orderData, true);
-        $lang = $orderData['option']['lang'];
+        $orderData['email'] = $data['email'];
 
-        $discount = 0;
-        if (!empty($data['option']['promo_code'])) {
-            $code = $data['option']['promo_code'];
-            $discounts = $ecwidService->getDiscountCoupons($code);
-            foreach ($discounts['items'] as $item) {
-                if ($item['code'] == $code) {
-                    $discount = $item;
+        $name = trim($data['clientName']);
+
+        $name = AppServise::TransLit($name);
+        $orderData['name'] = $name;
+        $orderData['lang'] = $data['lang'];
+        if (!empty($data['phone']))
+        $orderData['phone'] = $data['phone'];
+        $orderData['city'] = '';
+        $orderData['address'] = '';
+
+        if (!empty($data['city'])) {
+            $orderData['city'] = AppServise::TransLit($data['city']);
+            $orderData['address'] = AppServise::TransLit($data['street'] . ' ' . $data['house']);
+        }
+
+
+        $orderData['remarks'] = $order_data['order_id'] . " פרטים - מספר הזמנה: " ;
+        $orderData['orderNames'] =  $order_data['order_id'] . " מספר הזמנה: ";
+
+
+        foreach ($data['order_data']['products'] as $item) {
+
+            $product_name = $item['name']['en'];
+
+            if (!empty($item['options'])) {
+                foreach ($item['options'] as $option) {
+                    $name = $option['name']['en'];
+                    $value = $option['value']['textTranslated']['en'];
+                    $product_name .= " $name $value";
+                }
+            }
+
+
+            $items[] =  [
+                "catalogNum"   => $item['sku'],
+                "description"  => $product_name,
+                "quantity"     => $item['count'],
+                "price"        => $item['price'],
+                "currency"     => "ILS",
+                "currencyRate" => 1,
+                "vatType"      => 0
+            ];
+
+            $total = $item['count'] * $item['price'];
+            $orderData['remarks'] .= "\n ILS $total = {$item['count']} x ILS {$item['price']} : $product_name";
+            $orderData['orderNames'] .= "\n $product_name ({$item['count']}) ";
+        }
+
+        if (isset($data['order_data']['discount'])) {
+            $discount = $data['order_data']['discount'];
+            $orderData['remarks'] .= "\n ILS -{$discount['value']} :discount ";
+        }
+
+
+
+        $orderData['items'] = $items;
+
+        if (isset($data['delivery'])) {
+            if ($data['delivery'] == 'pickup') {
+                if (!empty($data['order_data']['delivery_discount'])) {
+                    $discount = $data['order_data']['delivery_discount'];
+                    $orderData['remarks'] .= "\n ILS - {$discount} :pickup discount ";
+                }
+
+            } else {
+                // стоимоссть доставки
+                $orderData['delivery'] = "\n delivery:\n ILS {$data['order_data']['delivery_price']} ............... " ;
+            }
+        }
+
+
+
+        if (isset($data['order_data']['tips']) && $data['order_data']['tips'] > 0) {
+
+            $orderData['tips'] = "\n ___________________\n טיפים: "
+                . $data['premium'] . "%\n"
+                . 'ILS '  . $data['order_data']['tips']
+                ." ...........";
+        }
+
+
+
+        if (isset($data['externalTransactionId'])) {
+            $orderData['payId'] = $data['externalTransactionId'];
+        } else {
+            $orderData['payId'] = '';
+        }
+
+        $orderData['total'] = $data['order_data']['order_total'];
+        $orderData['payDate'] = $date;
+
+
+
+        if ($data['methodPay'] == 1 || $data['methodPay'] == 3) {
+            $orderData['type'] = 3;
+
+            if ($data['methodPay'] == 1) {
+                $orderData['bankName'] = 'iCredit';
+            } elseif ($data['methodPay'] == 3) {
+                $orderData['bankName'] = 'PayPal';
+            }
+
+        } else {
+            $orderData['type'] = 1;
+            $orderData['bankName'] = 'none';
+        }
+
+        return $orderData;
+    }
+
+
+    public static function getShopOrderData($order)
+    {
+
+        $products = $order['order_data']['products'];
+
+        $products_total = 0;
+        foreach ($products as &$item) {
+            $id = $item['id'];
+            $product = Product::where('id', $id)->first();
+            $translate = json_decode($product->translate, true);
+
+            if (isset($item['variant'])) {
+                $var_key = $item['variant'];
+                $variables = json_decode($product->variables, true);
+                $variant = $variables[$var_key];
+                $price = $variant['defaultDisplayedPrice'];
+                $variant_count = $variant['quantity'] - $item['count'];
+
+                if ($variant_count < 0 ) {
+                    $variant_count = 0;
+                }
+
+                $variables[$var_key]['quantity'] = $variant_count;
+
+                $item_total = $price * $item['count'];
+                $product->variables = json_encode($variables);
+                $product->save();
+
+                $item['price'] = $variant['defaultDisplayedPrice'];
+                $item['sku'] = $variant['sku'];
+
+            } else {
+                $item_total = $product->price * $item['count'];
+                $item['price'] = $product->price;
+                $item['sku'] = $product->sku;
+            }
+            $item['name'] = $translate['nameTranslated'];
+
+            if (isset($item['options'])) {
+                $options = json_decode($product->options, true);
+
+                foreach ($item['options'] as &$item_option) {
+                    $option_key = $item_option['key'];
+                    $option_choice_key = $item_option['value'];
+                    $option = $options[$option_key];
+                    $choice = $option['choices'][$option_choice_key];
+                    if ($choice['priceModifier'] != 0) {
+                        if ($choice['priceModifierType'] == 'ABSOLUTE') {
+                            $price =  $product->price + $choice['priceModifier'] / 1;
+                        } else {
+                            $price =  $product->price + ($product->price / 100 * $choice['priceModifier']);
+                        }
+                        $item['price'] = $price;
+                        $item_total = $price * $item['count'];
+                        $item['total'] = $item_total;
+                    }
+                    $item_option['name'] = $option['nameTranslated'];
+                    $item_option['value'] = $option['choices'][$option_choice_key];
+                }
+            }
+
+            $products_total += $item_total;
+        }
+        $data['products'] = $products;
+        $order_total = $products_total;
+
+        // promo code
+        if (!empty($order['order_data']['promo_code'])) {
+            $code = $order['order_data']['promo_code'];
+            $coupon = Coupons::where('code', $code)->first();
+
+            if (!empty($coupon) && $coupon->status == 'active') {
+                $data['discount']['code'] = $code;
+
+                $discount = json_decode($coupon->discount, true);
+                $value = $discount['value'];
+                if ($discount['mod'] == 'PERSENT') {
+                    $disc = $order_total / 100 * $value;
+                    $disc = round($disc,1);
+                    $data['discount']['text'] = "$value% - $disc";
+                    $data['discount']['value'] = $disc;
+                    $order_total -= $disc;
+                } else {
+                    $data['discount']['text'] = "$value";
+                    $data['discount']['value'] = $value;
+                    $order_total -= $value;
                 }
             }
         }
 
-        foreach ($orderData['Cart']['items'] as $k => $item) {
-            $product_id = $item['id'];
-            $product = $ecwidService->getProduct($product_id);
+        // проверяем чаевые
+        if (!empty($order['premium'])) {
+            $tips = $order_total  / 100 * $order['premium'];
+            $tips = round($tips, 1);
+            $data['tips'] = $tips;
+            $order_total += $tips;
+        }
 
-            if (!empty($product['nameTranslated'][$lang])) {
-                $item['name'] = $product['nameTranslated'][$lang];
-            } else {
-                $item['name'] = $product['name'];
+        // delivery
+        if ($order['delivery'] != 'pickup') {
+            $data['delivery_price'] = (int) $order['order_data']['delivery_price'];
+            $order_total += (int) $order['order_data']['delivery_price'];
+        } else {
+            $data['delivery_discount'] = round($order_total / 100 * $order['order_data']['delivery_discount'], 1);
+            $order_total -= $data['delivery_discount'];
+        }
+
+
+        $data['items'] = $products;
+        $data['products_total'] = round($products_total, 1);
+        $data['order_total'] = round($order_total, 1);
+        $order['order_data'] = $data;
+
+        return $order;
+    }
+
+    public static function getShopShortOrderData($order)
+    {
+
+        $products = $order['order_data']['products'];
+
+        dd($order);
+        $products_total = 0;
+
+
+        $data['items'] = $products;
+        $data['products_total'] = round($products_total, 1);
+        $data['order_total'] = round($order_total, 1);
+        $order['order_data'] = $data;
+
+        return $order;
+    }
+
+    public static function getShopIcreditOrderData($order)
+    {
+        $order->orderData = json_decode($order->orderData, true);
+        $orderData = $order->toArray();
+        $data = $orderData['orderData']['order_data'];
+
+        /////////////////////////////////////////////////////
+        // construct order to icredit
+        $total = $orderData['orderPrice'];
+        $order_lang = $orderData['orderData']['lang'];
+        $discount = 0;
+
+        if (isset($data['delivery_discount'])) {
+            $discount += $data['delivery_discount'];
+        }
+        if (isset($data['discount'])) {
+            $discount += $data['discount']['value'];
+        }
+
+        $items = $data['products'];
+        foreach ($items as $item) {
+            $product_name = $item['name']['en'];
+
+            $orderItems[] = [
+                'CatalogNumber' => $item['sku'],
+                'Quantity' => $item['count'],
+                'UnitPrice' => $item['price'],
+                'Description' => $product_name
+            ];
+
+        }
+
+        if (isset($data['delivery_price'])) {
+            $orderItems[] = [
+                'CatalogNumber' => 'delivery',
+                'Quantity' => 1,
+                'UnitPrice' => $data['delivery_price'],
+                'Description' => 'delivery'
+            ];
+        }
+
+        if ($orderData['orderData']['premium'] > 0) {
+
+            $orderItems[] = [
+                'CatalogNumber' => 'tips_' . $orderData['orderData']['premium'],
+                'Quantity' => 1,
+                'UnitPrice' => $data['tips'],
+                'Description' => 'tips ' . $orderData['orderData']['premium'] . '%'
+            ];
+
+        }
+
+
+        if ($order_lang != 'he') {
+            $order_lang = 'en';
+        }
+
+        $order_data['lang']     = $order_lang;
+        $order_data['items']    = $orderItems;
+        $order_data['orderId']  = $order->order_id;
+        $order_data['custom2']  = 'ShopTB';
+        $order_data['email']    = $orderData['orderData']['email'];
+        if (isset($orderData['orderData']["phone"])) {
+            $order_data["phone"]    = $orderData['orderData']["phone"];
+        }
+        $order_data["name"]     = $orderData['orderData']["clientName"];
+        $order_data["discount"] = $discount;
+
+        return $order_data;
+    }
+
+    public function createOrderToAmocrm($order_id)
+    {
+
+        if ($order_id) {
+
+            $paymentMetods = AppServise::getOrderPaymentMethod();
+            $paymentStatuses = AppServise::getOrderPaymentStatus();
+            $lang_values = AppServise::getLangs();
+            $amoCrmService = $this->amoCrmService;
+
+            WebhookLog::addLog('new amo order ', $order_id);
+
+            $orderService = $this;
+            $order = Orders::where('order_id', $order_id)->first();
+            $orderData = json_decode($order['orderData'], true);
+            $orderData['paymentMethod'] = $paymentMetods[$order['paymentMethod']];
+            $orderData['paymentStatus'] = $paymentStatuses[$order['paymentStatus']];
+            $orderData['order_id'] = $order->order_id;
+            $order_lang =  $orderData['lang'];
+            $amo_lang = $lang_values[$order_lang]['name_ru'];
+
+            // проверка клиента
+            $client_id = $order->clientId;
+            $client = Clients::where('id', $client_id)->first();
+            $amo_contact = $this->searchOrCreateAmoContact($client, $amo_lang);
+
+            if ($amo_contact->id != $client->amoId) {
+                $client->amoId = $amo_contact->id;
+                $client->save();
             }
 
-            $orderData['Cart']['items'][$k] = $item;
+            $amoData = $orderService::getShopAmoDataLead($orderData);
+            $amoNotes = $orderService::getShopAmoNotes($orderData);
+            $amoData['text_note'] = $amoNotes;
+
+
+            $open_lead = $amoCrmService->searchOpenLeadByContactId($client->amoId);
+            if ($open_lead) {
+                $lead = $amoCrmService->updateLead($open_lead, $amoData);
+            } else {
+
+                $lead = $amoCrmService->createNewLead($amoData);
+                $amoCrmService->addContactToLead($amo_contact, $lead);
+            }
+
+            if ($lead) {
+                $amoCrmService->addTextNotesToLead($lead->id, $amoNotes);
+
+                $amoProducts = self::getShopAmoProducts($orderData);
+                $amoCrmService->addSopProductsToLead($lead->id, $amoProducts);
+
+                $amo_invoice_id = $amoCrmService->addInvoiceToLead($amo_contact->id, $order->order_id, $lead->id, (float) $order->orderPrice, $order->paymentStatus);
+                $amoData['invoice_id'] = $amo_invoice_id;
+
+
+                $order->amoData = json_encode($amoData);
+                $order->amoId =$lead->id;
+                $order->save();
+            } else {
+
+                AppErrors::addError('error create amo lead', $amoData);
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public function createOrderToAmocrmNew($order_id)
+    {
+
+        if ($order_id) {
+
+
+            $paymentMetods = AppServise::getOrderPaymentMethod();
+            $paymentStatuses = AppServise::getOrderPaymentStatus();
+            $lang_values = AppServise::getLangs();
+            $amoCrmService = $this->amoCrmService;
+
+            WebhookLog::addLog('new amo order ', $order_id);
+
+            $orderService = $this;
+            $order = Orders::where('order_id', $order_id)->first();
+            $orderData = json_decode($order['orderData'], true);
+            $orderData['paymentMethod'] = $paymentMetods[$order['paymentMethod']];
+            $orderData['paymentStatus'] = $paymentStatuses[$order['paymentStatus']];
+            $orderData['order_id'] = $order->order_id;
+            $order_lang =  $orderData['lang'];
+            $amo_lang = $lang_values[$order_lang]['name_ru'];
+
+            // проверка клиента
+            $client_id = $order->clientId;
+            $client = Clients::where('id', $client_id)->first();
+            $amo_contact = $this->searchOrCreateAmoContact($client, $amo_lang);
+
+            if ($amo_contact->id != $client->amoId) {
+                $client->amoId = $amo_contact->id;
+                $client->save();
+            }
+
+            $amoData = $orderService::getShopAmoDataLead($orderData);
+            $amoNotes = $orderService::getShopAmoNotes($orderData);
+            $amoData['text_note'] = $amoNotes;
+
+
+            $open_lead = $amoCrmService->searchOpenLeadByContactId($client->amoId);
+
+            if ($open_lead) {
+                $lead = $amoCrmService->updateLead($open_lead, $amoData);
+
+            } else {
+
+                $lead = $amoCrmService->createNewLead($amoData);
+                $amoCrmService->addContactToLead($amo_contact, $lead);
+            }
+
+            if ($lead) {
+                $amoCrmService->addTextNotesToLead($lead->id, $amoNotes);
+
+                $amoProducts = self::getShopAmoProducts($orderData);
+                $amoCrmService->addSopProductsToLead($lead->id, $amoProducts);
+
+                $amo_invoice_id = $amoCrmService->addInvoiceToLead($amo_contact->id, $order->order_id, $lead->id, (float) $order->orderPrice, $order->paymentStatus);
+                $amoData['invoice_id'] = $amo_invoice_id;
+
+
+                $order->amoData = json_encode($amoData);
+                $order->amoId =$lead->id;
+                $order->save();
+            } else {
+
+                AppErrors::addError('error create amo lead', $amoData);
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public function searchOrCreateAmoContact(Clients $client, $lang)
+    {
+        $amoCrmService = $this->amoCrmService;
+        $phone = self::phoneAmoFormater($client->phone);
+        $contactData = [
+            'name' => $client->name,
+            'phone' => $phone,
+            'email' => $client['email'],
+            'lang' => $lang
+        ];
+
+        $client_data = json_decode($client->data, true);
+        if (isset($client_data['clientBirthDay'])) {
+            $date = AppServise::dateFormater($client_data['clientBirthDay']);
+            if ($date) {
+                $date = new Carbon($date);
+                $date_time = strtotime($date->format('Y-m-d H:i:s'));
+                $contactData['birthday'] = $date_time;
+            }
+        }
+
+        if (!empty($client->amoId)) {
+            $contact = $amoCrmService->getContactBuId($client->amoId);
+        } else {
+            $contact = $this->searchAmoContact($client);
+        }
+
+        if (!$contact) {
+            $contact = $this->searchAmoContact($client);
+        }
+        if (!$contact) {
+            $contact = $amoCrmService->createContact($contactData);
+        } else {
+            $contact = $amoCrmService->syncContactData($contact, $contactData);
+        }
+
+        return $contact;
+    }
+
+
+    public function searchAmoContact(Clients $client)
+    {
+        $amoCrmService = $this->amoCrmService;
+
+        $contact = $amoCrmService->searchContactFilter($client->email);
+
+        if (!$contact) {
+            $contact = $amoCrmService->searchContactFilter($client->phone);
+        }
+        if (!$contact) {
+            $clientData = json_decode($client->data, true);
+            if (isset($clientData['phones'])) {
+                foreach ($clientData['phones'] as $phone) {
+                    if (!$contact) {
+                        $contact = $amoCrmService->searchContactFilter($phone);
+                    }
+                    if (!$contact) {
+                        $contact = $amoCrmService->searchContactFilter(self::phoneAmoFormater($phone));
+                    }
+                }
+            }
+
+        }
+
+        return $contact;
+    }
+
+    public static function phoneAmoFormater($phone)
+    {
+        $phone_or = $phone;
+
+        $phone = str_replace(' ', '', $phone);
+        $phone = str_replace('-', '', $phone);
+
+        if (preg_match('/972/', $phone)) {
+            $phone = str_replace('9720', '972', $phone);
+        }
+
+        if (preg_match('/^(\+[0-9]{3})([0-9]{3})([0-9]{3})([0-9]{4})$/', $phone, $mathes)) {
+
+            $phone = $mathes[1].' '.$mathes[2].'-'.$mathes[3].'-'.$mathes[4];
+        } elseif (preg_match('/^(\+[0-9]{3})([0-9]{2})([0-9]{3})([0-9]{4})$/', $phone, $mathes)) {
+
+            $phone = $mathes[1].' '.$mathes[2].'-'.$mathes[3].'-'.$mathes[4];
+        } else {
+            $phone = $phone_or;
+        }
+
+        return $phone;
+    }
+
+    public static function sendMailNewOrder($order_id, $mode)
+    {
+        $paymentStatuses = [
+            '4' => [
+                'ru' => 'Оплачен',
+                'en' => 'Paid',
+                'he' => 'Paid'
+            ],
+            '3' => [
+                'ru' => 'Ожидает оплаты',
+                'en' => 'Awaiting payment',
+                'he' => 'Awaiting payment'
+            ],
+            '2' => [
+                'ru' => 'Ожидает оплаты',
+                'en' => 'Awaiting payment',
+                'he' => 'Awaiting payment'
+            ]
+        ];
+        $paymentMethods = AppServise::getOrderPaymentMethod();
+
+        $order = OrdersModel::where('order_id', $order_id)->first();
+        $client_id = $order->clientId;
+        $client = Clients::where('id', $client_id)->first();
+
+
+        $orderData = json_decode($order->orderData, true);
+        $lang = $orderData['lang'];
+
+
+        if ($client->email == 'test@mail.ru') {
+            $client->email = 'virikidorhom@gmail.com';
+            $orderData['email'] = $client->email;
+        }
+        if ($mode == 'test_send' || $mode == 'test_view') {
+            $client->email = 'virikidorhom@gmail.com';
+            $orderData['email'] = $client->email;
+        }
+
+        foreach ($orderData['order_data']['products'] as &$item) {
+            $product_image = Product::where('id', $item['id'])->value('image');
+            if (isset($product_image)) {
+                $product_image = json_decode($product_image, true);
+                $product_image = $product_image['image160pxUrl'];
+                $item['img_url'] = $product_image;
+            }
+
+
+            $opt_str = '';
+            if (isset($item['options'])) {
+                foreach ($item['options'] as $option) {
+                    if (!empty($option['name'][$lang])) {
+                        $name = $option['name'][$lang];
+                    } else {
+                        $name = $option['name']['en'];
+                    }
+                    if (!empty($option['value']['textTranslated'][$lang])) {
+                        $value = $option['value']['textTranslated'][$lang];
+                    } else {
+                        $value = $option['value']['textTranslated']['en'];
+                    }
+                    $opt_str = " / $name $value";
+
+                }
+            }
+
+            $item['info'] = $opt_str;
         }
 
         $order->orderData = $orderData;
 
+        $order->paymentMethod = $paymentMethods[$order->paymentMethod];
+        $order->paymentStatus = $paymentStatuses[$order->paymentStatus][$lang];
 
-       Mail::to($client)->send(new NewOrder($order));
+        try {
+            if ($mode == 'test_send' || $mode == 'send') {
+                if ($mode == 'test_send') {
+                    print_r('send mail to ' . $client->email);
+                }
+                Mail::to($client)->send(new NewOrder($order));
+            }
+            return $order;
+        } catch (\Exception $e) {
+            if ($mode == 'test_send' || $mode == 'test_view') {
+                dd($e);
+            }
+            AppErrors::addError("error isend mail to", $order_id);
+            return false;
+        }
+    }
+
+    public function changeProductsCount($order)
+    {
+        $orderData = json_decode($order->orderData, true);
+        $products = $orderData['order_data']['products'];
+        foreach ($products as $item) {
+            $prod_id = $item['id'];
+            $product = Product::find($prod_id);
+            if ($product) {
+                if (empty($item['variant'])) {
+                    if ($product->unlimited == 0) {
+                        $product->count -= $item['count'];
+                        if ( $product->count < 0) {
+                            $product->count = 0;
+                        }
+                        $product->save();
+                    }
+                } else {
+                    $variant_key = $item['variant'];
+                    $product_variables = json_decode($product->variables, true);
+
+                    if ($product_variables[$variant_key]['unlimited'] == 0) {
+                        $product_variables[$variant_key]['quantity'] -= $item['count'];
+                        if ($product_variables[$variant_key]['quantity'] < 0) {
+                            $product_variables[$variant_key]['quantity'] = 0;
+                        }
+                        $product->save();
+                    }
+
+                }
+            }
+
+        }
+
     }
 
 }

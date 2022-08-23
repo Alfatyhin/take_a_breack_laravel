@@ -1,0 +1,48 @@
+@media (max-width: 1024px) {
+  .payOrder__title,
+.payOrder__text {
+    font-size: 3.9rem;
+    margin-bottom: 80px;
+  }
+}
+@media (max-width: 768px) {
+  .payOrder__title,
+.payOrder__text {
+    font-size: 2.9rem;
+    margin-bottom: 50px;
+  }
+
+  .payOrder__btns {
+    max-width: 400px;
+  }
+}
+@media (max-width: 480px) {
+  .payOrder__title,
+.payOrder__text {
+    font-size: 1.9rem;
+    margin-bottom: 40px;
+  }
+
+  .payOrder__btns {
+    max-width: 350px;
+  }
+
+  .payOrder__btn {
+    margin-bottom: 20px;
+  }
+}
+@media (max-width: 375px) {
+  .payOrder__title,
+.payOrder__text {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+  }
+}
+@media (max-width: 320px) {
+  .payOrder__title,
+.payOrder__text {
+    font-size: 1.3rem;
+  }
+}
+
+/*# sourceMappingURL=payOrder_adaptation.css.map */

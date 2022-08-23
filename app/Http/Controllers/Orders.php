@@ -7,6 +7,7 @@ use App\Models\AppErrors;
 use App\Models\Clients;
 use App\Models\IcreditPayments;
 use App\Models\Orders as OrdersModel;
+use App\Models\Product;
 use App\Models\WebhookLog;
 use App\Services\AmoCrmServise;
 use App\Services\AppServise;
@@ -14,6 +15,7 @@ use App\Services\EcwidService;
 use App\Services\GreenInvoiceService;
 use App\Services\IcreditServise;
 use App\Services\OrderService;
+use App\Services\SendpulseService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -73,7 +75,15 @@ class Orders extends Controller
     //////////////////////////////////////////////////////////////////////////////////////////
     public function getWebHookLog(Request $request)
     {
-        $logs = WebhookLog::latest('id')->paginate(10);
+        $logs = WebhookLog::latest('id')->paginate(100);
+
+//        foreach ($logs as $item) {
+//            if ($item->name == 'OrderThanksView ') {
+//                $data = json_decode($item->data, true);
+//                $orderData = $data['orderData'];
+//                dd($orderData);
+//            }
+//        }
 
         return view('app.webhooks', [
                 'webhoocks' => $logs,
@@ -371,176 +381,21 @@ class Orders extends Controller
 
     public function createOrder(Request $request)
     {
-        header('Access-Control-Allow-Origin: *');
+        $post = $request->post('data');
+        $post = json_decode($post, true);
 
-        $ecwidService = new EcwidService();
-        $data_test = $request->post('data-test');
-
-        if ($data_test) {
-            $data = json_decode($data_test, true);
-            echo "<pre>";
-//            dd($data);
-        } else {
-            $data = $request->post('data');
-            WebhookLog::addLog('new create order 2 '.$data['Cart']['order_id'], $data);
-        }
-
-        $total_price = 0;
-        $discount = false;
-        if (!empty($data['option']['promo_code'])) {
-            $code = $data['option']['promo_code'];
-            $discounts = $ecwidService->getDiscountCoupons($code);
-            foreach ($discounts['items'] as $item) {
-                if ($item['code'] == $code && $item['status'] == 'ACTIVE') {
-                    $discount = $item;
-                }
-            }
-        }
+        if (!empty($post)) {
 
 
-        foreach ($data['Cart']['items'] as $k => &$item) {
-            $produdt_id = $item['id'];
-            $varieble_id = $item['variable_id'];
-            $product = $ecwidService->getProduct($produdt_id);
-
-            $item['name'] = $product['name'];
-            $item['nameTranslated'] = $product['nameTranslated'];
-
-            if ($varieble_id > 0 ) {
-                foreach ($product['combinations'] as $variant) {
-                    if ($variant['id'] == $varieble_id) {
-                        foreach ($variant['options'] as $option) {
-                            if ($option['name'] == 'Size') {
-                                $item['option']['name'] = $option['name'];
-                                $item['option']['value'] = $option['value'];
-                                $item['option']['nameTranslated'] = $option['nameTranslated'];
-
-                            }
-                        }
-                        $item['price'] = $variant['defaultDisplayedPrice'];
-                        $item['sku'] = $variant['sku'];
-                    }
-                }
-
-            } else {
-                $item['price'] = $product['defaultDisplayedPrice'];
-                $item['sku'] = $product['sku'];
-            }
-            if (!empty($item['option_value'])) {
-                foreach ($product['options'] as $option) {
-                    foreach ($option['choices'] as $choice) {
-                        if ($choice['text'] == $item['option_value']) {
-                            if ($choice['priceModifierType'] == 'ABSOLUTE') {
-                                $item['price'] = $product['price'] + $choice['priceModifier'];
-                            }
-                        }
-                    }
-                }
-            }
-
-            $total_price += $item['price'] * $item['count'];
-        }
-        $data['option']['products_price'] = $total_price;
-
-        if ($discount) {
-            $data['Cart']['discount'] = [];
-            if ($discount['discountType'] == 'PERCENT') {
-                $data['Cart']['discount']['display'] = $discount['discount'] . '%';
-                $data['Cart']['discount']['total_discount'] = round($total_price * ($discount['discount'] / 100), 2);
-            } else {
-                $data['Cart']['discount']['display'] = $discount['discount'] . '₪';
-                $data['Cart']['discount']['total_discount'] = $discount['discount'];
-            }
-            $total_price -= $data['Cart']['discount']['total_discount'];
-        }
-        $total_price += $data['option']['delivery_price'];
-        if ($data['option']['tips_price'] > 0) {
-            $data['option']['tips_value'] = $total_price * $data['option']['tips_price'] / 100;
-            $total_price += $data['option']['tips_value'];
-        }
-        $data['option']['total_price'] = $total_price;
-
-
-        try {
-            $client = Clients::firstOrNew([
-                'email' => $data['Cart']['person']['email']
-            ]);
-
-            $client->name = $data['Cart']['person']['name'];
-            $client->phone = $data['Cart']['person']['phone'];
-            $client->save();
-
-            ////////////////////////////////////////////////////////////
-            $paymentMethods = AppServise::getOrderPaymentMethod();
-            $paymentMethods = array_flip($paymentMethods);
-            $payment_method = $data['option']['payment_method'];
-            $paymentMethod = $paymentMethods[$payment_method];
-
-            $order = OrdersModel::firstOrNew([
-                'order_id' => $data['Cart']['order_id']
-            ]);
-
-            $order->paymentMethod = $paymentMethod;
-            if ($client->name == 'test') {
-                $order->paymentStatus = 4;
-
-            }
-            $order->clientId = $client->id;
-            $order->orderPrice = (float) $data['option']['total_price'];
-            $order->orderData = json_encode($data);
+            $order = new OrdersModel();
+            $order->order_id = $post['order_id'];
+            $order->clientId = $post['clientId'];
+            $order->paymentMethod = $post['paymentMethod'];
+            $order->paymentStatus = $post['paymentStatus'];
+            $order->orderPrice = $post['orderPrice'];
+            $order->orderData = $post['orderData'];
             $res = $order->save();
-
-            if ($res) {
-                http_response_code(200);
-                if ($paymentMethod == 2) {
-
-                    $order->paymentStatus = 3;
-                    $order->save();
-
-                    if (empty($order->amoId)) {
-                        if (!$data_test) {
-                            AppServise::getQuest("https://takeabreak.website/api/create_amo_order?id=" . $order->order_id);
-                        }
-                    }
-
-                    $ecwidService->productsUpdateCount($data);
-
-                    $res = [
-                        'result'   => true,
-                        'order_id' => $order->order_id,
-                        'res'      => $res
-                    ];
-                    echo json_encode($res);
-                }
-                if ($paymentMethod == 1) {
-
-                        $res_json = [
-                            'result'   => true,
-                            'order_id' => $order->order_id,
-                            'url'      => 'https://takeabreak.website/api/cart_payment_url?id='.$order->order_id
-                        ];
-                        echo json_encode($res_json);
-
-                }
-                if ($paymentMethod == 3) {
-
-                        $res_json = [
-                            'result'   => true,
-                            'order_id' => $order->order_id,
-                            'url'      => 'https://takeabreak.website/api/paypal/button?id='.$order->order_id
-                        ];
-                        echo json_encode($res_json);
-
-                }
-
-            }
-
-        } catch (\Exception $e) {
-            $res = [
-                'result' => false,
-            ];
-            echo json_encode($res);
-            AppErrors::addError("error create order", $data);
+            dd($res);
         }
     }
 
@@ -815,14 +670,6 @@ class Orders extends Controller
 
 
         if ($icreditPay['paymentStatus'] == 'VERIFIED') {
-            $ecwidService = new EcwidService();
-            $result = $ecwidService->paymentStatusUpdate($orderId, 'PAID');
-
-            if ($result['updateCount'] == 1) {
-                echo "<p>status from Ecwid Update</p>";
-            } else {
-                echo "<p>status from Ecwid not Update</p>";
-            }
 
             $order = OrdersModel::where('order_id', $orderId)->first();
 
@@ -839,6 +686,47 @@ class Orders extends Controller
     }
 
 
+    public function orderDelete(\Illuminate\Http\Request $request)
+    {
+        $orderId = $request->get('id');
+
+        if ($orderId) {
+            $order = \App\Models\Orders::where('order_id', $orderId)->first();
+
+
+            if ($order) {
+                $res = $order->delete();
+                if ($res) {
+                    $message[] = "order $orderId delete";
+                    session()->flash('message', $message);
+                }
+            } else {
+                $message[] = "order $orderId not found";
+                session()->flash('message', $message);
+            }
+
+        } else {
+            dd('order not found');
+        }
+
+
+        return redirect()->route('shop_settings_orders');
+    }
+
+
+    public function orderRestore(\Illuminate\Http\Request $request)
+    {
+        $orderId = $request->get('id');
+
+        if ($orderId) {
+          OrdersModel::withTrashed()->where('order_id', $orderId)->restore();
+            $message[] = "order $orderId restore";
+            session()->flash('message', $message);
+        }
+
+
+        return redirect()->route('shop_settings_orders');
+    }
 
     public function createInvoice(Request $request)
     {
@@ -851,21 +739,26 @@ class Orders extends Controller
         echo "<pre>";
 
         if (isset($orderData['Cart'])) {
+
             $orderData['id'] = $order->order_id;
             $invoiceDada = OrderService::getOrderDataToGinvoice($orderData);
+
+        } elseif (isset($orderData['order_data'])) {
+
+            $invoiceDada = OrderService::getShopOrderDataToGinvoice($order);
+
         } else {
-            $ecwidService = new EcwidService();
-            $orderEcwid = $ecwidService->getOrderBuId($orderId);
-            $invoiceDada = EcwidService::getDataToGreenInvoice($orderEcwid);
+
+            dd($order);
+
         }
 
         $date = new Carbon();
         $invoiceDada['payDate'] = $date->format('Y-m-d');
         $invoice = new GreenInvoiceService($order);
 
-
-
         try {
+
             $res = $invoice->newDoc($invoiceDada);
 
             if (isset($res['errorCode'])) {
@@ -924,95 +817,133 @@ class Orders extends Controller
 
     public function sendMail(Request $request)
     {
-//        header('Access-Control-Allow-Origin: *');
-        http_response_code(200);
-
 
         $order_id = $request->get('id');
-        $order = OrdersModel::where('order_id', $order_id)->first();
-        $client_id = $order->clientId;
-        $client = Clients::where('id', $client_id)->first();
+        $order = OrderService::sendMailNewOrder($order_id, 'send');
 
-
-        $orderData = json_decode($order->orderData, true);
-        $orderData['mailler']['send_mail'] = 0;
-        $order->orderData = json_encode($orderData);
-        $order->save();
-        $order->orderData = $orderData;
-
-        $shop_setting = Storage::disk('local')->get('js/shop_setting.json');
-        $shop_setting = json_decode($shop_setting, true);
-
-        if ($client->email == 'test@mail.ru') {
-            $client->email = 'virikidorhom@gmail.com';
-
+        if ($order) {
+            $orderData = $order->orderData;
+            $lang = $orderData['lang'];
+        } else {
+            dd($order);
         }
 
-        try {
-            Mail::to($client)->send(new NewOrder($order, $shop_setting));
-            $orderData['mailler']['send_mail'] = 1;
-            $order->orderData = json_encode($orderData);
-            $order->save();
-            $order->orderData = $orderData;
-        } catch (\Exception $e) {
-            AppErrors::addError("error isend mail to", $order_id);
-        }
-
-
-        return view('mail.new_order', [
-            'order' => $order,
-            'shop_setting' => $shop_setting
+        return view('mail.new_order_'.$lang, [
+            'order' => $order
         ]);
 
     }
 
     public function testMail(Request $request)
     {
-
-        $order_id = $request->get('id');
-        $order = OrdersModel::where('order_id', $order_id)->first();
-        $client_id = $order->clientId;
-        $client = Clients::where('id', $client_id)->first();
-        if ($client->email == 'test@mail.ru') {
-            $client->email = 'virikidorhom@gmail.com';
+        $send = $request->get('send');
+        if ($send) {
+            $send = 'test_send';
+        } else {
+            $send = 'test_view';
         }
+        $order_id = $request->get('id');
+        $order = OrderService::sendMailNewOrder($order_id, $send); // test_view or test_send
+
+        $orderData = $order->orderData;
+        $lang = $orderData['lang'];
+
+        return view('mail.new_order_'.$lang, [
+            'order' => $order,
+        ]);
+
+    }
 
 
-        $orderData = json_decode($order->orderData, true);
-        $order->orderData = $orderData;
+    public function testSendpulse(Request $request, OrdersModel $order)
+    {
+        $order_data = json_decode($order->orderData, true);
 
+        $order_data['email'] = 'virikidorhom@gmail.com';
+        $order_data['phone'] = '+972555555555';
 
-        $shop_setting = Storage::disk('local')->get('js/shop_setting.json');
-        $shop_setting = json_decode($shop_setting, true);
+        $lang = $order_data['lang'];
 
-//        dd($orderData);
-
-//        echo '<pre>';
-//        print_r($orderData);
-//        dd($order->toArray());
-//        echo '</pre>';
-
-        if ($client->email == 'virikidorhom@gmail.com') {
-
-            try {
-                Mail::to($client)->send(new NewOrder($order, $shop_setting));
-                print_r('send mail test');
-            } catch (\Exception $e) {
-                AppErrors::addError("error isend mail to", $order_id);
+        $products_data = $order_data['order_data']['products'];
+        $total_price = 0;
+        foreach ($products_data as $item) {
+            if (!empty($item['name'][$lang])) {
+                $name = $item['name'][$lang];
+            } else {
+                $name = $item['name']['en'];
             }
 
-        }
-        $send = $request->get('send');
-        if ($send == 1) {
-            Mail::to($client)->send(new NewOrder($order, $shop_setting));
-            print_r('send mail ' . $client->email);
+            $text = '';
+            if (isset($item['options'])) {
+                foreach ($item['options'] as $option) {
+                    if (!empty($option['name'][$lang])) {
+                        $opt_name = $option['name'][$lang];
+                    } else {
+                        $opt_name = $option['name']['en'];
+                    }
+                    if (!empty($option['value']['textTranslated'][$lang])) {
+                        $opt_value = $option['value']['textTranslated'][$lang];
+                    } else {
+                        $opt_value = $option['value']['textTranslated']['en'];
+                    }
+
+                    $text .= " $opt_name - $opt_value";
+                }
+            }
+
+            $product = Product::find($item['id']);
+
+            $image_data = json_decode($product->image, true);
+            $image = "https://takeabreak.co.il" . $image_data['image400pxUrl'];
+
+
+            $products[] = [
+                'id' => $item['id'],
+                'name' => $name,
+                'text' => $text,
+                'img' => $image,
+                'price' => $item['price'],
+                'quantity' => $item['count'],
+                'amount' => $item['count'] * $item['price'],
+            ];
+            $total_price += $item['count'] * $item['price'];
         }
 
 
-        return view('mail.new_order', [
-            'order' => $order,
-            'shop_setting' => $shop_setting
-        ]);
+        $translite = [
+            'header_title' => [
+                'ru' => 'магазин авторских сладостей',
+                'en' => "shop of author's sweets",
+                'he' => "shop of author's sweets"
+            ],
+            'com_back' => [
+                'ru' => 'Возвращайтесь к нам снова!',
+                'en' => "Come back to us again!",
+                'he' => "Come back to us again!"
+            ],
+            'goo_shop' => [
+                'ru' => 'перейти в магазин',
+                'en' => "go to the store",
+                'he' => "go to the store"
+            ]
+        ];
+
+        $sendpulseData = [
+            'order_id' => $order['order_id'],
+            'header_title' => $translite['header_title'][$lang],
+            'com_back' => $translite['com_back'][$lang],
+            'goo_shop' => $translite['goo_shop'][$lang],
+            'lang' => $lang,
+            'email' => $order_data['email'],
+            'phone' => $order_data['phone'],
+            'products' => $products,
+            'total_amount' => $total_price,
+        ];
+
+        $res = SendpulseService::sendLostCart($sendpulseData);
+        dd($res);
+
+        dd($order->toArray(), $order_data, $sendpulseData);
 
     }
 

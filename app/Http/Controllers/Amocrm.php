@@ -15,6 +15,7 @@ use App\Services\OrderService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Mockery\Exception;
 
 class Amocrm extends Controller
 {
@@ -36,11 +37,18 @@ class Amocrm extends Controller
             $amoCrmService = new AmoCrmServise();
             $messages[] = $amoCrmService->getButton();
         }
+//        $messages[] = $amoCrmService->getButton();
 
-        return view('message', [
+        return view('amocrm.index', [
             'title'    => $title,
             'messages' => $messages
         ]);
+    }
+
+    public function amoMirror()
+    {
+
+        return view('amocrm.mirror');
     }
 
     // обработка ответа амо
@@ -95,7 +103,6 @@ class Amocrm extends Controller
         if (!empty($post['leads'])) {
             WebhookLog::addLog('amo web hook ', $post);
 
-            $ecwidService = new EcwidService();
             foreach ($post['leads'] as $event => $items) {
 
                 if ($event == 'status') { // изменение статуса
@@ -133,68 +140,41 @@ class Amocrm extends Controller
 
                                 if ($test) {
                                     print_r($status_id);
-                                    dd($old_status_id);
+//                                    dd($old_status_id);
                                 }
                                 $paymentStatusArray = array_flip(AppServise::getOrderPaymentStatus());
-                                var_dump('update status');
-                                if (empty($api_mode) || $api_mode == 'Ecwid') {
-                                    $res = $ecwidService->orderInAmoStatusUpdate($orer_id, $status_id, $statusPaidAmo);
 
-                                    if (!empty($res['updateCount'])) {
-                                        $ecwidPaymentStatus = $res['data']['paymentStatus'];
-                                        $order->ecwidStatus = $res['data']['fulfillmentStatus'];
-                                        $order->paymentStatus = $paymentStatusArray[$ecwidPaymentStatus];
-                                    }else {
-                                        AppErrors::addError('error update ststus to ecwid id ' . $orer_id, $res);
-                                    }
-
-                                } else {
-                                    switch ($statusPaidAmo) {
-                                        case 436781:
-                                            $paymentStatus = 'PAID';
-                                            break;
-                                        case 436783:
-                                            $paymentStatus = 'AWAITING_PAYMENT';
-                                            break;
-                                        default:
-                                            $paymentStatus = 'INCOMPLETE';
-                                            break;
-                                    }
-
-                                    $order->amoStatus = $status_id;
-                                    $order->paymentStatus = $paymentStatusArray[$paymentStatus];
-                                    $order->amoId = $item['id'];
-                                    $order->save();
-
+                                switch ($statusPaidAmo) {
+                                    case 436781:
+                                        $paymentStatus = 'PAID';
+                                        break;
+                                    case 436783:
+                                        $paymentStatus = 'AWAITING_PAYMENT';
+                                        break;
+                                    default:
+                                        $paymentStatus = 'INCOMPLETE';
+                                        break;
                                 }
+//                                dd($paymentStatus);
+
+                                $order->amoStatus = $status_id;
+                                $order->paymentStatus = $paymentStatusArray[$paymentStatus];
+                                $order->amoId = $item['id'];
+                                $order->save();
 
 
                                 // отправка инвойса
-                                var_dump($statusPaidAmo);
                                 if ($statusPaidAmo == '436781' && $order->invoiceStatus == 0) {
 
-                                    var_dump('create invoice');
                                     // статус оплачено
                                     $paymentDate = new Carbon();
                                     $paymentDateString = $paymentDate->format('Y-m-d H:i:s');
                                     $order->paymentDate = $paymentDateString;
                                     $order->save();
 
-                                    if (empty($api_mode) || $api_mode == 'Ecwid') {
-                                        var_dump('Ecvad data invoice');
-                                        $orderEcwid = $ecwidService->getOrderBuId($orer_id);
-                                        try {
-                                            $invoiceDada = EcwidService::getDataToGreenInvoice($orderEcwid);
-                                        } catch (\Exception $e) {
-                                            AppErrors::addError("error invoice Data to " . $order->order_id, $orderEcwid);
-                                        }
-                                    } elseif (empty($api_mode) || $api_mode == 'ServerTB') {
-                                        var_dump('Server data invoice');
-                                        $orderData = json_decode($order->orderData, true);
-                                        $orderData['id'] = $order->order_id;
-                                        $invoiceDada = OrderService::getOrderDataToGinvoice($orderData);
-                                    }
-
+                                    $orderData = json_decode($order->orderData, true);
+                                    $orderData['id'] = $order->order_id;
+                                    $invoiceDada = OrderService::getShopOrderDataToGinvoice($order);
 
                                     $invoice = new GreenInvoiceService($order);
 
@@ -307,60 +287,26 @@ class Amocrm extends Controller
     public function createOrderToApi(Request $request)
     {
 
-        $paymentMetods = AppServise::getOrderPaymentMethod();
-        $paymentStatuses = AppServise::getOrderPaymentStatus();
+        $orderService = new OrderService();
+        $order_id = $request->get('id');
+        try {
+            $orderService->createOrderToAmocrm($order_id);
+        } catch (Exception $e) {
 
-        $id = $request->get('id');
-        WebhookLog::addLog('new amo order ', $id);
+        }
+        $res = ['res' => true];
+        echo json_encode($res);
+    }
+
+    public function createOrderToApiBuOrderData(Request $request)
+    {
 
         $orderService = new OrderService();
-        $order = Orders::where('order_id', $id)->first();
-//        print_r($order->toArray());
-        $orderData = json_decode($order['orderData'], true);
-        $orderData['paymentMethod'] = $paymentMetods[$order['paymentMethod']];
-        $orderData['paymentStatus'] = $paymentStatuses[$order['paymentStatus']];
-        $orderData['order_id'] = $order->order_id;
+        $order_data = $request->post('data');
+        try {
+            $orderService->createOrderToAmocrmNew($order_data);
+        } catch (Exception $e) {
 
-
-        if ($id) {
-            $client = Clients::where('email', $orderData['Cart']['person']['email'])->first();
-
-            if (!empty($client->amoId)) {
-                $amoData['clientAmoId'] = $client->amoId;
-            }
-
-            // пролучаем массив для амо
-            $amoData = $orderService::getAmoDataLead($orderData);
-            $amoCrmServise = new AmoCrmServise();
-            $amoNotes = $orderService::getAmoNotes($orderData);
-
-            $amoData['text_note'] = $amoNotes;
-            $res = $amoCrmServise->NewOrder($amoData);
-
-            if (!empty($res['amo_id'])) {
-
-                $order = Orders::firstOrCreate([
-                    'order_id' => $order->order_id
-                ]);
-                $order->amoId = $res['amo_id'];
-                $order->save();
-
-                $client->amoId = $res['client_id'];
-                $client->save();
-
-
-                $amoCrmServise->addTextNotesToLead($order->amoId, $amoNotes);
-
-//                $amoProductsList = EcwidService::amoProductsList($orderEcwid['items']);
-//                $amoCrmServise->addProductsToLead($amoProductsList, $order->amoId);
-
-                $order->amoData = json_encode($res);
-                $order->save();
-
-            } else {
-                var_dump('error create amo lead', $res);
-                AppErrors::addError('error create amo lead', $res);
-            }
         }
         $res = ['res' => true];
         echo json_encode($res);
@@ -448,4 +394,18 @@ class Amocrm extends Controller
         }
 
     }
+
+    public function pipelineTest(Request $request)
+    {
+        $test = '{"id": 960, "clientId": 331, "order_id": "S-ZQOJ", "orderData": "{\"_token\":\"UTN4tM9EyHipP189iVS6qBkysGzd3MfB2LfXWAlf\",\"lang\":\"en\",\"delivery\":\"delivery\",\"clientName\":\"\\u05de\\u05d9\\u05ea\\u05e8 \\u05de\\u05e6\\u05e0\\u05e8\",\"city_id\":\"49\",\"city\":\"\\u05e4\\u05ea\\u05d7 \\u05ea\\u05e7\\u05d5\\u05d5\\u05d4\",\"street\":\"\\u05d0\\u05d7\\u05d3 \\u05d4\\u05e2\\u05dd\",\"house\":\"22\",\"flat\":null,\"floor\":\"6\",\"phone\":\"+972 052-687-2887\",\"nameOtherPerson\":null,\"phoneOtherPerson\":null,\"email\":\"meitarmatzner16@gmail.com\",\"clientBirthDay\":null,\"date\":\"2022-6-28\",\"time\":\"11:00-14:00\",\"methodPay\":\"4\",\"client_comment\":null,\"premium\":\"0\",\"order_data\":{\"products\":{\"1-0-71\":{\"id\":71,\"stock_count\":\"0\",\"variant\":\"0\",\"options\":[{\"key\":\"0\",\"value\":{\"text\":\"S\",\"priceModifier\":\"0\",\"textTranslated\":{\"en\":\"Mini\",\"he\":null,\"ru\":\"\\u041c\\u0438\\u043d\\u0438\"},\"priceModifierType\":\"ABSOLUTE\"},\"name\":{\"en\":\"Size\",\"he\":\"\\u05d2\\u05d5\\u05d3\\u05dc\",\"ru\":\"\\u0420\\u0430\\u0437\\u043c\\u0435\\u0440\"}}],\"count\":\"1\",\"price\":\"199\",\"sku\":\"00043S1\",\"name\":{\"en\":\"Tiramisu\",\"he\":\"\\u05e2\\u05d5\\u05d2\\u05ea \\u05e7\\u05e4\\u05d4 - \\u05d2\\u05dc\\u05d9\\u05d3\\u05d4 (\\u05d8\\u05d9\\u05e8\\u05de\\u05d9\\u05e1\\u05d5)\",\"ru\":\"\\u0422\\u0438\\u0440\\u0430\\u043c\\u0438\\u0441\\u0443\"}}},\"delivery_price\":30,\"items\":{\"1-0-71\":{\"id\":71,\"stock_count\":\"0\",\"variant\":\"0\",\"options\":[{\"key\":\"0\",\"value\":{\"text\":\"S\",\"priceModifier\":\"0\",\"textTranslated\":{\"en\":\"Mini\",\"he\":null,\"ru\":\"\\u041c\\u0438\\u043d\\u0438\"},\"priceModifierType\":\"ABSOLUTE\"},\"name\":{\"en\":\"Size\",\"he\":\"\\u05d2\\u05d5\\u05d3\\u05dc\",\"ru\":\"\\u0420\\u0430\\u0437\\u043c\\u0435\\u0440\"}}],\"count\":\"1\",\"price\":\"199\",\"sku\":\"00043S1\",\"name\":{\"en\":\"Tiramisu\",\"he\":\"\\u05e2\\u05d5\\u05d2\\u05ea \\u05e7\\u05e4\\u05d4 - \\u05d2\\u05dc\\u05d9\\u05d3\\u05d4 (\\u05d8\\u05d9\\u05e8\\u05de\\u05d9\\u05e1\\u05d5)\",\"ru\":\"\\u0422\\u0438\\u0440\\u0430\\u043c\\u0438\\u0441\\u0443\"}}},\"products_total\":199,\"order_total\":229}}", "created_at": "2022-06-26T13:04:03.000000Z", "orderPrice": 229, "updated_at": "2022-06-26T13:04:03.000000Z", "paymentMethod": "4", "paymentStatus": 3}';
+
+        $test = json_decode($test, true);
+
+        dd(json_decode($test['orderData'], true));
+
+        $AmoCrmService = $this->amoService;
+        $test = $AmoCrmService->getPipelines();
+        dd($test);
+    }
+
 }

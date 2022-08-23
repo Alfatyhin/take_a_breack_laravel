@@ -178,6 +178,8 @@ return [
         App\Providers\EcwidProvider::class,
         App\Providers\TranslitServiceProvider::class,
 
+        Intervention\Image\ImageServiceProvider::class
+
     ],
 
     /*
@@ -232,6 +234,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'TranslitTextService' => App\Facades\TranslitTextService::class,
+        'Image' => Intervention\Image\Facades\Image::class
 
     ),
 
