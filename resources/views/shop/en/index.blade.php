@@ -52,7 +52,7 @@
                 <h2 class="about__title blockTitle">Take a Break –<br>this is us: Zhenya and Liza</h2>
                 <div class="about__text blockText"><p>We always wanted something sweet and that it was not harmful to health. At one point, we decided to try to give up sweets from the store and make sweets and cakes at home to eliminate gluten, sugar, lactose, harmful dyes and preservatives...</p><p>It has grown into a whole studio of healthy desserts! All our friends, and later customers, were delighted with the taste of our sweets. They say: "This is much tastier than any store-bought cake with sugar." The secret ingredient is love!</p><p>Follow us on Instagram and be the first to know about new products and discounts!</p></div><a class="about__btn blockBtn blockBtn--bgc" href="https://www.instagram.com/takeabreak_desserts/" target="_blank">go to our instagram</a>
             </div>
-            <div class="about__images"><img src="./img/index/about/1.webp" alt="image"><img src="./img/index/about/2.webp" alt="image"><img src="./img/index/about/3.webp" alt="image">
+            <div class="about__images"><img data-src="./img/index/about/1.webp" alt="image"><img data-src="./img/index/about/2.webp" alt="image"><img data-src="./img/index/about/3.webp" alt="image">
             </div>
         </div>
     </div>
@@ -109,31 +109,31 @@
             <h2 class="feedback__title blockTitle">What they say about our desserts</h2>
             <div class="feedback__slider">
                 <div class="feedback__sliderItem">
-                    <div class="feedback__sliderItemContainer"><img src="./img/index/feedback/1.webp" alt="image"></div>
+                    <div class="feedback__sliderItemContainer"><img data-src="./img/index/feedback/1.webp" alt="image"></div>
                 </div>
                 <div class="feedback__sliderItem">
-                    <div class="feedback__sliderItemContainer"><img src="./img/index/feedback/2.webp" alt="image"></div>
+                    <div class="feedback__sliderItemContainer"><img data-src="./img/index/feedback/2.webp" alt="image"></div>
                 </div>
                 <div class="feedback__sliderItem">
-                    <div class="feedback__sliderItemContainer"><img src="./img/index/feedback/3.webp" alt="image"></div>
+                    <div class="feedback__sliderItemContainer"><img data-src="./img/index/feedback/3.webp" alt="image"></div>
                 </div>
                 <div class="feedback__sliderItem">
-                    <div class="feedback__sliderItemContainer"><img src="./img/index/feedback/1.webp" alt="image"></div>
+                    <div class="feedback__sliderItemContainer"><img data-src="./img/index/feedback/1.webp" alt="image"></div>
                 </div>
                 <div class="feedback__sliderItem">
-                    <div class="feedback__sliderItemContainer"><img src="./img/index/feedback/2.webp" alt="image"></div>
+                    <div class="feedback__sliderItemContainer"><img data-src="./img/index/feedback/2.webp" alt="image"></div>
                 </div>
                 <div class="feedback__sliderItem">
-                    <div class="feedback__sliderItemContainer"><img src="./img/index/feedback/3.webp" alt="image"></div>
+                    <div class="feedback__sliderItemContainer"><img data-src="./img/index/feedback/3.webp" alt="image"></div>
                 </div>
                 <div class="feedback__sliderItem">
-                    <div class="feedback__sliderItemContainer"><img src="./img/index/feedback/1.webp" alt="image"></div>
+                    <div class="feedback__sliderItemContainer"><img data-src="./img/index/feedback/1.webp" alt="image"></div>
                 </div>
                 <div class="feedback__sliderItem">
-                    <div class="feedback__sliderItemContainer"><img src="./img/index/feedback/2.webp" alt="image"></div>
+                    <div class="feedback__sliderItemContainer"><img data-src="./img/index/feedback/2.webp" alt="image"></div>
                 </div>
                 <div class="feedback__sliderItem">
-                    <div class="feedback__sliderItemContainer"><img src="./img/index/feedback/3.webp" alt="image"></div>
+                    <div class="feedback__sliderItemContainer"><img data-src="./img/index/feedback/3.webp" alt="image"></div>
                 </div>
             </div>
             <div class="feedback__sliderPagWrapper">
@@ -148,8 +148,35 @@
             <h2 class="info__title blockTitle">Delivery and payment</h2>
             <div class="info__content">
                 <div class="info__map">
-                    <iframe style="width: 100%; height: 100%;" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3382.780969817665!2d34.786971815315084!3d32.02104628120692!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1502b4b0e0292707%3A0xb7476744837f4cd8!2zRW1hbnVlbCBSaW5nZWxibHVtIDMsIEhvbG9uLCDQmNC30YDQsNC40LvRjA!5e0!3m2!1sru!2spl!4v1628862790907!5m2!1sru!2spl">
-                    </iframe>
+                    <!--<iframe loading="lazy" style="width: 100%; height: 100%;" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3382.780969817665!2d34.786971815315084!3d32.02104628120692!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1502b4b0e0292707%3A0xb7476744837f4cd8!2zRW1hbnVlbCBSaW5nZWxibHVtIDMsIEhvbG9uLCDQmNC30YDQsNC40LvRjA!5e0!3m2!1sru!2spl!4v1628862790907!5m2!1sru!2spl">
+                    </iframe>-->
+					
+	<iframe frameborder="0"
+	class="lazyload"
+    loading="lazy"
+    allowfullscreen=""
+    width="100%"
+    height="100%"
+    data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3382.780969817665!2d34.786971815315084!3d32.02104628120692!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1502b4b0e0292707%3A0xb7476744837f4cd8!2zRW1hbnVlbCBSaW5nZWxibHVtIDMsIEhvbG9uLCDQmNC30YDQsNC40LvRjA!5e0!3m2!1sru!2spl!4v1628862790907!5m2!1sru!2spl">
+</iframe>
+
+<script>
+  if ('loading' in HTMLIFrameElement.prototype) {
+    const iframes = document.querySelectorAll('iframe[loading="lazy"]');
+
+    iframes.forEach(iframe => {
+      iframe.src = iframe.dataset.src;
+    });
+
+  } else {
+    // Динамический импорт библиотеки LazySizes
+    const script = document.createElement('script');
+    script.src =
+      'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.2/lazysizes.min.js';
+    document.body.appendChild(script);
+  }
+
+</script>
                 </div>
                 <div class="info__items">
                     <div class="info__item">
@@ -197,7 +224,7 @@
                         </div>
                     </div>
                     <div class="contact__comIcons"><a class="contact__comIcon hoverIcon" href="https://www.instagram.com/takeabreak_desserts/" target="_blank">
-                            <img src="/img/common/inst.png" alt="image"></a><a class="contact__comIcon hoverIcon" href="https://www.facebook.com/TABdesserts/" target="_blank"><img src="./img/common/facebook.png" alt="image"></a>
+                            <img data-src="/img/common/inst.png" alt="image"></a><a class="contact__comIcon hoverIcon" href="https://www.facebook.com/TABdesserts/" target="_blank"><img data-src="./img/common/facebook.png" alt="image"></a>
                     </div>
                 </div>
                 <form class="contact__form" action="{{ route('send_contact_form') }}" method="POST">
@@ -221,7 +248,7 @@
                     <p>If you plan to regularly place orders with us for more than 1500₪ and want to save your time and money at the same time, pay attention to our offer.</p>
                 </div><a class="profitably__btn blockBtn blockBtn--transparent" href="{{ route('wholesale_'.$lang) }}">learn more</a>
             </div>
-            <div class="profitably__img"><img src="./img/common/wholesale.webp" alt="image"></div>
+            <div class="profitably__img"><img data-src="./img/common/wholesale.webp" alt="image"></div>
         </div>
     </div>
 </section>

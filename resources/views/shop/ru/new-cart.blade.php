@@ -283,6 +283,9 @@
                     <button type="submit">ОФОРМИТЬ ЗАКАЗ</button>
                 </div>
             </form>
+            <div class="order__listAreasPrices" hidden>
+                @include('shop.layouts.cart.city_price')
+            </div>
         </div>
     </div>
 </div>

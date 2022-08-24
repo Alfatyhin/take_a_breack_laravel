@@ -34,4 +34,4 @@
 </script>
 <!-- End Meta Pixel Code -->
 
-<script charset="UTF-8" src="//web.webpushs.com/js/push/edea8c2e457ba1e510660f4523a721bf_1.js" async></script>
+<script charset="UTF-8" src="//web.webpushs.com/js/push/edea8c2e457ba1e510660f4523a721bf_1.js" async ></script>

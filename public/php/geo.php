@@ -1,5 +1,7 @@
 <?php
+
 include("functions.php");
+
 
 if (!empty($_GET['getgeo'])) {
     $ip = getIPAddress();
@@ -10,12 +12,14 @@ if (!empty($_GET['getgeo'])) {
     }
 
     $urlApi = "http://www.geoplugin.net/json.gp?ip=$ip";
+
     $info = getQuest($urlApi);
 
     $data['ip'] = $ip;
     $data['country'] = $info['geoplugin_countryCode'];
     $data['custom4'] = $info['geoplugin_countryName'];
 
-    echo json_encode($data);
 
+    echo json_encode($data);
 }
+

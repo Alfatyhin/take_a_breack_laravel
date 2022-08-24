@@ -16,8 +16,6 @@
     <link rel="stylesheet" href="{{ asset('css/slick.css') }}?{{ $v }}">
     <link rel="stylesheet" href="{{ asset('css/slick-theme.css') }}?{{ $v }}">
 
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
     @if($noindex)
         <meta name="robots" content="noindex, follow" />
     @endif
@@ -39,6 +37,7 @@
 
     <main class="main lang_{{ $lang }}">
         <div class="preloader"></div>
+
         @section('content')
 
         @show

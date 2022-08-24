@@ -67,11 +67,6 @@ class ShopController extends Controller
         $products = Product::where('enabled', 1)->whereIn('id', $category_products)->get()->sortBy('index_num')->keyBy('id');
         $products = AppServise::ProductsShopPrepeare($products, $categories);
 
-        $cityes = Storage::disk('local')->get('js/israel-city.json');
-        $cityes = json_decode($cityes, true);
-
-        $delivery =  Storage::disk('local')->get('js/delivery.json');
-        $delivery = json_decode($delivery, true);
 
         $dey_offer_data = false;
         if (Storage::disk('local')->exists('data/dey-offer.json')) {
@@ -101,6 +96,25 @@ class ShopController extends Controller
             }
         }
 
+        /////////////////////////////////////////////////
+        /// CART
+        $order_number = false;
+        $order = session('order');
+        if ($order) {
+            $order_number = $order->order_id;
+        }
+        $post = $request->post();
+
+        $cityes = Storage::disk('local')->get('js/israel-city.json');
+        $cityes = json_decode($cityes, true);
+
+        $delivery =  Storage::disk('local')->get('js/delivery.json');
+        $delivery = json_decode($delivery, true);
+
+        $shop_setting = Storage::disk('local')->get('js/shop_setting.json');
+        $jsfile = Storage::disk('local')->get('js/translit-ekwid-store.js');
+        //////////////////////////////////////////////////////////////////////////////////
+
 
         return view("shop.index_master", [
             'v' => $v,
@@ -109,12 +123,16 @@ class ShopController extends Controller
             'lang' => $lang,
             'categories' => $categories,
             'products' => $products,
-            'delivery' => $delivery,
-            'cityes' => $cityes,
             'dey_offer_data' => $dey_offer_data,
             'category_active' => $category_default,
             'popapp_message' => $popapp_message,
             'category' => $category,
+            'order_number' => $order_number,
+            'shop_setting' => $shop_setting,
+            'delivery' => $delivery,
+            'cityes' => $cityes,
+            'jsfile' => $jsfile,
+            'post' => $post,
             'noindex' => $request->noindex
         ]);
     }
@@ -160,13 +178,26 @@ class ShopController extends Controller
             $products = false;
         }
 
+        /////////////////////////////////////////////////
+        /// CART
+        $order_number = false;
+        $order = session('order');
+        if ($order) {
+            $order_number = $order->order_id;
+        }
+        $post = $request->post();
+
         $cityes = Storage::disk('local')->get('js/israel-city.json');
         $cityes = json_decode($cityes, true);
 
         $delivery =  Storage::disk('local')->get('js/delivery.json');
         $delivery = json_decode($delivery, true);
 
+        dd($delivery);
 
+        $shop_setting = Storage::disk('local')->get('js/shop_setting.json');
+        $jsfile = Storage::disk('local')->get('js/translit-ekwid-store.js');
+        //////////////////////////////////////////////////////////////////////////////////
 
         return view("shop.category-master", [
             'v' => $v,
@@ -175,8 +206,11 @@ class ShopController extends Controller
             'lang' => $lang,
             'categories' => $categories,
             'products' => $products,
+            'order_number' => $order_number,
+            'shop_setting' => $shop_setting,
             'delivery' => $delivery,
             'cityes' => $cityes,
+            'jsfile' => $jsfile,
             'category_active' => $category_default,
             'popapp_message' => $popapp_message,
             'category' => $category,
@@ -317,13 +351,6 @@ class ShopController extends Controller
         $category->translate = json_decode($category->translate, true);
 
 
-        $cityes = Storage::disk('local')->get('js/israel-city.json');
-        $cityes = json_decode($cityes, true);
-
-        $delivery =  Storage::disk('local')->get('js/delivery.json');
-        $delivery = json_decode($delivery, true);
-
-
         if (empty($product->image)) {
             $product->image = $category->image;
         }
@@ -368,6 +395,24 @@ class ShopController extends Controller
 
 //        dd($product->options);
 
+        /////////////////////////////////////////////////
+        /// CART
+        $order_number = false;
+        $order = session('order');
+        if ($order) {
+            $order_number = $order->order_id;
+        }
+        $post = $request->post();
+
+        $cityes = Storage::disk('local')->get('js/israel-city.json');
+        $cityes = json_decode($cityes, true);
+
+        $delivery =  Storage::disk('local')->get('js/delivery.json');
+        $delivery = json_decode($delivery, true);
+
+        $shop_setting = Storage::disk('local')->get('js/shop_setting.json');
+        $jsfile = Storage::disk('local')->get('js/translit-ekwid-store.js');
+        //////////////////////////////////////////////////////////////////////////////////
 
         return view("shop.product_master", [
             'v' => $v,
@@ -377,8 +422,11 @@ class ShopController extends Controller
             'products' => $products,
             'rand_keys' => $rand_keys,
             'product' => $product,
+            'order_number' => $order_number,
+            'shop_setting' => $shop_setting,
             'delivery' => $delivery,
             'cityes' => $cityes,
+            'jsfile' => $jsfile,
             'category' => $category,
             'noindex' => $request->noindex
         ]);
@@ -395,6 +443,7 @@ class ShopController extends Controller
         $lang = 'en';
         return $this->ProductView($request, $category_slag, $product_slag, $lang);
     }
+
     public function ProductRuOld(Product $product, Request $request)
     {
         $category = Categories::find($product->category_id);
@@ -900,7 +949,7 @@ class ShopController extends Controller
             ];
             $order = json_decode(json_encode($order));
         }
-        
+
 
         $OrderService = new OrderService();
         $OrderService->changeProductsCount($order);

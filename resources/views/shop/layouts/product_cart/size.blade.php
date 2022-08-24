@@ -6,8 +6,8 @@
                 @php($name = $option['name'])
 
                 @isset($product->variables)
-                    <div class="description__sizeTitle description__sizeTitle--many showBlock">{{ $translate['Select size'][$lang] }}</div>
-                    <div class="description__sizeList openingBlock showBlock">
+                    <div class="description__sizeTitle description__sizeTitle--many">{{ $translate['Select size'][$lang] }}</div>
+                    <div class="description__sizeList openingBlock">
                     @foreach($product->variables as $kv => $variant)
                         @if ($variant['unlimited'] == 0)
                             @php($stock_count = $variant['quantity'])
@@ -158,11 +158,5 @@
         @endif
     @endforeach
 @else
-
-    @if ($product->unlimited == 0)
-        @php($stock_count = $product->count)
-    @else
-        @php($stock_count = 0)
-    @endif
-    <div class="description__sizeTitle"  data-stock_count="{{ $stock_count }}"></div>
+    <div class="description__sizeTitle"></div>
 @endisset

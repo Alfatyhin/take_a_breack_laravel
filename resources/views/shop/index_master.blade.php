@@ -19,6 +19,17 @@
     <link rel="stylesheet" href="{{ asset('css/index_adaptation.css') }}?{{ $v }}">
     <link rel="stylesheet" href="{{ asset('css/index-0.css') }}?{{ $v }}">
     <link rel="stylesheet" href="{{ asset('css/popup-cart.css') }}?{{ $v }}">
+<script src="lazyload.js"></script>
+
+<style>
+	img[data-src] {
+		opacity: 0 !important;
+	}
+
+	img[src] {
+		opacity: 1 !important;
+	}
+</style>
 
     <link rel="canonical" href="{{ route("index_$lang") }}">
 
@@ -37,6 +48,7 @@
 @section('content')
 
     @include("shop.$lang.index")
+    @include("shop.ru.new-cart")
 
     <div class="hidden" itemscope itemtype="https://schema.org/Organization">
         <a itemprop="url" href="{{ route('index_en') }}"><div itemprop="name">Take a Break</div>
@@ -76,11 +88,31 @@
             </div>
         </div>
     </div>
-    @include("shop.ru.new-cart")
+
+
 @stop
 
 @section('scripts')
     <script src="{{ asset('js/index.js') }}?{{ $v }}" defer></script>
     <script src="{{ asset('js/cart.js') }}?{{ $v }}" defer></script>
+    <script src="{{ asset('js/calendar.js') }}?{{ $v }}" defer></script>
+
+<noscript>
+
+	<style>
+		img[data-src] {
+			display: none !important;
+		}
+	</style>
+
+</noscript>
+
+<script>
+
+	let images = document.querySelectorAll("img");
+
+	lazyload(images);
+
+</script>
 @stop
 

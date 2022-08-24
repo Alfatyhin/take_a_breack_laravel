@@ -73,7 +73,7 @@ $translate = [
                 </div>
             @else
                 <div class="description__priceItem description__priceItem--current">
-                    <span class="description__priceItemText">{{ $translate['from'][$lang] }}</span>
+                    <span class="description__priceItemText">{{ $translate['from'][$lang] }}&nbsp</span>
                     <span class="description__priceItemNumber">{{ $product->price }}</span>
                     <span class="description__priceItemUnit">₪</span>
                 </div>
@@ -92,6 +92,7 @@ $translate = [
             </div>
         @else
             <div class="description__priceItem description__priceItem--current">
+                <span class="description__priceItemText">{{ $translate['from'][$lang] }}&nbsp</span>
                 <span class="description__priceItemNumber">{{ $product->price }}</span>
                 <span class="description__priceItemUnit">₪</span>
             </div>
