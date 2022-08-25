@@ -162,14 +162,18 @@
             </div>
         </div>
     </section>
-    <section class="description">
-        <div class="container blockText shortBlock close">
-            @isset($translate['descriptionTranslated'][$lang])
-                {!! $translate['descriptionTranslated'][$lang] !!}
-            @endisset
-            <div class="openingShortBlock"></div>
-        </div>
-    </section>
+
+    @isset($translate['descriptionTranslated'][$lang])
+        @php($size = strlen($translate['descriptionTranslated'][$lang]))
+        <section class="description ">
+            <div class="container blockText @if($size > 1200) shortBlock close @endif">
+                    {!! $translate['descriptionTranslated'][$lang] !!}
+                @if($size > 1500)
+                    <div class="openingShortBlock"></div>
+                @endif
+            </div>
+        </section>
+    @endisset
 
     @include("shop.$lang.anchor-advantage")
     @include("shop.$lang.master_popap")
