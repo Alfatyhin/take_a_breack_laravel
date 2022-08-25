@@ -6,7 +6,6 @@
     var methodPay = false;
     @endif
     var deivery_data = @json($delivery);
-    console.log(deivery_data);
 </script>
 
 <div class="popup-wrap">
