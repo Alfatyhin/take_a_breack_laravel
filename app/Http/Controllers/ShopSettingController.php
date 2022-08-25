@@ -339,23 +339,29 @@ class ShopSettingController extends Controller
             $request->validate([
                 'image'     => 'required|image|mimes:jpeg,jpg,png,'
             ]);
-            dd('stop');
 
             $file = $request->file('image');
 
             $file_name = $file->getClientOriginalName();
+            $file_data = explode('.', $file_name);
+            $image_name = $file_data[0];
             $path = 'public/images';
             Storage::putFileAs($path, $file, $file_name);
             $file_path = $path.'/'.$file_name;
             $source = str_replace('public', 'storage', $file_path);
-            $pathes['originalImageUrl'] = '/'.$source;
 
+            $new_image = "storage/images/$image_name.webp";
+            $pathes['originalImageUrl'] = '/'.$new_image;
+
+            ImageManager::make($source)
+                ->encode('webp', 100)
+                ->save($new_image, 80);
 
             $images_sizes = $this->image_sizes;
 
             foreach ($images_sizes as $size) {
 
-                $new_image = "storage/images/$size/$file_name";
+                $new_image = "storage/images/$size/$image_name.webp";
                 $key = "image".$size."pxUrl";
                 $pathes[$key] = '/'.$new_image;
 
@@ -363,9 +369,11 @@ class ShopSettingController extends Controller
                     ->resize($size, null, function ($constraint) {
                         $constraint->aspectRatio();
                     })
-                    ->crop($size, $size)
-                    ->save($new_image, 80);
+//                    ->crop($size, $size)
+                    ->encode('webp', 100)
+                    ->save($new_image, 100);
             }
+            Storage::delete($path."/".$file_name);
 
             $image_to = $request->get('image_to');
             $id = $request->get('id');
@@ -401,6 +409,7 @@ class ShopSettingController extends Controller
                 $image_galery[] = $pathes;
 
                 $product->galery = json_encode($image_galery);
+                $product->image = json_encode($image_galery[0]);
                 $product->save();
 
                 session()->flash('message', ["image add"]);
@@ -415,7 +424,7 @@ class ShopSettingController extends Controller
     public function imageTest(Request $request)
     {
 
-        dd('stop');
+        dd('stop 1');
         $products = Product::all();
 
         foreach ($products as $product) {
@@ -481,7 +490,11 @@ class ShopSettingController extends Controller
             $image_galery = array_slice($image_galery, 0);
 
             $product->galery = json_encode($image_galery);
-            $product->image = json_encode($image_galery[0]);
+            if (isset($image_galery[0])) {
+                $product->image = json_encode($image_galery[0]);
+            } else {
+                $product->image = null;
+            }
             $product->save();
 
             session()->flash('message', ["image delete"]);
