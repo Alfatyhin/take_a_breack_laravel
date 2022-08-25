@@ -72,7 +72,7 @@ class CouponsController extends Controller
         $id = $request->post('id');
         $coupon = Coupons::find($id);
         $data = $request->post('data');
-        $coupons_data = json_decode($coupon->data);
+        $coupons_data = json_decode($coupon->data, true);
 
         foreach ($data as $k => $v) {
             $coupons_data[$k] = $v;
