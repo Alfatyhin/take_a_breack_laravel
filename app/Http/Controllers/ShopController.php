@@ -193,8 +193,6 @@ class ShopController extends Controller
         $delivery =  Storage::disk('local')->get('js/delivery.json');
         $delivery = json_decode($delivery, true);
 
-        dd($delivery);
-
         $shop_setting = Storage::disk('local')->get('js/shop_setting.json');
         $jsfile = Storage::disk('local')->get('js/translit-ekwid-store.js');
         //////////////////////////////////////////////////////////////////////////////////
