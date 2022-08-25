@@ -5,6 +5,7 @@
         @else
     var methodPay = false;
     @endif
+    var deivery_data = @json($delivery);
 </script>
 <div class="popup-wrap">
     <button class="close-popup"></button>
