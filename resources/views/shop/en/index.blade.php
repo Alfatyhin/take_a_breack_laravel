@@ -11,40 +11,40 @@
         </div>
     </div>
 </section>
-<section class="size">
-    <div class="size__bg"></div>
-    <div class="container">
-        <div class="size__body">
-            <h2 class="size__title blockTitle">Choose the right cake size</h2>
-            <div class="size__itemsWrapper">
-                <div class="size__itemsBg"></div>
-                <div class="size__items">
-                    <div class="size_item">
-                        <div class="size_itemImg"><img class="size_itemImg--main" src="./img/index/size/4_parts.webp" alt="image">
-                            <img class="size_itemImg--hover" src="./img/index/size/4_parts_anim.webp" alt="image"></div>
-                        <div class="size_itemTitle">Size Mini</div>
-                        <div class="size_itemWeight">Weight: 600g ⌀12cm</div>
-                        <div class="size_itemText blockText">A small cake, suitable for a small company of 4-5 people</div>
-                    </div>
-                    <div class="size_item">
-                        <div class="size_itemImg"><img class="size_itemImg--main" src="./img/index/size/8_parts.webp" alt="image">
-                            <img class="size_itemImg--hover" src="./img/index/size/8_parts_anim.webp" alt="image"></div>
-                        <div class="size_itemTitle">Size Family</div>
-                        <div class="size_itemWeight">Weight:1200g ⌀16cm</div>
-                        <div class="size_itemText blockText">For warm meetings over a cup of tea in a family circle for 8-10 people</div>
-                    </div>
-                    <div class="size_item">
-                        <div class="size_itemImg"><img class="size_itemImg--main" src="./img/index/size/16_parts.webp" alt="image">
-                            <img class="size_itemImg--hover" src="./img/index/size/16_parts_anim.webp" alt="image"></div>
-                        <div class="size_itemTitle">Size Celebration</div>
-                        <div class="size_itemWeight">Weight: 2400g ⌀20cm</div>
-                        <div class="size_itemText blockText">Cake for special occasions for a large company of 16-20 people</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+{{--<section class="size">--}}
+{{--    <div class="size__bg"></div>--}}
+{{--    <div class="container">--}}
+{{--        <div class="size__body">--}}
+{{--            <h2 class="size__title blockTitle">Choose the right cake size</h2>--}}
+{{--            <div class="size__itemsWrapper">--}}
+{{--                <div class="size__itemsBg"></div>--}}
+{{--                <div class="size__items">--}}
+{{--                    <div class="size_item">--}}
+{{--                        <div class="size_itemImg"><img class="size_itemImg--main" src="./img/index/size/4_parts.webp" alt="image">--}}
+{{--                            <img class="size_itemImg--hover" src="./img/index/size/4_parts_anim.webp" alt="image"></div>--}}
+{{--                        <div class="size_itemTitle">Size Mini</div>--}}
+{{--                        <div class="size_itemWeight">Weight: 600g ⌀12cm</div>--}}
+{{--                        <div class="size_itemText blockText">A small cake, suitable for a small company of 4-5 people</div>--}}
+{{--                    </div>--}}
+{{--                    <div class="size_item">--}}
+{{--                        <div class="size_itemImg"><img class="size_itemImg--main" src="./img/index/size/8_parts.webp" alt="image">--}}
+{{--                            <img class="size_itemImg--hover" src="./img/index/size/8_parts_anim.webp" alt="image"></div>--}}
+{{--                        <div class="size_itemTitle">Size Family</div>--}}
+{{--                        <div class="size_itemWeight">Weight:1200g ⌀16cm</div>--}}
+{{--                        <div class="size_itemText blockText">For warm meetings over a cup of tea in a family circle for 8-10 people</div>--}}
+{{--                    </div>--}}
+{{--                    <div class="size_item">--}}
+{{--                        <div class="size_itemImg"><img class="size_itemImg--main" src="./img/index/size/16_parts.webp" alt="image">--}}
+{{--                            <img class="size_itemImg--hover" src="./img/index/size/16_parts_anim.webp" alt="image"></div>--}}
+{{--                        <div class="size_itemTitle">Size Celebration</div>--}}
+{{--                        <div class="size_itemWeight">Weight: 2400g ⌀20cm</div>--}}
+{{--                        <div class="size_itemText blockText">Cake for special occasions for a large company of 16-20 people</div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--</section>--}}
 <section class="about" id="anchor-about">
     <div class="container">
         <div class="about__body">
