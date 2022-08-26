@@ -67,6 +67,10 @@ class ShopController extends Controller
         $products = Product::where('enabled', 1)->whereIn('id', $category_products)->get()->sortBy('index_num')->keyBy('id');
         $products = AppServise::ProductsShopPrepeare($products, $categories);
 
+        foreach ($products as $product) {
+
+        }
+
 
         $dey_offer_data = false;
         if (Storage::disk('local')->exists('data/dey-offer.json')) {
@@ -147,6 +151,127 @@ class ShopController extends Controller
     {
         $lang = 'en';
         return $this->indexView($request, $lang);
+    }
+
+
+    private function ProductView(Request $request, $category_slag, $product_slag, $lang)
+    {
+        $v = $this->v;
+
+        $product = Product::where('slag', $product_slag)->first();
+        if (!$product) {
+            return $this->err404($request, $lang);
+        }
+
+        $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
+        $products_ids = [];
+        foreach ($categories as $category) {
+            $products_items = json_decode($category->products);
+            if ($products_items) {
+                $products_ids = array_merge($products_ids, $products_items);
+            }
+        }
+
+        $products = Product::where('enabled', 1)->whereIn('id', $products_ids)->get()->sortBy('index_num')->keyBy('id');
+
+        $products = AppServise::ProductsShopPrepeare($products, $categories);
+        $rand_keys = array_rand($products->toArray(), 15);
+        $category = Categories::where('slag', $category_slag)->first();
+        $category_data = json_decode($category->data, true);
+        $category->translate = json_decode($category->translate, true);
+
+
+        if (empty($product->image)) {
+            $product->image = $category->image;
+        }
+
+        $product->translate = json_decode($product->translate, true);
+        $product->image = json_decode($product->image, true);
+        $product->galery = json_decode($product->galery, true);
+        $product->data = json_decode($product->data, true);
+        $product->variables = json_decode($product->variables, true);
+
+
+        if (!empty($product->variables)) {
+            if (sizeof($product->variables) > 1) {
+                $variables = $product->variables;
+                foreach ($variables as &$variant) {
+                    $v_price = $variant['defaultDisplayedPrice'];
+                    if ($v_price < $product->price) {
+                        $product->price = $v_price;
+                    }
+                }
+                $product->variables = $variables;
+            }
+        }
+
+        $options = json_decode($product->options, true);
+        if (!empty($options)) {
+
+            foreach ($options as $option) {
+                $name = $option['name'];
+                $options_map[$name] = $option;
+                foreach ($option['choices'] as $kc => $item) {
+                    $key = $item['text'];
+                    $item['key'] = $kc;
+                    $choices_map[$key] = $item;
+                }
+                $options_map[$name]['choices'] = $choices_map;
+            }
+            $options['map'] = $options_map;
+
+            $product->options = $options;
+        }
+
+//        dd($product->options);
+
+        /////////////////////////////////////////////////
+        /// CART
+        $order_number = false;
+        $order = session('order');
+        if ($order) {
+            $order_number = $order->order_id;
+        }
+        $post = $request->post();
+
+        $cityes = Storage::disk('local')->get('js/israel-city.json');
+        $cityes = json_decode($cityes, true);
+
+        $delivery =  Storage::disk('local')->get('js/delivery.json');
+        $delivery = json_decode($delivery, true);
+
+        $shop_setting = Storage::disk('local')->get('js/shop_setting.json');
+        $jsfile = Storage::disk('local')->get('js/translit-ekwid-store.js');
+        //////////////////////////////////////////////////////////////////////////////////
+
+        return view("shop.product_master", [
+            'v' => $v,
+            'lang' => $lang,
+            'categories' => $categories,
+            'category_data' => $category_data,
+            'products' => $products,
+            'rand_keys' => $rand_keys,
+            'product' => $product,
+            'order_number' => $order_number,
+            'shop_setting' => $shop_setting,
+            'delivery' => $delivery,
+            'cityes' => $cityes,
+            'jsfile' => $jsfile,
+            'category' => $category,
+            'noindex' => $request->noindex
+        ]);
+    }
+
+    public function ProductRu($category_slag, $product_slag, Request $request)
+    {
+        $lang = 'ru';
+        return $this->ProductView($request, $category_slag, $product_slag, $lang);
+    }
+
+    public function ProductEn($category_slag, $product_slag, Request $request)
+    {
+        $lang = 'en';
+        return $this->ProductView($request, $category_slag, $product_slag, $lang);
     }
 
 
@@ -319,127 +444,6 @@ class ShopController extends Controller
     {
         $lang = 'ru';
         return $this->marketShortView($request, $lang);
-    }
-
-
-    private function ProductView(Request $request, $category_slag, $product_slag, $lang)
-    {
-        $v = $this->v;
-
-        $product = Product::where('slag', $product_slag)->first();
-        if (!$product) {
-            return $this->err404($request, $lang);
-        }
-
-        $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
-        $products_ids = [];
-        foreach ($categories as $category) {
-            $products_items = json_decode($category->products);
-            if ($products_items) {
-                $products_ids = array_merge($products_ids, $products_items);
-            }
-        }
-
-        $products = Product::where('enabled', 1)->whereIn('id', $products_ids)->get()->sortBy('index_num')->keyBy('id');
-
-        $products = AppServise::ProductsShopPrepeare($products, $categories);
-        $rand_keys = array_rand($products->toArray(), 15);
-        $category = Categories::where('slag', $category_slag)->first();
-        $category_data = json_decode($category->data, true);
-        $category->translate = json_decode($category->translate, true);
-
-
-        if (empty($product->image)) {
-            $product->image = $category->image;
-        }
-
-        $product->translate = json_decode($product->translate, true);
-        $product->image = json_decode($product->image, true);
-        $product->galery = json_decode($product->galery, true);
-        $product->data = json_decode($product->data, true);
-        $product->variables = json_decode($product->variables, true);
-
-
-        if (!empty($product->variables)) {
-            if (sizeof($product->variables) > 1) {
-                $variables = $product->variables;
-                foreach ($variables as &$variant) {
-                    $v_price = $variant['defaultDisplayedPrice'];
-                    if ($v_price < $product->price) {
-                        $product->price = $v_price;
-                    }
-                }
-                $product->variables = $variables;
-            }
-        }
-
-        $options = json_decode($product->options, true);
-        if (!empty($options)) {
-
-            foreach ($options as $option) {
-                $name = $option['name'];
-                $options_map[$name] = $option;
-                foreach ($option['choices'] as $kc => $item) {
-                    $key = $item['text'];
-                    $item['key'] = $kc;
-                    $choices_map[$key] = $item;
-                }
-                $options_map[$name]['choices'] = $choices_map;
-            }
-            $options['map'] = $options_map;
-
-            $product->options = $options;
-        }
-
-//        dd($product->options);
-
-        /////////////////////////////////////////////////
-        /// CART
-        $order_number = false;
-        $order = session('order');
-        if ($order) {
-            $order_number = $order->order_id;
-        }
-        $post = $request->post();
-
-        $cityes = Storage::disk('local')->get('js/israel-city.json');
-        $cityes = json_decode($cityes, true);
-
-        $delivery =  Storage::disk('local')->get('js/delivery.json');
-        $delivery = json_decode($delivery, true);
-
-        $shop_setting = Storage::disk('local')->get('js/shop_setting.json');
-        $jsfile = Storage::disk('local')->get('js/translit-ekwid-store.js');
-        //////////////////////////////////////////////////////////////////////////////////
-
-        return view("shop.product_master", [
-            'v' => $v,
-            'lang' => $lang,
-            'categories' => $categories,
-            'category_data' => $category_data,
-            'products' => $products,
-            'rand_keys' => $rand_keys,
-            'product' => $product,
-            'order_number' => $order_number,
-            'shop_setting' => $shop_setting,
-            'delivery' => $delivery,
-            'cityes' => $cityes,
-            'jsfile' => $jsfile,
-            'category' => $category,
-            'noindex' => $request->noindex
-        ]);
-    }
-
-    public function ProductRu($category_slag, $product_slag, Request $request)
-    {
-        $lang = 'ru';
-        return $this->ProductView($request, $category_slag, $product_slag, $lang);
-    }
-
-    public function ProductEn($category_slag, $product_slag, Request $request)
-    {
-        $lang = 'en';
-        return $this->ProductView($request, $category_slag, $product_slag, $lang);
     }
 
     public function ProductRuOld(Product $product, Request $request)
