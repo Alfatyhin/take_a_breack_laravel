@@ -60,6 +60,10 @@ Route::middleware(['isAdmin', "ShopSetting"])->group(function () {
         ->name('shop_settings_categories');
 
 
+    Route::get('crm/shop-settings/product-clone/{product}', array(ProductController::class, 'clone'))
+        ->middleware(['isAdmin'])->name('product_cone');
+
+
     Route::get('crm/shop-settings/product-redact/{product}', array(ProductController::class, 'RedactProduct'))
         ->middleware(['isAdmin'])->name('product_redact');
 

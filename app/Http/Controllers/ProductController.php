@@ -245,4 +245,18 @@ class ProductController extends Controller
 
         return back();
     }
+
+
+    public function clone(Request $request, Product $product)
+    {
+        $new_product = $product->replicate();
+        $new_product->name = $product->name . ' clone';
+        $new_product->sku = $product->sku . '-1';
+        $new_product->slag = $product->slag . '_clone';
+        $new_product->save();
+
+
+        session()->flash('message', ["product $product->name copy"]);
+        return redirect(route('product_redact', ['product' => $new_product]));
+    }
 }

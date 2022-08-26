@@ -91,8 +91,16 @@
 
                                     </span>
                                     </a>
+
                                     <a class="button" href="{{ route('product_delete', ['product' => $product]) }}">
                                     <span class="fa fa-trash">
+
+                                    </span>
+                                    </a>
+
+                                    </a>
+                                    <a class="button" href="{{ route('product_cone', ['product' => $product]) }}" title="копировать">
+                                    <span class="fa fa-clone">
 
                                     </span>
                                     </a>
