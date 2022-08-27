@@ -158,7 +158,7 @@
                     <div class="info__item">
                         <h3 class="info__itemTitle">Доставка курьером</h3>
                         <div class="info__itemText blockText">
-                            <p>Мы осуществляем доставку от Ашкелона до Хайфы. Размер оплаты — от 30 шекелей. Уточнить точную стоимость доставки и минимальную сумму заказа можно <button class='areaAndPriceBtn blockText'>здесь</button>.</p>
+                            <p>Мы осуществляем доставку от Ашкелона до Хайфы. Размер оплаты — от 35 шекелей. Уточнить точную стоимость доставки и минимальную сумму заказа можно <button class='areaAndPriceBtn blockText'>здесь</button>.</p>
                         </div>
                     </div>
                     <div class="info__item">

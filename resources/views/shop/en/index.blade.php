@@ -188,7 +188,7 @@
                     <div class="info__item">
                         <h3 class="info__itemTitle">Courier delivery</h3>
                         <div class="info__itemText blockText">
-                            <p>We deliver from Ashkelon to Haifa. The amount of payment is from 30 shekels. You can specify the exact cost of delivery and the minimum order amount <button class='areaAndPriceBtn blockText'>here</button>.</p>
+                            <p>We deliver from Ashkelon to Haifa. The amount of payment is from 35 shekels. You can specify the exact cost of delivery and the minimum order amount <button class='areaAndPriceBtn blockText'>here</button>.</p>
                         </div>
                     </div>
                     <div class="info__item">
