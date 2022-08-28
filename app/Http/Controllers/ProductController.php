@@ -52,6 +52,8 @@ class ProductController extends Controller
         }
         $product_data = json_decode($product->data, true);
 
+//        dd($product->toArray());
+
         $cat_id = $product->category_id;
         $products = Product::where('category_id', $cat_id)->get()->sortBy('index_num');
 
@@ -145,11 +147,37 @@ class ProductController extends Controller
 
 
         if ($mode == 'options') {
-
+            $variables  = false;
+            $old_options  = false;
+            if ($product->variables) {
+                $variables = json_decode($product->variables, true);
+            }
+            if ($product->options) {
+                $old_options = json_decode($product->options, true);
+            }
             foreach ($post['options'] as $k => $option) {
                 foreach ($option['choices'] as $ko => $choice ) {
                     if (!isset($choice['text'])) {
                         unset($option['choices'][$ko]);
+                    }
+                    if ($variables && $old_options) {
+                        foreach ($old_options as $old_option) {
+                            if ($old_option['name'] == $option['name']) {
+                                foreach ($option['choices'] as $kc => $choice) {
+                                    if ($choice['text'] != $old_option['choices'][$kc]['text']) {
+                                        $new_choice_text = $choice['text'];
+                                        foreach ($variables as &$variant) {
+                                            foreach ($variant['options'] as &$variant_option) {
+                                                if ($variant_option['name'] == $option['name']
+                                                    && $variant_option['value'] == $old_option['choices'][$kc]['text']) {
+                                                    $variant_option['value'] = $new_choice_text;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 if (sizeof($option['choices']) == 0) {
@@ -158,6 +186,9 @@ class ProductController extends Controller
 
             }
 
+            if ($variables) {
+                $product->variables = json_encode($variables);
+            }
             if (!empty($post['options'])) {
                 $product->options = json_encode($post['options']);
             } else {
