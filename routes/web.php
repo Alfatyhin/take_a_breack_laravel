@@ -280,6 +280,8 @@ Route::any('product/save/{product}', array(ProductController::class, 'ProductSav
 
 
 
+
+
 Route::middleware(["Shop"])->group(function () {
 
 //    Route::get('/site_map.xml', [ShopController::class, 'sitemap']);
