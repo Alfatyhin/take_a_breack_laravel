@@ -346,7 +346,7 @@ class ShopSettingController extends Controller
             $file_data = explode('.', $file_name);
             $image_name = $file_data[0];
             $path = 'public/images';
-            if (Storage::exists("$path/400/$image_name.webp")) {
+            if (Storage::exists("$path/$image_name.webp")) {
                 session()->flash('message', ["image for this name isset, please rename download file"]);
 
                 return back();
@@ -378,7 +378,9 @@ class ShopSettingController extends Controller
                     ->encode('webp', 100)
                     ->save($new_image, 100);
             }
-            Storage::delete($path."/".$file_name);
+            if (!preg_match("/webp$/", $file_name)) {
+                Storage::delete($path."/".$file_name);
+            }
 
             $image_to = $request->get('image_to');
             $id = $request->get('id');
