@@ -1,13 +1,13 @@
 
 
 jQuery(document).ready(function ($) {
-    $('.pop-ap .close').click(function () {
-        $('.pop-ap').hide();
-    });
+    // $('.pop-ap .close').click(function () {
+    //     $('.pop-ap').hide();
+    // });
 
     $('.close').click(function () {
-        var box = $(this).parent();
-        $(box).hide();
+        var box = $(this).parent().parent();
+        $(box).toggleClass('hidden');
     });
 
 
@@ -72,9 +72,7 @@ jQuery(document).ready(function ($) {
 
     // добавление бокового меню (продукты вкладка параметры)
     $('.options_header span.add_option').click(function () {
-        $('.new_option').toggleClass('hidden');
-        $('.options_header span.add_option.hidden').toggleClass('hidden');
-        $(this).toggleClass('hidden');
+        $(this).parent().find('.new_option').toggleClass('hidden');
     });
     $('.option_choice_add').click(function () {
         var data_key = $(this).attr('data_key') / 1;

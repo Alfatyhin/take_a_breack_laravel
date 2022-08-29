@@ -307,3 +307,15 @@ footer {
     width: 100%;
     background: #ddd;
 }
+.new_option.pop-ap {
+    overflow: scroll;
+}
+.new_option.pop-ap .body {
+    position: relative;
+    font-size: 100%;
+    text-align: left;
+    top: 0;
+    transform: none;
+    left: 0;
+    margin: auto;
+}
