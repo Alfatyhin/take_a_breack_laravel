@@ -31,6 +31,9 @@ class ShopController extends Controller
     {
         $v = $this->v;
         http_response_code(404);
+        if (!$lang) {
+            $lang = 'en';
+        }
 
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
         $categories = AppServise::CategoriesShopPrepeare($categories);
