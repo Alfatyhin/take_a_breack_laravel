@@ -337,7 +337,7 @@ class ShopSettingController extends Controller
         if ($request->hasFile('image')) {
 
             $request->validate([
-                'image'     => 'required|image|mimes:jpeg,jpg,png,'
+                'image'     => 'required|image|mimes:jpeg,jpg,png,webp'
             ]);
 
             $file = $request->file('image');
@@ -346,6 +346,11 @@ class ShopSettingController extends Controller
             $file_data = explode('.', $file_name);
             $image_name = $file_data[0];
             $path = 'public/images';
+            if (Storage::exists("$path/$image_name.webp")) {
+                session()->flash('message', ["image for this name isset, please rename download file"]);
+
+                return back();
+            }
             Storage::putFileAs($path, $file, $file_name);
             $file_path = $path.'/'.$file_name;
             $source = str_replace('public', 'storage', $file_path);
