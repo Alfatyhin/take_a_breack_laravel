@@ -10,6 +10,23 @@ body div.content .hidden {
 body > .content > div {
 
 }
+
+.new_option.pop-ap input {
+    border-color: #6b7280;
+    border-width: 1px;
+}
+.new_option.pop-ap {
+    overflow: scroll;
+}
+.new_option.pop-ap .body {
+    position: relative;
+    font-size: 100%;
+    text-align: left;
+    top: 0;
+    transform: none;
+    left: 0;
+    margin: auto;
+}
 [type='checkbox']:checked,
 [type='radio']:checked {
     color: #05cd05;
@@ -306,16 +323,4 @@ footer {
     text-align: center;
     width: 100%;
     background: #ddd;
-}
-.new_option.pop-ap {
-    overflow: scroll;
-}
-.new_option.pop-ap .body {
-    position: relative;
-    font-size: 100%;
-    text-align: left;
-    top: 0;
-    transform: none;
-    left: 0;
-    margin: auto;
 }

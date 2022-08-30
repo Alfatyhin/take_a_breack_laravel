@@ -321,7 +321,7 @@
                                     @endforeach
                                 </div>
                                 <p>
-                                    <input type="submit" value="добавить параметр">
+                                    <input class="button" type="submit" value="добавить параметр">
                                 </p>
                             </form>
 

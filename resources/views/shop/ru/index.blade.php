@@ -14,40 +14,40 @@
         </div>
     </div>
 </section>
-{{--<section class="size">--}}
-{{--    <div class="size__bg"></div>--}}
-{{--    <div class="container">--}}
-{{--        <div class="size__body">--}}
-{{--            <h2 class="size__title blockTitle">Выберите подходящий размер торта</h2>--}}
-{{--            <div class="size__itemsWrapper">--}}
-{{--                <div class="size__itemsBg"></div>--}}
-{{--                <div class="size__items">--}}
-{{--                    <div class="size_item">--}}
-{{--                        <div class="size_itemImg"><img class="size_itemImg--main" src="/img/index/size/4_parts.webp" alt="image">--}}
-{{--                            <img class="size_itemImg--hover" src="/img/index/size/4_parts_anim.webp" alt="image"></div>--}}
-{{--                        <div class="size_itemTitle">Размер Мини</div>--}}
-{{--                        <div class="size_itemWeight">Вес: 600г ⌀12см</div>--}}
-{{--                        <div class="size_itemText blockText">Небольшой торт, подойдёт для маленькой компании из 4-5 человек</div>--}}
-{{--                    </div>--}}
-{{--                    <div class="size_item">--}}
-{{--                        <div class="size_itemImg"><img class="size_itemImg--main" src="/img/index/size/8_parts.webp" alt="image">--}}
-{{--                            <img class="size_itemImg--hover" src="/img/index/size/8_parts_anim.webp" alt="image"></div>--}}
-{{--                        <div class="size_itemTitle">Размер Семейный</div>--}}
-{{--                        <div class="size_itemWeight">Вес:1200г ⌀16см</div>--}}
-{{--                        <div class="size_itemText blockText">Для тёплых встреч за чашкой чая в семейном кругу на 8-10 человек</div>--}}
-{{--                    </div>--}}
-{{--                    <div class="size_item">--}}
-{{--                        <div class="size_itemImg"><img class="size_itemImg--main" src="/img/index/size/16_parts.webp" alt="image">--}}
-{{--                            <img class="size_itemImg--hover" src="/img/index/size/16_parts_anim.webp" alt="image"></div>--}}
-{{--                        <div class="size_itemTitle">Размер Торжество</div>--}}
-{{--                        <div class="size_itemWeight">Вес: 2400г ⌀20см</div>--}}
-{{--                        <div class="size_itemText blockText">Торт для торжественных случаев на большую компанию из 16-20 человек</div>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>--}}
-{{--</section>--}}
+<section class="size">
+    <div class="size__bg"></div>
+    <div class="container">
+        <div class="size__body">
+            <h2 class="size__title blockTitle">Выберите подходящий размер торта</h2>
+            <div class="size__itemsWrapper">
+                <div class="size__itemsBg"></div>
+                <div class="size__items">
+                    <div class="size_item">
+                        <div class="size_itemImg"><img class="size_itemImg--main" src="/img/index/size/4_parts.webp" alt="image">
+                            <img class="size_itemImg--hover" src="/img/index/size/4_parts_anim.webp" alt="image"></div>
+                        <div class="size_itemTitle">Размер Мини</div>
+                        <div class="size_itemWeight">Вес: 600г ⌀12см</div>
+                        <div class="size_itemText blockText">Небольшой торт, подойдёт для маленькой компании из 4-5 человек</div>
+                    </div>
+                    <div class="size_item">
+                        <div class="size_itemImg"><img class="size_itemImg--main" src="/img/index/size/8_parts.webp" alt="image">
+                            <img class="size_itemImg--hover" src="/img/index/size/8_parts_anim.webp" alt="image"></div>
+                        <div class="size_itemTitle">Размер Семейный</div>
+                        <div class="size_itemWeight">Вес:1200г ⌀16см</div>
+                        <div class="size_itemText blockText">Для тёплых встреч за чашкой чая в семейном кругу на 8-10 человек</div>
+                    </div>
+                    <div class="size_item">
+                        <div class="size_itemImg"><img class="size_itemImg--main" src="/img/index/size/16_parts.webp" alt="image">
+                            <img class="size_itemImg--hover" src="/img/index/size/16_parts_anim.webp" alt="image"></div>
+                        <div class="size_itemTitle">Размер Торжество</div>
+                        <div class="size_itemWeight">Вес: 2400г ⌀20см</div>
+                        <div class="size_itemText blockText">Торт для торжественных случаев на большую компанию из 16-20 человек</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <section class="about" id="anchor-about">
     <div class="container">
         <div class="about__body">

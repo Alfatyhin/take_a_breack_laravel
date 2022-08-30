@@ -27,7 +27,7 @@
 	}
 
 	img[src] {
-		opacity: 1 !important;
+		/*opacity: 1 !important;*/
 	}
 </style>
 
