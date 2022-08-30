@@ -29,7 +29,7 @@ $translite['from'] = [
                 <div class="select__sliderPrice">
                     <div class="select__sliderPriceItem">
                         @if(!empty($product->variables))
-                            {{--                        {{ $translite['from'][$lang] }}--}}
+                            {{ $translite['from'][$lang] }}
                         @endif
                         <span class='sliderPrice'>{{ $product->price }}</span><span class='sliderUnit'>₪</span></div>
                     <div class="select__sliderPriceItem select__sliderPriceItem--old"></div>

@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="{{ asset('css/index-0.css') }}?{{ $v }}">
     <link rel="stylesheet" href="{{ asset('css/popup-cart.css') }}?{{ $v }}">
 <script src="lazyload.js"></script>
-    
+
 
     <link rel="canonical" href="{{ route("index_$lang") }}">
 
