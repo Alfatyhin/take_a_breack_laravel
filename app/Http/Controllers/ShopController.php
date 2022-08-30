@@ -25,7 +25,7 @@ use SoapClient;
 class ShopController extends Controller
 {
 
-    private $v = '1.5.5';
+    private $v = '1.5.7';
 
     public function err404(Request $request, $lang = 'en')
     {

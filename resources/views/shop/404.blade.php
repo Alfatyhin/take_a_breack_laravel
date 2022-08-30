@@ -16,6 +16,10 @@
     <link rel="stylesheet" href="{{ asset('css/slick.css') }}?{{ $v }}">
     <link rel="stylesheet" href="{{ asset('css/slick-theme.css') }}?{{ $v }}">
 
+
+    <link rel="stylesheet" href="/css/404.css"?{{ $v }}">
+    <link rel="stylesheet" href="/css/404_adaptation.css"?{{ $v }}">
+
     <meta name="robots" content="noindex, follow" />
 
     @section('head')

@@ -4,13 +4,9 @@
 
 @section('head')
 
-    <link rel="stylesheet" href="/css/404.css">
-    <link rel="stylesheet" href="/css/404_adaptation.css">
-
 @stop
 
 @section('content')
-
 
     <section class="page404">
         <div class="container">
