@@ -37,8 +37,8 @@
                         <div class="size_itemText blockText">Для тёплых встреч за чашкой чая в семейном кругу на 8-10 человек</div>
                     </div>
                     <div class="size_item">
-                        <div class="size_itemImg"><img class="size_itemImg--main" src="/img/index/size/16_parts.webp" alt="image">
-                            <img class="size_itemImg--hover" src="/img/index/size/16_parts_anim.webp" alt="image"></div>
+                        <div class="size_itemImg"><img class="size_itemImg--main" src="/img/index/size/16_parts.webp?v1" alt="image">
+                            <img class="size_itemImg--hover" src="/img/index/size/16_parts_anim.webp?v1" alt="image"></div>
                         <div class="size_itemTitle">Размер Торжество</div>
                         <div class="size_itemWeight">Вес: 2400г ⌀20см</div>
                         <div class="size_itemText blockText">Торт для торжественных случаев на большую компанию из 16-20 человек</div>
