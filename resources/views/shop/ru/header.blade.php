@@ -17,7 +17,7 @@
 {{--                            <li><a href="{{ route("index_$lang", ['category' => 'have']) }}#anchor-select" data-type="have">В наличии</a></li>--}}
                             @foreach($categories as $category)
                                 @php($translate = json_decode($category->translate, true))
-                                <li><a href="{{ route("category_$lang", ['category' => $category->name]) }}" data-type="{{ $category->slag }}">{{ $translate['nameTranslated'][$lang] }}</a></li>
+                                <li><a href="{{ route("category_$lang", ['category' => $category->slag]) }}" data-type="{{ $category->slag }}">{{ $translate['nameTranslated'][$lang] }}</a></li>
                             @endforeach
                         </ul>
                     </div>
