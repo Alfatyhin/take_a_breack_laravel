@@ -22,8 +22,8 @@
     <script src="{{ asset('js/main.js?v1.0.0') }}" defer></script>
 
 
-    <link rel="stylesheet" href="{{ asset('css/shop-settings.css') }}?v1.03">
-    <script src="{{ asset('js/shop-settings.js') }}" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/shop-settings.css') }}?v1.04">
+    <script src="{{ asset('js/shop-settings.js') }}?v1.04" defer></script>
 
     @section('head')
 
