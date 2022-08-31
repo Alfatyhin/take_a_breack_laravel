@@ -27,6 +27,31 @@ body > .content > div {
     left: 0;
     margin: auto;
 }
+.opening_box:after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 12px;
+    height: 12px;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    transform: rotate(-135deg);
+
+}
+.opening_box.plus:after {
+    top: 5px;
+    transform: rotate(45deg);
+}
+.opening_box {
+    position: relative;
+    border-bottom: 1px solid #a93030;
+    cursor: pointer;
+}
+.open_box.closed {
+    display: none;
+}
 [type='checkbox']:checked,
 [type='radio']:checked {
     color: #05cd05;

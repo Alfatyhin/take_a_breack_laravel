@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    @php($v = '1.05')
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -22,8 +23,8 @@
     <script src="{{ asset('js/main.js?v1.0.0') }}" defer></script>
 
 
-    <link rel="stylesheet" href="{{ asset('css/shop-settings.css') }}?v1.04">
-    <script src="{{ asset('js/shop-settings.js') }}?v1.04" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/shop-settings.css') }}?{{ $v }}">
+    <script src="{{ asset('js/shop-settings.js') }}?{{ $v }}" defer></script>
 
     @section('head')
 

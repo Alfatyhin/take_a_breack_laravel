@@ -11,6 +11,10 @@ jQuery(document).ready(function ($) {
     });
 
 
+    $('.opening_box').click(function (el) {
+        $(this).toggleClass('plus');
+        $(this).next().toggleClass('closed');
+    });
 
     $('.box_list  ul.list li:first-child').each(function () {
         ContentBoxMenuActivate(this);

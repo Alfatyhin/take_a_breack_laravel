@@ -352,14 +352,16 @@
                                         наименование:
                                         <input type="text" name="options[{{ $k }}][name]" value="{{ $option['name'] }}">
                                         <hr>
-                                        <p>Переводы</p>
-                                        @foreach($shop_langs as $kl => $lang_data)
-                                            @php($name = $option['nameTranslated'][$kl])
-                                            <div class="">
-                                                {{ $lang_data['name'] }} <br>
-                                                <input type="text" name="options[{{ $k }}][nameTranslated][{{ $kl }}]" value="{{ $name }}">
-                                            </div>
-                                        @endforeach
+                                        <p class="opening_box plus">Переводы</p>
+                                        <div class="open_box closed">
+                                            @foreach($shop_langs as $kl => $lang_data)
+                                                @php($name = $option['nameTranslated'][$kl])
+                                                <div class="">
+                                                    {{ $lang_data['name'] }} <br>
+                                                    <input type="text" name="options[{{ $k }}][nameTranslated][{{ $kl }}]" value="{{ $name }}">
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                     <div class="box_inline box_border">
                                         тип:
@@ -411,22 +413,24 @@
                                                             <input type="text" name="options[{{ $k }}][choices][{{ $kc }}][text]" >
                                                         @endisset
                                                         <hr>
-                                                        <p>Переводы</p>
-                                                        @foreach($shop_langs as $kl => $lang_data)
-                                                            <div class="text-right">
-                                                                <p>{{ $lang_data['name'] }}
-                                                                    @isset($choice['textTranslated'][$kl])
-                                                                        <input name="options[{{ $k }}][choices][{{ $kc }}][textTranslated][{{ $kl }}]"
-                                                                               value="{{ $choice['textTranslated'][$kl] }}"
-                                                                               placeholder="{{ $choice['text'] }}">
-                                                                    @else
-                                                                        <input name="options[{{ $k }}][choices][{{ $kc }}][textTranslated][{{ $kl }}]"
-                                                                               value=""
-                                                                               placeholder="{{ $choice['text'] }}">
-                                                                    @endisset
-                                                                </p>
-                                                            </div>
-                                                        @endforeach
+                                                        <p class="opening_box plus">Переводы</p>
+                                                        <div class="open_box closed">
+                                                            @foreach($shop_langs as $kl => $lang_data)
+                                                                <div class="text-right">
+                                                                    <p>{{ $lang_data['name'] }}
+                                                                        @isset($choice['textTranslated'][$kl])
+                                                                            <input name="options[{{ $k }}][choices][{{ $kc }}][textTranslated][{{ $kl }}]"
+                                                                                   value="{{ $choice['textTranslated'][$kl] }}"
+                                                                                   placeholder="{{ $choice['text'] }}">
+                                                                        @else
+                                                                            <input name="options[{{ $k }}][choices][{{ $kc }}][textTranslated][{{ $kl }}]"
+                                                                                   value=""
+                                                                                   placeholder="{{ $choice['text'] }}">
+                                                                        @endisset
+                                                                    </p>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
 
                                                     </td>
                                                     <td>
