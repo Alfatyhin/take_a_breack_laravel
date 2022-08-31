@@ -216,6 +216,7 @@ class ProductController extends Controller
             $variables[$kv]['combinationNumber'] = $kv;
             $variables[$kv]['id'] = time();
             $variables[$kv]['unlimited'] = 0;
+            $variables[$kv]['quantity'] = 0;
             $variables[$kv]['defaultDisplayedPrice'] = 0;
 
             if ($product->variables) {
