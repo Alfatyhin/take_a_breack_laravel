@@ -466,7 +466,7 @@
                                             @endforeach
                                             <tr>
                                                 <th colspan="4">
-                                                   для добавления параметра заполнить поля ниже и нажать
+                                                   для добавления значения параметра заполнить поля ниже и нажать
                                                     <span class="fa fa-plus"></span>
                                                 </th>
                                             </tr>
@@ -516,6 +516,8 @@
             </div>
 
             <div class="box_inline content_item box_list_3">
+                @php($variables = json_decode($product->variables, true))
+
                 <div class="options_header">
                     <span class="button add_option">
                         добавить вариацию
@@ -524,14 +526,47 @@
                         <div class="body">
                             <span class="close"></span>
                             <p>
-                                new variant
+                                add variant
                             </p>
+                            <form action="{{ route('product_save', ['product' => $product, 'mode' => 'add-variable']) }}" method="POST">
+                            @csrf
+                                @if (!empty($variables))
+                                    @php($kv = array_key_last($variables) + 1)
+                                    @php($sk = $kv)
+                                @else
+                                    @php($kv = 0)
+                                    @php($sk = 1)
+                                @endif
+                                <p>
+                                    variant-{{ $kv }}
+                                    <input type="hidden" name="kv" value="{{ $kv }}">
+                                </p>
+                                <p>
+                                    sku<b>*</b>:
+                                    <input required type="text" name="variables[{{ $kv }}][sku]" value="{{ $product->sku }}-{{ $sk }}">
+                                </p>
+                                <div>
+                                    @if (!empty($options))
+                                        @foreach($options as $k => $option)
+                                            <p>
+                                                <input type="hidden" name="variables[{{ $kv }}][options][{{ $k }}][name]" value="{{ $option['name'] }}">
+                                                {{ $option['name'] }}
+                                                <select name="variables[{{ $kv }}][options][{{ $k }}][value]" >
+                                                    @foreach($option['choices'] as $choise)
+                                                        <option value="{{ $choise['text'] }}"> {{ $choise['text'] }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </p>
+                                        @endforeach
+                                    @endif
+                                </div>
+                                <input class="button" type="submit">
+                            </form>
                         </div>
                     </div>
                 </div>
                 <form action="{{ route('product_save', ['product' => $product, 'mode' => 'variables']) }}" method="POST">
                     @csrf
-                    @php($variables = json_decode($product->variables, true))
                     @if (!empty($variables))
                         <table>
                             <tr>
@@ -585,7 +620,7 @@
                                         @isset($variant['sku'])
                                             <input type="text" name="variables[{{ $kv }}][sku]" value="{{ $variant['sku'] }}">
                                         @else
-                                            <input type="text" name="variables[{{ $kv }}][sku]" value="">
+                                            <input required type="text" name="variables[{{ $kv }}][sku]" value="">
                                         @endisset
                                     </td>
                                     <td>

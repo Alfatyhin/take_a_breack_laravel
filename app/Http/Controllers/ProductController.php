@@ -164,7 +164,7 @@ class ProductController extends Controller
                         foreach ($old_options as $old_option) {
                             if ($old_option['name'] == $option['name']) {
                                 foreach ($option['choices'] as $kc => $choice) {
-                                    if ($choice['text'] != $old_option['choices'][$kc]['text']) {
+                                    if (isset($choice['text']) && $choice['text'] != $old_option['choices'][$kc]['text']) {
                                         $new_choice_text = $choice['text'];
                                         foreach ($variables as &$variant) {
                                             foreach ($variant['options'] as &$variant_option) {
@@ -210,6 +210,24 @@ class ProductController extends Controller
             session()->flash('message', ["product {$product->name} save"]);
         }
 
+        if ($mode == 'add-variable') {
+            $variables = $post['variables'];
+            $kv = $post['kv'];
+            $variables[$kv]['combinationNumber'] = $kv;
+            $variables[$kv]['id'] = time();
+            $variables[$kv]['unlimited'] = 0;
+            $variables[$kv]['defaultDisplayedPrice'] = 0;
+
+            if ($product->variables) {
+                $old_variables = json_decode($product->variables, true);
+                $old_variables[$kv] = $variables[$kv];
+                $variables = $old_variables;
+            }
+            $post['variables'] = $variables;
+
+            $mode = 'variables';
+
+        }
 
         if ($mode == 'variables') {
             if (!empty($post['variables'])) {
