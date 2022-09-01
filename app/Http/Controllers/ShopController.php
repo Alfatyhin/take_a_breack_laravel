@@ -681,6 +681,11 @@ class ShopController extends Controller
 
             if (isset($post['order_id'])) {
                 $order = Orders::where('order_id', $post['order_id'])->first();
+                if (!$order) {
+                    $order = new Orders();
+                    $order_id = rand(100, 999);
+                    $order->order_id = AppServise::generateOrderId($order_id, 'S');
+                }
             } else {
                 $order = new Orders();
                 $order_id = rand(100, 999);
