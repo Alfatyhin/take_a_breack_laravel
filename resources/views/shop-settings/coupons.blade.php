@@ -51,7 +51,9 @@
                             %
                         @endif
                     </td>
-                    <td></td>
+                    <td>
+
+                    </td>
                     <td>
                         <form class="ajax" action="{{ route('coupon_status_save') }}" method="POST">
                             @csrf
@@ -67,17 +69,11 @@
                         {{ $item->count }}
                     </td>
                     <td>
-
-                        <form action="{{ route('coupon_data_change') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="id" value="{{ $item->id }}">
-                            @isset($data['count_limit'])
-                                <input type="number" name="data[count_limit]" value="{{ $data['count_limit'] }}">
-                            @else
-                                <input type="number" name="data[count_limit]" value="0">
-                            @endif
-                            <input type="submit" name="save" value="изменить">
-                        </form>
+                        @isset($data['count_limit'])
+                        {{ $data['count_limit'] }}
+                        @else
+                            0
+                        @endif
                     </td>
                     <td>
                         всех товаров
@@ -85,28 +81,46 @@
                     <td>
                         <a class="fa fa-trash" href="{{ route('coupons_discount', ['delete' => $item->id ]) }}"></a>
                         <br>
-                        <span class="fa fa-pencil" data_id="{{ $item->id }}"></span>
-                        <div class="hidden float-box">
-                            <form  action="" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="{{ $item->id }}">
-                                <p>
-                                    скидка
-                                    <input type="number" name="discount[value]" value="{{ $discount['value'] }}"> <br>
-                                    тип скидки: <br>
-                                    @if ($discount['mod'] == "ABS")
-                                        <input type="radio" name="discount[mod]" value="ABS" checked>$
-                                        <input type="radio" name="discount[mod]" value="PERSENT" >%
-                                    @else
-                                        <input type="radio" name="discount[mod]" value="ABS" >$
-                                        <input type="radio" name="discount[mod]" value="PERSENT" checked>%
-                                    @endif
-                                </p>
-                                <p>
-                                    ограничение применений:
-                                    <input type="number" name="data[count_limit]" value="">
-                                </p>
-                            </form>
+                        <span class="fa fa-pencil add_option" data_id="{{ $item->id }}"></span>
+                        <div class="new_option hidden pop-ap">
+                            <div class="body">
+                                <span class="close"></span>
+                                <form  action="{{ route('coupon_data_change') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $item->id }}">
+                                    <p>
+                                        название: <br>
+                                        <input type="text" name="name" size="100" value="{{ $item->name }}">
+                                    </p>
+                                    <p>
+                                        код: <br>
+                                        <input type="text" name="code" size="100" value="{{ $item->code }}">
+                                    </p>
+                                    <p>
+                                        скидка
+                                        <input type="number" name="discount[value]" value="{{ $discount['value'] }}">
+                                        тип скидки:
+                                        @if ($discount['mod'] == "ABS")
+                                            <input type="radio" name="discount[mod]" value="ABS" checked>$
+                                            <input type="radio" name="discount[mod]" value="PERSENT" >%
+                                        @else
+                                            <input type="radio" name="discount[mod]" value="ABS" >$
+                                            <input type="radio" name="discount[mod]" value="PERSENT" checked>%
+                                        @endif
+                                    </p>
+                                    <p>
+                                        ограничение применений:
+                                        @isset($data['count_limit'])
+                                            <input type="number" name="data[count_limit]" value="{{ $data['count_limit'] }}">
+                                        @else
+                                            <input type="number" name="data[count_limit]" value="0">
+                                        @endif
+                                    </p>
+
+
+                                    <input type="submit" name="save" value="изменить">
+                                </form>
+                            </div>
                         </div>
                     </td>
                 </tr>

@@ -75,7 +75,7 @@ jQuery(document).ready(function ($) {
 
 
     // добавление бокового меню (продукты вкладка параметры)
-    $('.options_header span.add_option').click(function () {
+    $('.add_option').click(function () {
         $(this).parent().find('.new_option').toggleClass('hidden');
     });
     $('.option_choice_add').click(function () {
