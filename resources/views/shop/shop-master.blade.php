@@ -55,5 +55,6 @@
 @show
 
 @include('shop.layouts.seo.footer-scripts')
+@include("shop.$lang.popap_sendpulse")
 </body>
 </html>
