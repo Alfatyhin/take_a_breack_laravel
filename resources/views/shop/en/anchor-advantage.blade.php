@@ -2,7 +2,7 @@
 <section class="advantage" id="anchor-advantage">
     <div class="advantage__body">
         <div class="container">
-            <h2 class="advantage__title blockTitle">Our desserts are better because</h2>
+            <h2 class="advantage__title blockTitle">Advantages of our desserts</h2>
         </div>
         <div class="advantage__itemsWrapper">
             <div class="container">
