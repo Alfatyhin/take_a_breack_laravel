@@ -36,7 +36,6 @@
 <div class="wrapper">
 
     <main class="main lang_{{ $lang }}">
-        <div class="preloader"></div>
 
         @section('content')
 
