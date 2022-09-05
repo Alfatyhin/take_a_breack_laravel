@@ -950,14 +950,13 @@ class Orders extends Controller
     public function createAmoInvoiceToOrder(Request $request, OrdersModel $order)
     {
         $client = Clients::find($order->clientId);
+        $amoData = json_decode($order->amoData, true);
 
         $amoCrmService = new AmoCrmServise();
         $amo_invoice_id = $amoCrmService->addInvoiceToLead($client->amoId, $order->order_id, $order->amoId, (float) $order->orderPrice, $order->paymentStatus);
         $amoData['invoice_id'] = $amo_invoice_id;
 
-
         $order->amoData = json_encode($amoData);
-        $order->amoId =$lead->id;
         $order->save();
     }
 
