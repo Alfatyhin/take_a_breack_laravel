@@ -450,7 +450,7 @@
                         <span class="position-absolute text-small button show-hide"></span>
 
 
-                        <a class=" button" href="{{ route('amo_create_invoice_to_order', ['order' => $item->id]) }}" >
+                        <a class="hide button" href="{{ route('amo_create_invoice_to_order', ['order' => $item->id]) }}" >
                             add amo invoice to lead
                         </a>
                         <br>
