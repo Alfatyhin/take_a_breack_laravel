@@ -49,6 +49,9 @@ Route::middleware(['isAdmin', "ShopSetting"])->group(function () {
 
     Route::any('crm/users', [Controller::class, 'allUsers'])->name('users');
 
+    Route::any('crm/shop-settings/amo/create-invoice-to-order/{order}', [Orders::class, 'createAmoInvoiceToOrder'])
+        ->name('amo_create_invoice_to_order');
+
 
     Route::any('crm/alex-payd', [PaypalController::class, 'alexpayd'])
         ->name('alex_payd');

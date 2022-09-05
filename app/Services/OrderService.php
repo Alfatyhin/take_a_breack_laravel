@@ -916,12 +916,11 @@ class OrderService
             if ($open_lead) {
                 $lead = $amoCrmService->updateLead($open_lead, $amoData);
             } else {
-
                 $lead = $amoCrmService->createNewLead($amoData);
-                $amoCrmService->addContactToLead($amo_contact, $lead);
             }
 
             if ($lead) {
+                $amoCrmService->addContactToLead($amo_contact, $lead);
                 $amoCrmService->addTextNotesToLead($lead->id, $amoNotes);
 
                 $amoProducts = self::getShopAmoProducts($orderData);
