@@ -198,6 +198,10 @@
                 <td>
                     <span class="position-absolute text-small button show-hide"></span>
 
+                    <a class="hide button" href="{{ route('amo_create_invoice_to_order', ['order' => $orderSearch->id]) }}" >
+                        add amo invoice to lead
+                    </a>
+                    <br>
                     <a class="hide button" href="{{ route('delete_order', ['id' => $orderSearch->order_id]) }}" >delete</a><br>
                     <a class="hide button" href="{{ route('orders_test_mail', ['id' => $orderSearch->order_id]) }}" >test mail</a>
                     <br>
