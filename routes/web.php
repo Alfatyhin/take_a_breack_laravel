@@ -127,6 +127,9 @@ Route::middleware(['isAdmin', "ShopSetting"])->group(function () {
     Route::any('crm/shop-settings/banner', [ShopSettingController::class, 'banner'])
         ->name('banner');
 
+    Route::any('crm/shop-settings/test-icredit-payment-data', [Orders::class, 'testIcreditPaymentData'])
+        ->name('test_icredit_payment_data');
+
     Route::any('crm/shop-settings/update-amo-contact/{client}', [ShopSettingController::class, 'updateAmoContact'])->name('update_amo_contact');
 
 });

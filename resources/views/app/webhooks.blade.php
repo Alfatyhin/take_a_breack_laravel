@@ -133,6 +133,11 @@
                                 <input type="hidden" name="data" value="{{$item->data}}">
                                 <input class="button" type="submit" name="test data" value="test thanks">
                             </form>
+                            <form action="{{ route('test_icredit_payment_data') }}" method="post">
+                                @csrf
+                                <input type="hidden" name="data" value="{{$item->data}}">
+                                <input class="button" type="submit" name="test_icredit_payment_data" value="test icreditPD">
+                            </form>
 
                         </td>
                     </tr>

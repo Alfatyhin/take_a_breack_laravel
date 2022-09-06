@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Request;
+use function PHPUnit\Framework\assertRegExp;
 
 ;
 
@@ -958,6 +959,22 @@ class Orders extends Controller
 
         $order->amoData = json_encode($amoData);
         $order->save();
+    }
+
+    public function testIcreditPaymentData(Request $request)
+    {
+        $data = $request->post('data');
+        $data = json_decode($data, true);
+        $id = $data['order_id'];
+        $order = OrdersModel::where('order_id', $id)->first();
+        if ($order) {
+            $icreditOrderData = OrderService::getShopIcreditOrderData($order);
+            dd($icreditOrderData);
+            $iCreditService = new IcreditServise();
+            $result = $iCreditService->getUrl($icreditOrderData);
+        }
+        dd($data);
+
     }
 
 }
