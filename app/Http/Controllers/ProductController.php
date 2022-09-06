@@ -147,6 +147,7 @@ class ProductController extends Controller
 
 
         if ($mode == 'options') {
+//            dd($post);
             $variables  = false;
             $old_options  = false;
             if ($product->variables) {
@@ -155,9 +156,12 @@ class ProductController extends Controller
             if ($product->options) {
                 $old_options = json_decode($product->options, true);
             }
-            foreach ($post['options'] as $k => $option) {
+            foreach ($post['options'] as $k => &$option) {
                 foreach ($option['choices'] as $ko => $choice ) {
-                    if (!isset($choice['text'])) {
+                    if (!$choice['priceModifier']) {
+                        $option['choices'][$ko]['priceModifier'] = 0;
+                    }
+                    if (empty($choice['text'])) {
                         unset($option['choices'][$ko]);
                     }
                     if ($variables && $old_options) {
