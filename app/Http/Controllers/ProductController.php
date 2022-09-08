@@ -88,6 +88,9 @@ class ProductController extends Controller
                 $slag = strtolower($post['slag']);
                 $slag = preg_replace('/\\W/', '_', $slag);
             }
+            if (empty($post['compareToPrice'])) {
+                $post['compareToPrice'] = 0;
+            }
 
             $product->name = $post['name'];
             $product->slag = $slag;
