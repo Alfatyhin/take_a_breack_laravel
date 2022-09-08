@@ -100,12 +100,12 @@
                         @csrf
                         <p>
                             Ярлык: <input class="name" type="text" name="name" value="{{ $product->name }}">
-                            sku: <input type="text" name="sku" value="{{ $product->sku }}">
+                            sku: <input type="text" name="sku" value="{{ $product->sku }}"> <br>
                             стоимость: <input type="number" name="price" value="{{ $product->price }}">
                             сравнить с ценой: <input type="number" name="compareToPrice" value="{{ $product->compareToPrice }}">
-                            <input type="submit" value="сохранить"> <br>
-
-                            Url: <input class="name" type="text" name="slag" value="{{ $product->slag }}">
+                            <br>
+                            Url: <input class="name @error('slag') is-invalid @enderror" type="text" name="slag" value="{{ $product->slag }}">
+                            <br><input type="submit" value="сохранить">
                         </p>
                         <p>
                             <span class="box_inline border">

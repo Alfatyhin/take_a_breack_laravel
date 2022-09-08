@@ -341,6 +341,14 @@ p.deleted_at {
     font-weight: 900;
     text-align: right;
 }
+input.is-invalid {
+    border: 1px solid red;
+}
+.pop-ap.alert .body {
+    color: brown;
+    font-weight: 900;
+    border: 3px solid red;
+}
 
 footer {
     position: fixed;

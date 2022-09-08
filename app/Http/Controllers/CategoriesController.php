@@ -64,6 +64,13 @@ class CategoriesController extends Controller
         $category = Categories::where('id', $category_id)->first();
 
         if (!empty($category->id)) {
+
+            $validate_array = [
+                'slag' => 'required|unique:categories,slag',
+            ];
+
+            $this->validate($request, $validate_array);
+
             if (!empty($post['name'])) {
                 $category->name = $post['name'];
             }

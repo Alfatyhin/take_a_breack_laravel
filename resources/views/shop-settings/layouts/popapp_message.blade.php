@@ -12,3 +12,14 @@
         </div>
     @endif
 @endisset
+@if ($errors->any())
+    <div class="pop-ap message alert alert-danger">
+        <div class="body">
+            <span class="close"></span>
+
+            @foreach ($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    </div>
+@endif

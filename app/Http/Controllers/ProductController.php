@@ -76,6 +76,13 @@ class ProductController extends Controller
         $post = $request->post();
 
         if ($mode == 'general') {
+
+            $validate_array = [
+                'slag' => 'required|unique:products,slag',
+            ];
+
+            $this->validate($request, $validate_array);
+
             $categories = Categories::all()->sortBy('index_num')->keyBy('id');
 
             $product_category_old_id = $product->category_id;
