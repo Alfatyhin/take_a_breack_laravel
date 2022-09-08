@@ -121,7 +121,7 @@
                             <hr>
                             <p>
                                 Ярлык: <input type="text" name="name" value="{{ $category->name }}"> <br>
-                                Url: <input type="text" name="slag" value="{{ $category->slag }}">
+                                Url: <input type="text" class="@error('slag') is-invalid @enderror" name="slag" value="{{ $category->slag }}">
                             </p>
                             <hr>
                             @php($translite = json_decode($category->translate, true))

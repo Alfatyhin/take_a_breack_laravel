@@ -167,9 +167,9 @@
                             <p>
                                 Название:
                                 @isset($translite['nameTranslated']['en'])
-                                    <input type="text" name="translate[nameTranslated][en]" value="{{ $translite['nameTranslated']['en'] }}">
+                                    <input type="text" class="name" name="translate[nameTranslated][en]" value="{{ $translite['nameTranslated']['en'] }}">
                                 @else
-                                    <input type="text" name="translate[nameTranslated][en]" value="">
+                                    <input type="text" class="name" name="translate[nameTranslated][en]" value="">
                                 @endif
                             </p>
 
@@ -187,9 +187,9 @@
                             <p>
                                 Название:
                                 @isset($translite['nameTranslated']['ru'])
-                                    <input type="text" name="translate[nameTranslated][ru]" value="{{ $translite['nameTranslated']['ru'] }}">
+                                    <input type="text" class="name" name="translate[nameTranslated][ru]" value="{{ $translite['nameTranslated']['ru'] }}">
                                 @else
-                                    <input type="text" name="translate[nameTranslated][ru]" value="">
+                                    <input type="text" class="name" name="translate[nameTranslated][ru]" value="">
                                 @endif
                             </p>
 
@@ -207,9 +207,9 @@
                             <p>
                                 Название:
                                 @isset($translite['nameTranslated']['he'])
-                                    <input type="text" name="translate[nameTranslated][he]" value="{{ $translite['nameTranslated']['he'] }}">
+                                    <input type="text" class="name" name="translate[nameTranslated][he]" value="{{ $translite['nameTranslated']['he'] }}">
                                 @else
-                                    <input type="text" name="translate[nameTranslated][he]" value="">
+                                    <input type="text" class="name" name="translate[nameTranslated][he]" value="">
                                 @endif
                             </p>
 
