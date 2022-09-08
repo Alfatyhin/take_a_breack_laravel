@@ -85,7 +85,7 @@ class CategoriesController extends Controller
                 $slag = strtolower($slag);
 
             } else {
-                $slag = $post['slag'];
+                $slag = strtolower($post['slag']);
                 $slag = preg_replace('/\\W/', '_', $slag);
             }
 
