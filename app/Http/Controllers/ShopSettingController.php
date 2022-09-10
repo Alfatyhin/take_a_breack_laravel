@@ -431,36 +431,36 @@ class ShopSettingController extends Controller
                         $new_path_data = array_slice($path_data, 0,-1);
                         $new_path = "/" . implode('/', $new_path_data) . "/$filename.webp";
                         if (preg_match('/webp$/', $file_names)) {
-                            if (!preg_match('/_product/', $file_names)) {
-                                $flag = true;
-
-                                if (Storage::disk('public_root')->exists($path)) {
-
-                                    if (!Storage::disk('public_root')->exists($new_path)) {
-                                        Storage::disk('public_root')->copy($path, $new_path);
-                                    }
-                                    $img_delete[] = $path;
-
-                                } else {
-//                                Storage::disk('public_root')->copy('/storage/images/160/3p-1662726324.webp', '/storage/images/160/2921468169.webp');
-//                                dd('test 2', $path, $product->id);
-                                }
-                                $path = "$new_path";
-                            }
+//                            if (!preg_match('/_product/', $file_names)) {
+//                                $flag = true;
+//
+//                                if (Storage::disk('public_root')->exists($path)) {
+//
+//                                    if (!Storage::disk('public_root')->exists($new_path)) {
+//                                        Storage::disk('public_root')->copy($path, $new_path);
+//                                    }
+//                                    $img_delete[] = $path;
+//
+//                                } else {
+////                                Storage::disk('public_root')->copy('/storage/images/160/3p-1662726324.webp', '/storage/images/160/2921468169.webp');
+////                                dd('test 2', $path, $product->id);
+//                                }
+//                                $path = "$new_path";
+//                            }
 
                         } else {
 //                            dd($path_old, $path);
-//                            $path = "$new_path";
-//                            $flag = true;
-//                            $file_path = "public/" . implode('/', array_slice($path_data, 1));
-//                            if (Storage::disk('public_root')->exists($path) && $file_data[1] != 'webp') {
-//
-//                                $flag = true;
-//                                $img = ImageManager::make($path_old)->encode('webp', 100);
-//                                $img->save($new_path, 100);
-//                                $img->destroy();
-//                                Storage::disk('public_root')->delete($path);
-//                            }
+                            $path = "$new_path";
+                            $flag = true;
+                            $file_path = "public/" . implode('/', array_slice($path_data, 1));
+                            if (Storage::disk('public_root')->exists($path) && $file_data[1] != 'webp') {
+
+                                $flag = true;
+                                $img = ImageManager::make($path_old)->encode('webp', 100);
+                                $img->save($new_path, 100);
+                                $img->destroy();
+                                Storage::disk('public_root')->delete($path);
+                            }
                         }
 
                     }
