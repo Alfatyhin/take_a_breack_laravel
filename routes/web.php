@@ -127,10 +127,35 @@ Route::middleware(['isAdmin', "ShopSetting"])->group(function () {
     Route::any('crm/shop-settings/banner', [ShopSettingController::class, 'banner'])
         ->name('banner');
 
+    Route::any('crm/shop-settings/test-change-product-count/{order}', [ShopSettingController::class, 'testOrderChangeCount'])
+        ->name('test_change_product_count');
+
     Route::any('crm/shop-settings/test-icredit-payment-data', [Orders::class, 'testIcreditPaymentData'])
         ->name('test_icredit_payment_data');
 
-    Route::any('crm/shop-settings/update-amo-contact/{client}', [ShopSettingController::class, 'updateAmoContact'])->name('update_amo_contact');
+    Route::any('crm/shop-settings/update-amo-contact/{client}', [ShopSettingController::class, 'updateAmoContact'])
+        ->name('update_amo_contact');
+
+
+////////////////////////////////////////////////////////////////////////////
+
+    Route::get('crm/shop-settings/amocrm', [Amocrm::class, 'integrationAmoCrm'])
+        ->name('amocrm');
+
+    Route::get('crm/shop-settings/amocrm/order', [Amocrm::class, 'getOrderById'])
+        ->name('amo.get_order');
+
+    Route::get('crm/shop-settings/amocrm/callback', [Amocrm::class, 'callBack']);
+
+    Route::get('crm/shop-settings/amocrm/pipeline-test', [Amocrm::class, 'pipelineTest']);
+
+    Route::any('crm/shop-settings/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
+        ->name('amo_webhook');
+
+////////////////////////////////////////////////////////////////////////////
+
+
+
 
 });
 
@@ -146,19 +171,6 @@ Route::post('/orders/icredit', [Orders::class, 'getIcreditPaymentUrl'])
     ->name('order.paymenturl');;
 
 
-////////////////////////////////////////////////////////////////////////////
-Route::get('/amocrm/amo', [Amocrm::class, 'amoMirror'])
-    ->middleware(['isAdmin']);
-Route::get('/amocrm', [Amocrm::class, 'integrationAmoCrm'])
-    ->middleware(['isAdmin'])->name('amocrm');
-Route::get('/amocrm/order', [Amocrm::class, 'getOrderById'])
-    ->middleware(['isAdmin'])->name('amo.get_order');
-Route::get('/amocrm/contacts', [Amocrm::class, 'getContacts'])
-    ->middleware(['isAdmin'])->name('amo.get_contacts');
-Route::get('/amocrm/callback', [Amocrm::class, 'callBack']);
-Route::get('/amocrm/pipeline-test', [Amocrm::class, 'pipelineTest']);
-Route::any('/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
-    ->name('amo_webhook');
 
 
 

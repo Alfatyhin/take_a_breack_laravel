@@ -115,42 +115,30 @@ class ShopSettingController extends Controller
 
         $utm_orders = UtmModel::whereBetween('created_at', [$date_from, $date_to])->get()->keyBy('order_id')->toArray();
 
+
         // статистика
-        $ordersAll = DB::table('orders')
+        $paydPeriodInfo['заказов'] = DB::table('orders')
             ->where('orders.deleted_at', null)
             ->whereBetween('orders.created_at', [$date_from, $date_to])
-            ->whereBetween('orders.paymentStatus', [2, 4])
-            ->get();
+            ->whereBetween('orders.paymentStatus', [2, 4])->count('id');
 
-        $paydPeriodInfo = [];
-        $paydPeriodInfo['заказов'] = sizeof($ordersAll);
-        $paydPeriodInfo['средний чек'] = 0;
-        $paydPeriodInfo['totall'] = 0;
 
-        if (!empty($ordersAll)) {
-            foreach ($ordersAll as $k => $item) {
+        foreach ($paymentMethod as $kpm => $method_name) {
+            foreach ($paymentStatus as $kps => $status) {
+                $summ = DB::table('orders')
+                    ->where('orders.deleted_at', null)
+                    ->whereBetween('orders.created_at', [$date_from, $date_to])
+                    ->where('orders.paymentMethod', $kpm)
+                    ->where('orders.paymentStatus', $kps)->sum('orderPrice');
 
-                if ($item->amoId) {
-                    if ($item->paymentStatus == 1) {
-//                    $lostCart[] = $item;
-//                    unset($ordersAll[$k]);
-                    } else {
-                        $paymethodName = $paymentMethod[$item->paymentMethod];
-
-                        if (empty($paydPeriodInfo[$paymethodName])) {
-                            $paydPeriodInfo[$paymethodName] = $item->orderPrice;
-                        } else {
-                            $paydPeriodInfo[$paymethodName] += $item->orderPrice;
-                        }
-                        $paydPeriodInfo['totall'] += $item->orderPrice;
-                    }
+                if ($summ > 0) {
+                    $paydPeriodInfo['orders'][$kpm][$kps]['summ'] = $summ;
+                    $paydPeriodInfo['orders'][$kpm][$kps]['count'] = DB::table('orders')
+                        ->where('orders.deleted_at', null)
+                        ->whereBetween('orders.created_at', [$date_from, $date_to])
+                        ->where('orders.paymentMethod', $kpm)
+                        ->where('orders.paymentStatus', $kps)->count('id');
                 }
-
-            }
-
-            if (!empty(sizeof($orders))) {
-                $paydPeriodInfo['средний чек'] = round($paydPeriodInfo['totall'] / sizeof($ordersAll), 2);
-                $paydPeriodInfo = array_reverse($paydPeriodInfo);
             }
         }
 
@@ -164,10 +152,6 @@ class ShopSettingController extends Controller
 
         $priceYear = OrdersModel::whereYear('created_at', $date_start->format('Y'))
             ->sum('orderPrice');
-
-//        print_r(json_decode($orders->items()[0]->orderData, true));
-
-        echo "</pre>";
 
         return view('shop-settings.orders', [
             'orders'         => $orders,
@@ -210,14 +194,14 @@ class ShopSettingController extends Controller
         $categories = Categories::all()->sortBy('index_num')->keyBy('id');
         $products = Product::all()->sortBy('index_num')->keyBy('id');
 
-
-
         $empty_categories = [];
         foreach ($products as $product) {
             if ($product->category_id < 1 && empty($product->categories)) {
                 $empty_categories[] = $product->id;
             }
         }
+
+
 
         return view('shop-settings.products', [
             'message' => $request->message,
@@ -343,8 +327,7 @@ class ShopSettingController extends Controller
             $file = $request->file('image');
 
             $file_name = $file->getClientOriginalName();
-            $file_data = explode('.', $file_name);
-            $image_name = $file_data[0];
+            $image_name = time();
             $path = 'public/images';
             if (Storage::exists("$path/$image_name.webp")) {
                 session()->flash('message', ["image for this name isset, please rename download file"]);
@@ -431,7 +414,6 @@ class ShopSettingController extends Controller
     public function imageTest(Request $request)
     {
 
-        dd('stop 1');
         $products = Product::all();
 
         foreach ($products as $product) {
@@ -442,31 +424,63 @@ class ShopSettingController extends Controller
                     foreach ($item as &$path) {
                         $path_data = explode('/', $path);
                         $path_data = array_slice($path_data,1);
-                        $path_old = implode('/', $path_data);  $file_names = last($path_data);
+                        $path_old = implode('/', $path_data);
+                        $file_names = last($path_data);
                         $file_data = explode('.', $file_names);
-                        $filename = $file_data[0];
+                        $filename = $product->id . "_product";
                         $new_path_data = array_slice($path_data, 0,-1);
-                        $new_path = implode('/', $new_path_data)."/$filename.webp";
-                        $path = "/$new_path";
+                        $new_path = "/" . implode('/', $new_path_data) . "/$filename.webp";
+                        if (preg_match('/webp$/', $file_names)) {
+                            if (!preg_match('/_product/', $file_names)) {
+                                $flag = true;
 
-                        $file_path = "public/" . implode('/', array_slice($path_data, 1));
-                        if (Storage::exists($file_path) && $file_data[1] != 'webp') {
+                                if (Storage::disk('public_root')->exists($path)) {
 
-                            $flag = true;
-                            $img = ImageManager::make($path_old)->encode('webp', 100);
-                            $img->save($new_path, 100);
-                            $img->destroy();
-                            Storage::delete($file_path);
+                                    if (!Storage::disk('public_root')->exists($new_path)) {
+                                        Storage::disk('public_root')->copy($path, $new_path);
+                                    }
+                                    $img_delete[] = $path;
+
+                                } else {
+//                                Storage::disk('public_root')->copy('/storage/images/160/3p-1662726324.webp', '/storage/images/160/2921468169.webp');
+//                                dd('test 2', $path, $product->id);
+                                }
+                                $path = "$new_path";
+                            }
+
+                        } else {
+//                            dd($path_old, $path);
+//                            $path = "$new_path";
+//                            $flag = true;
+//                            $file_path = "public/" . implode('/', array_slice($path_data, 1));
+//                            if (Storage::disk('public_root')->exists($path) && $file_data[1] != 'webp') {
+//
+//                                $flag = true;
+//                                $img = ImageManager::make($path_old)->encode('webp', 100);
+//                                $img->save($new_path, 100);
+//                                $img->destroy();
+//                                Storage::disk('public_root')->delete($path);
+//                            }
                         }
+
                     }
                 }
             }
+
 
             if ($flag) {
                 $product->galery = json_encode($images);
                 $product->image = json_encode($images[0]);
                 $product->save();
-                dd($product->toArray());
+
+            }
+        }
+
+        if (isset($img_delete)) {
+            foreach ($img_delete as $old_img) {
+                if (Storage::disk('public_root')->exists($old_img)) {
+                    Storage::disk('public_root')->delete($old_img);
+                }
             }
         }
         dd('done');
@@ -725,6 +739,14 @@ class ShopSettingController extends Controller
             'message' => $request->message,
             'banner'  => $banner
         ]);
+    }
+
+    public function testOrderChangeCount(Request $request, OrdersModel $order)
+    {
+        $post = $request->post();
+        $OrderService = new OrderService();
+        $OrderService->changeProductsCountTest($order);
+
     }
 
 
