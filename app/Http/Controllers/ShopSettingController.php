@@ -413,7 +413,7 @@ class ShopSettingController extends Controller
 
     public function imageTest(Request $request)
     {
-
+        dd('stop');
         $products = Product::all();
 
         foreach ($products as $product) {
