@@ -688,17 +688,8 @@ class OrderService
                 $variables = json_decode($product->variables, true);
                 $variant = $variables[$var_key];
                 $price = $variant['defaultDisplayedPrice'];
-                $variant_count = $variant['quantity'] - $item['count'];
-
-                if ($variant_count < 0 ) {
-                    $variant_count = 0;
-                }
-
-                $variables[$var_key]['quantity'] = $variant_count;
 
                 $item_total = $price * $item['count'];
-                $product->variables = json_encode($variables);
-                $product->save();
 
                 $item['price'] = $variant['defaultDisplayedPrice'];
                 $item['sku'] = $variant['sku'];
@@ -778,23 +769,6 @@ class OrderService
             $data['delivery_discount'] = round($order_total / 100 * $order['order_data']['delivery_discount'], 1);
             $order_total -= $data['delivery_discount'];
         }
-
-
-        $data['items'] = $products;
-        $data['products_total'] = round($products_total, 1);
-        $data['order_total'] = round($order_total, 1);
-        $order['order_data'] = $data;
-
-        return $order;
-    }
-
-    public static function getShopShortOrderData($order)
-    {
-
-        $products = $order['order_data']['products'];
-
-        dd($order);
-        $products_total = 0;
 
 
         $data['items'] = $products;
@@ -1221,6 +1195,44 @@ class OrderService
                         if ($product_variables[$variant_key]['quantity'] < 0) {
                             $product_variables[$variant_key]['quantity'] = 0;
                         }
+                        $product->variables = json_encode($product_variables);
+                        $product->save();
+                    }
+
+                }
+            }
+
+        }
+
+    }
+
+    public function changeProductsCountTest($order)
+    {
+        $orderData = json_decode($order->orderData, true);
+        $products = $orderData['order_data']['products'];
+//        dd($products);
+        foreach ($products as $item) {
+            $prod_id = $item['id'];
+            $product = Product::find($prod_id);
+            if ($product) {
+                if (empty($item['variant'])) {
+                    if ($product->unlimited == 0) {
+                        $product->count -= $item['count'];
+                        if ( $product->count < 0) {
+                            $product->count = 0;
+                        }
+                        $product->save();
+                    }
+                } else {
+                    $variant_key = $item['variant'];
+                    $product_variables = json_decode($product->variables, true);
+
+                    if ($product_variables[$variant_key]['unlimited'] == 0) {
+                        $product_variables[$variant_key]['quantity'] -= $item['count'];
+                        if ($product_variables[$variant_key]['quantity'] < 0) {
+                            $product_variables[$variant_key]['quantity'] = 0;
+                        }
+                        $product->variables = json_encode($product_variables);
                         $product->save();
                     }
 

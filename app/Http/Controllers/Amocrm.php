@@ -45,12 +45,6 @@ class Amocrm extends Controller
         ]);
     }
 
-    public function amoMirror()
-    {
-
-        return view('amocrm.mirror');
-    }
-
     // обработка ответа амо
     // запись токена
     public function callBack(Request $request)
@@ -325,75 +319,6 @@ class Amocrm extends Controller
 
     }
 
-    public function getContacts()
-    {
-
-        $contacts = Storage::disk('local')->get('/data/amo_contacts.json');
-        $contacts = json_decode($contacts, true);
-
-        echo "<pre>";
-
-        foreach ($contacts as $page) {
-
-//            var_dump($page['contacts']);
-            foreach ($page['contacts'] as $item) {
-                $email = false;
-                $contactId = $item['id'];
-//                var_dump($contactId);
-                $data = $item['custom_fields_values'];
-
-                if (!empty($data)) {
-
-                    foreach ($data as $itemData) {
-                        $fieldCode = $itemData['field_code'];
-
-                        if (empty($fieldCode)) {
-//                        var_dump($itemData);
-                        } else {
-
-                            if ($fieldCode == 'EMAIL') {
-                                $email = $itemData['values'][0]['value'];
-
-                            }
-
-                        }
-
-                    }
-
-
-                } else {
-                    $email = 'not custom fields';
-                }
-
-                if ($email) {
-                    $testContact[$email][] = $item;
-                } else {
-                    $testContact['not mail'][] = $item;
-                }
-
-
-
-            }
-        }
-
-        foreach ($testContact as $key => $item) {
-            $size = sizeof($item);
-
-
-            if ($key != 'not custom fields'
-                && $key != 'not mail'
-                && $key != 'lubarove@gmail.com'
-                && $key != 'Jivo'
-                && $key != 'Get more'
-            ) {
-                if ($size > 1) {
-                    echo "$key - ( $size ) <br>";
-
-                }
-            }
-        }
-
-    }
 
     public function pipelineTest(Request $request)
     {

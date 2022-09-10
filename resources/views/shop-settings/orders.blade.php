@@ -32,12 +32,24 @@
     <a class="button" href="{{ route('shop_settings_orders', ['dates' => 'today']) }}"> за сегодня </a>
     <a class="button" href="{{ route('shop_settings_orders', ['dates' => 'month']) }}"> за месяц </a>
     <hr>
-    <p>
-        отчет за период с {{ $date_from->format('Y-m-d') }} по {{ $date_to->format('Y-m-d') }} <br>
-        @foreach($paydPeriodInfo as $key => $summ)
-            &nbsp; &nbsp; &nbsp; {{ $key }} - {{ $summ }} <br>
-        @endforeach
-    </p>
+    <div class="statistic">
+        <p>
+            отчет за период с {{ $date_from->format('Y-m-d') }} по {{ $date_to->format('Y-m-d') }} <br>
+            заказов - {{ $paydPeriodInfo['заказов'] }} <br>
+            @isset($paydPeriodInfo['orders'])
+                @foreach($paydPeriodInfo['orders'] as $keypm => $item)
+                    &nbsp; &nbsp; &nbsp; <b>{{ $paymentMethod[$keypm] }}</b>  <br>
+                    @foreach($item as $kps => $value)
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{ $paymentStatus[$kps] }} - summ
+                        <span class="order_summ">{{ $value['summ'] }}</span>, count {{ $value['count'] }} <br>
+                    @endforeach
+                @endforeach
+            @endisset
+        </p>
+        <div class="out">
+
+        </div>
+    </div>
 
 
     <form action="{{ route('shop_settings_orders') }}" method="get">
@@ -454,6 +466,9 @@
                         <span class="position-absolute text-small button show-hide"></span>
 
 
+                        <a class=" button" href="{{ route('test_change_product_count', ['order' => $item->id]) }}" >
+                            test_change_product_count
+                        </a>
                         <a class="hide button" href="{{ route('amo_create_invoice_to_order', ['order' => $item->id]) }}" >
                             add amo invoice to lead
                         </a>

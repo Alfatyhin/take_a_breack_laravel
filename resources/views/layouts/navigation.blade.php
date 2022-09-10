@@ -49,9 +49,9 @@
 
                     <x-slot name="content" >
                         <div class="sub-menu">
-                            <x-nav-link :href="route('amo.get_contacts')" >
-                                contacts
-                            </x-nav-link>
+{{--                            <x-nav-link :href="route('amo.get_contacts')" >--}}
+{{--                                contacts--}}
+{{--                            </x-nav-link>--}}
                         </div>
                     </x-slot>
                 </x-dropdown>
