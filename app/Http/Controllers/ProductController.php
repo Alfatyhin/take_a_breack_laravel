@@ -318,6 +318,35 @@ class ProductController extends Controller
         $new_product->name = $product->name . ' clone';
         $new_product->sku = $product->sku . '-1';
         $new_product->slag = $product->slag . '_clone';
+
+        $image_galery = json_decode($product->galery, true);
+
+        if (!empty($image_galery)) {
+            $flag = false;
+            foreach ($image_galery as $ki => &$item) {
+                foreach ($item as &$path) {
+                    $path_data = explode('/', $path);
+                    $path_data = array_slice($path_data,1);
+                    $file_names = last($path_data);
+                    $filename = $product->id . "_" . $ki . "_product_clone";
+                    $new_path_data = array_slice($path_data, 0,-1);
+                    $new_path = "/" . implode('/', $new_path_data) . "/$filename.webp";
+                    if (preg_match('/webp$/', $file_names)) {
+                        if (Storage::disk('public_root')->exists($path)) {
+                            $flag = true;
+                            if (!Storage::disk('public_root')->exists($new_path)) {
+                                Storage::disk('public_root')->copy($path, $new_path);
+                            }
+                            $path = "$new_path";
+                        }
+                    }
+                }
+            }
+            if ($flag) {
+                $product->galery = json_encode($image_galery);
+                $product->image = json_encode($image_galery[0]);
+            }
+        }
         $new_product->save();
 
 
