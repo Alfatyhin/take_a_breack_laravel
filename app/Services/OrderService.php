@@ -1208,7 +1208,12 @@ class OrderService
 
     public function changeProductsCountTest($order)
     {
-        $orderData = json_decode($order->orderData, true);
+        if (is_string($order->orderData)) {
+            $orderData = json_decode($order->orderData, true);
+        } else {
+            $orderData =  $order->orderData;
+        }
+
         $products = $orderData['order_data']['products'];
 //        dd($products);
         foreach ($products as $item) {
