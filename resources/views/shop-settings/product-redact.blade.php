@@ -350,7 +350,7 @@
                                 <div class="content_item option_{{ $option['name'] }}">
                                     <div class="box_inline box_border">
                                         наименование:
-                                        <input type="text" name="options[{{ $k }}][name]" value="{{ $option['name'] }}" disabled>
+                                        <input type="text" name="options[{{ $k }}][name]" value="{{ $option['name'] }}" >{{ $option['name'] }}
                                         <hr>
                                         <p class="opening_box plus">Переводы</p>
                                         <div class="open_box closed">

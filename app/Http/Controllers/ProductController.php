@@ -177,6 +177,9 @@ class ProductController extends Controller
                     }
                     if ($variables && $old_options) {
                         foreach ($old_options as $old_option) {
+                            if (!isset($old_option['name']) || !isset($option['name'])) {
+                                dd($old_option['name'], $option);
+                            }
                             if ($old_option['name'] == $option['name']) {
                                 foreach ($option['choices'] as $kc => $choice) {
                                     if (isset($choice['text']) && $choice['text'] != $old_option['choices'][$kc]['text']) {
