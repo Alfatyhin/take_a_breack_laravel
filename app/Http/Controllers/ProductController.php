@@ -168,30 +168,30 @@ class ProductController extends Controller
                 $old_options = json_decode($product->options, true);
             }
             foreach ($post['options'] as $k => &$option) {
-                foreach ($option['choices'] as $ko => $choice ) {
+                foreach ($option['choices'] as $ko => $choice) {
                     if (!$choice['priceModifier']) {
                         $option['choices'][$ko]['priceModifier'] = 0;
                     }
                     if (empty($choice['text'])) {
                         unset($option['choices'][$ko]);
                     }
-                    if ($variables && $old_options) {
-                        foreach ($old_options as $old_option) {
-                            if (!isset($old_option['name']) || !isset($option['name'])) {
-//                                dd($old_option['name'], $option);
-                            }
-                            if ($old_option['name'] == $option['name']) {
-                                foreach ($option['choices'] as $kc => $choice) {
-                                    if (isset($choice['text']) && $choice['text'] != $old_option['choices'][$kc]['text']) {
-                                        $new_choice_text = $choice['text'];
-                                        foreach ($variables as &$variant) {
-                                            foreach ($variant['options'] as &$variant_option) {
-                                                if ($variant_option['name'] == $option['name']
-                                                    && $variant_option['value'] == $old_option['choices'][$kc]['text']) {
-                                                    $variant_option['value'] = $new_choice_text;
-                                                }
-                                            }
-                                        }
+                }
+            }
+            foreach ($post['options'] as $k => &$option) {
+
+                if ($variables && $old_options) {
+
+                    foreach ($variables as &$variant) {
+
+                        foreach ($variant['options'] as &$variant_option) {
+
+                            if ($variant_option['name'] == $old_options[$k]['name']) {
+
+                                $variant_option['name'] = $option['name'];
+
+                                foreach ($old_options[$k]['choices'] as $kc => $old_choise) {
+                                    if ($variant_option['value'] == $old_choise['text']) {
+                                        $variant_option['value'] = $option['choices'][$kc]['text'];
                                     }
                                 }
                             }

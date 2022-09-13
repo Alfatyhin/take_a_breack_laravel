@@ -364,18 +364,19 @@
                                         </div>
                                     </div>
                                     <div class="box_inline box_border">
-                                        тип:
-                                        <select name="options[{{ $k }}][type]">
-                                            @foreach($options_select as $ks => $item)
-                                                @if($option['type'] == $ks)
-                                                    <option value="{{ $ks }}" selected>{{ $item }}</option>
-                                                @else
+                                        <input type="hidden" name="options[{{ $k }}][type]" value="{{ $option['type'] }}">
+                                        тип: {{ $option['type'] }}
+{{--                                        <select name="options[{{ $k }}][type]">--}}
+{{--                                            @foreach($options_select as $ks => $item)--}}
+{{--                                                @if($option['type'] == $ks)--}}
+{{--                                                    <option value="{{ $ks }}" selected>{{ $item }}</option>--}}
+{{--                                                @else--}}
 
-                                                    <option value="{{ $ks }}" >{{ $item }}</option>
-                                                @endif
+{{--                                                    <option value="{{ $ks }}" >{{ $item }}</option>--}}
+{{--                                                @endif--}}
 
-                                            @endforeach
-                                        </select>
+{{--                                            @endforeach--}}
+{{--                                        </select>--}}
                                     </div>
                                     <div class="box_block">
                                         <p>
