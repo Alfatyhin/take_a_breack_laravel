@@ -42,8 +42,11 @@ class ShopThanks
 
         if ($order) {
             $order = Orders::where('id', $order->id)->first();
-
-            $orderData = json_decode($order->orderData, true);
+            if (is_string($order->orderData)) {
+                $orderData = json_decode($order->orderData, true);
+            } else {
+                $orderData =  $order->orderData;
+            }
             if (isset($orderData['order_data']['discount'])) {
                 $code = $orderData['order_data']['discount']['code'];
                 $promo_code = Coupons::where('code', $code)->first();
