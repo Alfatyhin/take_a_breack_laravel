@@ -1247,6 +1247,8 @@ class OrderService
                     }
 
                 }
+            } else {
+                print_r('no product');
             }
 
         }
