@@ -537,6 +537,10 @@ class ShopSettingController extends Controller
 
         $amo_contact = $amoCrmService->getContactBuId($client->amoId);
 
+        $client_orders = OrdersModel::where('clientId', $client->id)
+            ->select('order_id', 'id')
+            ->get()->toArray();
+
         if (!$amo_contact && $amo_clones) {
             $amo_clones_rev = array_reverse($amo_clones);
             $client->amoId = $amo_clones_rev[0]['id'];
@@ -547,7 +551,8 @@ class ShopSettingController extends Controller
         return view('shop-settings.client', [
             'message' => $request->message,
             'client' => $client,
-            'amo_clones' => $amo_clones
+            'amo_clones' => $amo_clones,
+            'client_orders' => $client_orders
         ]);
 
     }

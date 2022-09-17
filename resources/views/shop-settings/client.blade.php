@@ -73,6 +73,15 @@
                 </div>
             @endforeach
         @endif
+
+        @if(!empty($client_orders))
+            <h2>Client orders</h2>
+            @foreach($client_orders as $key => $item)
+                <a class="button" href="{{ route('shop_settings_orders', ['order_id' => $item['order_id']]) }}">
+                    {{ $item['order_id'] }}
+                </a> <br>
+            @endforeach
+        @endif
     </div>
 
 @stop
