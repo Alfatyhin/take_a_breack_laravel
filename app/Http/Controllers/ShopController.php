@@ -743,6 +743,7 @@ class ShopController extends Controller
     {
 
         $post = $request->post();
+        dd($post);
 
         $post['phone'] = str_replace('_', '', $post['phone']);
 
