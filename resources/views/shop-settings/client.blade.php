@@ -76,10 +76,20 @@
 
         @if(!empty($client_orders))
             <h2>Client orders</h2>
+            <hr>
             @foreach($client_orders as $key => $item)
-                <a class="button" href="{{ route('shop_settings_orders', ['order_id' => $item['order_id']]) }}">
-                    {{ $item['order_id'] }}
-                </a> <br>
+                <p>
+                    order id: <b>{{ $item['order_id'] }}</b> <br>
+                    сумма: {{ $item['orderPrice'] }} статус оплаты - {{ $paymentStatus[$item['paymentStatus']] }}<br>
+                    чек: {{ $invoiceStatus[$item['invoiceStatus']] }}<br>
+                    дата создания: {{ $item['created_at'] }} <br>
+                    посленее изменение: {{ $item['updated_at'] }} <br>
+
+                    <a class="button" href="{{ route('shop_settings_orders', ['order_id' => $item['order_id']]) }}">
+                        найти
+                    </a>
+                </p>
+                <hr>
             @endforeach
         @endif
     </div>

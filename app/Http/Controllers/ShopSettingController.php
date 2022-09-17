@@ -531,6 +531,11 @@ class ShopSettingController extends Controller
 
     public function clientData(Request $request, Clients $client)
     {
+
+        $paymentMethod = AppServise::getOrderPaymentMethod();
+        $paymentStatus = AppServise::getOrderPaymentStatus();
+        $invoiceStatus = AppServise::getOrderInvoiceStatus();
+
         $client->data = json_decode($client->data, true);
         $amoCrmService = new AmoCrmServise();
         $amo_clones = $amoCrmService->getContactDoubles($client->email);
@@ -538,8 +543,8 @@ class ShopSettingController extends Controller
         $amo_contact = $amoCrmService->getContactBuId($client->amoId);
 
         $client_orders = OrdersModel::where('clientId', $client->id)
-            ->select('order_id', 'id')
-            ->get()->toArray();
+            ->select('order_id', 'id', 'paymentStatus', 'orderPrice', 'invoiceStatus', 'created_at', 'updated_at')
+            ->get();
 
         if (!$amo_contact && $amo_clones) {
             $amo_clones_rev = array_reverse($amo_clones);
@@ -550,6 +555,9 @@ class ShopSettingController extends Controller
 
         return view('shop-settings.client', [
             'message' => $request->message,
+            'paymentMethod'  => $paymentMethod,
+            'paymentStatus'  => $paymentStatus,
+            'invoiceStatus'  => $invoiceStatus,
             'client' => $client,
             'amo_clones' => $amo_clones,
             'client_orders' => $client_orders
