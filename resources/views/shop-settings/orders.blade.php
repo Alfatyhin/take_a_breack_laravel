@@ -118,7 +118,9 @@
                     @endphp
 
                     <p>
-                        <b>имя:</b> <a href="{{ route('client_data', ['client' => $orderSearch->clientId]) }}" >{{ $orderSearch->name }} </a><br>
+                        <b>имя:</b> {{ $orderSearch->name }}
+                        <a class="button" href="{{ route('client_data', ['client' => $orderSearch->clientId]) }}" > карточка клиента </a>
+                        <br>
                         <b>email:</b> {{ $orderSearch->email }} <br>
                         @isset($orderData['phone'])
                         <b>tel:</b> {{ $orderData['phone'] }}
@@ -376,7 +378,9 @@
                         @else
 
                             <p>
-                                <b>имя:</b> <a href="{{ route('client_data', ['client' => $item->clientId]) }}" >{{ $item->name }} </a><br>
+                                <b>имя:</b>{{ $item->name }}
+                                <a class="button" href="{{ route('client_data', ['client' => $item->clientId]) }}" > карточка клиента </a>
+                                <br>
                                 <b>email:</b> {{ $item->email }} <br>
                                 @isset($orderData['phone'])
                                     <b>tel:</b> {{ $orderData['phone'] }}
