@@ -541,6 +541,12 @@ class ShopSettingController extends Controller
         $amo_clones = $amoCrmService->getContactDoubles($client->email);
 
         $amo_contact = $amoCrmService->getContactBuId($client->amoId);
+        if (isset($client->data['phones'])) {
+            $phones = array_unique($client->data['phones']);
+            $client->data = json_encode($phones);
+            $client->save();
+            $client->data = json_decode($client->data, true);
+        }
 
         $client_orders = OrdersModel::where('clientId', $client->id)
             ->select('order_id', 'id', 'paymentStatus', 'orderPrice', 'invoiceStatus', 'created_at', 'updated_at')

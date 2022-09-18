@@ -653,10 +653,8 @@ class ShopController extends Controller
             }
             if (isset($data['phones'])) {
                 $phones = $data['phones'];
-                $test_phones = array_reverse($phones);
-                if (!isset($test_phones[$phone])) {
-                    $phones[] = $phone;
-                }
+                $phones[] = $phone;
+                $phones = array_unique($phones);
                 $data['phones'] = $phones;
             } else {
                 $data['phones'][] = $phone;
