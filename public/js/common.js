@@ -590,3 +590,15 @@ function checkProduct_cart(products_cart) {
 }
 
 var client = getObjToLocalStorage('client');
+console.log(client);
+
+$(function(){
+  if (!!ga) {
+    ga(function(tracker) {
+      var clientId = tracker.get('clientId');
+      console.log(clientId);
+      $("input[name='gClientId']").val(clientId);
+    });
+  }
+
+});
