@@ -17,8 +17,8 @@ class VerifyCsrfToken extends Middleware
         'orders/thanks',
         'orders/response',
         'orders/icredit',
-        'amocrm/callback',
-        'amocrm/amowebhok',
+        'crm/shop-settings/amocrm/callback',
+        'crm/shop-settings/amocrm/amowebhok',
         'api/*'
     ];
 

@@ -94,8 +94,10 @@ class Amocrm extends Controller
         }
 
 
+        WebhookLog::addLog('amo web hook ', $post);
+
         if (!empty($post['leads'])) {
-            WebhookLog::addLog('amo web hook ', $post);
+//            WebhookLog::addLog('amo web hook ', $post);
 
             foreach ($post['leads'] as $event => $items) {
 
