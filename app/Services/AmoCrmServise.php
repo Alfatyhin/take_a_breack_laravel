@@ -1018,7 +1018,7 @@ class AmoCrmServise
         $CustomFieldValueModel->setFieldId($field_id);
         $CustomFieldValueModel->setValues(
             (new UrlCustomFieldValueCollection())
-                ->add((new UrlCustomFieldValueModel())->setValue($value))
+                ->add((new BaseCustomFieldValueModel())->setValue($value))
         );
         $leadCustomFieldsValues->add($CustomFieldValueModel);
 
