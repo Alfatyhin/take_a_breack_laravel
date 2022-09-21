@@ -90,7 +90,7 @@
                                     <p style="margin: 0; padding: 0; font-family: 'Roboto',sans-serif;font-style: normal;font-weight: 400;font-size: 16px;line-height: 19px;color: #000000;text-align: left; margin-top: 10px;"><strong>Статус оплаты:</strong> {{ $order->paymentStatus }}</p>
                                     <p style="margin: 0; padding: 0; font-family: 'Roboto',sans-serif;font-style: normal;font-weight: 400;font-size: 16px;line-height: 19px;color: #000000;text-align: left; margin-top: 10px;"><strong>Статус заказа:</strong> В обработке</p>
                                     <p style="margin: 0; padding: 0; font-family: 'Roboto',sans-serif;font-style: normal;font-weight: 400;font-size: 16px;line-height: 19px;color: #000000;text-align: left; margin-top: 10px;"><strong>Способ доставки:</strong>
-                                        @if($order->orderData['delivery'] == 'delivery')
+                                        @if(isset($order->orderData['delivery']) && $order->orderData['delivery'] == 'delivery')
                                             Служба доставки
                                         @else
                                             Самовывоз
@@ -105,7 +105,7 @@
                                 <td align="center">
                                     <p style="margin: 0; padding: 0; margin-top: 25px; font-family: 'Roboto',sans-serif;font-style: normal;font-weight: 400;font-size: 16px;line-height: 19px;text-align: center;color: #000000;text-align: left; text-transform: uppercase;">Детали доставки</p>
                                     <p style="margin: 0; padding: 0; font-family: 'Roboto',sans-serif;font-style: normal;font-weight: 400;font-size: 16px;line-height: 19px;text-align: center;color: #000000;text-align: left;margin-top: 25px;">
-                                        @if($order->orderData['delivery'] == 'delivery')
+                                        @if(isset($order->orderData['delivery']) && $order->orderData['delivery'] == 'delivery')
                                             <strong>Адрес:</strong>
                                             г. {{ $order->orderData['city'] }}, ул. {{ $order->orderData['street'] }},
                                             дом  {{ $order->orderData['house'] }}

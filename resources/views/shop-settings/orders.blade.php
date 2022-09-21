@@ -469,10 +469,6 @@
                     <td>
                         <span class="position-absolute text-small button show-hide"></span>
 
-
-                        <a class=" button" href="{{ route('test_change_product_count', ['order' => $item->id]) }}" >
-                            test_change_product_count
-                        </a>
                         <a class="hide button" href="{{ route('amo_create_invoice_to_order', ['order' => $item->id]) }}" >
                             add amo invoice to lead
                         </a>
@@ -520,6 +516,10 @@
                                 test PayPal
                             </a> <br>
                         </div>
+                        <br>
+                        <a class="button" href="{{ route('api_order_view', [ 'order_id' => $item->order_id]) }}" >
+                            api order view
+                        </a> <br>
                     </td>
 
                 </tr>

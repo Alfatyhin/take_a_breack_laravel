@@ -79,7 +79,7 @@ $lang = $order->orderData['lang'];
                             <table align="center" cellpadding="0" cellspacing="0" width="95%" style="max-width: 600px; min-width: 300px; background-color: #FEEDD6">
                                 <tr>
                                     <td align="center" width="97">
-                                        <img width="86" src="https://i.ibb.co/QrGvFb4/Ellipse-13.png" height="86" style="max-width: 86px; min-width: 86px" alt="" align="left">
+                                        <img width="86" src="https://takeabreak.co.il/img/common/logo.webp" height="86" style="max-width: 86px; min-width: 86px" alt="" align="left">
                                     </td>
                                     <td align="center">
                                         <p style="margin: 0; padding: 0; font-family: 'Roboto',sans-serif;font-style: normal;font-weight: 400;font-size: 32px;line-height: 38px;color: #121212; text-align: left">Take a Break.</p>
@@ -147,12 +147,12 @@ $lang = $order->orderData['lang'];
                                             <tr>
                                                 <td align="left">
                                                     <a href="#" target="_blank" style="text-decoration: none">
-                                                        <img width="33" height="33" src="https://i.ibb.co/SxvZx2m/inst.png" style="display: block" alt="">
+                                                        <img width="33" height="33" src="https://takeabreak.co.il/img/common/inst.png" style="display: block" alt="">
                                                     </a>
                                                 </td>
                                                 <td align="right">
                                                     <a href="#" target="_blank" style="text-decoration: none">
-                                                        <img width="33" height="33" src="https://i.ibb.co/6HYQmh8/facebook.png" style="display: block" alt="">
+                                                        <img width="33" height="33" src="https://takeabreak.co.il/img/common/facebook.png" style="display: block" alt="">
                                                     </a>
                                                 </td>
                                             </tr>

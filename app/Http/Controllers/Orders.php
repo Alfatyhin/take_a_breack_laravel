@@ -806,8 +806,10 @@ class Orders extends Controller
 
         if ($Data['payment_status'] == 'Completed') {
             $order = OrdersModel::where('order_id', $order_id)->first();
-            $order->invoiceStatus = true;
-            $order->save();
+            if ($order) {
+                $order->invoiceStatus = true;
+                $order->save();
+            }
         }
 
         $response = [
@@ -846,6 +848,7 @@ class Orders extends Controller
         $order_id = $request->get('id');
         $order = OrderService::sendMailNewOrder($order_id, $send); // test_view or test_send
 
+        $order->orderData = json_decode($order->orderData, true);
         $orderData = $order->orderData;
         $lang = $orderData['lang'];
 

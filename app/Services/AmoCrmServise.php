@@ -36,6 +36,7 @@ use AmoCRM\Models\CustomFieldsValues\PriceCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\SelectCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\StreetAddressCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\TextCustomFieldValuesModel;
+use AmoCRM\Models\CustomFieldsValues\UrlCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\BirthdayCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\CheckboxCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\DateCustomFieldValueCollection;
@@ -48,6 +49,7 @@ use AmoCRM\Models\CustomFieldsValues\ValueCollections\PriceCustomFieldValueColle
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\SelectCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\StreetAddressCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\TextCustomFieldValueCollection;
+use AmoCRM\Models\CustomFieldsValues\ValueCollections\UrlCustomFieldValueCollection;
 use AmoCRM\Models\CustomFieldsValues\ValueModels\BaseCustomFieldValueModel;
 use AmoCRM\Models\CustomFieldsValues\ValueModels\CheckboxCustomFieldValueModel;
 use AmoCRM\Models\CustomFieldsValues\ValueModels\DateCustomFieldValueModel;
@@ -981,6 +983,8 @@ class AmoCrmServise
         if (!empty($amoData['tags'])) {
             $lead->getTags($amoData['tags']);
         }
+        $leadCustomFieldsValues = $this->addUrlCustomFieldValuesModel($leadCustomFieldsValues, 519327, "https://takeabreak.co.il/api/orders/view-order/" . $amoData['order_id']);
+
 
         // комнплексное создание сделки
         $lead->setName($amoData['order name'])
@@ -1004,6 +1008,19 @@ class AmoCrmServise
                 ->add((new TextCustomFieldValueModel())->setValue($value))
         );
         $leadCustomFieldsValues->add($textCustomFieldValueModel);
+
+        return $leadCustomFieldsValues;
+    }
+
+    public function addUrlCustomFieldValuesModel($leadCustomFieldsValues, $field_id, $value)
+    {
+        $CustomFieldValueModel = new UrlCustomFieldValuesModel();
+        $CustomFieldValueModel->setFieldId($field_id);
+        $CustomFieldValueModel->setValues(
+            (new UrlCustomFieldValueCollection())
+                ->add((new UrlCustomFieldValueModel())->setValue($value))
+        );
+        $leadCustomFieldsValues->add($CustomFieldValueModel);
 
         return $leadCustomFieldsValues;
     }

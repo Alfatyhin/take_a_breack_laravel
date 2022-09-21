@@ -257,6 +257,10 @@ Route::get('/import-db', [Controller::class, 'importDB'])
 
 
 
+
+Route::get('/api/orders/view-order/{order_id}', [ApiController::class, 'OrderView'])
+    ->name('api_order_view');
+
 Route::any('/api/ginvoice/webhook', [Orders::class, 'gInvoceWebhook'])
     ->name('api_ginvoice');
 

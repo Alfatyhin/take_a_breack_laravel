@@ -89,7 +89,7 @@
                                     <p style="margin: 0; padding: 0; font-family: 'Roboto',sans-serif;font-style: normal;font-weight: 400;font-size: 16px;line-height: 19px;color: #000000;text-align: left; margin-top: 10px;"><strong>Payment state:</strong> {{ $order->paymentStatus }}</p>
                                     <p style="margin: 0; padding: 0; font-family: 'Roboto',sans-serif;font-style: normal;font-weight: 400;font-size: 16px;line-height: 19px;color: #000000;text-align: left; margin-top: 10px;"><strong>Order status:</strong> In processing</p>
                                     <p style="margin: 0; padding: 0; font-family: 'Roboto',sans-serif;font-style: normal;font-weight: 400;font-size: 16px;line-height: 19px;color: #000000;text-align: left; margin-top: 10px;"><strong>Delivery method:</strong>
-                                        @if($order->orderData['delivery'] == 'delivery')
+                                        @if(isset($order->orderData['delivery']) && $order->orderData['delivery'] == 'delivery')
                                             Delivery service
                                         @else
                                             Pickup
