@@ -247,6 +247,11 @@
                             </a> <br>
                         </div>
                     @endif
+
+                    <br>
+                    <a class="button" href="{{ route('api_order_view', [ 'order_id' => $orderSearch->order_id]) }}" >
+                        распечатать заказ
+                    </a> <br>
                 </td>
 
             </tr>
@@ -518,7 +523,7 @@
                         </div>
                         <br>
                         <a class="button" href="{{ route('api_order_view', [ 'order_id' => $item->order_id]) }}" >
-                            api order view
+                            распечатать заказ
                         </a> <br>
                     </td>
 
