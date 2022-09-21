@@ -149,7 +149,7 @@ Route::middleware(['isAdmin', "ShopSetting"])->group(function () {
 
     Route::get('crm/shop-settings/amocrm/pipeline-test', [Amocrm::class, 'pipelineTest']);
 
-    Route::any('crm/shop-settings/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
+    Route::any('api/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
         ->name('amo_webhook');
 
 ////////////////////////////////////////////////////////////////////////////
