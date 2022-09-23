@@ -77,11 +77,16 @@ class ProductController extends Controller
 
         if ($mode == 'general') {
 
-            $validate_array = [
-                'slag' => 'required|unique:products,slag',
-            ];
+            if ($post['slag'] != $product->slag) {
+                $validate_array = [
+                    'slag' => 'required|unique:products,slag',
+                ];
 
-            $this->validate($request, $validate_array);
+
+                $this->validate($request, $validate_array);
+            }
+
+
 
             $categories = Categories::all()->sortBy('index_num')->keyBy('id');
 
