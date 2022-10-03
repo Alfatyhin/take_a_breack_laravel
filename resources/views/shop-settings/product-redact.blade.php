@@ -351,6 +351,16 @@
                                     <div class="box_inline box_border">
                                         наименование:
                                         <input type="text" name="options[{{ $k }}][name]" value="{{ $option['name'] }}" >{{ $option['name'] }}
+                                        @if($option['type'] == 'TEXT')
+                                            <br>
+                                            макс кол-во символов
+                                            @isset($option['max_size'])
+                                                <input type="number" name="options[{{ $k }}][max_size]" value="{{ $option['max_size'] }}">
+                                            @else
+
+                                                <input type="number" name="options[{{ $k }}][max_size]" value="20">
+                                            @endisset
+                                        @endif
                                         <hr>
                                         <p class="opening_box plus">Переводы</p>
                                         <div class="open_box closed">
@@ -394,6 +404,9 @@
                                                     название
                                                 </th>
                                                 <th>
+                                                    описание
+                                                </th>
+                                                <th>
                                                     модификатор цены
                                                 </th>
                                                 <th>
@@ -407,6 +420,12 @@
                                                 <tr>
 
                                                     <td>
+                                                        @isset($choice['variant_number'])
+                                                            <input type="hidden" name="options[{{ $k }}][choices][{{ $kc }}][variant_number]" value="{{ $choice['variant_number'] }}">
+                                                            <b>
+                                                                variant-{{ $choice['variant_number'] + 1 }}
+                                                            </b><br>
+                                                        @endisset
                                                         значение:
                                                         @isset($choice['text'])
                                                             <input type="text" name="options[{{ $k }}][choices][{{ $kc }}][text]" value="{{ $choice['text'] }}">
@@ -433,6 +452,23 @@
                                                             @endforeach
                                                         </div>
 
+                                                    </td>
+                                                    <td>
+                                                        @foreach($shop_langs as $kl => $lang_data)
+                                                            <div class="text-right">
+                                                                <p>{{ $lang_data['name'] }}
+                                                                    @isset($choice['description'][$kl])
+                                                                        <input name="options[{{ $k }}][choices][{{ $kc }}][description][{{ $kl }}]"
+                                                                               value="{{ $choice['description'][$kl] }}"
+                                                                               placeholder="description">
+                                                                    @else
+                                                                        <input name="options[{{ $k }}][choices][{{ $kc }}][description][{{ $kl }}]"
+                                                                               value=""
+                                                                               placeholder="description">
+                                                                    @endisset
+                                                                </p>
+                                                            </div>
+                                                        @endforeach
                                                     </td>
                                                     <td>
                                                         <div class="box_inline">
@@ -469,39 +505,44 @@
                                                     </td>
                                                 </tr>
                                             @endforeach
-                                            <tr>
-                                                <th colspan="4">
-                                                   для добавления значения параметра заполнить поля ниже и нажать
-                                                    <span class="fa fa-plus"></span>
-                                                </th>
-                                            </tr>
-                                            <tr>
-                                                @php($kc++)
-                                                <td>
-                                                    значение:
-                                                    <input type="text" name="options[{{ $k }}][choices][{{ $kc }}][text]" >
-                                                </td>
-                                                <td>
-                                                    <div class="box_inline">
-                                                        <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" >
-                                                    </div>
-                                                    <div class="box_inline">
-                                                        <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" > $
-                                                        <br>
-                                                        <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" checked> %
-                                                    </div>
-                                                </td>
+                                            @if($option['type'] != 'TEXT')
+                                                <tr>
+                                                    <th colspan="5">
+                                                        для добавления значения параметра заполнить поля ниже и нажать
+                                                        <span class="fa fa-plus"></span>
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    @php($kc++)
+                                                    <td>
+                                                        значение:
+                                                        <input type="text" name="options[{{ $k }}][choices][{{ $kc }}][text]" >
+                                                    </td>
+                                                    <td>
 
-                                                <td>
-                                                    <input type="radio" name="options[{{ $k }}][defaultChoice]" value="{{ $kc }}" >
-                                                </td>
-                                                <td>
+                                                    </td>
+                                                    <td>
+                                                        <div class="box_inline">
+                                                            <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" >
+                                                        </div>
+                                                        <div class="box_inline">
+                                                            <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" > $
+                                                            <br>
+                                                            <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" checked> %
+                                                        </div>
+                                                    </td>
+
+                                                    <td>
+                                                        <input type="radio" name="options[{{ $k }}][defaultChoice]" value="{{ $kc }}" >
+                                                    </td>
+                                                    <td>
 
                                                         <button type="submit">
                                                             <span class="fa fa-plus button"></span>
                                                         </button>
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                </tr>
+                                            @endif
                                         </table>
 
 

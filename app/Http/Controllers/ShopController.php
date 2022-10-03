@@ -25,7 +25,7 @@ use SoapClient;
 class ShopController extends Controller
 {
 
-    private $v = '1.5.7';
+    private $v = '1.5.8';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -66,10 +66,6 @@ class ShopController extends Controller
         $categories = AppServise::CategoriesShopPrepeare($categories);
         $products = Product::where('enabled', 1)->whereIn('id', $category_products)->get()->sortBy('index_num')->keyBy('id');
         $products = AppServise::ProductsShopPrepeare($products, $categories);
-
-        foreach ($products as $product) {
-
-        }
 
 
         $dey_offer_data = false;
@@ -120,7 +116,7 @@ class ShopController extends Controller
         //////////////////////////////////////////////////////////////////////////////////
 
 
-        return view("shop.index_master", [
+        return view("shop.new.index_master", [
             'v' => $v,
             'banner' => $request->banner,
             'client' => $client,
@@ -206,24 +202,9 @@ class ShopController extends Controller
         }
 
         $options = json_decode($product->options, true);
-        if (!empty($options)) {
+        $product->options = $options;
 
-            foreach ($options as $option) {
-                $name = $option['name'];
-                $options_map[$name] = $option;
-                foreach ($option['choices'] as $kc => $item) {
-                    $key = $item['text'];
-                    $item['key'] = $kc;
-                    $choices_map[$key] = $item;
-                }
-                $options_map[$name]['choices'] = $choices_map;
-            }
-            $options['map'] = $options_map;
-
-            $product->options = $options;
-        }
-
-//        dd($product->options);
+        dd($product->options, $product->variables);
 
         /////////////////////////////////////////////////
         /// CART
@@ -244,7 +225,7 @@ class ShopController extends Controller
         $jsfile = Storage::disk('local')->get('js/translit-ekwid-store.js');
         //////////////////////////////////////////////////////////////////////////////////
 
-        return view("shop.product_master", [
+        return view("shop.new.product_master", [
             'v' => $v,
             'lang' => $lang,
             'categories' => $categories,
@@ -322,7 +303,7 @@ class ShopController extends Controller
         $jsfile = Storage::disk('local')->get('js/translit-ekwid-store.js');
         //////////////////////////////////////////////////////////////////////////////////
 
-        return view("shop.category-master", [
+        return view("shop.new.category_master", [
             'v' => $v,
             'banner' => $request->banner,
             'client' => $client,
