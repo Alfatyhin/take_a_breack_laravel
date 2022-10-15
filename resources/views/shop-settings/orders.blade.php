@@ -96,7 +96,7 @@
                         </a>
                     @endif
                     <br>
-                    Оллата <b>{{ $paymentMethod[$orderSearch->paymentMethod] }}</b>
+                    Оплата <b>{{ $paymentMethod[$orderSearch->paymentMethod] }}</b>
                     статус <b>{{ $paymentStatus[$orderSearch->paymentStatus] }}</b>
                     дата <b>{{ $orderSearch->paymentDate }}</b>
                     <br>
@@ -236,15 +236,13 @@
                             check status
                         </a>
                     @endif
+                    <div class="hide">
+                        <br>
+                        <a class="button" href="{{ route('invoice_create', ['orderId' => $orderSearch->order_id]) }}" >
+                            create invoice
+                        </a> <br>
+                    </div>
 
-                    @if ($orderSearch->invoiceStatus == 0)
-                        <div class="hide">
-                            <br>
-                            <a class="button" href="{{ route('invoice_create', ['orderId' => $orderSearch->order_id]) }}" >
-                                create invoice
-                            </a> <br>
-                        </div>
-                    @endif
                 </td>
 
             </tr>

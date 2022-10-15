@@ -17,6 +17,9 @@
         .page_box li a.fa {
             width: auto;
         }
+        .product-info__edge-item.swiper-slide {
+            display: inline-block;
+        }
     </style>
 
 @stop
@@ -26,6 +29,7 @@
 @stop
 
 @section('content')
+
 
     <div class="box_inline box_list box_border">
         <ul class="sortable list categories_list">
@@ -249,7 +253,7 @@
                                 @endisset
                                 <input type="submit" value="сохранить">
                                 <br>
-                                @include("shop.ru.desc_slider")
+                                @include("shop.new.layouts.product_cart.desc_slider")
                             </div>
                             <div class="box_border">
                                 Хранение <br>

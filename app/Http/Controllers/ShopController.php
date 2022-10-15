@@ -171,7 +171,7 @@ class ShopController extends Controller
         $products = Product::where('enabled', 1)->whereIn('id', $products_ids)->get()->sortBy('index_num')->keyBy('id');
 
         $products = AppServise::ProductsShopPrepeare($products, $categories);
-        $rand_keys = array_rand($products->toArray(), 15);
+        $rand_keys = array_rand($products->toArray(), 4);
         $category = Categories::where('slag', $category_slag)->first();
         $category_data = json_decode($category->data, true);
         $category->translate = json_decode($category->translate, true);
@@ -204,7 +204,7 @@ class ShopController extends Controller
         $options = json_decode($product->options, true);
         $product->options = $options;
 
-        dd($product->options, $product->variables);
+//        dd($product->options, $product->variables);
 
         /////////////////////////////////////////////////
         /// CART

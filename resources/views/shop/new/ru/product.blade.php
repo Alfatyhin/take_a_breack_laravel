@@ -22,21 +22,6 @@
 
             </div>
             @include("shop.new.layouts.product_cart.options")
-            <div class="product-info__add">
-                <p>добавить Надпись для торта</p>
-                <div>
-                    <label>
-                                            <span>
-                                                Текст для торта
-                                            </span>
-                        <input placeholder="Happy Birthday" type="text">
-                    </label>
-                    <span>
-                                            5 ₪
-                                        </span>
-                    <button class="trans-btn">Добавить</button>
-                </div>
-            </div>
             <div class="product-info__action">
                 <div class="product-info__count">
                     <button class="product-info-decrement">-</button>
@@ -47,18 +32,10 @@
             </div>
             <div class="product-info__edge swiper">
                 <div class="product-info__edge-wrapper swiper-wrapper">
-                    <div class="product-info__edge-item swiper-slide">
-                        <img src="assets/images/icons/include.png" alt="">
-                    </div>
-                    <div class="product-info__edge-item swiper-slide">
-                        <img src="assets/images/icons/milk.png" alt="">
-                    </div>
-                    <div class="product-info__edge-item swiper-slide">
-                        <img src="assets/images/icons/sugar.png" alt="">
-                    </div>
-                    <div class="product-info__edge-item swiper-slide">
-                        <img src="assets/images/icons/vegan.png" alt="">
-                    </div>
+                    @isset($category_data['attributes']['desc_icons'])
+                        @include("shop.new.layouts.product_cart.desc_slider")
+                    @endisset
+
                 </div>
                 <div class="product-info__edge-nav">
                     <div class="edge-prev">
@@ -74,32 +51,58 @@
                 </div>
             </div>
             <div class="product-info__text">
-                <p>
-                    Итальянская классика в веганском варианте. Это торт потрясающе нежный и воздушный. Многие любят его за кофейную пропитку. Неудивительно! Ведь  вкус эспрессо кроется в нежных кремовых прослойках, которые тают во рту и напоминают мороженое.
-                    <br> Тирамису подходит для тех, кто любит не слишком сладкие десерты, но при этом с легкой горчинкой какао и вкусом кофе.
-                </p>
+                {!! $product->translate['descriptionTranslated'][$lang] !!}
             </div>
+
             <div class="product-info__tabs">
-                <div class="product-info__tabs-btns">
-                    <button class="product-info__tabs-btn">Состав</button>
-                    <button class="product-info__tabs-btn">Калорийность</button>
-                    <button class="product-info__tabs-btn">Хранение</button>
-                </div>
-                <div class="product-info__tab-text">
-                    <p>
-                        <b>В составе десерта следующие ингридиенты:</b> грецкие орехи, финики, эспрессо, органическое кокосовое масло, чистый экстракт ванили, морская соль, кешью, органический кленовый сироп, темный кленовый сироп, какао-порошок, какао-масло, миндальное молоко.
-                    </p>
-                </div>
-                <div class="product-info__tab-text">
-                    <p>
-                        <b>В составе десерта следующие ингридиенты:</b> грецкие орехи, финики, эспрессо, органическое кокосовое масло, чистый экстракт ванили, морская соль, кешью, органический кленовый сироп, темный кленовый сироп, какао-порошок, какао-масло, миндальное молоко.
-                    </p>
-                </div>
-                <div class="product-info__tab-text">
-                    <p>
-                        <b>В составе десерта следующие ингридиенты:</b> грецкие орехи, финики, эспрессо, органическое кокосовое масло, чистый экстракт ванили, морская соль, кешью, органический кленовый сироп, темный кленовый сироп, какао-порошок, какао-масло, миндальное молоко.
-                    </p>
-                </div>
+                @if(isset($product->data['attributes']) && (isset($product->data['attributes']['composition'][$lang]) || $product->data['attributes']['calories'] || $category_data['attributes']['keeping']))
+
+                    <div class="product-info__tabs-btns">
+                        <button class="product-info__tabs-btn">Состав</button>
+                        <button class="product-info__tabs-btn">Калорийность</button>
+                        <button class="product-info__tabs-btn">Хранение</button>
+                    </div>
+                    <div class="product-info__tab-text">
+                        @isset($product->data['attributes']['composition'][$lang])
+                            <p>
+                                <b>В составе десерта следующие ингридиенты:</b>
+                                {{ $product->data['attributes']['composition'][$lang] }}
+                            </p>
+                        @endisset
+                    </div>
+                    <div class="product-info__tab-text">
+                        @isset($product->data['attributes']['calories'])
+                            <p>
+                                <b>Энергетическая ценность на 100 грамм продукта:</b>
+                            </p>
+                            <p>
+                                <b>Калорийность</b>
+                                {{ $product->data['attributes']['calories']['calories'] }} ккал
+                            </p>
+                            <p>
+                                <b>Белки</b>
+                                {{ $product->data['attributes']['calories']['protein'] }} г
+                            </p>
+                            <p>
+                                <b>Жиры</b>
+                                {{ $product->data['attributes']['calories']['fat'] }} г
+                            </p>
+                            <p>
+                                <b>Углеводы</b>
+                                {{ $product->data['attributes']['calories']['carbohydrate'] }} г
+                            </p>
+                        @endisset
+                    </div>
+                    <div class="product-info__tab-text">
+
+                        @isset($category_data['attributes']['keeping'][$lang])
+                            <p>
+                                <b>Сроки и условия хранения:</b>
+                                {!! $category_data['attributes']['keeping'][$lang] !!}
+                            </p>
+                        @endisset
+                    </div>
+                @endisset
             </div>
         </div>
     </div>
@@ -110,58 +113,7 @@
             </h3>
         </div>
         <div class="recblock__items">
-            <a href="#" class="recblock__item">
-                <div class="item-img">
-                    <img src="assets/images/rec.jpg" alt="">
-                </div>
-                <div class="item__text">
-                    <p>
-                        Свеча для торта
-                    </p>
-                    <span>
-                                            3 ₪
-                                        </span>
-                </div>
-            </a>
-            <a href="#" class="recblock__item">
-                <div class="item-img">
-                    <img src="assets/images/rec.jpg" alt="">
-                </div>
-                <div class="item__text">
-                    <p>
-                        Свеча для торта
-                    </p>
-                    <span>
-                                            3 ₪
-                                        </span>
-                </div>
-            </a>
-            <a href="#" class="recblock__item">
-                <div class="item-img">
-                    <img src="assets/images/rec.jpg" alt="">
-                </div>
-                <div class="item__text">
-                    <p>
-                        Свеча для торта
-                    </p>
-                    <span>
-                                            3 ₪
-                                        </span>
-                </div>
-            </a>
-            <a href="#" class="recblock__item">
-                <div class="item-img">
-                    <img src="assets/images/rec.jpg" alt="">
-                </div>
-                <div class="item__text">
-                    <p>
-                        Свеча для торта
-                    </p>
-                    <span>
-                                            3 ₪
-                                        </span>
-                </div>
-            </a>
+            @include("shop.new.layouts.slider")
         </div>
     </div>
 </div>
