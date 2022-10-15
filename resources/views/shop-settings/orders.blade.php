@@ -57,7 +57,7 @@
             Search bu order id <input name="order_id" type="text"
                                       @if ($order_id)
                                       value="{{ $order_id }}"
-                @endif
+                    @endif
             >
 
             <input type="submit" value="search">
@@ -96,7 +96,7 @@
                         </a>
                     @endif
                     <br>
-                    Оплата <b>{{ $paymentMethod[$orderSearch->paymentMethod] }}</b>
+                    Оллата <b>{{ $paymentMethod[$orderSearch->paymentMethod] }}</b>
                     статус <b>{{ $paymentStatus[$orderSearch->paymentStatus] }}</b>
                     дата <b>{{ $orderSearch->paymentDate }}</b>
                     <br>
@@ -118,10 +118,12 @@
                     @endphp
 
                     <p>
-                        <b>имя:</b> <a href="{{ route('client_data', ['client' => $orderSearch->clientId]) }}" >{{ $orderSearch->name }} </a><br>
+                        <b>имя:</b> {{ $orderSearch->name }}
+                        <a class="button" href="{{ route('client_data', ['client' => $orderSearch->clientId]) }}" > карточка клиента </a>
+                        <br>
                         <b>email:</b> {{ $orderSearch->email }} <br>
                         @isset($orderData['phone'])
-                        <b>tel:</b> {{ $orderData['phone'] }}
+                            <b>tel:</b> {{ $orderData['phone'] }}
                         @endisset
                     </p>
 
@@ -236,13 +238,20 @@
                             check status
                         </a>
                     @endif
-                    <div class="hide">
-                        <br>
-                        <a class="button" href="{{ route('invoice_create', ['orderId' => $orderSearch->order_id]) }}" >
-                            create invoice
-                        </a> <br>
-                    </div>
 
+                    @if ($orderSearch->invoiceStatus == 0)
+                        <div class="hide">
+                            <br>
+                            <a class="button" href="{{ route('invoice_create', ['orderId' => $orderSearch->order_id]) }}" >
+                                create invoice
+                            </a> <br>
+                        </div>
+                    @endif
+
+                    <br>
+                    <a class="button" href="{{ route('api_order_view', [ 'order_id' => $orderSearch->order_id]) }}" >
+                        распечатать заказ
+                    </a> <br>
                 </td>
 
             </tr>
@@ -254,10 +263,10 @@
                 <tr>
                     <td>
                         @if (!empty($item->deleted_at))
-                           <p class="deleted_at" >
-                               удален {{ $item->deleted_at }}<br>
-                               <a class="hide button" href="{{ route('restore_order', ['id' => $item->order_id]) }}" >restore</a>
-                           </p>
+                            <p class="deleted_at" >
+                                удален {{ $item->deleted_at }}<br>
+                                <a class="hide button" href="{{ route('restore_order', ['id' => $item->order_id]) }}" >restore</a>
+                            </p>
                         @endif
                         ( {{ $item->id }} ) <b>#{{ $item->order_id }}</b> | <b>gId:</b>{{ $item->gclientId }}  <br>
                         Дата: {{ $item->created_at }} <br>
@@ -277,19 +286,19 @@
                         дата опл <b>{{ $item->paymentDate }}</b>
                         <br>
                         Инвойс <b>{{ $invoiceStatus[$item->invoiceStatus] }}</b>
-                            @if(!empty($item->invoiceData))
-                                @php
+                        @if(!empty($item->invoiceData))
+                            @php
                                 $invoice_data = json_decode($item->invoiceData, true);
-                                @endphp
+                            @endphp
 
-                                @isset($invoice_data['url']['en'])
-                                    <a class="button" href="{{ $invoice_data['url']['en'] }}">en</a>
-                                @endisset
-                                @isset($invoice_data['url']['he'])
-                                    <a class="button" href="{{ $invoice_data['url']['he'] }}">he</a>
-                                @endisset
+                            @isset($invoice_data['url']['en'])
+                                <a class="button" href="{{ $invoice_data['url']['en'] }}">en</a>
+                            @endisset
+                            @isset($invoice_data['url']['he'])
+                                <a class="button" href="{{ $invoice_data['url']['he'] }}">he</a>
+                            @endisset
 
-                            @endif
+                        @endif
                         <hr>
                         Сумма <b>{{ $item->orderPrice }}</b>
                         <br>
@@ -374,7 +383,9 @@
                         @else
 
                             <p>
-                                <b>имя:</b> <a href="{{ route('client_data', ['client' => $item->clientId]) }}" >{{ $item->name }} </a><br>
+                                <b>имя:</b>{{ $item->name }}
+                                <a class="button" href="{{ route('client_data', ['client' => $item->clientId]) }}" > карточка клиента </a>
+                                <br>
                                 <b>email:</b> {{ $item->email }} <br>
                                 @isset($orderData['phone'])
                                     <b>tel:</b> {{ $orderData['phone'] }}
@@ -447,9 +458,9 @@
                                         {{ $orderData['order_data']['delivery_discount'] }}
                                     @endisset
                                 @endif
-                            <hr>
-                            <b>Дата:</b>
-                            {{ $orderData['date'] }} {{ $orderData['time'] }}
+                                <hr>
+                                <b>Дата:</b>
+                                {{ $orderData['date'] }} {{ $orderData['time'] }}
 
                             @endisset
                             <div class="hide">
@@ -463,10 +474,6 @@
                     <td>
                         <span class="position-absolute text-small button show-hide"></span>
 
-
-                        <a class=" button" href="{{ route('test_change_product_count', ['order' => $item->id]) }}" >
-                            test_change_product_count
-                        </a>
                         <a class="hide button" href="{{ route('amo_create_invoice_to_order', ['order' => $item->id]) }}" >
                             add amo invoice to lead
                         </a>
@@ -514,6 +521,10 @@
                                 test PayPal
                             </a> <br>
                         </div>
+                        <br>
+                        <a class="button" href="{{ route('api_order_view', [ 'order_id' => $item->order_id]) }}" >
+                            распечатать заказ
+                        </a> <br>
                     </td>
 
                 </tr>
