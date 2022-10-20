@@ -79,7 +79,7 @@ class ShopController extends Controller
             $dey_offer_data = json_decode($dey_offer_json, true);
             $offer_id = $dey_offer_data['id'];
             $dey_offer = $products[$offer_id];
-            $options = json_decode($dey_offer->options, true);
+            $options = $dey_offer->options;
 
             if (!empty($options)) {
 
