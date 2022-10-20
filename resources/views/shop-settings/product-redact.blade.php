@@ -655,12 +655,14 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @foreach($variant['options'] as $ko => $option)
-                                            {{ $option['name'] }} {{ $option['value'] }} <br>
+                                        @isset($variant['options'])
+                                            @foreach($variant['options'] as $ko => $option)
+                                                {{ $option['name'] }} {{ $option['value'] }} <br>
 
-                                            <input type="hidden" name="variables[{{ $kv }}][options][{{$ko}}][name]" value="{{ $option['name'] }}">
-                                            <input type="hidden" name="variables[{{ $kv }}][options][{{$ko}}][value]" value="{{ $option['value'] }}">
-                                        @endforeach
+                                                <input type="hidden" name="variables[{{ $kv }}][options][{{$ko}}][name]" value="{{ $option['name'] }}">
+                                                <input type="hidden" name="variables[{{ $kv }}][options][{{$ko}}][value]" value="{{ $option['value'] }}">
+                                            @endforeach
+                                        @endisset
                                     </td>
                                     <td>
                                         @isset($variant['sku'])

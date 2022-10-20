@@ -42,6 +42,7 @@
 
     <script>
         var product = @json($product);
+        console.log(product);
     </script>
 
 @stop

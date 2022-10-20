@@ -77,11 +77,16 @@ class ProductController extends Controller
 
         if ($mode == 'general') {
 
-            $validate_array = [
-                'slag' => 'required|unique:products,slag',
-            ];
+            if ($post['slag'] != $product->slag) {
+                $validate_array = [
+                    'slag' => 'required|unique:products,slag',
+                ];
 
-            $this->validate($request, $validate_array);
+
+                $this->validate($request, $validate_array);
+            }
+
+
 
             $categories = Categories::all()->sortBy('index_num')->keyBy('id');
 
@@ -181,18 +186,16 @@ class ProductController extends Controller
 
                 if ($variables && $old_options) {
 
-                    foreach ($variables as $kv => &$variant) {
+                    foreach ($variables as &$variant) {
 
                         foreach ($variant['options'] as &$variant_option) {
 
                             if ($variant_option['name'] == $old_options[$k]['name']) {
 
                                 $variant_option['name'] = $option['name'];
-                                $variant_option['nameTranslated'] = $option['nameTranslated'];
 
                                 foreach ($old_options[$k]['choices'] as $kc => $old_choise) {
                                     if ($variant_option['value'] == $old_choise['text']) {
-                                        $variant_option['valueTranslated'] = $option['choices'][$kc]['textTranslated'];
                                         $variant_option['value'] = $option['choices'][$kc]['text'];
                                     }
                                 }
@@ -252,29 +255,6 @@ class ProductController extends Controller
 
         if ($mode == 'variables') {
             if (!empty($post['variables'])) {
-                if (isset($product->options)) {
-                    $options = json_decode($product->options, true);
-
-                    foreach ($post['variables'] as $kv => &$variable) {
-                        foreach ($variable['options'] as &$var_option) {
-                            $var_opt_name = $var_option['name'];
-                            foreach ($options as &$option) {
-                                if ($option['name'] == $var_opt_name) {
-                                    $var_option['nameTranslated'] = $option['nameTranslated'];
-                                    $var_opt_value = $var_option['value'];
-                                    foreach ($option['choices'] as &$choice) {
-                                        if ($choice['text'] == $var_opt_value) {
-                                            $var_option['valueTranslated'] = $choice['textTranslated'];
-                                            $choice['variant_number'] = $kv;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    $product->options = json_encode($options);
-                }
                 $product->variables = json_encode($post['variables']);
             } else {
                 $product->variables = null;
