@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', ()=>{
 
+    
 
     // Открытие меню - начало
 
@@ -59,8 +60,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
 
     
-    // выбор размера продута
     
+    
+    // Выбор размера продукта
 
     let openTableBtn = document.querySelector('.open-size-table'); 
     let tableSize = document.querySelector('.product-size__table');
@@ -69,7 +71,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
     if (tableSizeVar.length != null) {
         tableSizeVar.forEach(function(item){
             item.addEventListener('click', ()=>{
+
                 openTableBtn.querySelector('span').innerHTML =  item.getAttribute('data-infosize');
+                $(".current-price")[0].innerHTML =  item.querySelector(".price").innerText
+                $(".main-btn.go-to-cart")[0].disabled = false;
+                $(".product-info-checkbox")[0].disabled = false;
+                $(".main-btn.go-to-cart")[0].style.opacity = "1.0";
                 CloseTable();
             })
         })
@@ -83,13 +90,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
             }
         })
     }
-
     function CloseTable() {
         tableSize.classList.remove('active');
         openTableBtn.classList.remove('active');
 
     }
-
     function OpenTable() {
         tableSize.classList.add('active');
         openTableBtn.classList.add('active');
@@ -100,8 +105,47 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 CloseTable();
             }
         })
-    }
+    } 
 
+    //  Добавление в корзину
+    $(".main-btn.go-to-cart").on('click', function(event){
+
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");       
+        let addedPosition = { id: product.id,
+                             size: "size",
+                             text: $(".body-product-info-input-text")[0].value,
+                             count: $(".product-info-count-input")[0].value                            
+                            }
+        cart.push(addedPosition)
+        localStorage.setItem("cart", JSON.stringify(cart));
+    });
+    // Checkbox для текста к торту
+    $(".product-info-checkbox").change(function(){
+       
+        if($(".product-info-checkbox")[0].checked == true){
+            $(".body-product-info-add")[0].classList.add("active")
+            $(".product-info__add")[0].style.marginBottom = "30px"
+        } 
+        else{
+            $(".body-product-info-add")[0].classList.remove("active")
+            $(".product-info__add")[0].style.marginBottom = "107px"
+        } 
+        
+
+    });
+    // Кнопка  добавить текст к торту
+    $(".trans-btn").on('click', function(event){
+        if( $(".trans-btn")[0].innerHTML == "Добавить"){
+            if( $(".body-product-info-input-text")[0].value != "" ){
+                $(".current-price")[0].innerHTML =  (+$(".current-price")[0].innerHTML + +$(".price-text")[0].innerHTML).toString()
+                $(".trans-btn")[0].innerHTML = "Убрать текст"
+            }
+        } else if($(".trans-btn")[0].innerHTML == "Убрать текст"){
+            $(".current-price")[0].innerHTML =  (+$(".current-price")[0].innerHTML - +$(".price-text")[0].innerHTML).toString()
+            $(".trans-btn")[0].innerHTML = "Добавить"
+            $(".body-product-info-input-text")[0].value = ""
+        }
+    });
 
     // маска вводы номера телефона
     
@@ -150,8 +194,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
         })
     }
 
-    
-
     // табы продукта
 
     let productTabBtns = document.querySelectorAll('.product-info__tabs-btn');
@@ -184,8 +226,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 console.log(productInfoNum);
                 if (e.target.classList.contains('product-info-decrement')) {
                     let num = +productInfoNum.value - 1 ;
-                    if (num<0) {
-                        num = 0;
+                    if (num<1) {
+                        num = 1;
                     } 
                     productInfoNum.value = num;
                 } else if (e.target.classList.contains('product-info-increment')) {
@@ -196,6 +238,21 @@ document.addEventListener('DOMContentLoaded', ()=>{
         })
     }
 
+    $("input[name=product-count]").keyup(function(){
+        if($("input[name=product-count]")[0].value > 999){
+            $("input[name=product-count]")[0].value = $("input[name=product-count]")[0].value.toString().substring(0,3)
+        }
+    });
+    $("input[name=product-count]").change(function(){        
+        if($("input[name=product-count]")[0].value < 1) $("input[name=product-count]")[0].value = 1        
+    });
+    $("input[name=product-count]").keypress(function(e){
+        if (e.keyCode === 13) $("input[name=product-count]").blur()  
+    });
+
+   
+
+   
     // открытие текст на странице о категории
 
     let openTextBtn = document.querySelector('.open-text');
@@ -273,3 +330,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
     
 })
+
+
+

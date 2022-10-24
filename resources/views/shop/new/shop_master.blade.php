@@ -12,6 +12,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <link rel="stylesheet" href="{{ asset('/css/style.css') }}?{{ $v }}">
 
     @if($noindex)
@@ -40,50 +41,6 @@
         <main class="main">
             <div class="container">
                 <div class="main__wrap">
-                    <div class="category">
-                        <button class="close-menu-btn"></button>
-                        <p>
-                            <img src="/assets/images/icons/category.svg" alt="">
-                        </p>
-                        <ul>
-                            @foreach($categories as $category)
-                                @php($translate = json_decode($category->translate, true))
-                                <li>
-                                    <a href="{{ route("category_$lang", ['category' => $category->slag]) }}"
-                                       data-type="{{ $category->slag }}">
-                                        @isset($translate['nameTranslated'][$lang])
-                                            {{ $translate['nameTranslated'][$lang] }}
-                                        @else
-                                            {{ $category->name }}
-                                        @endisset
-                                    </a>
-                                </li>
-                            @endforeach
-
-                        </ul>
-                        <ul class="for-mobile">
-                            <li>
-                                <a href="#">
-                                    О нас
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Доставка и Оплата
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Отзывы
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Контакты
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
 
                     @section('content')
 

@@ -14,19 +14,21 @@
             </div>
             <div class="product-info__price">
                 <span>
-                    @if(!empty($product->variables) && sizeof($product->variables) > 1)
-                        от
-                    @endif
-                    {{ $product->price }}
+                    <span class="current-price">
+                        @if(!empty($product->variables) && sizeof($product->variables) > 1)
+                            от
+                        @endif
+                        {{ $product->price }}
+                    </span>
+                    ₪
                 </span>
-
             </div>
             @include("shop.new.layouts.product_cart.options")
             <div class="product-info__action">
                 <div class="product-info__count">
-                    <button class="product-info-decrement">-</button>
-                    <input class="product-info-count-input" value="1" type="number" name="product-count">
-                    <button class="product-info-increment">+</button>
+                    <button class="product-info-decrement" disabled="true">-</button>
+                    <input class="product-info-count-input" value="1" type="number" name="product-count" min="1" max="999" disabled="true">
+                    <button class="product-info-increment" disabled="true">+</button>
                 </div>
                 <button class="main-btn go-to-cart">Добавить в корзину</button>
             </div>

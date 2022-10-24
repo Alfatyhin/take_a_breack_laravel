@@ -25,7 +25,7 @@ use SoapClient;
 class ShopController extends Controller
 {
 
-    private $v = '1.5.8';
+    private $v = '2.0.0';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -75,7 +75,7 @@ class ShopController extends Controller
             $dey_offer_data = json_decode($dey_offer_json, true);
             $offer_id = $dey_offer_data['id'];
             $dey_offer = $products[$offer_id];
-            $options = json_decode($dey_offer->options, true);
+            $options = $dey_offer->options;
 
             if (!empty($options)) {
 
@@ -186,7 +186,6 @@ class ShopController extends Controller
         $product->galery = json_decode($product->galery, true);
         $product->data = json_decode($product->data, true);
         $product->variables = json_decode($product->variables, true);
-
 
         if (!empty($product->variables)) {
             if (sizeof($product->variables) > 1) {
@@ -524,7 +523,7 @@ class ShopController extends Controller
         ////////////////////////////////////////////////////
         $jsfile = Storage::disk('local')->get('js/translit-ekwid-store.js');
 
-        return view("shop.$lang.cart", [
+        return view("shop.new.$lang.cart", [
             'v' => $v,
             'lang' => $lang,
             'categories' => $categories,

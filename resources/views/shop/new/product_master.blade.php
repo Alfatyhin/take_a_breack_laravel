@@ -49,6 +49,8 @@
 
 @section('content')
 
+    @include("shop.new.$lang.left_sidebar")
+
     @include("shop.new.$lang.product")
 
     <div class="hidden" style="display: none">

@@ -30,6 +30,7 @@
 
 @section('content')
 
+    @include("shop.new.$lang.left_sidebar")
     @include("shop.new.$lang.index")
 
     <div class="hidden" style="display: none" itemscope itemtype="https://schema.org/Organization">

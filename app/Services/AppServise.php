@@ -125,6 +125,7 @@ class AppServise
             $cat_names = [];
             $cat_ids = json_decode($product->categories, true);
             $product->image = json_decode($product->image, true);
+            $product->galery = json_decode($product->galery, true);
             $product->data = json_decode($product->data, true);
             $product->variables = json_decode($product->variables, true);
             $product->options = json_decode($product->options, true);

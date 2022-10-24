@@ -84,13 +84,13 @@
         @elseif ($option['type'] == 'TEXT')
 
             <div class="product-info__add">
+                <input class="product-info-checkbox" type="checkbox" disabled="true">
                 <p>добавить
                     @if(!empty($option['nameTranslated'][$lang]))
                         {{ $option['nameTranslated'][$lang] }}
                     @else
                         {{ $name }}
-                    @endif
-                </p>
+                    @endif</p>
                 <div>
                     <label
                             data-pricemodifier="{{ $option['choices'][0]['priceModifier'] }}"
@@ -103,11 +103,15 @@
                             @endif
                         </span>
 
-                        <input placeholder="@isset($option['choices'][0]['description'][$lang]){{ $option['choices'][0]['description'][$lang] }}@endisset"
+                        <input class="body-product-info-input-text"
+                               maxlength="{{ $option['max_size'] }}"
+                               placeholder="@isset($option['choices'][0]['description'][$lang]){{ $option['choices'][0]['description'][$lang] }}@endisset"
                                type="text">
+
                     </label>
                     <span>
-                     {{ $option['choices'][0]['priceModifier'] }} ₪
+                        <span class="price-text">{{ $option['choices'][0]['priceModifier'] }}</span>
+                        ₪
                     </span>
                     <button class="trans-btn">Добавить</button>
                 </div>

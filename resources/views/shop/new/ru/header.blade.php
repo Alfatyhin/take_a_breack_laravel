@@ -9,7 +9,7 @@
             </div>
             <div class="header__login">
                 <a href="{{ route("cart_$lang") }}"><img src="/assets/images/icons/bag.svg" alt=""></a>
-                <a href="#"><img src="/assets/images/icons/user.svg" alt=""></a>
+{{--                <a href="#"><img src="/assets/images/icons/user.svg" alt=""></a>--}}
             </div>
             <div class="header__title">
                 <a href="{{ route("index_$lang") }}">
