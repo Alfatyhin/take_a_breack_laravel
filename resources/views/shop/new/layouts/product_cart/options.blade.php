@@ -16,6 +16,15 @@
                     @foreach($option['choices'] as $ko => $choice)
                         @isset($choice['variant_number'])
                             @php($variant = $product->variables[$choice['variant_number']])
+                            @php($price = $variant['defaultDisplayedPrice'])
+                        @else
+                            @if($choice['priceModifierType'] == 'ABSOLUTE' && $choice['priceModifier'] != 0)
+                                @php($price = $product->price + $choice['priceModifier'])
+                            @elseif($choice['priceModifierType'] == 'PERCENT' && $choice['priceModifier'] != 0)
+                                @php($price = round($product->price + ($product->price * $choice['priceModifier'] / 100), 2))
+                            @else
+                                @php($price = $product->price)
+                            @endif
                         @endisset
                         <label class="product-size-var" data-infosize="@if(!empty($option['nameTranslated'][$lang]))
                         {{ $option['nameTranslated'][$lang] }}
@@ -30,8 +39,10 @@
                         @isset($choice['variant_number'])
                             {{ $variant['defaultDisplayedPrice'] }}
                         @endisset ₪"
-                               data-option_key="{{ $ko }}"
+                               data-option_key="{{ $key }}"
+                               data-option_value="{{ $ko }}"
                                @isset($choice['variant_number'])
+                                    data-variant_number="{{ $choice['variant_number'] }}"
                                     data-pricemodifier="{{ $variant['defaultDisplayedPrice'] }}"
                                     data-pricemodifiertype="PRICE"
                                @else
@@ -64,17 +75,10 @@
                                 </div>
                             </div>
                             <p>
-
                                 @isset($variant['compareToPrice'])
-                                    ({{ $translate['benefit'][$lang] }} {{ $variant['compareToPrice'] - $variant['defaultDisplayedPrice']  }}₪)
+{{--                                    ({{ $translate['benefit'][$lang] }} {{ $variant['compareToPrice'] - $variant['defaultDisplayedPrice']  }}₪)--}}
                                 @endisset
-
-                                    @isset($choice['variant_number'])
-                                        {{ $variant['defaultDisplayedPrice'] }}
-                                        ₪
-                                    @else
-
-                                    @endisset
+                                <span class="price">{{ $price }}</span> ₪
                             </p>
                         </label>
                     @endforeach
@@ -93,6 +97,8 @@
                     @endif</p>
                 <div>
                     <label
+
+                            data-option_key="{{ $key }}"
                             data-pricemodifier="{{ $option['choices'][0]['priceModifier'] }}"
                             data-pricemodifiertype="{{ $option['choices'][0]['priceModifierType'] }}">
                         <span>

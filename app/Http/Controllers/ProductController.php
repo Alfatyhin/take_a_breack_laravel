@@ -361,4 +361,19 @@ class ProductController extends Controller
         session()->flash('message', ["product $product->name copy"]);
         return redirect(route('product_redact', ['product' => $new_product]));
     }
+
+    public function fixProducts(Request $request)
+    {
+        $products = Product::all();
+
+        foreach ($products as $product) {
+            if (!empty($product->variables)) {
+                $variables = json_decode($product->variables, true);
+                $options = json_decode($product->options, true);
+                dd($product->toArray());
+            }
+        }
+
+        dd('done', $products->toArray());
+    }
 }

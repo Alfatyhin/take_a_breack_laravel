@@ -73,6 +73,9 @@ Route::middleware(['isAdmin', "ShopSetting"])->group(function () {
     Route::get('crm/shop-settings/product-delete/{product}', array(ProductController::class, 'deleteProduct'))
         ->middleware(['isAdmin'])->name('product_delete');
 
+    Route::get('crm/shop-settings/products-fix', array(ProductController::class, 'fixProducts'))
+        ->middleware(['isAdmin']);
+
     Route::any('crm/shop-settings/product/create', array(ProductController::class, 'createProduct'))
         ->name('shop_settings_product_create');
 

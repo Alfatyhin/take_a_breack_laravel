@@ -102,6 +102,7 @@
                         Оплатить
                     </button>
                 </div>
+                <input class="order_data" type="hidden" name="order_data">
             </form>
         </div>
     </div>
