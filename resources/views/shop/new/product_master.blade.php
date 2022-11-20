@@ -28,10 +28,11 @@
 
     <link rel="stylesheet" href="{{ asset('/assets/libs/swiper-bundle.min.css') }}?{{ $v }}">
 
-    <link rel="canonical" href="{{ route("product_$lang", ['category' => $category->slag, 'product' => $product->slag]) }}">
+    <link rel="canonical" href="{{ route("product", ['category' => $category->slag, 'product' => $product->slag]) }}">
 
-    <link rel="alternate" hreflang="ru" href="{{ route("product_ru", ['category' => $category->slag, 'product' => $product->slag]) }}">
-    <link rel="alternate" hreflang="en" href="{{ route("product_en", ['category' => $category->slag, 'product' => $product->slag]) }}">
+    <link rel="alternate" hreflang="he" href="{{ route("product", ['lang' => 'he', 'category' => $category->slag, 'product' => $product->slag]) }}">
+    <link rel="alternate" hreflang="ru" href="{{ route("product", ['lang' => 'ru', 'category' => $category->slag, 'product' => $product->slag]) }}">
+    <link rel="alternate" hreflang="en" href="{{ route("product", ['category' => $category->slag, 'product' => $product->slag]) }}">
 
 
     @if ($lang == 'ru')
@@ -45,13 +46,20 @@
         console.log(product);
     </script>
 
+    @if($lang == 'en')
+        @php($rout = route("product", ['category' => $category->slag, 'product' => $product->slag]))
+    @else
+        @php($rout = route("product", ['lang' => $lang, 'category' => $category->slag, 'product' => $product->slag]))
+    @endif
+
+
 @stop
 
 @section('content')
 
-    @include("shop.new.$lang.left_sidebar")
+    @include("shop.new.layouts.left_sidebar")
 
-    @include("shop.new.$lang.product")
+    @include("shop.new.layouts.product_cart.product")
 
     <div class="hidden" style="display: none">
         <div itemtype="http://schema.org/Product" itemscope>
@@ -70,7 +78,7 @@
 
             <meta itemprop="description" content="{!! $product->translate['descriptionTranslated'][$lang] !!}" />
             <div itemprop="offers" itemtype="http://schema.org/Offer" itemscope>
-                <link itemprop="url" href="{{ route('product_'.$lang, ['category' => $category->slag, 'product' => $product->slag]) }}" />
+                <link itemprop="url" href="{{ $rout }}" />
                 <meta itemprop="availability" content="https://schema.org/InStock" />
                 <meta itemprop="priceCurrency" content="ILS" />
                 <meta itemprop="itemCondition" content="https://schema.org/UsedCondition" />
@@ -133,9 +141,78 @@
 
 @stop
 
+@section('popup')
+    <div class="text_add">
+        @if (!empty($product->translate['nameTranslated'][$lang]))
+            {{ $product->translate['nameTranslated'][$lang] }}
+        @else
+            {{ $product->name }}
+        @endif
+        {{ __('shop.добавлено в корзину') }}!</div>
+    <div class="count_in_cart_text">{{ __('shop.в корзине') }}
+        <span class="count_in_cart"></span>{{ __('shop.шт') }}. {{ __('shop.данного товара') }}</div>
+
+    <div class="text_in_cart">{{ __('shop.Для продолжения оформления заказа перейдите пожалуйста в корзину') }}</div>
+
+    <div class="buttons_popup">
+        <button class="go_prod">{{ __('shop.ВЕРНУТЬСЯ К ТОВАРАМ') }}</button>
+        <button class="go_cart">
+            <a href="{{ route('cart', ['lang' => $lang]) }}">
+                {{ __('shop.ПЕРЕЙТИ В КОРЗИНУ') }}
+            </a>
+        </button>
+    </div>
+@stop
+
 
 @section('scripts')
     <script src="{{ asset('/assets/libs/swiper-bundle.min.js') }}?{{ $v }}" defer></script>
+    <script>
+        window.onload = function() {
+            console.log('test jQ v-' + jQuery.fn.jquery);
+
+            //
+            // var products = {}; // тут по идее берем из корзины если есть
+            // $('.main-btn.go-to-cart').click(function () {
+            //     var options = {};
+            //     var cart_key = product.id;
+            //     var variant = false;
+            //     $('.product_options .product_option').each(function () {
+            //         var option = {};
+            //         var option_el = $(this).find('.option_value.active');
+            //
+            //         if (option_el.length != 0) {
+            //             var option_key = $(option_el).attr('data-option_key');
+            //             option.type = $(this).attr('data_optiontype');
+            //             option.key = option_key;
+            //             option.value = $(option_el).attr('data-option_value');
+            //             option.text = $(option_el).find('.option_text').text();
+            //             option.input_text = $(option_el).find('.option_input_text').val();
+            //             var variant_number = $(option_el).attr('data-variant_number');
+            //
+            //             cart_key = `${cart_key}-${option_key}-${option.value}`;
+            //             if (!!variant_number) {
+            //                 variant = variant_number;
+            //             }
+            //
+            //             options[option_key] = option;
+            //         }
+            //
+            //
+            //     });
+            //     var count = $('#count-product').val();
+            //     product = {
+            //         'id' : product.id,
+            //         'count' : count,
+            //         'variant' : variant,
+            //         'options': options
+            //     }
+            //     products[cart_key] = product;
+            //     console.log(products);
+            // });
+        }
+
+    </script>
 @stop
 
 

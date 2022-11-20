@@ -11,8 +11,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <link rel="stylesheet" href="{{ asset('/css/style.css') }}?{{ $v }}">
 
     @if($noindex)
@@ -20,8 +19,8 @@
     @endif
 
     <script>
-        var general_url = "{{ route('index_'.$lang) }}";
         console.log('cart v-{{ $v }}');
+        var lang = '{{ $lang }}';
     </script>
     @section('head')
 
@@ -36,7 +35,7 @@
     <div class="content">
         <div class="modal"></div>
 
-        @include('shop.new.ru.header')
+        @include('shop.new.layouts.header')
 
         <main class="main">
             <div class="container">
@@ -50,25 +49,48 @@
                 @section('content_2')
 
                 @show
-
             </div>
         </main>
-        @include("shop.new.$lang.footer")
+        <section class="popup">
+            <div class="popup__content">
+                <div class="close">
+                    <span></span>
+                    <span></span>
+                </div>
+                @section('popup')
+
+                @show
+            </div>
+        </section>
+
+
+        @include("shop.new.layouts.footer")
     </div>
+
     <div class="mark">
-        <div>
-            <a href="{{ route("cart_$lang") }}" class="mark-link">
-                <img src="/assets/images/icons/bag.svg" alt="">
-            </a>
-            <a href="#" class="mark-link">
-                <img src="/assets/images/icons/user.svg" alt="">
-            </a>
-            <a class="social-link" href="#">
-                Facebook
-            </a>
-            <a class="social-link" href="#">
-                Instagram
-            </a>
+        <div class="right_user_login_block">
+            <div>
+                <a href="{{ route("cart", ['lang' => $lang]) }}" class="mark-link cart">
+                    <img src="/assets/images/icons/bag.svg" alt="">
+                    @include('shop.new.layouts.components.bag-badge')
+                </a>
+            </div>
+            <div>
+                <a href="#" class="mark-link">
+                    <img src="/assets/images/icons/user.svg" alt="">
+                </a>
+            </div>
+            <div>
+                <ul class="lang_select mark_lang">
+                    @include('shop.new.layouts.components.lang-select')
+                </ul>
+            </div>
+            <div>
+                <a class="social-link" href="#">Facebook</a>
+            </div>
+            <div>
+                <a class="social-link" href="#">Instagram</a>
+            </div>
         </div>
     </div>
 </div>
@@ -78,6 +100,6 @@
 <script src="{{ asset('/scripts/app.js') }}?{{ $v }}" defer></script>
 
 @include('shop.layouts.seo.footer-scripts')
-@include("shop.$lang.popap_sendpulse")
+@include("shop.new.layouts.send_pulse.$lang.popap_sendpulse")
 </body>
 </html>

@@ -16,24 +16,27 @@
                 <span>
                     <span class="current-price">
                         @if(!empty($product->variables) && sizeof($product->variables) > 1)
-                            от
+                            {{ __('shop.от') }}
                         @endif
                         {{ $product->price }}
                     </span>
                     ₪
                 </span>
             </div>
-            @include("shop.new.layouts.product_cart.options")
+            <div class="product_options">
+                @include("shop.new.layouts.product_cart.options")
+            </div>
             <div class="product-info__action">
                 <div class="product-info__count">
-                    <button class="product-info-decrement" disabled="true">-</button>
-                    <input class="product-info-count-input" value="1" type="number" name="product-count" min="1" max="999" disabled="true">
-                    <button class="product-info-increment" disabled="true">+</button>
+                    <button class="product-info-decrement" disabled="true" onclick="decrement(this)">-</button>
+                    <input id="count-product" class="product-info-count-input" value="1" type="number" name="product-count" min="1" max="999" disabled="true">
+                    <button class="product-info-increment" disabled="true" onclick="increment(this)">+</button>
                 </div>
-                <button class="main-btn go-to-cart">Добавить в корзину</button>
+                <button class="main-btn go-to-cart">{{ __('shop.Добавить в корзину') }}</button>
             </div>
             <div class="product-info__edge swiper">
                 <div class="product-info__edge-wrapper swiper-wrapper">
+
                     @isset($category_data['attributes']['desc_icons'])
                         @include("shop.new.layouts.product_cart.desc_slider")
                     @endisset
@@ -60,14 +63,14 @@
                 @if(isset($product->data['attributes']) && (isset($product->data['attributes']['composition'][$lang]) || $product->data['attributes']['calories'] || $category_data['attributes']['keeping']))
 
                     <div class="product-info__tabs-btns">
-                        <button class="product-info__tabs-btn">Состав</button>
-                        <button class="product-info__tabs-btn">Калорийность</button>
-                        <button class="product-info__tabs-btn">Хранение</button>
+                        <button class="product-info__tabs-btn">{{ __('shop.Состав') }}</button>
+                        <button class="product-info__tabs-btn">{{ __('shop.Калорийность') }}</button>
+                        <button class="product-info__tabs-btn">{{ __('shop.Хранение') }}</button>
                     </div>
                     <div class="product-info__tab-text">
                         @isset($product->data['attributes']['composition'][$lang])
                             <p>
-                                <b>В составе десерта следующие ингридиенты:</b>
+                                <b>{{ __('shop.В составе десерта ингридиенты:') }}</b>
                                 {{ $product->data['attributes']['composition'][$lang] }}
                             </p>
                         @endisset
@@ -75,22 +78,22 @@
                     <div class="product-info__tab-text">
                         @isset($product->data['attributes']['calories'])
                             <p>
-                                <b>Энергетическая ценность на 100 грамм продукта:</b>
+                                <b>{{ __('shop.Энергетическая ценность') }}</b>
                             </p>
                             <p>
-                                <b>Калорийность</b>
-                                {{ $product->data['attributes']['calories']['calories'] }} ккал
+                                <b>{{ __('shop.Калорийность') }}</b>
+                                {{ $product->data['attributes']['calories']['calories'] }} {{ __('shop.ккал') }}
                             </p>
                             <p>
-                                <b>Белки</b>
-                                {{ $product->data['attributes']['calories']['protein'] }} г
+                                <b>{{ __('shop.Белки') }}</b>
+                                {{ $product->data['attributes']['calories']['protein'] }} {{ __('shop.г') }}
                             </p>
                             <p>
-                                <b>Жиры</b>
+                                <b>{{ __('shop.Жиры') }}</b>
                                 {{ $product->data['attributes']['calories']['fat'] }} г
                             </p>
                             <p>
-                                <b>Углеводы</b>
+                                <b>{{ __('shop.Углеводы') }}</b>
                                 {{ $product->data['attributes']['calories']['carbohydrate'] }} г
                             </p>
                         @endisset
@@ -99,7 +102,7 @@
 
                         @isset($category_data['attributes']['keeping'][$lang])
                             <p>
-                                <b>Сроки и условия хранения:</b>
+                                <b>{{ __('shop.Сроки и условия хранения:') }}</b>
                                 {!! $category_data['attributes']['keeping'][$lang] !!}
                             </p>
                         @endisset
@@ -111,7 +114,7 @@
     <div class="recblock">
         <div class="recblock__title">
             <h3>
-                Добавить к заказу
+                {{ __('shop.Добавить к заказу') }}
             </h3>
         </div>
         <div class="recblock__items">

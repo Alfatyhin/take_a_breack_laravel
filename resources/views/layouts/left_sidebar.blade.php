@@ -36,5 +36,8 @@
         <li class="users" data_name="users">
             <a href="{{ route('users') }}" >персонал</a>
         </li>
+        <li class="users" data_name="products_options">
+            <a href="{{ route('shop_settings_products_options') }}" >Product Options</a>
+        </li>
     @endif
 </ul>

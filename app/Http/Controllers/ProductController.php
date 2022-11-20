@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categories;
 use App\Models\Product;
+use App\Models\ProductOptions;
 use App\Services\AppServise;
 use App\Services\EcwidService;
 use Illuminate\Http\Request;
@@ -39,9 +40,9 @@ class ProductController extends Controller
         if (session()->has('message')) {
             $message = session('message');
         }
+        $products_options = ProductOptions::all()->keyBy('id')->toArray();
         $shop_langs = AppServise::getLangs();
 
-        $options_select = ['SELECT' => 'список', 'SIZE' => 'размер', 'RADIO' => 'выбор', 'CHECKBOX' => 'флажки', 'TEXT' => 'текстовое поле'];
 
         $categories = Categories::all()->sortBy('index_num')->keyBy('id');
 
@@ -52,7 +53,8 @@ class ProductController extends Controller
         }
         $product_data = json_decode($product->data, true);
 
-//        dd($product->toArray());
+//        dd(json_decode($product->options, true),json_decode($product->variables, true), $products_options);
+
 
         $cat_id = $product->category_id;
         $products = Product::where('category_id', $cat_id)->get()->sortBy('index_num');
@@ -64,7 +66,7 @@ class ProductController extends Controller
             'product'    => $product,
             'products'   => $products,
             'prod_categories_map' => $prod_categories_map,
-            'options_select' => $options_select,
+            'products_options' => $products_options,
             'product_data' => $product_data,
             'shop_langs' => $shop_langs
         ]);
@@ -74,6 +76,8 @@ class ProductController extends Controller
     {
         $mode = $request->get('mode');
         $post = $request->post();
+
+//        dd($post);
 
         if ($mode == 'general') {
 
@@ -163,55 +167,6 @@ class ProductController extends Controller
 
 
         if ($mode == 'options') {
-//            dd($post);
-            $variables  = false;
-            $old_options  = false;
-            if ($product->variables) {
-                $variables = json_decode($product->variables, true);
-            }
-            if ($product->options) {
-                $old_options = json_decode($product->options, true);
-            }
-            foreach ($post['options'] as $k => &$option) {
-                foreach ($option['choices'] as $ko => $choice) {
-                    if (!$choice['priceModifier']) {
-                        $option['choices'][$ko]['priceModifier'] = 0;
-                    }
-                    if (empty($choice['text'])) {
-                        unset($option['choices'][$ko]);
-                    }
-                }
-            }
-            foreach ($post['options'] as $k => &$option) {
-
-                if ($variables && $old_options) {
-
-                    foreach ($variables as &$variant) {
-
-                        foreach ($variant['options'] as &$variant_option) {
-
-                            if ($variant_option['name'] == $old_options[$k]['name']) {
-
-                                $variant_option['name'] = $option['name'];
-
-                                foreach ($old_options[$k]['choices'] as $kc => $old_choise) {
-                                    if ($variant_option['value'] == $old_choise['text']) {
-                                        $variant_option['value'] = $option['choices'][$kc]['text'];
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if (sizeof($option['choices']) == 0) {
-                    unset($post['options'][$k]);
-                }
-
-            }
-
-            if ($variables) {
-                $product->variables = json_encode($variables);
-            }
             if (!empty($post['options'])) {
                 $product->options = json_encode($post['options']);
             } else {
@@ -221,10 +176,11 @@ class ProductController extends Controller
             $product->save();
             session()->flash('message', ["product {$product->name} save"]);
         }
+
         if ($mode == 'option_add') {
 
 
-            $option = $post['option'];
+            $option['options_id'] = $post['new_option_id'];
             $options = json_decode($product->options, true);
             $options[] = $option;
             $product->options = json_encode($options);
@@ -234,19 +190,23 @@ class ProductController extends Controller
         }
 
         if ($mode == 'add-variable') {
-            $variables = $post['variables'];
-            $kv = $post['kv'];
-            $variables[$kv]['combinationNumber'] = $kv;
-            $variables[$kv]['id'] = time();
-            $variables[$kv]['unlimited'] = 0;
-            $variables[$kv]['quantity'] = 0;
-            $variables[$kv]['defaultDisplayedPrice'] = 0;
 
-            if ($product->variables) {
-                $old_variables = json_decode($product->variables, true);
-                $old_variables[$kv] = $variables[$kv];
-                $variables = $old_variables;
+            $new_variable = $post['variables'];
+            $new_variable['id'] = time();
+            $new_variable['unlimited'] = 0;
+            $new_variable['quantity'] = 0;
+            $new_variable['defaultDisplayedPrice'] = 0;
+
+            foreach ($new_variable['options'] as $ko => $option) {
+                if (empty($option['value'])) {
+                    unset($new_variable['options'][$ko]);
+                }
             }
+            if ($product->variables) {
+                $variables = json_decode($product->variables, true);
+            }
+            $variables[] = $new_variable;
+
             $post['variables'] = $variables;
 
             $mode = 'variables';
@@ -256,9 +216,31 @@ class ProductController extends Controller
         if ($mode == 'variables') {
             if (!empty($post['variables'])) {
                 $product->variables = json_encode($post['variables']);
+                $variables = json_decode($product->variables, true);
             } else {
                 $product->variables = null;
+                $variables = false;
             }
+
+            if ($product->options) {
+                $options = json_decode($product->options, true); foreach ($options as $k => &$option) {
+                    foreach ($option['choices'] as $ko => &$choice) {
+                        unset($choice['variant_number']);
+                        if ($variables) {
+                            foreach ($variables as $kv => $variant) {
+                                if (isset($variant['options'][$k])) {
+                                    if ($variant['options'][$k]['name'] == $option['name'] && $variant['options'][$k]['value'] == $choice['text']) {
+                                        $choice['variant_number'] = $kv;
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+                $product->options = json_encode($options);
+            }
+
 
             $product->save();
             session()->flash('message', ["product {$product->name} save"]);

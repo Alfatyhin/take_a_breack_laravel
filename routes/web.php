@@ -11,6 +11,7 @@ use App\Http\Controllers\IcreditController;
 use App\Http\Controllers\Orders;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductOptionsController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ShopSettingController;
 use App\Http\Controllers\TildaController;
@@ -44,115 +45,127 @@ Route::get('/test_get_url/', [IcreditController::class, 'testGetPaymentUrl'])->n
 
 Route::any('crm', array(ShopSettingController::class, 'index'))->name('index');
 
-Route::middleware(['isAdmin', "ShopSetting"])->group(function () {
+Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () {
 
 
-    Route::any('crm/users', [Controller::class, 'allUsers'])->name('users');
+    Route::any('/users', [Controller::class, 'allUsers'])->name('users');
 
-    Route::any('crm/shop-settings/amo/create-invoice-to-order/{order}', [Orders::class, 'createAmoInvoiceToOrder'])
+    Route::any('shop-settings/amo/create-invoice-to-order/{order}', [Orders::class, 'createAmoInvoiceToOrder'])
         ->name('amo_create_invoice_to_order');
 
 
-    Route::any('crm/alex-payd', [PaypalController::class, 'alexpayd'])
+    Route::any('/alex-payd', [PaypalController::class, 'alexpayd'])
         ->name('alex_payd');
 
-    Route::get('crm/artisan/migrate', [ShopSettingController::class, 'migration'])
+    Route::get('/artisan/migrate', [ShopSettingController::class, 'migration'])
         ->name('artisan_migrate');
 
-    Route::any('crm/shop-settings/categories', array(ShopSettingController::class, 'Categories'))
+    Route::any('/shop-settings/categories', array(ShopSettingController::class, 'Categories'))
         ->name('shop_settings_categories');
 
 
-    Route::get('crm/shop-settings/product-clone/{product}', array(ProductController::class, 'clone'))
+    Route::get('/shop-settings/product-clone/{product}', array(ProductController::class, 'clone'))
         ->middleware(['isAdmin'])->name('product_cone');
 
 
-    Route::get('crm/shop-settings/product-redact/{product}', array(ProductController::class, 'RedactProduct'))
+    Route::get('/shop-settings/product-redact/{product}', array(ProductController::class, 'RedactProduct'))
         ->middleware(['isAdmin'])->name('product_redact');
 
-    Route::get('crm/shop-settings/product-delete/{product}', array(ProductController::class, 'deleteProduct'))
+    Route::get('/shop-settings/product-delete/{product}', array(ProductController::class, 'deleteProduct'))
         ->middleware(['isAdmin'])->name('product_delete');
 
-    Route::get('crm/shop-settings/products-fix', array(ProductController::class, 'fixProducts'))
+    Route::get('/shop-settings/products-fix', array(ProductController::class, 'fixProducts'))
         ->middleware(['isAdmin']);
 
-    Route::any('crm/shop-settings/product/create', array(ProductController::class, 'createProduct'))
+    Route::any('/shop-settings/product/create', array(ProductController::class, 'createProduct'))
         ->name('shop_settings_product_create');
 
-    Route::any('crm/shop-settings/category/create', array(CategoriesController::class, 'create'))
+    Route::any('/shop-settings/category/create', array(CategoriesController::class, 'create'))
         ->name('shop_settings_category_create');
 
-    Route::any('crm/shop-settings/category/delete/{category}', array(CategoriesController::class, 'delete'))
+    Route::any('/shop-settings/category/delete/{category}', array(CategoriesController::class, 'delete'))
         ->name('shop_settings_category_delete');
 
-    Route::any('crm/shop-settings/products', array(ShopSettingController::class, 'Products'))
+    Route::any('/shop-settings/products', array(ShopSettingController::class, 'Products'))
         ->name('shop_settings_products');
 
-    Route::any('crm/shop-settings/dey-offer', array(ShopSettingController::class, 'DeyOffer'))
+    Route::any('/shop-settings/products_options', array(ShopSettingController::class, 'productOptions'))
+        ->name('shop_settings_products_options');
+
+    Route::any('/shop-settings/products_options/add', array(ProductOptionsController::class, 'add'))
+        ->name('shop_settings_products_options_add');
+
+    Route::any('/shop-settings/products_options/save/{option}', array(ProductOptionsController::class, 'save'))
+        ->name('shop_settings_products_option_save');
+
+    Route::any('/shop-settings/dey-offer', array(ShopSettingController::class, 'DeyOffer'))
         ->name('dey_offer');
 
-    Route::any('crm/shop-settings/save-sortable/', array(ShopSettingController::class, 'sortableSave'))
+    Route::any('/shop-settings/save-sortable/', array(ShopSettingController::class, 'sortableSave'))
         ->name('save_sortable');
 
-    Route::any('crm/shop-settings/orders', array(ShopSettingController::class, 'Orders'))
+    Route::any('/shop-settings/orders', array(ShopSettingController::class, 'Orders'))
         ->name('shop_settings_orders');
 
-    Route::any('crm/shop-settings/coupons-discount', array(CouponsController::class, 'couponsDiscounts'))
+    Route::any('/shop-settings/coupons-discount', array(CouponsController::class, 'couponsDiscounts'))
         ->name('coupons_discount');
 
-    Route::any('crm/shop-settings/save/coupon-status', array(CouponsController::class, 'couponStatusSave'))
+    Route::any('/shop-settings/save/coupon-status', array(CouponsController::class, 'couponStatusSave'))
         ->name('coupon_status_save');
 
-    Route::any('crm/shop-settings/coupon-data-change', array(CouponsController::class, 'dataSave'))
+    Route::any('/shop-settings/coupon-data-change', array(CouponsController::class, 'dataSave'))
         ->name('coupon_data_change');
 
-    Route::any('crm/shop-settings/image-download', array(ShopSettingController::class, 'imageDownload'))
+    Route::any('/shop-settings/image-download', array(ShopSettingController::class, 'imageDownload'))
         ->name('image_download');
 
-    Route::any('crm/shop-settings/image-delete', array(ShopSettingController::class, 'imageDelete'))
+    Route::any('/shop-settings/image-delete', array(ShopSettingController::class, 'imageDelete'))
         ->name('image_delete');
 
-    Route::any('crm/shop-settings/image-test', array(ShopSettingController::class, 'imageTest'))
+    Route::any('/shop-settings/image-test', array(ShopSettingController::class, 'imageTest'))
         ->name('image_test');
 
-    Route::any('crm/shop-settings/client/{client}', array(ShopSettingController::class, 'clientData'))
+    Route::any('/shop-settings/client/{client}', array(ShopSettingController::class, 'clientData'))
         ->name('client_data');
 
-    Route::any('crm/shop-settings/delivery', array(ShopSettingController::class, 'delivery'))
+    Route::any('/shop-settings/delivery', array(ShopSettingController::class, 'delivery'))
         ->name('delivery');
 
-    Route::any('crm/shop-settings/delivery/save', array(ShopSettingController::class, 'deliverySave'))
+    Route::any('/shop-settings/delivery/save', array(ShopSettingController::class, 'deliverySave'))
         ->name('delivery_save');
 
-    Route::get('crm/shop-settings/invoice-setting', [ShopSettingController::class, 'appInvoiceSetting'])
+    Route::get('/shop-settings/invoice-setting', [ShopSettingController::class, 'appInvoiceSetting'])
         ->name('invoice_setting');
 
-    Route::any('crm/shop-settings/banner', [ShopSettingController::class, 'banner'])
+    Route::any('/shop-settings/banner', [ShopSettingController::class, 'banner'])
         ->name('banner');
 
-    Route::any('crm/shop-settings/test-change-product-count/{order}', [ShopSettingController::class, 'testOrderChangeCount'])
+    Route::any('/shop-settings/test-change-product-count/{order}', [ShopSettingController::class, 'testOrderChangeCount'])
         ->name('test_change_product_count');
 
-    Route::any('crm/shop-settings/test-icredit-payment-data', [Orders::class, 'testIcreditPaymentData'])
+    Route::any('/shop-settings/test-icredit-payment-data', [Orders::class, 'testIcreditPaymentData'])
         ->name('test_icredit_payment_data');
 
-    Route::any('crm/shop-settings/update-amo-contact/{client}', [ShopSettingController::class, 'updateAmoContact'])
+    Route::any('/shop-settings/update-amo-contact/{client}', [ShopSettingController::class, 'updateAmoContact'])
         ->name('update_amo_contact');
+
+    Route::any('/shop-settings/script-modules', [ShopSettingController::class, 'scriptsModules'])
+        ->name('script_modules');
 
 
 ////////////////////////////////////////////////////////////////////////////
 
-    Route::get('crm/shop-settings/amocrm', [Amocrm::class, 'integrationAmoCrm'])
+    Route::get('/shop-settings/amocrm', [Amocrm::class, 'integrationAmoCrm'])
         ->name('amocrm');
 
-    Route::get('crm/shop-settings/amocrm/order', [Amocrm::class, 'getOrderById'])
+    Route::get('/shop-settings/amocrm/order', [Amocrm::class, 'getOrderById'])
         ->name('amo.get_order');
 
-    Route::get('crm/shop-settings/amocrm/callback', [Amocrm::class, 'callBack']);
+    Route::get('/shop-settings/amocrm/callback', [Amocrm::class, 'callBack']);
 
-    Route::get('crm/shop-settings/amocrm/pipeline-test', [Amocrm::class, 'pipelineTest']);
+    Route::get('/shop-settings/amocrm/pipeline-test', [Amocrm::class, 'pipelineTest']);
 
-    Route::any('crm/shop-settings/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
+    Route::any('/shop-settings/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
         ->name('amo_webhook');
 
 ////////////////////////////////////////////////////////////////////////////
@@ -201,15 +214,6 @@ Route::get('/api/create_amo_order_test', [Amocrm::class, 'createOrderToApiTest']
     ->name('api_create_amo_order_test');
 
 Route::any('/api/test_request', [ApiRest::class, 'testRequest']);
-
-
-Route::get('/test-tilda', [TildaController::class, 'testTildaInput'])
-    ->middleware(['isAdmin'])
-    ->name('test_tilda');
-Route::get('/tilda-invoice-create', [TildaController::class, 'createInvoiceOrder'])
-    ->middleware(['isAdmin'])
-    ->name('tilda_invoice_create');
-
 
 
 
@@ -307,30 +311,40 @@ Route::middleware(["Shop"])->group(function () {
 
 //    Route::get('/site_map.xml', [ShopController::class, 'sitemap']);
 
+
+
+
     Route::get('/404', [ShopController::class, 'err404'])->name('404');
 
-    Route::any('/change-product-count', [ShopController::class, 'changeProductCount'])->name('change_product_count');
+    Route::get('/check-promo-code', [ShopController::class, 'getPromoCode'])->name('check_promo_code');
 
-
-    Route::get('/ru/category/{category}', [ShopController::class, 'categoryRu'])->name('category_ru');
-
-    Route::get('/category/{category}', [ShopController::class, 'categoryEn'])->name('category_en');
-
-    Route::get('/ru', [ShopController::class, 'indexRu'])->name('index_ru');
-
-    Route::get('/', [ShopController::class, 'indexEn'])->name('index_en');
+    Route::get('/{lang?}', [ShopController::class, 'indexView'])->name('index');
 
     Route::get('/ru/market', [ShopController::class, 'marketRU'])->name('market_ru');
+
+
+    Route::any('/{lang}/cart/{step?}', [ShopController::class, 'CartView'])->name('cart');
+
+
+
+    Route::get('/category/{category?}', [ShopController::class, 'categoryView'])->name('category_index');
+
+    Route::get('/{lang}/category/{category}', [ShopController::class, 'categoryLang'])->name('category');
+
+
+    Route::get('/{category}/{product}', [ShopController::class, 'ProductView'])->name('product_index');
+
+    Route::get('/{lang?}/{category}/{product}', [ShopController::class, 'ProductLang'])->name('product');
+
+
+
+    Route::any('/change-product-count', [ShopController::class, 'changeProductCount'])->name('change_product_count');
 
     Route::get('/market', [ShopController::class, 'marketEn'])->name('market_en');
 
     Route::get('/ru/short-market', [ShopController::class, 'marketShortRu'])->name('short_market_ru');
 
     Route::get('/short-market', [ShopController::class, 'marketShortEn'])->name('short_market_en');
-
-    Route::get('/ru/cart/', [ShopController::class, 'Cart'])->name('cart_ru');
-
-    Route::get('/cart/', [ShopController::class, 'CartEn'])->name('cart_en');
 
     Route::any('/new-order/', [ShopController::class, 'NewOrder'])->name('new_order');
 
@@ -348,8 +362,6 @@ Route::middleware(["Shop"])->group(function () {
 
     Route::any('/links/', [ShopController::class, 'links'])->name('shop_links');
 
-    Route::get('/check-promo-code/', [ShopController::class, 'getPromoCode'])->name('check_promo_code');
-
     Route::post('/send-contact-form/', [ShopController::class, 'contactForm'])->name('send_contact_form');
 
     Route::post('/send-birthday/', [ShopController::class, 'saveContactBirth'])->name('send_birthday');
@@ -360,12 +372,6 @@ Route::middleware(["Shop"])->group(function () {
     Route::get('/ru/product/{product}', [ShopController::class, 'ProductRuOld']);
 
     Route::get('/product/{product}', [ShopController::class, 'ProductEnOld']);
-
-
-    Route::get('/ru/{category}/{product}', [ShopController::class, 'ProductRu'])->name('product_ru');
-
-    Route::get('/{category}/{product}', [ShopController::class, 'ProductEn'])->name('product_en');
-
 
 
 });

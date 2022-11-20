@@ -14,10 +14,10 @@
 @section('head')
 
 
-    <link rel="canonical" href="{{ route("index_$lang") }}">
+    <link rel="canonical" href="{{ route("index") }}">
 
-    <link rel="alternate" hreflang="ru" href="{{ route('index_ru') }}">
-    <link rel="alternate" hreflang="en" href="{{ route('index_en') }}">
+    <link rel="alternate" hreflang="ru" href="{{ route('index', ["lang" => 'ru']) }}">
+    <link rel="alternate" hreflang="en" href="{{ route('index') }}">
 
     @if ($lang == 'ru')
         <meta name="description" content="Главная в интернет-магазине Take a Break 🧁 Натуральные авторские десерты ✈ Быстрая доставка в Гуш-Дан, Нетанию, Ашдод, Хайфу и Иерусалим ☎ +972 55-947-5812">
@@ -28,13 +28,19 @@
     @include('shop.layouts.seo.re_captcha')
 @stop
 
+
+@section('product_filter')
+    @include('shop.new.layouts.products_filters')
+@stop
+
+
 @section('content')
 
-    @include("shop.new.$lang.left_sidebar")
-    @include("shop.new.$lang.index")
+    @include("shop.new.layouts.left_sidebar")
+    @include("shop.new.layouts.index")
 
     <div class="hidden" style="display: none" itemscope itemtype="https://schema.org/Organization">
-        <a itemprop="url" href="{{ route('index_en') }}"><div itemprop="name">Take a Break</div>
+        <a itemprop="url" href="{{ route('index') }}"><div itemprop="name">Take a Break</div>
         </a>
         @if ($lang == 'ru')
             <div itemprop="description">Главная в интернет-магазине Take a Break 🧁 Натуральные авторские десерты ✈ Быстрая доставка в Гуш-Дан, Нетанию, Ашдод, Хайфу и Иерусалим ☎ +972 55-947-5812</div>

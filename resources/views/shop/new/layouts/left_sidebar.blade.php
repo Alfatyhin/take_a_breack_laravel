@@ -5,10 +5,20 @@
         <img src="/assets/images/icons/category.svg" alt="">
     </p>
     <ul>
+        <li>
+            <a href="">
+                {{ __('shop-left_sidebar.все') }}
+            </a>
+        </li>
         @foreach($categories as $category)
             @php($translate = json_decode($category->translate, true))
             <li>
-                <a href="{{ route("category_$lang", ['category' => $category->slag]) }}"
+                @if($lang == 'en')
+                    @php($rout = route("category_index", ['category' => $category->slag]))
+                @else
+                    @php($rout = route("category", ['lang' => $lang, 'category' => $category->slag]))
+                @endif
+                <a href="{{ $rout }}"
                    data-type="{{ $category->slag }}">
                     @isset($translate['nameTranslated'][$lang])
                         {{ $translate['nameTranslated'][$lang] }}
@@ -20,25 +30,6 @@
         @endforeach
     </ul>
     <ul class="for-mobile">
-        <li>
-            <a href="#">
-                О нас
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                Доставка и Оплата
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                Отзывы
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                Контакты
-            </a>
-        </li>
+        @include('shop.new.layouts.nav-menu')
     </ul>
 </div>

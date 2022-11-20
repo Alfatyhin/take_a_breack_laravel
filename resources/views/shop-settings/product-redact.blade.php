@@ -237,93 +237,37 @@
                     <div class="new_option hidden pop-ap">
                         <div class="body">
                             <span class="close"></span>
-                            <form action="{{ route('product_save', ['product' => $product, 'mode' => 'option_add']) }}" method="POST">
-                                @csrf
-                                <div class="box_inline box_border">
-                                    наименование:
-                                    <input type="text" name="option[name]" value="">
-                                </div>
-                                <div class="box_inline box_border">
-                                    тип:
-                                    <select name="option[type]">
-                                        @foreach($options_select as $ks => $item)
-                                            <option value="{{ $ks }}" >{{ $item }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="box_block">
-                                    <p>
-                                        <input type="checkbox" name="option['required']" value="true">
-                                        обязательный параметр
-                                    </p>
-                                    <table>
-                                        <tr>
-                                            <th>
-                                                название
-                                            </th>
-                                            <th>
-                                                модификатор цены
-                                            </th>
-                                            <th>
-                                                по умолчанию
-                                            </th>
-                                            <th>
-
-                                            </th>
-                                        </tr>
-                                        @for($x=0; $x<2; $x++)
-                                            <tr>
-
-                                                <td>
-                                                    значение:
-                                                    <input type="text" name="option[choices][{{ $x }}][text]" value="">
-
-                                                </td>
-                                                <td>
-                                                    <div class="box_inline">
-
-                                                        <input type="number" name="option[choices][{{ $x }}][priceModifier]" value="">
-
-                                                    </div>
-                                                    <div class="box_inline">
-                                                        <input type="radio" name="option[choices][{{ $x }}][priceModifierType]" value="ABSOLUTE" checked> $
-                                                        <br>
-                                                        <input type="radio" name="option[choices][{{ $x }}][priceModifierType]" value="PERCENT" > %
-                                                    </div>
-                                                </td>
-
-                                                <td>
-                                                    <input type="radio" name="option[defaultChoice]" value="{{ $x }}" >
-                                                </td>
-                                                <td>
-                                                    {{--                                            <span class="fa fa-plus-square option_choice_add" data_key="0"></span>--}}
-                                                </td>
-                                            </tr>
-                                        @endfor
-                                    </table>
-
-                                    <p>Переводы</p>
-                                    @foreach($shop_langs as $kl => $lang_data)
-                                        <div class="box_block box_border">
-                                            <p>Язык: {{ $lang_data['name'] }}</p>
-                                            <div class="box_inline">
-                                                наименование: <br>
-                                                <input type="text" name="option[nameTranslated][{{ $kl }}]" value="">
-                                            </div>
-                                            <div class="box_inline box_choices" >
-                                                значения <br>
-                                                @for($x=0; $x<2; $x++)
-                                                    <input name="option[choices][{{ $x }}][textTranslated][{{ $kl }}]" >
-                                                    <br>
-                                                @endfor
-                                            </div>
-                                        </div>
+                            <div class="box_inline box_border">
+                                options:
+                                <ul class="list products_list">
+                                    @foreach($products_options as $option)
+                                        <li class="products" data_id="{{ $option['id'] }}" data_name="category_{{ $option['id'] }}" >
+                                            <a>
+                                                {{ $option['name'] }}
+                                            </a>
+                                        </li>
                                     @endforeach
-                                </div>
-                                <p>
-                                    <input class="button" type="submit" value="добавить параметр">
-                                </p>
-                            </form>
+                                </ul>
+
+                            </div>
+                            <div class="box_inline content_list">
+                                @foreach($products_options as $option)
+                                    @php($nameTranslate = json_decode($option['nameTranslate']))
+
+                                    <div class="content_item category_{{ $option['id'] }}" data_name="{{ $option['id'] }}" >
+                                        <form action="{{ route('product_save', ['product' => $product, 'mode' => 'option_add']) }}" method="POST">
+                                            @csrf
+                                            <input hidden name="new_option_id" value="{{ $option['id'] }}" />
+                                            {{ $option['name'] }} - type: {{ $option['type'] }}
+
+                                            <p>
+                                                <input class="button" type="submit" value="добавить параметр">
+                                            </p>
+                                        </form>
+                                    </div>
+                                @endforeach
+                            </div>
+
 
                         </div>
                     </div>
@@ -336,8 +280,10 @@
                     <div class="box_inline box_list">
                         <ul class="list options_list">
                             @foreach($options as $k => $option)
-                                <li data_name="option_{{ $option['name'] }}" data_name="{{ $option['name'] }}">
-                                    <a >{{ $option['name'] }}</a>
+                                @php($option_id = $option['options_id'])
+                                @php($option_data = $products_options[$option_id])
+                                <li data_name="option_{{ $option_data['id'] }}" data_name="{{ $option_data['id'] }}">
+                                    <a >{{ $option_data['name'] }}</a>
                                 </li>
                             @endforeach
                         </ul>
@@ -347,11 +293,17 @@
                         <form class="" action="{{ route('product_save', ['product' => $product, 'mode' => 'options']) }}" method="POST">
                             @csrf
                             @foreach($options as $k => $option)
-                                <div class="content_item option_{{ $option['name'] }}">
+                                @php($option_id = $option['options_id'])
+                                @php($option_data = $products_options[$option_id])
+                                @php($nameTranslate = json_decode($option_data['nameTranslate'], true))
+                                <div class="content_item option_{{ $option_data['id'] }}">
                                     <div class="box_inline box_border">
+                                        <input type="hidden" name="options[{{ $k }}][options_id]" value="{{ $option_id }}">
                                         наименование:
-                                        <input type="text" name="options[{{ $k }}][name]" value="{{ $option['name'] }}" >{{ $option['name'] }}
-                                        @if($option['type'] == 'TEXT')
+                                        {{ $option_data['name'] }}
+
+
+                                        @if($option_data['type'] == 'TEXT')
                                             <br>
                                             макс кол-во символов
                                             @isset($option['max_size'])
@@ -365,30 +317,18 @@
                                         <p class="opening_box plus">Переводы</p>
                                         <div class="open_box closed">
                                             @foreach($shop_langs as $kl => $lang_data)
-                                                @php($name = $option['nameTranslated'][$kl])
+                                                @php($name = $nameTranslate[$kl])
                                                 <div class="">
-                                                    {{ $lang_data['name'] }} <br>
-                                                    <input type="text" name="options[{{ $k }}][nameTranslated][{{ $kl }}]" value="{{ $name }}">
+                                                    {{ $lang_data['name'] }} -
+                                                    {{ $name }}
                                                 </div>
                                             @endforeach
                                         </div>
                                     </div>
                                     <div class="box_inline box_border">
-                                        <input type="hidden" name="options[{{ $k }}][type]" value="{{ $option['type'] }}">
-                                        тип: {{ $option['type'] }}
-{{--                                        <select name="options[{{ $k }}][type]">--}}
-{{--                                            @foreach($options_select as $ks => $item)--}}
-{{--                                                @if($option['type'] == $ks)--}}
-{{--                                                    <option value="{{ $ks }}" selected>{{ $item }}</option>--}}
-{{--                                                @else--}}
-
-{{--                                                    <option value="{{ $ks }}" >{{ $item }}</option>--}}
-{{--                                                @endif--}}
-
-{{--                                            @endforeach--}}
-{{--                                        </select>--}}
+                                        тип опции: {{ $option_data['type'] }}
                                     </div>
-                                    <div class="box_block">
+                                    <tr class="box_block">
                                         <p>
                                             @if(!empty($option['required']))
                                                 <input type="checkbox" name="options[{{ $k }}]['required']" value="true" checked>
@@ -406,6 +346,11 @@
                                                 <th>
                                                     описание
                                                 </th>
+                                                @if($option_data['type'] != 'TEXT')
+                                                    <th>
+                                                        метрики
+                                                    </th>
+                                                @endif
                                                 <th>
                                                     модификатор цены
                                                 </th>
@@ -416,137 +361,240 @@
 
                                                 </th>
                                             </tr>
-                                            @foreach($option['choices'] as $kc => $choice)
-                                                <tr>
-
-                                                    <td>
-                                                        @isset($choice['variant_number'])
-                                                            <input type="hidden" name="options[{{ $k }}][choices][{{ $kc }}][variant_number]" value="{{ $choice['variant_number'] }}">
-                                                            <b>
-                                                                variant-{{ $choice['variant_number'] + 1 }}
-                                                            </b><br>
-                                                        @endisset
-                                                        значение:
-                                                        @isset($choice['text'])
-                                                            <input type="text" name="options[{{ $k }}][choices][{{ $kc }}][text]" value="{{ $choice['text'] }}">
-                                                        @else
-                                                            <input type="text" name="options[{{ $k }}][choices][{{ $kc }}][text]" >
-                                                        @endisset
-                                                        <hr>
-                                                        <p class="opening_box plus">Переводы</p>
-                                                        <div class="open_box closed">
-                                                            @foreach($shop_langs as $kl => $lang_data)
-                                                                <div class="text-right">
-                                                                    <p>{{ $lang_data['name'] }}
-                                                                        @isset($choice['textTranslated'][$kl])
-                                                                            <input name="options[{{ $k }}][choices][{{ $kc }}][textTranslated][{{ $kl }}]"
-                                                                                   value="{{ $choice['textTranslated'][$kl] }}"
-                                                                                   placeholder="{{ $choice['text'] }}">
-                                                                        @else
-                                                                            <input name="options[{{ $k }}][choices][{{ $kc }}][textTranslated][{{ $kl }}]"
-                                                                                   value=""
-                                                                                   placeholder="{{ $choice['text'] }}">
-                                                                        @endisset
-                                                                    </p>
-                                                                </div>
-                                                            @endforeach
-                                                        </div>
-
-                                                    </td>
-                                                    <td>
-                                                        @foreach($shop_langs as $kl => $lang_data)
-                                                            <div class="text-right">
-                                                                <p>{{ $lang_data['name'] }}
-                                                                    @isset($choice['description'][$kl])
-                                                                        <input name="options[{{ $k }}][choices][{{ $kc }}][description][{{ $kl }}]"
-                                                                               value="{{ $choice['description'][$kl] }}"
-                                                                               placeholder="description">
-                                                                    @else
-                                                                        <input name="options[{{ $k }}][choices][{{ $kc }}][description][{{ $kl }}]"
-                                                                               value=""
-                                                                               placeholder="description">
-                                                                    @endisset
-                                                                </p>
-                                                            </div>
-                                                        @endforeach
-                                                    </td>
-                                                    <td>
-                                                        <div class="box_inline">
-
-
-                                                            @isset($choice['priceModifier'])
-                                                                <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" value="{{ $choice['priceModifier'] }}">
-                                                            @else
-                                                                <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" >
+                                            @php($data_option_variants = json_decode($option_data['options'], true))
+                                            @if (isset($option['choices']) && !empty($option['choices']))
+                                                @foreach($option['choices'] as $kc => $choice)
+                                                    @php($key_opt_var = $choice['var_option_id'])
+                                                    @php($choice_data = $data_option_variants[$key_opt_var])
+                                                    @php($textTranslated = $choice_data['textTranslated'])
+                                                    <tr>
+                                                        <td>
+                                                            @isset($choice['variant_number'])
+                                                                <input type="hidden" name="options[{{ $k }}][choices][{{ $kc }}][variant_number]" value="{{ $choice['variant_number'] }}">
+                                                                <b>
+                                                                    variant-{{ $choice['variant_number'] + 1 }}
+                                                                </b><br>
                                                             @endisset
-                                                        </div>
-                                                        <div class="box_inline">
-                                                            @if (isset($choice['priceModifierType']) && $choice['priceModifierType'] == 'ABSOLUTE')
-                                                                <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" checked> $
-                                                                <br>
-                                                                <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" > %
-                                                            @else
-                                                                <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" > $
-                                                                <br>
-                                                                <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" checked> %
-                                                            @endif
-                                                        </div>
-                                                    </td>
+                                                            <input hidden name="options[{{ $k }}][choices][{{ $kc }}][var_option_id]" value="{{ $key_opt_var }}">
+                                                            значение:
+                                                            @isset($choice_data['text'])
+                                                                {{ $choice_data['text'] }}
+                                                            @endisset
+                                                            <hr>
+                                                            <p class="opening_box plus">Переводы</p>
+                                                            <div class="open_box closed">
+                                                                <table>
+                                                                    @foreach($shop_langs as $kl => $lang_data)
+                                                                        <tr>
+                                                                            <td>
+                                                                                {{ $lang_data['name'] }}
+                                                                            </td>
+                                                                            <td>
+                                                                                {{ $textTranslated[$kl] }}
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </table>
+                                                            </div>
 
-                                                    <td>
-                                                        @if(isset($option['defaultChoice']) && $option['defaultChoice'] == $kc)
-                                                            <input type="radio" name="options[{{ $k }}][defaultChoice]" value="{{ $kc }}" checked>
-                                                        @else
-                                                            <input type="radio" name="options[{{ $k }}][defaultChoice]" value="{{ $kc }}" >
+                                                        </td>
+                                                        <td>
+                                                            @isset($choice_data['description'])
+                                                                <table>
+                                                                    @foreach($shop_langs as $kl => $lang_data)
+                                                                        <tr>
+                                                                            <td>
+                                                                                {{ $lang_data['name'] }}
+                                                                            </td>
+                                                                            <td>
+                                                                                @isset($choice_data['description'][$kl])
+                                                                                    {{ $choice_data['description'][$kl] }}
+                                                                                @endisset
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </table>
+                                                            @endisset
+                                                        </td>
+
+                                                        @if($option_data['type'] != 'TEXT')
+                                                            <td>
+                                                                @isset($choice_data['metrics'])
+                                                                    <table>
+                                                                        @foreach($choice_data['metrics'] as $metric)
+                                                                            @foreach($shop_langs as $kl => $lang_data)
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        {{ $lang_data['name'] }}
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @isset($metric[$kl])
+                                                                                            {{ $metric[$kl] }}
+                                                                                        @endisset
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                        @endforeach
+                                                                    </table>
+                                                                @endisset
+
+                                                            </td>
                                                         @endif
-                                                    </td>
-                                                    <td>
-                                                        <span class="fa fa-trash button"></span>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                            @if($option['type'] != 'TEXT')
-                                                <tr>
-                                                    <th colspan="5">
-                                                        для добавления значения параметра заполнить поля ниже и нажать
-                                                        <span class="fa fa-plus"></span>
-                                                    </th>
-                                                </tr>
-                                                <tr>
-                                                    @php($kc++)
-                                                    <td>
-                                                        значение:
-                                                        <input type="text" name="options[{{ $k }}][choices][{{ $kc }}][text]" >
-                                                    </td>
-                                                    <td>
+                                                        <td>
+                                                            <div class="box_inline">
 
-                                                    </td>
-                                                    <td>
-                                                        <div class="box_inline">
-                                                            <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" >
-                                                        </div>
-                                                        <div class="box_inline">
-                                                            <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" > $
-                                                            <br>
-                                                            <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" checked> %
-                                                        </div>
-                                                    </td>
 
-                                                    <td>
-                                                        <input type="radio" name="options[{{ $k }}][defaultChoice]" value="{{ $kc }}" >
-                                                    </td>
-                                                    <td>
+                                                                @isset($choice['priceModifier'])
+                                                                    <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" value="{{ $choice['priceModifier'] }}">
+                                                                @else
+                                                                    <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" >
+                                                                @endisset
+                                                            </div>
+                                                            <div class="box_inline">
+                                                                @if (isset($choice['priceModifierType']) && $choice['priceModifierType'] == 'ABSOLUTE')
+                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" checked> $
+                                                                    <br>
+                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" > %
+                                                                @else
+                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" > $
+                                                                    <br>
+                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" checked> %
+                                                                @endif
+                                                            </div>
+                                                        </td>
 
-                                                        <button type="submit">
-                                                            <span class="fa fa-plus button"></span>
-                                                        </button>
-                                                    </td>
-                                                </tr>
+                                                        <td>
+                                                            @if(isset($option['defaultChoice']) && $option['defaultChoice'] == $kc)
+                                                                <input type="radio" name="options[{{ $k }}][defaultChoice]" value="{{ $kc }}" checked>
+                                                            @else
+                                                                <input type="radio" name="options[{{ $k }}][defaultChoice]" value="{{ $kc }}" >
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <span class="fa fa-trash button"></span>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+
+                                            @else
+                                                @if($option_data['type'] == 'TEXT')
+                                                    @php($choice_data = $data_option_variants[0])
+                                                    @php($textTranslated = $choice_data['textTranslated'])
+
+                                                    <tr>
+                                                        <td>
+
+                                                            <input hidden name="options[{{ $k }}][choices][0][var_option_id]" value="0">
+                                                            значение:
+                                                            @isset($choice_data['text'])
+                                                                {{ $choice_data['text'] }}
+                                                            @endisset
+                                                            <hr>
+                                                            <p class="opening_box plus">Переводы</p>
+                                                            <div class="open_box closed">
+                                                                <table>
+                                                                    @foreach($shop_langs as $kl => $lang_data)
+                                                                        <tr>
+                                                                            <td>
+                                                                                {{ $lang_data['name'] }}
+                                                                            </td>
+                                                                            <td>
+                                                                                {{ $textTranslated[$kl] }}
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </table>
+                                                            </div>
+
+                                                        </td>
+                                                        <td>
+                                                            @isset($choice_data['description'])
+                                                                <table>
+                                                                    @foreach($shop_langs as $kl => $lang_data)
+                                                                        <tr>
+                                                                            <td>
+                                                                                {{ $lang_data['name'] }}
+                                                                            </td>
+                                                                            <td>
+                                                                                @isset($choice_data['description'][$kl])
+                                                                                    {{ $choice_data['description'][$kl] }}
+                                                                                @endisset
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </table>
+                                                            @endisset
+                                                        </td>
+
+
+                                                        <td>
+                                                            <div class="box_inline">
+                                                                <input type="number" name="options[{{ $k }}][choices][0][priceModifier]" >
+                                                            </div>
+                                                            <div class="box_inline">
+                                                                <input type="radio" name="options[{{ $k }}][choices][0][priceModifierType]" value="ABSOLUTE" > $
+                                                                <br>
+                                                                <input type="radio" name="options[{{ $k }}][choices][0][priceModifierType]" value="PERCENT" checked> %
+                                                            </div>
+                                                        </td>
+
+                                                        <td>
+
+                                                        </td>
+                                                        <td>
+
+                                                        </td>
+                                                    </tr>
+                                                @else
+                                                    @php($kc = 0)
+                                                    @foreach($data_option_variants as $key_opt_var => $choice_data)
+
+                                                        <tr>
+                                                            <td>
+                                                                <input hidden name="options[{{ $k }}][choices][{{ $kc }}][var_option_id]" value="{{ $key_opt_var }}">
+                                                                значение:
+                                                                @isset($choice_data['text'])
+                                                                    {{ $choice_data['text'] }}
+                                                                @endisset
+
+
+                                                            </td>
+                                                            <td>
+
+                                                            </td>
+
+                                                            @if($option_data['type'] != 'TEXT')
+                                                                <td>
+
+                                                                </td>
+                                                            @endif
+                                                            <td>
+                                                                <div class="box_inline">
+
+                                                                    <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" >
+                                                                </div>
+                                                                <div class="box_inline">
+                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" checked> $
+                                                                    <br>
+                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" > %
+
+                                                                </div>
+                                                            </td>
+
+                                                            <td>
+                                                                <input type="radio" name="options[{{ $k }}][defaultChoice]" value="{{ $kc }}" >
+                                                            </td>
+                                                            <td>
+                                                                <span class="fa fa-plus button"></span>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
+
                                             @endif
                                         </table>
 
 
-                                    </div>
                                 </div>
 
                             @endforeach
@@ -575,7 +623,7 @@
                                 add variant
                             </p>
                             <form action="{{ route('product_save', ['product' => $product, 'mode' => 'add-variable']) }}" method="POST">
-                            @csrf
+                                @csrf
                                 @if (!empty($variables))
                                     @php($kv = array_key_last($variables) + 1)
                                     @php($sk = $kv)
@@ -589,20 +637,30 @@
                                 </p>
                                 <p>
                                     sku<b>*</b>:
-                                    <input required type="text" name="variables[{{ $kv }}][sku]" value="{{ $product->sku }}-{{ $sk }}">
+                                    <input required type="text" name="variables[sku]" value="{{ $product->sku }}-{{ $sk }}">
                                 </p>
                                 <div>
                                     @if (!empty($options))
                                         @foreach($options as $k => $option)
-                                            <p>
-                                                <input type="hidden" name="variables[{{ $kv }}][options][{{ $k }}][name]" value="{{ $option['name'] }}">
-                                                {{ $option['name'] }}
-                                                <select name="variables[{{ $kv }}][options][{{ $k }}][value]" >
-                                                    @foreach($option['choices'] as $choise)
-                                                        <option value="{{ $choise['text'] }}"> {{ $choise['text'] }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </p>
+                                            @php($option_id = $option['options_id'])
+                                            @php($option_data = $products_options[$option_id])
+                                            @php($nameTranslate = json_decode($option_data['nameTranslate'], true))
+
+                                            @if ($option_data['type'] != 'TEXT')
+                                                <p>
+                                                    {{ $option_data['name'] }}
+                                                    {{--                                                    <select name="variables[options][{{ $k }}][value]" >--}}
+                                                    {{--                                                        <option value=""> выбрать параметр </option>--}}
+                                                    {{--                                                        @foreach($option['choices'] as $choise)--}}
+                                                    {{--                                                            @isset($choise['variant_number'])--}}
+                                                    {{--                                                                <option value="{{ $choise['text'] }}" disabled> {{ $choise['text'] }}</option>--}}
+                                                    {{--                                                            @else--}}
+                                                    {{--                                                                <option value="{{ $choise['text'] }}"> {{ $choise['text'] }}</option>--}}
+                                                    {{--                                                            @endisset--}}
+                                                    {{--                                                        @endforeach--}}
+                                                    {{--                                                    </select>--}}
+                                                </p>
+                                            @endif
                                         @endforeach
                                     @endif
                                 </div>
@@ -641,9 +699,8 @@
                             @foreach($variables as $kv => $variant)
                                 <tr>
                                     <td>
-                                        #{{ $variant['combinationNumber'] }} <br>
+                                        #{{ $kv + 1 }} <br>
                                         id: {{ $variant['id'] }}
-                                        <input type="hidden" name="variables[{{ $kv }}][combinationNumber]" value="{{ $variant['combinationNumber'] }}">
                                         <input type="hidden" name="variables[{{ $kv }}][id]" value="{{ $variant['id'] }}">
 
                                     </td>
@@ -657,10 +714,28 @@
                                     <td>
                                         @isset($variant['options'])
                                             @foreach($variant['options'] as $ko => $option)
-                                                {{ $option['name'] }} {{ $option['value'] }} <br>
+                                                @isset($option['options_id'])
+                                                    @php($option_id = $option['options_id'])
+                                                    @php($option_data = $products_options[$option_id])
+                                                    @php($option_data_values = json_decode($option_data['options'], true))
+                                                    <input hidden name="variables[{{ $kv }}][options][{{ $ko }}][options_id]" value="{{ $option_id }}">
+                                                    {{ $option_data['name'] }}
+                                                @endisset
+                                                @isset($option['var_option_id'])
+                                                    @php($var_option_id = $option['var_option_id'])
+                                                    @php($option_value = $option_data_values[$var_option_id])
+                                                    <input hidden name="variables[{{ $kv }}][options][{{ $ko }}][var_option_id]" value="{{ $var_option_id }}">
+                                                    {{ $option_value['text'] }}
+                                                @else
+                                                    <select name="variables[{{ $kv }}][options][{{ $ko }}][var_option_id]">
+                                                        <option value="">not value</option>
+                                                        @foreach($option_data_values as $kc => $data_value)
+                                                            <option value="{{ $kc }}">{{ $data_value['text'] }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                @endisset
+                                                <br>
 
-                                                <input type="hidden" name="variables[{{ $kv }}][options][{{$ko}}][name]" value="{{ $option['name'] }}">
-                                                <input type="hidden" name="variables[{{ $kv }}][options][{{$ko}}][value]" value="{{ $option['value'] }}">
                                             @endforeach
                                         @endisset
                                     </td>

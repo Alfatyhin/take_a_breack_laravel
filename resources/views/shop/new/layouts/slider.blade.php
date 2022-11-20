@@ -1,8 +1,16 @@
 @foreach($rand_keys as $prod_id)
     @php($product = $products[$prod_id])
+
+    @if($lang == 'en')
+        @php($rout = route("product", ['category' => $category->slag, 'product' => $product->slag]))
+    @else
+        @php($rout = route("product", ['lang' => $lang, 'category' => $category->slag, 'product' => $product->slag]))
+    @endif
+
+
     @if (!empty($product->image))
         @php($prod_category = $categories[$product->category_id])
-        <a href="{{ route('product_'.$lang, ['category' => $prod_category->slag, 'product' => $product->slag]) }}"
+        <a href="{{ $rout }}"
            class="recblock__item">
             <div class="item-img">
                 <img src="{{ $product->image['image160pxUrl'] }}" title="{{ $product->name }}" alt="{{ $product->name }}">

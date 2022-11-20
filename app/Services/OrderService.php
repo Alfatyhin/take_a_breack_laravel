@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use phpDocumentor\Reflection\Types\Self_;
 
 class OrderService
@@ -683,16 +684,22 @@ class OrderService
             $product = Product::where('id', $id)->first();
             $translate = json_decode($product->translate, true);
 
-            if (isset($item['variant'])) {
+            $item['product_price'] = $product->price;
+            if ($item['variant'] >= 0) {
                 $var_key = $item['variant'];
-                $variables = json_decode($product->variables, true);
-                $variant = $variables[$var_key];
-                $price = $variant['defaultDisplayedPrice'];
+                if (!empty($product->variables)) {
+                    $variables = json_decode($product->variables, true);
 
-                $item_total = $price * $item['count'];
+                    if (!isset($variables[$var_key])) {
+                        dd($item, $variables, $product->toArray());
+                    }
+                    $variant = $variables[$var_key];
+                    print_r('variant - '.$var_key);
 
-                $item['price'] = $variant['defaultDisplayedPrice'];
-                $item['sku'] = $variant['sku'];
+                    $item['variant_price'] = $variant['defaultDisplayedPrice'];
+                    $item['price'] = $variant['defaultDisplayedPrice'];
+                    $item['sku'] = $variant['sku'];
+                }
 
             } else {
                 $item_total = $product->price * $item['count'];
@@ -709,19 +716,38 @@ class OrderService
                     $option_choice_key = $item_option['value'];
                     $option = $options[$option_key];
                     $choice = $option['choices'][$option_choice_key];
+
+                    if (isset($choice['variant_number'])) {
+                        $choice_variant_key = $choice['variant_number'];
+                        $variant = $variables[$choice_variant_key];
+                        $price = $variant['defaultDisplayedPrice'];
+                    } else {
+//                        dd('test', $item_option);
+                        $price = $product->price;
+                    }
+//                    dd($item_option, $option, $choice, $price);
                     if ($choice['priceModifier'] != 0) {
                         if ($choice['priceModifierType'] == 'ABSOLUTE') {
-                            $price =  $product->price + $choice['priceModifier'] / 1;
+                            $price_item =  $item['price'] + $choice['priceModifier'] / 1;
                         } else {
-                            $price =  $product->price + ($product->price / 100 * $choice['priceModifier']);
+                            $price_item =  $item['price'] + ($price / 100 * $choice['priceModifier']);
                         }
-                        $item['price'] = $price;
-                        $item_total = $price * $item['count'];
+
+                        $item_total = $item['price'] * $item['count'];
                         $item['total'] = $item_total;
+                    } else {
+                        $item_total = $item['price'] * $item['count'];
                     }
                     $item_option['name'] = $option['nameTranslated'];
                     $item_option['value'] = $option['choices'][$option_choice_key];
+                    if (isset($item_option['text'])) {
+                        $item_option['text'] = Str::remove(["\n", "   "], $item_option['text']);
+                    }
                 }
+            }
+
+            if (!isset($item_total)) {
+                dd($item, $product, $options);
             }
 
             $products_total += $item_total;
@@ -762,16 +788,18 @@ class OrderService
         }
 
         // delivery
-        if ($order['delivery'] != 'pickup') {
-            $data['delivery_price'] = (int) $order['order_data']['delivery_price'];
-            $order_total += (int) $order['order_data']['delivery_price'];
-        } else {
-            $data['delivery_discount'] = round($order_total / 100 * $order['order_data']['delivery_discount'], 1);
-            $order_total -= $data['delivery_discount'];
+        if (isset($order['delivery'])) {
+            if ($order['delivery'] != 'pickup') {
+                $data['delivery_price'] = (int) $order['order_data']['delivery_price'];
+                $order_total += (int) $order['order_data']['delivery_price'];
+            } else {
+                $data['delivery_discount'] = round($order_total / 100 * $order['order_data']['delivery_discount'], 1);
+                $order_total -= $data['delivery_discount'];
+            }
         }
 
 
-        $data['items'] = $products;
+//        $data['items'] = $products;
         $data['products_total'] = round($products_total, 1);
         $data['order_total'] = round($order_total, 1);
         $order['order_data'] = $data;
@@ -1061,6 +1089,8 @@ class OrderService
 
         $phone = str_replace(' ', '', $phone);
         $phone = str_replace('-', '', $phone);
+        $phone = str_replace('(', '', $phone);
+        $phone = str_replace(')', '', $phone);
 
         if (preg_match('/972/', $phone)) {
             $phone = str_replace('9720', '972', $phone);

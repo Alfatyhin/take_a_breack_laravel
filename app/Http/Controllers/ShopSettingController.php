@@ -9,6 +9,7 @@ use App\Models\Clients;
 use App\Models\Coupons;
 use App\Models\Orders as OrdersModel;
 use App\Models\Product;
+use App\Models\ProductOptions;
 use App\Models\UtmModel;
 use App\Services\AmoCrmServise;
 use App\Services\AppServise;
@@ -194,12 +195,14 @@ class ShopSettingController extends Controller
         $categories = Categories::all()->sortBy('index_num')->keyBy('id');
         $products = Product::all()->sortBy('index_num')->keyBy('id');
 
-        $empty_categories = [];
-        foreach ($products as $product) {
-            if ($product->category_id < 1 && empty($product->categories)) {
-                $empty_categories[] = $product->id;
-            }
+        $product_options = ProductOptions::all()->keyBy('id')->toArray();
+
+        foreach ($product_options as &$item) {
+            $item['options'] = json_decode($item['options'], true);
         }
+
+
+        $empty_categories = [];
 
 
 
@@ -625,6 +628,7 @@ class ShopSettingController extends Controller
     {
 
         $shop_setting = $request->get('shop');
+
         if (!empty($shop_setting)) {
             $res = Storage::disk('local')->put('js/shop_setting.json', json_encode($shop_setting));
             if($res) {
@@ -634,6 +638,8 @@ class ShopSettingController extends Controller
         }
 
         $delivery = $request->post('delivery');
+        dd($delivery);
+
         if (!empty($delivery)) {
             $delivery_cityes = $request->post('city');
             foreach ($delivery as $k => $value) {
@@ -753,5 +759,38 @@ class ShopSettingController extends Controller
 
     }
 
+    public function scriptsModules(Request $request)
+    {
+        $files = Storage::disk('views_shop')->files('layouts/seo');
+
+        foreach ($files as $file_path) {
+            $file_name = last(explode('/', $file_path));
+            $files_data[] = [
+                'file_path' => $file_path,
+                'file_name' => $file_name,
+                'file_text' => Storage::disk('views_shop')->get($file_path)
+            ];
+        }
+        dd($files_data);
+    }
+
+    public function productOptions (Request $request)
+    {
+        $products_options = ProductOptions::all()->keyBy('id');
+        $shop_langs = AppServise::getLangs();
+
+        $options_select = ['SELECT' => 'список', 'SIZE' => 'размер', 'RADIO' => 'выбор', 'CHECKBOX' => 'флажки', 'TEXT' => 'текстовое поле'];
+
+
+//        dd($products_options);
+
+
+        return view('shop-settings.products_options', [
+            'message' => $request->message,
+            'products_options' => $products_options,
+            'options_select' => $options_select,
+            'shop_langs' => $shop_langs
+        ]);
+    }
 
 }

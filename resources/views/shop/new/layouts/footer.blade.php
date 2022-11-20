@@ -4,7 +4,7 @@
         <div class="footer__body">
             <div class="footer__row">
                 <p>
-                    Израиль, <br>
+                    {{ __('shop-footer.Израиль') }}, <br>
                     Emanuel Ringelblum 3, Holon
                 </p>
                 <a href="https://wa.me/9720559475812">+972 055-947-5812</a>

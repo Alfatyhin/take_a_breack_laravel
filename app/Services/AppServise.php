@@ -4,8 +4,10 @@
 namespace App\Services;
 
 
+use App\Models\ProductOptions;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use phpDocumentor\Reflection\Types\String_;
 
 class AppServise
 {
@@ -60,26 +62,19 @@ class AppServise
 
     public static function getCountryFromIP($ip)
     {
+        $url = "http://www.geoplugin.net/json.gp?ip=$ip";
+        $header = [];
 
-        $country = exec("whois $ip  | grep -i country"); // Run a local whois and get the result back
-        //$country = strtolower($country); // Make all text lower case so we can use str_replace happily
-        // Clean up the results as some whois results come back with odd results, this should cater for most issues
-        $country = str_replace("country:", "", "$country");
-        $country = str_replace("Country:", "", "$country");
-        $country = str_replace("Country :", "", "$country");
-        $country = str_replace("country :", "", "$country");
-        $country = str_replace("network:country-code:", "", "$country");
-        $country = str_replace("network:Country-Code:", "", "$country");
-        $country = str_replace("Network:Country-Code:", "", "$country");
-        $country = str_replace("network:organization-", "", "$country");
-        $country = str_replace("network:organization-usa", "us", "$country");
-        $country = str_replace("network:country-code;i:us", "us", "$country");
-        $country = str_replace("eu#countryisreallysomewhereinafricanregion", "af", "$country");
-        $country = str_replace("", "", "$country");
-        $country = str_replace("countryunderunadministration", "", "$country");
-        $country = str_replace(" ", "", "$country");
+        $info = self::getQuest($url, $header);
+        $data['countryCode'] = $info['geoplugin_countryCode'];
+        $data['countryName'] = $info['geoplugin_countryName'];
 
-        return $country;
+        return $data;
+    }
+
+    public static function ftrim($str)
+    {
+
     }
 
 
@@ -121,7 +116,16 @@ class AppServise
 
     public static function ProductsShopPrepeare($products, $categories)
     {
+        $product_options = ProductOptions::all()->keyBy('id')->toArray();
+
+        foreach ($product_options as $k => $item) {
+            $product_options[$k]['options'] = json_decode($item['options'], true);
+            $product_options[$k]['nameTranslated'] = json_decode($item['nameTranslate'], true);
+        }
+
         foreach ($products as &$product) {
+            unset($options);
+            unset($option_data);
             $cat_names = [];
             $cat_ids = json_decode($product->categories, true);
             $product->image = json_decode($product->image, true);
@@ -133,16 +137,38 @@ class AppServise
 
             if (!empty($product->options)) {
 
-                foreach ($product->options as $option) {
+                $options = $product->options;
+                foreach ($options as &$option) {
+                    $opt_id = $option['options_id'];
+                    $option_data = $product_options[$opt_id];
+                    $option['name'] = $option_data['name'];
+                    $option['type'] = $option_data['type'];
+                    $option['nameTranslated'] = $option_data['nameTranslated'];
                     $name = $option['name'];
                     $options_map[$name] = $option;
-                    foreach ($option['choices'] as $item) {
-                        $key = $item['text'];
-                        $choices_map[$key] = $item;
+
+                    if (isset($option['choices']) && !empty($option['choices'])) {
+                        foreach ($option['choices'] as &$item) {
+                            $ch_key = $item['var_option_id'];
+                            $item['text'] = $option_data['options'][$ch_key]['text'];
+                            if (isset($option_data['options'][$ch_key]['textTranslated'])) {
+                                $item['textTranslated'] = $option_data['options'][$ch_key]['textTranslated'];
+                            }
+                            if (isset($option_data['options'][$ch_key]['description'])) {
+                                $item['description'] = $option_data['options'][$ch_key]['description'];
+                            }
+                            if (isset($option_data['options'][$ch_key]['metrics'])) {
+                                $item['metrics'] = $option_data['options'][$ch_key]['metrics'];
+                            }
+                            $key = $item['text'];
+                            $choices_map[$key] = $item;
+                        }
+                        $options_map[$name]['choices'] = $choices_map;
                     }
-                    $options_map[$name]['choices'] = $choices_map;
+
                 }
 
+                $product->options = $options;
             }
 
             if (empty($product->image)) {
@@ -150,63 +176,9 @@ class AppServise
                 if (isset($categories[$category_id])) {
                     $category = $categories[$category_id];
                     $product->image = json_decode($category->image, true);
-                } else {
-//                    dd($product->toArray(), $categories);
                 }
             }
 
-            if ($product->unlimited == 0 && $product->count > 0) {
-                $cat_names['have'] = 'have';
-            }
-            $label = false;
-            if (!isset($cat_names['have']) && !empty($product->variables)) {
-                foreach ($product->variables as $vk => $variant) {
-                    if ($variant['unlimited'] == false && $variant['quantity'] > 0 ) {
-                        if ($variant['unlimited'] == 0 && $variant['quantity'] > 0) {
-                            foreach($variant['options'] as $option) {
-                                $opt_name = $option['name'];
-                                $label[$opt_name]['values'][] = $option['value'];
-                                $label[$opt_name]['nameTranslated'] = $options_map[$opt_name]['nameTranslated'];
-                            }
-                        }
-                        if (!isset($cat_names['have'])) {
-                            $cat_names['have'] = 'have';
-                        }
-                    }
-                }
-                $product->stok_label = $label;
-//                if ($label) {
-//                    dd($product->stok_label);
-//                }
-            }
-
-
-            if (!empty($product->category_id) && isset($categories[$product->category_id])) {
-                $cat_name = $categories[$product->category_id]['slag'];
-                if (!isset($cat_all_count[$cat_name])) {
-                    $cat_all_count[$cat_name] = 0;
-                }
-                $cat_all_count[$cat_name] ++;
-                if ($cat_all_count[$cat_name] <= 2 ) {
-                    $cat_names['all'] = 'all';
-                }
-                $cat_names[] = $cat_name;
-            }
-            if (!empty($cat_ids)) {
-                $product->categories = $cat_ids;
-                foreach ($cat_ids as $cat_id) {
-                    if (isset($categories[$cat_id])) {
-                        $cat_names[] = $categories[$cat_id]['name'];
-                    }
-                }
-
-            }
-            if (sizeof($cat_names) == 0){
-                $product->cat_names = 'no_category';
-            } else {
-                $cat_names_str = implode(' ', $cat_names);
-                $product->cat_names = $cat_names_str;
-            }
 
             if (!empty($product->variables)) {
                 if (sizeof($product->variables) > 1) {
@@ -281,5 +253,12 @@ class AppServise
         }
 
         return $date;
+    }
+
+    public static function getAllCountries()
+    {
+        $allCountries = Storage::disk('local')->get('js/all_countries.json');
+
+        return json_decode($allCountries, true);
     }
 }
