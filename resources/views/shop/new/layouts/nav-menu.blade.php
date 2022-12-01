@@ -4,7 +4,7 @@
     </a>
 </li>
 <li>
-    <a href="#">
+    <a href="{{ route('delivery', ['lang' => $lang]) }}">
         {{ __('shop-header.Доставка и Оплата') }}
     </a>
 </li>

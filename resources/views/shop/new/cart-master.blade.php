@@ -6,6 +6,7 @@
 
 @section('head')
 
+    <link rel="stylesheet" href="{{ asset('/css/cart-new.css') }}?{{ $v }}">
 @parent
 
 <link rel="stylesheet" href="{{ asset('/dist/intlTelInput.css') }}?{{ $v }}">
@@ -18,7 +19,7 @@
         var cityes = @json($cityes);
         console.log('cityes');
         console.log(cityes);
-        var shop_setting = @json($shop_setting);
+        var shop_setting = {!! $shop_setting !!};
         console.log('shop_setting');
         console.log(shop_setting);
     </script>

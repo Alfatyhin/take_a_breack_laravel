@@ -58,9 +58,11 @@
 
 @section('content')
 
+
     @include("shop.new.layouts.left_sidebar")
 
     @php($translate = json_decode($category->translate, true))
+
 
     @include("shop.new.layouts.category_products")
 

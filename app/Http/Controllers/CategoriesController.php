@@ -24,6 +24,7 @@ class CategoriesController extends Controller
     {
         $prod_ids = $request->post('prod_ids');
         $category_id = $request->post('id');
+
         if (!empty($category_id && $prod_ids)) {
             $category = Categories::where('id', $category_id)->first();
             if (!empty($category)) {

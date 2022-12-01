@@ -13,6 +13,7 @@ use App\Models\Coupons;
 use App\Models\Orders;
 use App\Models\Orders as OrdersModel;
 use App\Models\Product;
+use App\Models\ProductOptions;
 use App\Models\UtmModel;
 use App\Models\WebhookLog;
 use App\Services\EcwidService;
@@ -678,6 +679,13 @@ class OrderService
 
         $products = $order['order_data']['products'];
 
+        $product_options = ProductOptions::all()->keyBy('id')->toArray();
+        foreach ($product_options as $k => $item) {
+            $product_options[$k]['options'] = json_decode($item['options'], true);
+            $product_options[$k]['nameTranslate'] = json_decode($item['nameTranslate'], true);
+        }
+
+//        dd($products);
         $products_total = 0;
         foreach ($products as &$item) {
             $id = $item['id'];
@@ -694,7 +702,7 @@ class OrderService
                         dd($item, $variables, $product->toArray());
                     }
                     $variant = $variables[$var_key];
-                    print_r('variant - '.$var_key);
+//                    print_r('variant - '.$var_key);
 
                     $item['variant_price'] = $variant['defaultDisplayedPrice'];
                     $item['price'] = $variant['defaultDisplayedPrice'];
@@ -702,6 +710,7 @@ class OrderService
                 }
 
             } else {
+                dd('test 1', $item);
                 $item_total = $product->price * $item['count'];
                 $item['price'] = $product->price;
                 $item['sku'] = $product->sku;
@@ -725,21 +734,36 @@ class OrderService
 //                        dd('test', $item_option);
                         $price = $product->price;
                     }
-//                    dd($item_option, $option, $choice, $price);
                     if ($choice['priceModifier'] != 0) {
                         if ($choice['priceModifierType'] == 'ABSOLUTE') {
+                            if (!isset($item['price'])) {
+                                dd($item);
+                            }
                             $price_item =  $item['price'] + $choice['priceModifier'] / 1;
                         } else {
                             $price_item =  $item['price'] + ($price / 100 * $choice['priceModifier']);
                         }
 
-                        $item_total = $item['price'] * $item['count'];
+                        $item_total = $price_item * $item['count'];
                         $item['total'] = $item_total;
                     } else {
                         $item_total = $item['price'] * $item['count'];
                     }
-                    $item_option['name'] = $option['nameTranslated'];
-                    $item_option['value'] = $option['choices'][$option_choice_key];
+                    $options_id = $option['options_id'];
+                    $option_value = $choice['var_option_id'];
+                    $item_option['name'] = $product_options[$options_id]['nameTranslate'];
+                    if ($product_options[$options_id]['type'] == 'TEXT') {
+
+                        $item_option['value'] = [
+                            'text' => $product_options[$options_id]['name'],
+                            'textTranslated' => $product_options[$options_id]['nameTranslate']
+                        ];
+
+                    } else {
+                        $item_option['value'] = $product_options[$options_id]['options'][$option_value];
+                    }
+                    $item_option['value']['priceModifier'] = $choice['priceModifier'];
+                    $item_option['value']['priceModifierType'] = $choice['priceModifierType'];
                     if (isset($item_option['text'])) {
                         $item_option['text'] = Str::remove(["\n", "   "], $item_option['text']);
                     }

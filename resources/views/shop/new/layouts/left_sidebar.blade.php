@@ -5,25 +5,20 @@
         <img src="/assets/images/icons/category.svg" alt="">
     </p>
     <ul>
-        <li>
-            <a href="">
-                {{ __('shop-left_sidebar.все') }}
-            </a>
-        </li>
-        @foreach($categories as $category)
-            @php($translate = json_decode($category->translate, true))
+        @foreach($categories as $item)
+            @php($translate = json_decode($item->translate, true))
             <li>
                 @if($lang == 'en')
-                    @php($rout = route("category_index", ['category' => $category->slag]))
+                    @php($rout = route("category_index", ['category' => $item->slag]))
                 @else
-                    @php($rout = route("category", ['lang' => $lang, 'category' => $category->slag]))
+                    @php($rout = route("category", ['lang' => $lang, 'category' => $item->slag]))
                 @endif
-                <a href="{{ $rout }}"
-                   data-type="{{ $category->slag }}">
+                <a class="@if(isset($category) && $category->slag == $item->slag) active @endif" href="{{ $rout }}"
+                   data-type="{{ $item->slag }}">
                     @isset($translate['nameTranslated'][$lang])
                         {{ $translate['nameTranslated'][$lang] }}
                     @else
-                        {{ $category->name }}
+                        {{ $item->name }}
                     @endisset
                 </a>
             </li>

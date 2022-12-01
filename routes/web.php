@@ -43,7 +43,25 @@ require __DIR__.'/auth.php';
 Route::get('/test_get_url/', [IcreditController::class, 'testGetPaymentUrl'])->name('test_get_url');
 
 
-Route::any('crm', array(ShopSettingController::class, 'index'))->name('index');
+Route::any('crm', array(ShopSettingController::class, 'index'))->name('crm_index');
+
+////////////////////////////////////////////////////////////////////////////
+
+Route::get('/shop-settings/amocrm', [Amocrm::class, 'integrationAmoCrm'])
+    ->name('amocrm');
+
+Route::get('/shop-settings/amocrm/order', [Amocrm::class, 'getOrderById'])
+    ->name('amo.get_order');
+
+Route::get('/shop-settings/amocrm/callback', [Amocrm::class, 'callBack']);
+
+Route::get('/shop-settings/amocrm/pipeline-test', [Amocrm::class, 'pipelineTest']);
+
+Route::any('/shop-settings/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
+    ->name('amo_webhook');
+
+////////////////////////////////////////////////////////////////////////////
+
 
 Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () {
 
@@ -129,7 +147,7 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
         ->name('client_data');
 
     Route::any('/shop-settings/delivery', array(ShopSettingController::class, 'delivery'))
-        ->name('delivery');
+        ->name('crm_delivery');
 
     Route::any('/shop-settings/delivery/save', array(ShopSettingController::class, 'deliverySave'))
         ->name('delivery_save');
@@ -152,23 +170,10 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
     Route::any('/shop-settings/script-modules', [ShopSettingController::class, 'scriptsModules'])
         ->name('script_modules');
 
+    Route::any('/shop-settings/translations', [ShopSettingController::class, 'translations'])
+        ->name('translations');
 
-////////////////////////////////////////////////////////////////////////////
 
-    Route::get('/shop-settings/amocrm', [Amocrm::class, 'integrationAmoCrm'])
-        ->name('amocrm');
-
-    Route::get('/shop-settings/amocrm/order', [Amocrm::class, 'getOrderById'])
-        ->name('amo.get_order');
-
-    Route::get('/shop-settings/amocrm/callback', [Amocrm::class, 'callBack']);
-
-    Route::get('/shop-settings/amocrm/pipeline-test', [Amocrm::class, 'pipelineTest']);
-
-    Route::any('/shop-settings/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
-        ->name('amo_webhook');
-
-////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -318,25 +323,36 @@ Route::middleware(["Shop"])->group(function () {
 
     Route::get('/check-promo-code', [ShopController::class, 'getPromoCode'])->name('check_promo_code');
 
-    Route::get('/{lang?}', [ShopController::class, 'indexView'])->name('index');
+    Route::get('/delivery', [ShopController::class, 'deliveryIndex']);
 
     Route::get('/ru/market', [ShopController::class, 'marketRU'])->name('market_ru');
 
+    Route::get('/{lang?}/delivery', [ShopController::class, 'deliveryIndex'])->name('delivery');
+
+    Route::get('/{lang?}', [ShopController::class, 'indexView'])
+        ->where('lang', '[a-z]{2}')
+        ->name('index');
+
+
+
+    Route::get('/{filter?}', [ShopController::class, 'indexFilterEn'])
+        ->where('filter', '(in_stock)||(sale)')
+        ->name('index_filter_en');
+
+    Route::get('/{lang?}/{filter?}', [ShopController::class, 'indexView'])
+        ->where('filter', '(in_stock)||(sale)')
+        ->name('index_filter');
+
 
     Route::any('/{lang}/cart/{step?}', [ShopController::class, 'CartView'])->name('cart');
-
-
 
     Route::get('/category/{category?}', [ShopController::class, 'categoryView'])->name('category_index');
 
     Route::get('/{lang}/category/{category}', [ShopController::class, 'categoryLang'])->name('category');
 
-
     Route::get('/{category}/{product}', [ShopController::class, 'ProductView'])->name('product_index');
 
     Route::get('/{lang?}/{category}/{product}', [ShopController::class, 'ProductLang'])->name('product');
-
-
 
     Route::any('/change-product-count', [ShopController::class, 'changeProductCount'])->name('change_product_count');
 

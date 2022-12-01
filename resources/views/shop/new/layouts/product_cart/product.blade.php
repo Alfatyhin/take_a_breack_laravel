@@ -1,5 +1,52 @@
 
 <div class="product">
+    <nav class="breadcrumbs"  itemscope itemtype="http://schema.org/BreadcrumbList">
+
+        @if($lang == 'en')
+            @php($rout = route("index"))
+        @else
+            @php($rout = route("index", ['lang' => $lang]))
+        @endif
+                <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                    <a itemprop="item" href="{{ $rout }}">{{ $general }}</a>
+                    <meta itemprop="name" content="{{ $general }}" />
+                    <meta itemprop="position" content="1" />
+                </span>
+        @if($lang == 'en')
+            @php($rout = route("category_index", ['category' => $category->slag]))
+        @else
+            @php($rout = route("category", ['lang' => $lang, 'category' => $category->slag]))
+        @endif
+        <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                    <a itemprop="item" href="{{ $rout }}">
+                        @php($translate = $category->translate)
+                        @isset($translate['nameTranslated'][$lang])
+                            @php($category_name = $translate['nameTranslated'][$lang] )
+                        @else
+                            @php($category_name = $category->name )
+                        @endisset
+                        {{ $category_name }}
+                    </a>
+                    <meta itemprop="name" content="{{ $category_name }}" />
+                    <meta itemprop="position" content="2" />
+                </span>
+        <span>
+                    <a itemprop="item" >
+                          @if (!empty($product->translate['nameTranslated'][$lang]))
+                            {{ $product->translate['nameTranslated'][$lang] }}
+                        @else
+                            {{ $product->name }}
+                        @endif
+                    </a>
+
+                </span>
+    </nav>
+    @auth()
+        @if(Auth::user()->user_role == 'admin' )
+            <a class="admin fa fa-pencil" title="product redact" href="{{ route('product_redact', ['product' => $product]) }}" target="_blank">
+            </a>
+        @endif
+    @endauth
     <div class="product__body">
         @include("shop.new.layouts.product_cart.galery")
         <div class="product__info product-info">
@@ -10,6 +57,7 @@
                     @else
                         {{ $product->name }}
                     @endif
+
                 </h1>
             </div>
             <div class="product-info__price">

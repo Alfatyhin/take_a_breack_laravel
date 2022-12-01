@@ -6,34 +6,55 @@
             <div >03 <span>{{ __('shop-cart.ОПЛАТА') }}</span></div>
         </div>
 
-{{--        <div class="pay-dop-info">--}}
-            <label class="pickup">
-                <input type="radio" name="delivery" value="delivery" checked>
-                <span>{{ __('shop-cart.Доставка по Израилю') }}</span>
-            </label>
-            <label class="pickup">
-                <input type="radio" name="delivery" value="pickup" >
-                <span>{{ __('shop-cart.Самовывоз по адресу') }}</span>
-            </label>
-{{--        </div>--}}
+        @isset($order_number)
+            <h3>Order #{{ $order_number }}</h3>
+        @endisset
+        <label class="delivery">
+            <input type="radio" name="delivery" value="delivery" checked>
+            <span>{{ __('shop-cart.Доставка по Израилю') }}</span>
+        </label>
+        <label class="pickup">
+            <input type="radio" name="delivery" value="pickup" >
+            <span>{{ __('shop-cart.Самовывоз по адресу') }}</span>
+        </label>
 
         <div class="pay__form">
-            <form class="form-cart{{ $step }}" action="{{ route("cart", ['lang' => $lang, 'step' => 2]) }}" method="POST">
+            <form class="form-cart{{ $step }}" action="{{ route("cart", ['lang' => $lang, 'step' => 3]) }}" method="POST">
                 @csrf
 
+                <input hidden name="lang" value="{{ $lang }}">
+                <input hidden name="gClientId" value="">
+                <input hidden name="order_id" value="{{ $order_number }}">
+                <input hidden required name="delivery_method" value="">
+
                 <div class="delivery">
+                    <div class="calendar-wrapper calendar_box">
+                        <div class="calendar_table hidden"></div>
+                    </div>
                     <label>
                         <p>{{ __('shop-cart.Дата доставки') }}  *</p>
-                        <input required placeholder="{{ __('shop-cart.Выберите дату доставки') }}" type="date" name="date">
+                        <input class="show_calendar date"
+                               required autocomplete="off"
+                               placeholder="{{ __('shop-cart.Выберите дату доставки') }}"
+                               data-text_delivery="{{ __('shop-cart.Выберите дату доставки') }}"
+                               data-text_pickup="{{ __('shop-cart.Выберите дату самовывоза') }}"
+                               type="text" name="date" readonly>
                     </label>
 
+
                     <label>
-                        <p>{{ __('shop-cart.Выбрать время доставки') }}</p>
-                        <input  type="time" name="time">
+                        <p class="delivery">{{ __('shop-cart.Выбрать время доставки') }}</p>
+                        <p class="pickup" style="display: none;">{{ __('shop-cart.Выбрать время самовывоза') }}</p>
+
+                        <input class="delivery_time" type="text" name="time" value="" placeholder="{{ __('shop-cart.Укажите удобное вам время') }}" readonly>
+                        <ul class="delivery_time city-lis">
+                            <li class="default" data-time="">not time</li>
+                        </ul>
+
                     </label>
                 </div>
 
-                <p>
+                <p class="other-man">
                     <label>
                         <input type="checkbox" name="otherPerson" value="otherPerson">
                         {{ __('shop-cart.Заказ для другого человека') }}

@@ -1,2 +1,2 @@
 
-@include("shop.new.layouts.category_products")
+@include("shop.new.layouts.index_products")

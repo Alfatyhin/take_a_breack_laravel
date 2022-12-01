@@ -12,7 +12,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/css/style-2.css') }}?{{ $v }}">
     <link rel="stylesheet" href="{{ asset('/css/style.css') }}?{{ $v }}">
+
+    @auth()
+        @if(Auth::user()->user_role == 'admin' )
+            <style>
+                a.admin {
+                    position: absolute;
+                    right: 9%;
+                    display: block;
+                    width: 30px;
+                    height: 20px;
+                }
+            </style>
+        @endif
+    @endauth
 
     @if($noindex)
         <meta name="robots" content="noindex, follow" />
@@ -91,6 +108,14 @@
             <div>
                 <a class="social-link" href="#">Instagram</a>
             </div>
+            @auth()
+                @if(Auth::user()->user_role == 'admin' )
+                    <div>
+                        <a class="admin fa fa-adn" title="CRM" href="{{ route('crm_index') }}" target="_blank">
+                        </a>
+                    </div>
+                @endif
+            @endauth
         </div>
     </div>
 </div>

@@ -148,19 +148,20 @@
         @else
             {{ $product->name }}
         @endif
-        {{ __('shop.добавлено в корзину') }}!</div>
+        {{ __('shop.добавлен в корзину') }}</div>
     <div class="count_in_cart_text">{{ __('shop.в корзине') }}
-        <span class="count_in_cart"></span>{{ __('shop.шт') }}. {{ __('shop.данного товара') }}</div>
+        <span class="count_in_cart"></span>{{ __('shop.шт') }}. {{ __('shop.данного товара') }}
+    </div>
 
     <div class="text_in_cart">{{ __('shop.Для продолжения оформления заказа перейдите пожалуйста в корзину') }}</div>
 
     <div class="buttons_popup">
         <button class="go_prod">{{ __('shop.ВЕРНУТЬСЯ К ТОВАРАМ') }}</button>
-        <button class="go_cart">
-            <a href="{{ route('cart', ['lang' => $lang]) }}">
+        <a href="{{ route('cart', ['lang' => $lang]) }}">
+            <button class="go_cart">
                 {{ __('shop.ПЕРЕЙТИ В КОРЗИНУ') }}
-            </a>
-        </button>
+            </button>
+        </a>
     </div>
 @stop
 
@@ -171,8 +172,8 @@
         window.onload = function() {
             console.log('test jQ v-' + jQuery.fn.jquery);
 
-            //
-            // var products = {}; // тут по идее берем из корзины если есть
+
+            // var products_data = {}; // тут по идее берем из корзины если есть
             // $('.main-btn.go-to-cart').click(function () {
             //     var options = {};
             //     var cart_key = product.id;
@@ -201,14 +202,14 @@
             //
             //     });
             //     var count = $('#count-product').val();
-            //     product = {
+            //     var product_item = {
             //         'id' : product.id,
             //         'count' : count,
             //         'variant' : variant,
             //         'options': options
             //     }
-            //     products[cart_key] = product;
-            //     console.log(products);
+            //     products_data[cart_key] = product_item;
+            //     console.log(products_data);
             // });
         }
 

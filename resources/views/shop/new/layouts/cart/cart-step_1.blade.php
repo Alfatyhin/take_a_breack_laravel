@@ -5,6 +5,9 @@
             <div >02 <span>{{ __('shop-cart.ДОСТАВКА') }}</span></div>
             <div >03 <span>{{ __('shop-cart.ОПЛАТА') }}</span></div>
         </div>
+        @if($order_number)
+            <h3>Order #{{ $order_number }}</h3>
+        @endif
         @if ($errors->any())
             <div class="alert alert-danger" style="color: brown;">
                 <ul>
@@ -18,9 +21,10 @@
             <form class="form-cart{{ $step }}" action="{{ route("cart", ['lang' => $lang, 'step' => 2]) }}" method="POST">
                 @csrf
                 <input hidden name="lang" value="{{ $lang }}">
-                <input hidden name="gClientId" value="{{ $lang }}">
+                <input hidden name="gClientId" value="">
+                <input hidden name="order_id" value="{{ $order_number }}">
                 <label class="phone-mask" for="" class="@error('phone') error @enderror">
-                    <input class="phone" hidden name="phone" value="">
+                    <input hidden class="phone" name="phone" value="">
                     <p>
                         {{ __('shop-cart.Телефон') }} *
                     </p>

@@ -168,10 +168,32 @@ class ProductController extends Controller
 
         if ($mode == 'options') {
             if (!empty($post['options'])) {
+                if (!empty($post['new_options'])) {
+                    foreach ($post['new_options'] as $opt_key => &$option_choices) {
+                        foreach ($option_choices['choices'] as &$choice) {
+                            $choice['priceModifier'] = 0;
+                            $choice['priceModifierType'] = 'ABSOLUTE';
+                        }
+                        if (!isset($post['options'][$opt_key]['choices'])) {
+                            $post['options'][$opt_key]['choices'] = $option_choices['choices'];
+                        } else {
+                            $next_key = sizeof($post['options'][$opt_key]['choices']);
+                            foreach ($option_choices['choices'] as $choice) {
+                                $post['options'][$opt_key]['choices'][$next_key] = $choice;
+                            }
+                        }
+                    }
+                }
+                foreach ($post['options'] as $ko => $option) {
+                    if(!isset($option['choices'])) {
+                        unset($post['options'][$ko]);
+                    }
+                }
                 $product->options = json_encode($post['options']);
             } else {
                 $product->options = null;
             }
+
 
             $product->save();
             session()->flash('message', ["product {$product->name} save"]);
@@ -197,15 +219,20 @@ class ProductController extends Controller
             $new_variable['quantity'] = 0;
             $new_variable['defaultDisplayedPrice'] = 0;
 
-            foreach ($new_variable['options'] as $ko => $option) {
-                if (empty($option['value'])) {
+            foreach ($new_variable['options'] as $ko => $optionv) {
+                if ($optionv['var_option_id'] == '') {
                     unset($new_variable['options'][$ko]);
                 }
             }
-            if ($product->variables) {
-                $variables = json_decode($product->variables, true);
+            if (!empty($new_variable['options'])) {
+                if ($product->variables) {
+                    $variables = json_decode($product->variables, true);
+                }
+                $variables[] = $new_variable;
+            } else {
+                dd('add options to variant');
             }
-            $variables[] = $new_variable;
+
 
             $post['variables'] = $variables;
 
@@ -223,17 +250,20 @@ class ProductController extends Controller
             }
 
             if ($product->options) {
-                $options = json_decode($product->options, true); foreach ($options as $k => &$option) {
-                    foreach ($option['choices'] as $ko => &$choice) {
-                        unset($choice['variant_number']);
-                        if ($variables) {
-                            foreach ($variables as $kv => $variant) {
-                                if (isset($variant['options'][$k])) {
-                                    if ($variant['options'][$k]['name'] == $option['name'] && $variant['options'][$k]['value'] == $choice['text']) {
-                                        $choice['variant_number'] = $kv;
+                $options = json_decode($product->options, true);
+                foreach ($options as $k => &$option) {
+                    if (isset($option['choices'])) {
+                        foreach ($option['choices'] as $ko => &$choice) {
+                            unset($choice['variant_number']);
+                            if ($variables) {
+                                foreach ($variables as $kv => $variant) {
+                                    if (isset($variant['options'][$k])) {
+                                        if ($variant['options'][$k]['options_id'] == $option['options_id'] && $variant['options'][$k]['var_option_id'] == $choice['var_option_id']) {
+                                            $choice['variant_number'] = $kv;
+                                        }
                                     }
-                                }
 
+                                }
                             }
                         }
                     }

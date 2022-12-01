@@ -56,6 +56,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'views_lang' => [
+            'driver' => 'local',
+            'root' => storage_path('../resources/lang'),
+            'url' => env('APP_URL').'/',
+            'visibility' => 'private',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

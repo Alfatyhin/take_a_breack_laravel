@@ -197,10 +197,10 @@
                         <form action="{{ route('category_products_save') }}" method="POST">
                             @csrf
                             <h3>товары в категории</h3>
+                            <input type="hidden" name="id" value="{{ $category->id }}" />
                             @if(!empty($category->products))
                                 @php($prod_ids = json_decode($category->products))
 
-                                <input type="hidden" name="id" value="{{ $category->id }}" />
                                 <ul class="category_products_list sortable">
                                     @foreach($prod_ids as $prod_id)
                                         @isset($products[$prod_id])

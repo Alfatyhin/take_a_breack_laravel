@@ -633,7 +633,7 @@ class ShopSettingController extends Controller
             $res = Storage::disk('local')->put('js/shop_setting.json', json_encode($shop_setting));
             if($res) {
                 session()->flash('message', ['shop setting date-time delivery save']);
-                return redirect(route('delivery'));
+                return redirect(back());
             }
         }
 
@@ -792,5 +792,68 @@ class ShopSettingController extends Controller
             'shop_langs' => $shop_langs
         ]);
     }
+
+    public function translations(Request $request)
+    {
+
+        $products_options = ProductOptions::all()->keyBy('id');
+        $shop_langs = AppServise::getLangs();
+
+        $post = $request->post();
+
+        if ($post) {
+            $file_path = $post['file_path'];
+            $str = "<?php"."\n"."\n"."return [";
+            Storage::disk('views_lang')->put($file_path, $str);
+
+            if (!empty($post['translite_add']['key']) && !empty($post['translite_add']['value'])) {
+                $key = $post['translite_add']['key'];
+                $value = $post['translite_add']['value'];
+                if (!isset($post['translite'][$key])) {
+                    $post['translite'][$key] = $value;
+                } else {
+                    dd("item key [$key] isset");
+                }
+            }
+            foreach ($post['translite'] as $kstr => $vstr) {
+                if (!empty($vstr)) {
+                    $str = "    '$kstr' => '$vstr',";
+                    Storage::disk('views_lang')->append($file_path, $str);
+                }
+            }
+            $str =  "\n".'];';
+            Storage::disk('views_lang')->append($file_path, $str);
+
+            session()->flash('message', ["file $file_path save"]);
+
+            return back();
+        }
+
+        foreach ($shop_langs as $key => $item) {
+            $lang = $key;
+            $files_lang = Storage::disk('views_lang')->files("$lang");
+            $files_test[$lang] = Storage::disk('views_lang')->files("$lang");
+            foreach ($files_lang as $file_name) {
+                if (preg_match('/shop/', $file_name)) {
+
+                    $files[$lang]['names'][] = $file_name;
+                    $files[$lang]['contents'][$file_name] = include_once("../resources/lang/$file_name");
+
+                }
+            }
+        }
+
+//        dd($files);
+
+
+        return view('shop-settings.translations', [
+            'message' => $request->message,
+            'products_options' => $products_options,
+            'files' => $files,
+            'shop_langs' => $shop_langs
+        ]);
+    }
+
+
 
 }

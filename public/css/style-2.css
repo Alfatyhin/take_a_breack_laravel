@@ -1,0 +1,7 @@
+.card__items {
+    width: 100%;
+}
+.category-about__col {
+    width: 100% !important;
+    column-count: 2;
+}

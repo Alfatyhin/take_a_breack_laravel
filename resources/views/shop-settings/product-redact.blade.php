@@ -363,10 +363,16 @@
                                             </tr>
                                             @php($data_option_variants = json_decode($option_data['options'], true))
                                             @if (isset($option['choices']) && !empty($option['choices']))
+                                                @php($choices_isset = [])
                                                 @foreach($option['choices'] as $kc => $choice)
                                                     @php($key_opt_var = $choice['var_option_id'])
                                                     @php($choice_data = $data_option_variants[$key_opt_var])
-                                                    @php($textTranslated = $choice_data['textTranslated'])
+
+                                                    @isset($choice_data['textTranslated'])
+                                                        @php($textTranslated = $choice_data['textTranslated'])
+                                                    @endisset
+
+                                                    @php($choices_isset[$key_opt_var] = 1)
                                                     <tr>
                                                         <td>
                                                             @isset($choice['variant_number'])
@@ -447,18 +453,18 @@
                                                                 @isset($choice['priceModifier'])
                                                                     <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" value="{{ $choice['priceModifier'] }}">
                                                                 @else
-                                                                    <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" >
+                                                                    <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" value="0">
                                                                 @endisset
                                                             </div>
                                                             <div class="box_inline">
-                                                                @if (isset($choice['priceModifierType']) && $choice['priceModifierType'] == 'ABSOLUTE')
-                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" checked> $
-                                                                    <br>
-                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" > %
-                                                                @else
+                                                                @if (isset($choice['priceModifierType']) && $choice['priceModifierType'] == 'PERCENT')
                                                                     <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" > $
                                                                     <br>
-                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" checked> %
+                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" checked > %
+                                                                @else
+                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" checked > $
+                                                                    <br>
+                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" > %
                                                                 @endif
                                                             </div>
                                                         </td>
@@ -474,6 +480,24 @@
                                                             <span class="fa fa-trash button"></span>
                                                         </td>
                                                     </tr>
+                                                @endforeach
+
+                                                @foreach($data_option_variants as $key_opt_var => $choice_data)
+
+                                                    @isset($choices_isset[$key_opt_var])
+
+                                                        @else
+                                                        <tr>
+                                                            <td colspan="6">
+                                                                <label>
+                                                                    <input type="checkbox" name="new_options[{{ $k }}][choices][{{ ++$kc }}][var_option_id]" value="{{ $key_opt_var }}">
+                                                                    значение:
+                                                                    {{ $choice_data['text'] }}
+                                                                </label>
+
+                                                            </td>
+                                                        </tr>
+                                                    @endisset
                                                 @endforeach
 
                                             @else
@@ -529,12 +553,12 @@
 
                                                         <td>
                                                             <div class="box_inline">
-                                                                <input type="number" name="options[{{ $k }}][choices][0][priceModifier]" >
+                                                                <input type="number" name="options[{{ $k }}][choices][0][priceModifier]" value="0">
                                                             </div>
                                                             <div class="box_inline">
-                                                                <input type="radio" name="options[{{ $k }}][choices][0][priceModifierType]" value="ABSOLUTE" > $
+                                                                <input type="radio" name="options[{{ $k }}][choices][0][priceModifierType]" value="ABSOLUTE" checked > $
                                                                 <br>
-                                                                <input type="radio" name="options[{{ $k }}][choices][0][priceModifierType]" value="PERCENT" checked> %
+                                                                <input type="radio" name="options[{{ $k }}][choices][0][priceModifierType]" value="PERCENT" > %
                                                             </div>
                                                         </td>
 
@@ -550,45 +574,23 @@
                                                     @foreach($data_option_variants as $key_opt_var => $choice_data)
 
                                                         <tr>
-                                                            <td>
-                                                                <input hidden name="options[{{ $k }}][choices][{{ $kc }}][var_option_id]" value="{{ $key_opt_var }}">
-                                                                значение:
-                                                                @isset($choice_data['text'])
+                                                            <td colspan="6">
+                                                                <label>
+                                                                    <input type="checkbox" name="new_options[{{ $k }}][choices][{{ $kc }}][var_option_id]" value="{{ $key_opt_var }}">
+                                                                    значение:
                                                                     {{ $choice_data['text'] }}
-                                                                @endisset
+                                                                </label>
 
-
-                                                            </td>
-                                                            <td>
-
-                                                            </td>
-
-                                                            @if($option_data['type'] != 'TEXT')
-                                                                <td>
-
-                                                                </td>
-                                                            @endif
-                                                            <td>
-                                                                <div class="box_inline">
-
-                                                                    <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" >
-                                                                </div>
-                                                                <div class="box_inline">
-                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" checked> $
-                                                                    <br>
-                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" > %
-
-                                                                </div>
-                                                            </td>
-
-                                                            <td>
-                                                                <input type="radio" name="options[{{ $k }}][defaultChoice]" value="{{ $kc }}" >
-                                                            </td>
-                                                            <td>
-                                                                <span class="fa fa-plus button"></span>
                                                             </td>
                                                         </tr>
+
+                                                        @php($kc++)
                                                     @endforeach
+                                                    <tr>
+                                                        <td colspan="6">
+                                                            <input type="submit" value="добавить">
+                                                        </td>
+                                                    </tr>
                                                 @endif
 
                                             @endif
@@ -643,22 +645,19 @@
                                     @if (!empty($options))
                                         @foreach($options as $k => $option)
                                             @php($option_id = $option['options_id'])
+                                            <input type="hidden" name="variables[options][{{ $k }}][options_id]" value="{{ $option_id }}" >
                                             @php($option_data = $products_options[$option_id])
                                             @php($nameTranslate = json_decode($option_data['nameTranslate'], true))
-
+                                            @php($data_option_variants = json_decode($option_data['options'], true))
                                             @if ($option_data['type'] != 'TEXT')
                                                 <p>
                                                     {{ $option_data['name'] }}
-                                                    {{--                                                    <select name="variables[options][{{ $k }}][value]" >--}}
-                                                    {{--                                                        <option value=""> выбрать параметр </option>--}}
-                                                    {{--                                                        @foreach($option['choices'] as $choise)--}}
-                                                    {{--                                                            @isset($choise['variant_number'])--}}
-                                                    {{--                                                                <option value="{{ $choise['text'] }}" disabled> {{ $choise['text'] }}</option>--}}
-                                                    {{--                                                            @else--}}
-                                                    {{--                                                                <option value="{{ $choise['text'] }}"> {{ $choise['text'] }}</option>--}}
-                                                    {{--                                                            @endisset--}}
-                                                    {{--                                                        @endforeach--}}
-                                                    {{--                                                    </select>--}}
+                                                    <select name="variables[options][{{ $k }}][var_option_id]" >
+                                                        <option value=""> выбрать параметр </option>
+                                                        @foreach($data_option_variants as $ki => $option_item)
+                                                            <option value="{{ $ki }}"> {{ $option_item['text'] }}</option>
+                                                        @endforeach
+                                                    </select>
                                                 </p>
                                             @endif
                                         @endforeach
@@ -725,7 +724,7 @@
                                                     @php($var_option_id = $option['var_option_id'])
                                                     @php($option_value = $option_data_values[$var_option_id])
                                                     <input hidden name="variables[{{ $kv }}][options][{{ $ko }}][var_option_id]" value="{{ $var_option_id }}">
-                                                    {{ $option_value['text'] }}
+                                                    {{ $option_value['text'] }} test
                                                 @else
                                                     <select name="variables[{{ $kv }}][options][{{ $ko }}][var_option_id]">
                                                         <option value="">not value</option>

@@ -62,7 +62,7 @@
                                data-option_text="{{ $info }}"
                                data_id="{{ $product->id }}-{{ $key }}-{{ $ko }}"
                                data_url="{{ $rout }}"
-                               data-option_key="{{ $key }}"
+                               data-option_key="{{ $key }}-{{ $ko }}"
                                data-option_value="{{ $ko }}"
                                @isset($choice['variant_number'])
                                data-variant_number="{{ $choice['variant_number'] }}"
@@ -132,6 +132,13 @@
                 @php($price = $price)
             @endif
 
+            @if(!empty($option['nameTranslated'][$lang]))
+                @php($info = $option['nameTranslated'][$lang])
+            @else
+                @php($info = $name)
+            @endif
+
+
             <div class="product-info__add product_option text" data_optiontype="{{ $option['type'] }}">
                 <label>
                     <input class="product-info-checkbox" type="checkbox" disabled="true">
@@ -146,7 +153,8 @@
                 <div class="body-product-info-add">
 
                     <label class="option_value"
-                            data-option_key="{{ $key }}"
+                            data-option_text="{{ $info }}"
+                            data-option_key="{{ $key }}-0"
                             data-option_value="0"
                             data-variant_number=""
                             data-pricemodifier="{{ $option['choices'][0]['priceModifier'] }}"
@@ -172,7 +180,7 @@
                     <button class="trans-btn" data_add="{{ __('shop.Добавить') }}" data_delete="{{ __('shop.Убрать текст') }}">{{ __('shop.Добавить') }}</button>
                 </div>
             </div>
-        @elseif ($option['type'] == 'RADIO')
+        @elseif ($option['type'] == 'RADIO' && isset($option['choices']))
 
             <div class="product-info__add product_option radio" data_optiontype="{{ $option['type'] }}">
 
@@ -184,9 +192,9 @@
                         @php($variant = $product->variables[$choice['variant_number']])
                         @php($price = $variant['defaultDisplayedPrice'])
                     @else
-                        @if($choice['priceModifierType'] == 'ABSOLUTE' && $choice['priceModifier'] != 0)
+                        @if($choice['priceModifierType'] == 'ABSOLUTE' && !isset($choice['variant_number']))
                             @php($price = $choice['priceModifier'])
-                        @elseif($choice['priceModifierType'] == 'PERCENT' && $choice['priceModifier'] != 0)
+                        @elseif($choice['priceModifierType'] == 'PERCENT' && !isset($choice['variant_number']))
                             @php($price = round(($product->price * $choice['priceModifier'] / 100), 2))
                         @else
                             @php($price = $product->price)
@@ -218,7 +226,7 @@
                            data-option_text="{{ $info }}"
                            data_id="{{ $product->id }}-{{ $key }}-{{ $ko }}"
                            data_url="{{ $rout }}"
-                           data-option_key="{{ $key }}"
+                           data-option_key="{{ $key }}-{{ $ko }}"
                            data-option_value="{{ $ko }}"
                            @isset($choice['variant_number'])
                            data-variant_number="{{ $choice['variant_number'] }}"
@@ -233,7 +241,7 @@
                     >
                         <div class="option-info option_text">
                             <p>
-                                <input type="radio" name="{{ $option['name'] }}">
+                                <input type="radio" name="{{ $option['name'] }}" disabled="true">
                                 @if(!empty($option['nameTranslated'][$lang]))
                                     {{ $option['nameTranslated'][$lang] }}
                                 @else
@@ -262,9 +270,104 @@
                                     <pre class="weight-params"> </pre>
                                 @endisset
 
-                            @isset($variant['compareToPrice'])
-                                {{--                                    ({{ $translate['benefit'][$lang] }} {{ $variant['compareToPrice'] - $variant['defaultDisplayedPrice']  }}₪)--}}
+                            +<span class="price">{{ $price }}</span> ₪
+                            </p>
+                        </div>
+
+                    </label>
+                @endforeach
+
+            </div>
+        @elseif ($option['type'] == 'CHECKBOX' && isset($option['choices']))
+
+            <div class="product-info__add product_option checkbox" data_optiontype="{{ $option['type'] }}">
+
+                <p>
+                    <span>{{ __('shop.Выберите') }} {{ $name_lang_lower }} </span>
+                </p>
+                @foreach($option['choices'] as $ko => $choice)
+                    @isset($choice['variant_number'])
+                        @php($variant = $product->variables[$choice['variant_number']])
+                        @php($price = $variant['defaultDisplayedPrice'])
+                    @else
+                        @if($choice['priceModifierType'] == 'ABSOLUTE' && !isset($choice['variant_number']))
+                            @php($price = $choice['priceModifier'])
+                        @elseif($choice['priceModifierType'] == 'PERCENT' && !isset($choice['variant_number']))
+                            @php($price = round(($product->price * $choice['priceModifier'] / 100), 2))
+                        @else
+                            @php($price = $product->price)
+                        @endif
+                    @endisset
+
+
+                        @if(!empty($option['nameTranslated'][$lang]))
+                            @php($info = $option['nameTranslated'][$lang])
+                        @else
+                            @php($info = $name)
+                        @endif
+
+                        @if(!empty($choice['textTranslated'][$lang]))
+                            @php($info .= ' ' . $choice['textTranslated'][$lang])
+                        @else
+                            @php($info .= ' ' . $choice['text'])
+                        @endif
+
+                        @isset($choice['metrics'])
+                            @foreach($choice['metrics'] as $metric)
+                                @isset($metric[$lang])
+                                    @php($info .= ' ' . $metric[$lang])
+                                @endisset
+                            @endforeach
+                        @endisset
+
+                    <label class=" option_value" data-infosize="{{ $info }}"
+                           data-option_text="{{ $info }}"
+                           data_id="{{ $product->id }}-{{ $key }}-{{ $ko }}"
+                           data_url="{{ $rout }}"
+                           data-option_key="{{ $key }}-{{ $ko }}"
+                           data-option_value="{{ $ko }}"
+                           @isset($choice['variant_number'])
+                           data-variant_number="{{ $choice['variant_number'] }}"
+                           data-pricemodifier="{{ $variant['defaultDisplayedPrice'] }}"
+                           data-pricemodifiertype="VARIANT_PRICE"
+                           @else
+                           data-variant_number=""
+                           data-pricemodifier="{{ $choice['priceModifier'] }}"
+                           data-pricemodifiertype="{{ $choice['priceModifierType'] }}"
                             @endisset
+
+                    >
+                        <div class="option-info option_text">
+                            <p>
+                                <input type="checkbox" name="{{ $option['name'] }}" disabled="true">
+                                @if(!empty($option['nameTranslated'][$lang]))
+                                    {{ $option['nameTranslated'][$lang] }}
+                                @else
+                                    {{ $name }}
+                                @endif
+                                @if(!empty($choice['textTranslated'][$lang]))
+                                    {{ $choice['textTranslated'][$lang] }}
+                                @else
+                                    {{ $choice['text'] }}
+                                @endif
+
+                                @isset($choice['description'][$lang])
+                                    <span>
+                                                {{ $choice['description'][$lang] }}
+                                            </span>
+                                @endisset
+                                @isset($choice['metrics'])
+                                    @foreach($choice['metrics'] as $metric)
+                                        @isset($metric[$lang])
+                                            <span>
+                                                    <pre class="weight-params">{{ $metric[$lang] }}</pre>
+                                                </span>
+                                        @endisset
+                                    @endforeach
+                                @else
+                                    <pre class="weight-params"> </pre>
+                                @endisset
+
                             +<span class="price">{{ $price }}</span> ₪
                             </p>
                         </div>
@@ -287,9 +390,9 @@
                             @php($variant = $product->variables[$choice['variant_number']])
                             @php($price = $variant['defaultDisplayedPrice'])
                         @else
-                            @if($choice['priceModifierType'] == 'ABSOLUTE' && $choice['priceModifier'] != 0)
+                            @if($choice['priceModifierType'] == 'ABSOLUTE' && !isset($choice['variant_number']))
                                 @php($price = $choice['priceModifier'])
-                            @elseif($choice['priceModifierType'] == 'PERCENT' && $choice['priceModifier'] != 0)
+                            @elseif($choice['priceModifierType'] == 'PERCENT' && !isset($choice['variant_number']))
                                 @php($price = round(($product->price * $choice['priceModifier'] / 100), 2))
                             @else
                                 @php($price = $product->price)
@@ -320,7 +423,7 @@
                                data-option_text="{{ $info }}"
                                data_id="{{ $product->id }}-{{ $key }}-{{ $ko }}"
                                data_url="{{ $rout }}"
-                               data-option_key="{{ $key }}"
+                               data-option_key="{{ $key }}-{{ $ko }}"
                                data-option_value="{{ $ko }}"
                                @isset($choice['variant_number'])
                                data-variant_number="{{ $choice['variant_number'] }}"

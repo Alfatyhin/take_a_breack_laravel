@@ -8,26 +8,30 @@ var translite = {
         'ru': ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'],
         'en': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
         'he': ['א', 'שני', 'ג', 'רביעי', 'ה', 'שי', 'שבת']
+    },
+    'select_date': {
+        'ru': 'Выберите дату',
+        'en': 'Select date',
+        'he': 'Select date'
     }
 };
 
-var Cart = {};
 
 $(function(){
 
     $('.show_calendar').click(function () {
         $('.calendar_table').removeClass('hidden');
 
-        // текущая дата
-        var date=new Date();
-        // текущий год
-        var year=date.getFullYear();
-        // текущий месяц
-        var mon=date.getMonth();
-
-        setCalendar(year, mon);
     });
+    
+    // текущая дата
+    var date=new Date();
+    // текущий год
+    var year=date.getFullYear();
+    // текущий месяц
+    var mon=date.getMonth();
 
+    setCalendar(year, mon);
 
 
     $("input[name='delivery']").on('change', function () {
@@ -51,21 +55,8 @@ $(function(){
         var delivery_mode = $("input[name='delivery']:checked").val();
         var stock_mode = 'in_stock';
 
-        /////////////////////////////////////////////////
-        $('.listProduct__table tr').each(function () {
-            var prod_id = $(this).attr('data-productid');
-            if (prod_id) {
-                var product = products_cart[prod_id];
-                var count = $(`.productCount__countNumber[data-productid="${prod_id}"]`).text() / 1;
+        //////////////////////////////////////////////
 
-                if (product['stock_count'] > 0 && count <= product['stock_count'] && stock_mode == 'in_stock') {
-
-                } else {
-                    stock_mode = 'pre_order';
-                }
-            }
-
-        });
         //////////////////////////////////////////////
 
         console.log('stock_mode');
@@ -81,7 +72,7 @@ $(function(){
         var adate=new Date();
         adate.setDate(adate.getDate() + add_day);
 
-        $('table.calendar td').each(function () {
+        $('.calendar_box .calendar .date').each(function () {
             var td_date = $(this).attr('data_date');
             var week_day = $(this).attr('data_week_day');
             var date_str = $(this).attr('data_date_string');
@@ -110,33 +101,51 @@ $(function(){
 
         });
 
-        var date_set = $('.shop_cart_box input.date').val();
-        if (date_set) {
-            $(`.shop_cart_box table.calendar td[data_date_string='${date_set}']`).addClass('select_date');
-        }
+        // var date_set = $('.shop_cart_box input.date').val();
+        // if (date_set) {
+        //     $(`.shop_cart_box table.calendar td[data_date_string='${date_set}']`).addClass('select_date');
+        // }
 
-        $('table.calendar .data_change').click(function () {
+        $('.calendar_box .calendar .data_change').click(function () {
             var year = $(this).attr('data_year');
             var month = $(this).attr('data_month');
             setCalendar(year, month);
         });
 
 
-        $('table.calendar td.open_date').click(function () {
+        $(document).mouseup(function (e) {
+            var container = $(".calendar_table .calendar");
+            if (container.has(e.target).length === 0){
+                if (!$('.calendar_table').hasClass('hidden')) {
+                    $('.calendar_table').addClass('hidden');
+                }
+            }
+        });
+
+
+        $('.calendar_box .calendar .open_date').click(function () {
             console.log('test');
             var date_delivery = $(this).attr('data_date_string');
             var week_day = $(this).attr('data_week_day');
-            $('table.calendar td.select_date').toggleClass('select_date');
+            $('.calendar_box .calendar .select_date').toggleClass('select_date');
             $(this).toggleClass('select_date');
             $('input.date').val(date_delivery);
             $('.calendar_table').addClass('hidden');
 
             var times = shop_setting['delivery_date_time']['time_day'][week_day];
-            $('select[name="time"] option').remove();
+            $('ul.delivery_time li').each(function () {
+
+                if ($(this).hasClass('default')) {
+
+                } else {
+                    $(this).remove();
+                }
+            });
             for (k in times){
                 var time = times[k];
-                $('select[name="time"]').append(`<option value="${time}">${time}</option>`);
+                $('ul.delivery_time').append(`<li  data-time="${time}"><span>${time}</span></li>`);
             }
+
         });
     }
 
@@ -190,20 +199,19 @@ $(function(){
 
 
 
-        var txt=`<tr>`;
+        var txt=``;
 
         for (x=0; x<=6; x++)
         {
             var dn=jdn[lang][x];
-            txt=`${txt} <th>${dn}</th>`;
+            txt=`${txt} <li class="weekday">${dn}</li>`;
         }
-        txt=`${txt} </tr>`;
+        txt=`${txt}`;
 
         var i=0;
         while (i<=6)
         {
             x=0;
-            txt=`${txt} <tr>`;
             while (x<=6)
             {
                 var nmon=ndate.getMonth();
@@ -219,34 +227,40 @@ $(function(){
                     cl = cl + ' today_date';
                 }
 
-                txt=`${txt} <td class='${cl} date_${tyear}-${nmon}-${ndm}'
+                txt=`${txt} <li class='date ${cl} date_${tyear}-${nmon}-${ndm}'
                 data_week_day="${x}"
                 data_date_string="${tyear}-${nmon+1}-${ndm}"
                 data_date="${tyear}-${nmon}-${ndm}" >
                     <div>
                         ${ndm}
                     </div>
-                </td>`;
+                </li>`;
 
                 ndate.setDate(ndate.getDate() +1);
                 x++;
             }
             if (nmon != tmon && nmon != smon)
                 i=6;
-            txt=`${txt} </tr>`;
+            // txt=`${txt} </tr>`;
             i++;
         }
 
-        var calendar = `<table class="calendar">
-        <tr>
-            <th colspan="7" class="header">
-                <span class="data_change" data_year="${fory}" data_month="${form}"><</span>
-                <span>${year} - ${jmon[lang][tmon]}</span>
-                <span class="data_change" data_year="${nexty}" data_month="${nextm}">></span>
-            </th>
-        </tr>
+        var calendar = `<ul class="calendar">
+            <li class="label_select_date">
+                <h5>${translite['select_date'][lang]}</h5>
+            </li>
+            <li  class="header">
+                <div>
+                    <span class="data_month">${jmon[lang][tmon]}</span>
+                    <span class="data_year">${year}</span>
+                    <div class="arrows">
+                        <span class="data_change back" data_year="${fory}" data_month="${form}">&lt;</span>
+                        <span class="data_change next" data_year="${nexty}" data_month="${nextm}"">&gt;</span>
+                    </div>
+                </div>
+            </li>
         ${txt}
-        </table>`;
+        </ul>`;
 
         return calendar;
     }

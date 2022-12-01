@@ -117,13 +117,14 @@ class AppServise
     public static function ProductsShopPrepeare($products, $categories)
     {
         $product_options = ProductOptions::all()->keyBy('id')->toArray();
-
         foreach ($product_options as $k => $item) {
             $product_options[$k]['options'] = json_decode($item['options'], true);
             $product_options[$k]['nameTranslated'] = json_decode($item['nameTranslate'], true);
         }
 
         foreach ($products as &$product) {
+            $product->in_stock = false;
+            $product->sale = false;
             unset($options);
             unset($option_data);
             $cat_names = [];
@@ -134,6 +135,18 @@ class AppServise
             $product->variables = json_decode($product->variables, true);
             $product->options = json_decode($product->options, true);
             $product->translate = json_decode($product->translate, true);
+
+            if (!$product->variables) {
+                if ($product->price < $product->compareToPrice) {
+                    $product->sale = true;
+                }
+            } else {
+                foreach ($product->variables as $variable) {
+                    if ($variable['defaultDisplayedPrice'] < $variable['compareToPrice']) {
+                        $product->sale = true;
+                    }
+                }
+            }
 
             if (!empty($product->options)) {
 
@@ -181,20 +194,34 @@ class AppServise
 
 
             if (!empty($product->variables)) {
-                if (sizeof($product->variables) > 1) {
-                    foreach ($product->variables as $variant) {
-                        $v_price = $variant['defaultDisplayedPrice'];
-                        if ($v_price < $product->price)
-                            $product->price = $v_price;
+                $variables = $product->variables;
+                foreach ($variables as &$variant) {
+                    foreach ($variant['options'] as &$voption) {
+                        if (isset($voption['options_id'])) {
+                            $opt_id = $voption['options_id'];
+                            $option_data = $product_options[$opt_id];
+                            $voption['name'] = $option_data['name'];
+                            $voption['nameTranslated'] = $option_data['nameTranslated'];
+
+                            $ch_key = $voption['var_option_id'];
+                            $voption['text'] = $option_data['options'][$ch_key]['text'];
+                            if (isset($option_data['options'][$ch_key]['textTranslated'])) {
+                                $voption['textTranslated'] = $option_data['options'][$ch_key]['textTranslated'];
+                            }
+                        }
                     }
+                    if ($variant['unlimited'] == 0 && $variant['quantity'] > 0) {
+                        $product->in_stock = true;
+//                        dd($variant);
+                    }
+                }
+                $product->variables = $variables;
+            } else {
+                if ($product->unlimited == 1 && $product->count > 0) {
+                    $product->in_stock = true;
                 }
             }
 
-            if (isset($cat_names['have'])) {
-                $product->in_stock = true;
-            } else {
-                $product->in_stock = false;
-            }
         }
 
         return $products;
@@ -204,6 +231,9 @@ class AppServise
     {
         foreach ($categories as &$category) {
             $category->data = json_decode($category->data, true);
+            if($category->products) {
+                $category->products = json_decode($category->products, true);
+            }
         }
 
         return $categories;

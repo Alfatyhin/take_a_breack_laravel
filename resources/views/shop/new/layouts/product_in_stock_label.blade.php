@@ -5,7 +5,6 @@
             @if($variant['unlimited'] == 0 && $variant['quantity'] > 0)
                 @foreach($variant['options'] as $item)
                     @if(preg_match('/size/i', $item['name']))
-                        @php($name_lower = strtolower($item['value']))
                         <img src="/assets/images/icons/white-size{{ $kv + 1 }}.png" alt="">
                     @endif
                 @endforeach
@@ -13,21 +12,34 @@
         @endforeach
     @endisset
     <div class="text">
-        @if ($product->stok_label != false)
-            @foreach($product->stok_label as $key => $val)
-                {{ $val['nameTranslated'][$lang] }}
-                @foreach($val['values'] as $item)
-                    @if ($loop->first)
-                        {{ $item }}
-                    @else
-                        , {{ $item }}
+        @isset($product->variables)
+            @php($flag = false)
+            @foreach($product->variables as $kv => $variant)
+
+                @if($variant['unlimited'] == 0 && $variant['quantity'] > 0)
+                    @if(!$loop->first && $flag)
+                        &
                     @endif
-                @endforeach
+                    @foreach($variant['options'] as $item)
+                        @isset($item['nameTranslated'][$lang])
+                            {{ $item['nameTranslated'][$lang] }}
+                        @else
+                            {{ $item['nameTranslated']['en'] }}
+                        @endisset
+                        @isset($item['textTranslated'][$lang])
+                            {{ $item['textTranslated'][$lang] }}
+                        @else
+                            {{ $item['textTranslated']['en'] }}
+                        @endisset
+
+                    @endforeach
+
+                    @php($flag = true)
+                @endif
+
+
             @endforeach
-
-        @else
-
-        @endif
+        @endisset
 
         {{ __('shop.доступен сегодня') }}
 

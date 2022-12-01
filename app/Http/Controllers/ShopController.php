@@ -25,7 +25,7 @@ use SoapClient;
 class ShopController extends Controller
 {
 
-    private $v = '2.0.12';
+    private $v = '2.0.18';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -43,7 +43,7 @@ class ShopController extends Controller
         ]);
     }
 
-    public function indexView(Request $request, $lang = 'en', $category_default = 'all')
+    public function indexView(Request $request, $lang = 'en', $filter = 'all')
     {
 
         App::setLocale($lang);
@@ -64,6 +64,9 @@ class ShopController extends Controller
         if (!$category) {
             return $this->err404($request, $lang);
         }
+        if($category->products) {
+            $category->products = json_decode($category->products, true);
+        }
 
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
         $categories = AppServise::CategoriesShopPrepeare($categories);
@@ -79,6 +82,20 @@ class ShopController extends Controller
             $offer_id = $dey_offer_data['id'];
             $dey_offer = $products[$offer_id];
         }
+        if ($filter == 'in_stock') {
+            foreach ($products as $key => $item) {
+                if (!$item->in_stock) {
+                    unset($products[$key]);
+                }
+            }
+        }
+        if ($filter == 'sale') {
+            foreach ($products as $key => $item) {
+                if (!$item->sale) {
+                    unset($products[$key]);
+                }
+            }
+        }
 
 
 
@@ -87,6 +104,7 @@ class ShopController extends Controller
             'banner' => $request->banner,
             'client' => $client,
             'lang' => $lang,
+            'filter' => $filter,
             'categories' => $categories,
             'products' => $products,
             'dey_offer_data' => $dey_offer_data,
@@ -95,6 +113,65 @@ class ShopController extends Controller
             'category' => $category,
             'noindex' => $request->noindex
         ]);
+    }
+
+    public function indexFilterEn(Request $request, $filter)
+    {
+        
+        return $this->indexView($request, 'en', $filter);
+    }
+
+
+    public function categoryView(Request $request, $category, $lang = 'en', $filter = 'all')
+    {
+
+        App::setLocale($lang);
+
+        $v = $this->v;
+
+        $client = session('client');
+
+        $popapp_message = session('message_popapp');
+
+        $category = Categories::where('slag', $category)->first();
+        if (!$category) {
+            return $this->err404($request, $lang);
+        }
+        $category_products = $category->products;
+
+
+
+        $category_products = json_decode($category_products, true);
+
+        $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
+        $categories = AppServise::CategoriesShopPrepeare($categories);
+        $category = $categories[$category->id];
+        if (!empty($category_products)) {
+            $products = Product::where('enabled', 1)->whereIn('id', $category_products)->get()->sortBy('index_num')->keyBy('id');
+            $products = AppServise::ProductsShopPrepeare($products, $categories);
+        } else {
+            $products = false;
+        }
+
+
+        return view("shop.new.category_master", [
+            'v' => $v,
+            'banner' => $request->banner,
+            'client' => $client,
+            'lang' => $lang,
+            'filter' => $filter,
+            'categories' => $categories,
+            'products' => $products,
+            'category_active' => $category,
+            'popapp_message' => $popapp_message,
+            'category' => $category,
+            'noindex' => $request->noindex
+        ]);
+    }
+
+    public function categoryLang(Request $request, $lang, $category)
+    {
+        return $this->categoryView($request, $category, $lang);
     }
 
 
@@ -170,57 +247,6 @@ class ShopController extends Controller
         return $this->ProductView($request, $category, $product, $lang);
     }
 
-    public function categoryView(Request $request, $category, $lang = 'en')
-    {
-
-        App::setLocale($lang);
-
-        $v = $this->v;
-
-        $client = session('client');
-
-        $popapp_message = session('message_popapp');
-
-        $category = Categories::where('slag', $category)->first();
-        if (!$category) {
-            return $this->err404($request, $lang);
-        }
-        $category_products = $category->products;
-
-
-
-        $category_products = json_decode($category_products, true);
-
-        $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
-        $categories = AppServise::CategoriesShopPrepeare($categories);
-        $category = $categories[$category->id];
-        if (!empty($category_products)) {
-            $products = Product::where('enabled', 1)->whereIn('id', $category_products)->get()->sortBy('index_num')->keyBy('id');
-            $products = AppServise::ProductsShopPrepeare($products, $categories);
-        } else {
-            $products = false;
-        }
-
-
-        return view("shop.new.category_master", [
-            'v' => $v,
-            'banner' => $request->banner,
-            'client' => $client,
-            'lang' => $lang,
-            'categories' => $categories,
-            'products' => $products,
-            'category_active' => $category,
-            'popapp_message' => $popapp_message,
-            'category' => $category,
-            'noindex' => $request->noindex
-        ]);
-    }
-
-    public function categoryLang(Request $request, $lang, $category)
-    {
-        return $this->categoryView($request, $category, $lang);
-    }
-
     public function CartView(Request $request, $lang = 'en', $step = 1)
     {
         App::setLocale($lang);
@@ -292,25 +318,33 @@ class ShopController extends Controller
 
 
             if (isset($post['order_id'])) {
-                $order = Orders::where('order_id', $post['order_id'])->first();
+                $order = Orders::find($post['order_id']);
                 if (!$order) {
                     $order = new Orders();
                     $order_id = rand(100, 999);
                     $order->order_id = AppServise::generateOrderId($order_id, 'S');
                 }
+
             } else {
-                $order = new Orders();
-                $order_id = rand(100, 999);
-                $order->order_id = AppServise::generateOrderId($order_id, 'S');
+                $order_id = session('order_id');
+                if ($order_id) {
+                    $order =  Orders::find($order_id);
+                    if (!$order) {
+                        $order = new Orders();
+                        $order_id = rand(100, 999);
+                        $order->order_id = AppServise::generateOrderId($order_id, 'S');
+                    }
+                } else {
+                    $order = new Orders();
+                    $order_id = rand(100, 999);
+                    $order->order_id = AppServise::generateOrderId($order_id, 'S');
+                }
             }
             WebhookLog::addLog('new order step 1', $order->order_id);
 
-            session(['order' => $order]);
-            $lang = $lang;
 
             if ($post['clientName'] == 'test') {
                 $orderData = OrderService::getShopOrderData($post);
-//            dd($orderData);
                 $order->clientId = $client->id;
                 if (isset($post['gClientId'])) {
                     $order->gclientId = $post['gClientId'];
@@ -319,12 +353,18 @@ class ShopController extends Controller
                 $order->paymentStatus = 0;
                 $order->orderPrice = $orderData['order_data']['order_total'];
                 $order->orderData = json_encode($orderData);
-//                $order->save();
+                $order->save();
+                session(['order_id' => $order->order_id]);
+
+                dd($orderData, $order->order_id, session('order_id'));
             }
 
 
 
 //            dd($post, $step);
+        } elseif($step == 3 ) {
+
+            dd($post);
         }
 
         $order_number = false;
@@ -341,10 +381,11 @@ class ShopController extends Controller
         $products = AppServise::ProductsShopPrepeare($products, $categories);
         $rand_keys = array_rand($products->toArray(), 15);
 
-        $order = session('order');
 
-        if ($order) {
-            $order_number = $order->order_id;
+        $order_id = session('order_id');
+
+        if ($order_id) {
+            $order_number = $order_id;
         }
 
         $cityes = Storage::disk('local')->get('js/israel-city.json');
@@ -546,6 +587,35 @@ class ShopController extends Controller
 
     }
 
+    public function deliveryIndex(Request $request, $lang = 'en')
+    {
+        App::setLocale($lang);
+
+        $v = $this->v;
+        $popapp_message = session('message_popapp');
+
+        $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
+        $categories = AppServise::CategoriesShopPrepeare($categories);
+
+        $cityes = Storage::disk('local')->get('js/israel-city.json');
+        $cityes = json_decode($cityes, true);
+
+        $delivery =  Storage::disk('local')->get('js/delivery.json');
+        $delivery = json_decode($delivery, true);
+
+//        dd($cityes, $delivery);
+
+        return view('shop.new.delivery-master', [
+            'v' => $v,
+            'banner' => $request->banner,
+            'lang' => $lang,
+            'delivery' => $delivery,
+            'cityes' => $cityes,
+            'categories' => $categories,
+            'popapp_message' => $popapp_message,
+            'noindex' => $request->noindex
+        ]);
+    }
 
     private function marketView(Request $request, $lang)
     {

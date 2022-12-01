@@ -1,6 +1,7 @@
 
 <div class="pay-cart">
     <div class="pay-cart__box">
+
         <div class="pay-cart__title">
                                 <span>
                                     {{ __('shop-cart.Ваш заказ') }}
@@ -31,7 +32,7 @@
             </p>
             <p>
                 <span>{{ __('shop-cart.скидка') }}</span>
-                <span class="delivery_discount">{{ __('shop-cart.рассчитывается на следующем шаге') }}</span>
+                <span><span class="discount">0</span> ₪</span>
             </p>
             <p>
                 <span>{{ __('shop-cart.доставка') }}</span>
