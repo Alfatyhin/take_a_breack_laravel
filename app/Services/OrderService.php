@@ -819,8 +819,8 @@ class OrderService
         // delivery
         if (isset($order['delivery'])) {
             if ($order['delivery'] != 'pickup') {
-                $data['delivery_price'] = (int) $order['order_data']['delivery_price'];
-                $order_total += (int) $order['order_data']['delivery_price'];
+                $data['delivery_price'] = (float) $order['order_data']['delivery_price'];
+                $order_total += (float) $order['order_data']['delivery_price'];
             } else {
 
             }
@@ -866,10 +866,16 @@ class OrderService
         foreach ($items as $item) {
             $product_name = $item['name']['en'];
 
+            if (isset($item['total']) && !empty($item['total'])) {
+                $price = $item['total'];
+            } else {
+                $price = $item['price'];
+            }
+
             $orderItems[] = [
                 'CatalogNumber' => $item['sku'],
                 'Quantity' => $item['count'],
-                'UnitPrice' => $item['price'],
+                'UnitPrice' => $price,
                 'Description' => $product_name
             ];
 

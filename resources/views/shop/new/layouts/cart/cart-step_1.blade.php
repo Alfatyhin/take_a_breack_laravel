@@ -6,8 +6,6 @@
             <div >03 <span>{{ __('shop-cart.ОПЛАТА') }}</span></div>
         </div>
 
-        <h3>Order #{{ $order_number }}</h3>
-
         @include("shop.new.layouts.cart.errors")
 
         <div class="pay__form">
@@ -15,7 +13,7 @@
                 @csrf
                 <input hidden name="lang" value="{{ $lang }}">
                 <input hidden name="gClientId" value="">
-                <input hidden name="order_id" value="">
+                <input hidden name="order_id" value="{{ $order_number }}">
                 <label class="phone-mask" for="" class="@error('phone') error @enderror">
                     <input hidden class="phone" name="phone" value="">
                     <p>
@@ -27,13 +25,13 @@
                         <p>
                             {{ __('shop-cart.Имя') }} *
                         </p>
-                        <input required type="text" name="clientName" value="firstname">
+                        <input required type="text" name="clientName" value="">
                     </label>
                     <label for="" class="@error('clientLastName') error @enderror">
                         <p>
                             {{ __('shop-cart.Фамилия') }} *
                         </p>
-                        <input required type="text" name="clientLastName" value="lastname">
+                        <input required type="text" name="clientLastName" value="">
                     </label>
                 </div>
 
@@ -47,7 +45,7 @@
                     <p>
                         {{ __('shop-cart.Email') }} *
                     </p>
-                    <input required type="email" name="email" value="test@mail.ru">
+                    <input required type="email" name="email" value="">
                 </label>
 
                 <span>{{ __('shop-cart.Согласен с') }} <a href="#">{{ __('shop-cart.политикой конфиденциальности') }}</a></span>

@@ -6,7 +6,14 @@
             <div >03 <span>{{ __('shop-cart.ОПЛАТА') }}</span></div>
         </div>
 
-        <h3>Order #{{ $order_number }}</h3>
+
+        @error('order_data')
+        <p class="errors">{{ $message }}</p><p></p>
+        @enderror
+
+        @error('min_summ_order')
+        <p class="errors">{{ $message }}</p><p></p>
+        @enderror
 
         <label class="delivery">
             <input type="radio" name="delivery" value="delivery" checked form="form">
@@ -50,7 +57,9 @@
 
                         <input class="delivery_time" type="text" name="time" value="{{ old('time') }}" placeholder="{{ __('shop-cart.Укажите удобное вам время') }}" readonly>
                         <ul class="delivery_time city-lis">
-                            <li class="default" data-time="">{{ __('shop-cart.любое время') }}</li>
+                            <li class="default" data-time="">
+{{--                                {{ __('shop-cart.любое время') }}--}}
+                            </li>
                         </ul>
 
 
@@ -98,7 +107,7 @@
                         <p>
                             {{ __('shop-cart.Город') }} *
                         </p>
-                        <input class="city_name" type="text" name="city" >
+                        <input class="city_name" type="text" name="city"  value="">
                     </label>
 
                     @error('city')
@@ -112,7 +121,7 @@
                         <p>
                             {{ __('shop-cart.Улица') }} *
                         </p>
-                        <input type="text" name="street">
+                        <input type="text" name="street"  value="{{ old('street') }}">
 
                         @error('street')
                         <p class="errors">{{ $message }}</p>
@@ -123,7 +132,7 @@
                             <p>
                                 {{ __('shop-cart.Дом') }} *
                             </p>
-                            <input type="text" name="house">
+                            <input type="text" name="house"  value="{{ old('house') }}">
 
                             @error('house')
                             <p class="errors">{{ $message }}</p>
@@ -133,7 +142,7 @@
                             <p>
                                 {{ __('shop-cart.Квартира') }}
                             </p>
-                            <input type="text" name="flat">
+                            <input type="text" name="flat"  value="{{ old('flat') }}">
                             @error('flat')
                             <p class="errors">{{ $message }}</p>
                             @enderror
@@ -144,13 +153,13 @@
                             <p>
                                 {{ __('shop-cart.Этаж') }}
                             </p>
-                            <input type="text" name="floor">
+                            <input type="text" name="floor"  value="{{ old('floor') }}">
                         </label>
                         <label for="">
                             <p>
                                 {{ __('shop-cart.Код подьезда') }}
                             </p>
-                            <input type="text" name="house_code">
+                            <input type="text" name="house_code"  value="{{ old('house_code') }}">
                         </label>
                     </div>
                 </div>

@@ -281,9 +281,6 @@ Route::get('/paypal', [PaypalController::class, 'index'])
 Route::any('/api/paypal/order/capture', [PaypalController::class, 'orderCapture'])
     ->name('paypal_capture');
 
-Route::get('/paypal/payment', [PaypalController::class, 'getButton'])
-    ->name('paypal_button');
-
 
 
 
@@ -330,8 +327,6 @@ Route::middleware(["Shop"])->group(function () {
 
     Route::get('/delivery', [ShopController::class, 'deliveryIndex']);
 
-    Route::get('/{lang?}/{category}/{product}', [ShopController::class, 'ProductLang'])->name('product');
-
     Route::any('/change-product-count', [ShopController::class, 'changeProductCount'])->name('change_product_count');
 
     Route::get('/market', [ShopController::class, 'marketEn'])->name('market_en');
@@ -353,6 +348,9 @@ Route::middleware(["Shop"])->group(function () {
     Route::post('/send-birthday/', [ShopController::class, 'saveContactBirth'])->name('send_birthday');
 
     Route::get('/utm', [ShopController::class, 'testUtm']);
+
+    Route::get('/paypal/payment', [ShopController::class, 'getButtonPaypal'])
+        ->name('paypal_button');
 
     Route::get('/{lang?}/delivery', [ShopController::class, 'deliveryIndex'])
         ->where('lang', '[a-z]{2}')
@@ -406,6 +404,8 @@ Route::middleware(["Shop"])->group(function () {
     Route::get('/{lang}/category/{category}', [ShopController::class, 'categoryLang'])
         ->where('lang', '[a-z]{2}')
         ->name('category');
+
+    Route::get('/{lang?}/{category}/{product}', [ShopController::class, 'ProductLang'])->name('product');
 
     Route::any('/{lang}/new-order/', [ShopController::class, 'NewOrder'])
         ->where('lang', '[a-z]{2}')

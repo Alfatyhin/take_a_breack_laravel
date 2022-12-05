@@ -138,9 +138,6 @@ document.addEventListener('DOMContentLoaded',()=>{
         menuList.classList.remove('active');
         document.body.style.overflow = 'auto';
         modal.classList.remove('active');
-        // debugger
-
-
     }
 
     function OpenMenu() {
@@ -375,7 +372,6 @@ document.addEventListener('DOMContentLoaded',()=>{
         
 
         let cart = JSON.parse(localStorage.getItem("cart") || "[]");  
-        // debugger
         let addedPosition = { 
                                 id:  16/*product.id*/,
                                 name: $(".product-info__title h1")[0].innerText,
@@ -397,23 +393,39 @@ document.addEventListener('DOMContentLoaded',()=>{
     //#endregion
 
     //#region Кнопка  добавить текст к торту
-    $(".trans-btn").on('click',async function(e){
-        // debugger
-        let inputText = e.currentTarget.closest(".body-product-info-add").querySelector(".body-product-info-input-text.option_input_text")
-        if( e.currentTarget.innerHTML == "Добавить" ){                
-            if( inputText.value != "" ){
-                e.currentTarget.innerHTML = "Убрать текст"
-                this.closest(".body-product-info-add").querySelector(".option_value").classList.add("active")
-                $(".current-price")[0].innerHTML =  roundNumber(await currentSumm( $("#count-product")[0].value) || $(".current-price")[0].innerHTML)                
-            }
-        } else if(e.currentTarget.innerHTML == "Убрать текст"){            
-            e.currentTarget.innerHTML = "Добавить"
+
+    
+    $('input.body-product-info-input-text').keyup( async function(e){
+        if( this.value != "" ){           
+            this.closest(".body-product-info-add").querySelector(".option_value").classList.add("active")
+            $(".current-price")[0].innerHTML =  roundNumber(    await currentSumm( $("#count-product")[0].value) || $(".current-price")[0].innerHTML)                
+        } else{
             let el = this.closest(".body-product-info-add").querySelector(".option_value")
             if(el.classList.contains("active")) el.classList.remove("active")
-            inputText.value = ""
-            $(".current-price")[0].innerHTML = roundNumber(await currentSumm( $("#count-product")[0].value) || $(".current-price")[0].innerHTML)              
-        }
+            this.value = ""
+            $(".current-price")[0].innerHTML = roundNumber(await currentSumm( $("#count-product")[0].value) || $(".current-price")[0].innerHTML)
+        }        
     });
+
+
+
+
+    // $(".trans-btn").on('click',async function(e){
+    //     let inputText = e.currentTarget.closest(".body-product-info-add").querySelector(".body-product-info-input-text.option_input_text")
+    //     if( e.currentTarget.innerHTML == "Добавить" ){                
+    //         if( inputText.value != "" ){
+    //             e.currentTarget.innerHTML = "Убрать текст"
+    //             this.closest(".body-product-info-add").querySelector(".option_value").classList.add("active")
+    //             $(".current-price")[0].innerHTML =  roundNumber(await currentSumm( $("#count-product")[0].value) || $(".current-price")[0].innerHTML)                
+    //         }
+    //     } else if(e.currentTarget.innerHTML == "Убрать текст"){            
+    //         e.currentTarget.innerHTML = "Добавить"
+    //         let el = this.closest(".body-product-info-add").querySelector(".option_value")
+    //         if(el.classList.contains("active")) el.classList.remove("active")
+    //         inputText.value = ""
+    //         $(".current-price")[0].innerHTML = roundNumber(await currentSumm( $("#count-product")[0].value) || $(".current-price")[0].innerHTML)              
+    //     }
+    // });
     //#endregion
 
     //#region  Выбор радиобаттонов
@@ -568,8 +580,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     //             cart[i].itemSumm = (+cart[i].itemSumm/cart[i].count*e.currentTarget.value).toString()
     //             cart[i].count = e.currentTarget.value
     //         }
-    //     }       
-    //     debugger
+    //     }      
     //     localStorage.removeItem("cart");   
     //     localStorage.setItem("cart", JSON.stringify(cart)); 
     //     cartInitProducts(cart)
@@ -583,8 +594,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     //             cart[i].itemSumm = (+cart[i].itemSumm/cart[i].count*e.currentTarget.value).toString()
     //             cart[i].count = e.currentTarget.value
     //         }
-    //     }       
-    //     debugger
+    //     }  
     //     localStorage.removeItem("cart");   
     //     localStorage.setItem("cart", JSON.stringify(cart)); 
     //     cartInitProducts(cart)
@@ -641,15 +651,12 @@ document.addEventListener('DOMContentLoaded',()=>{
     //#endregion
 
     //#region Гармошка корзины товара
-
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        
+   
         setTimeout(() => {
             let totalCartBtn = document.querySelector('.pay-cart__total-sum'),
-            cartBox = document.querySelector('.pay-cart__box');
-            
+            cartBox = document.querySelector('.pay-cart__box');            
             if (totalCartBtn) {
-                totalCartBtn.addEventListener('click', (e)=>{                     
+                totalCartBtn.addEventListener('click', (e)=>{                                         
                 if (totalCartBtn.classList.contains('active')) {
                     totalCartBtn.classList.remove('active');
                     cartBox.style.maxHeight =  0 + 'px';
@@ -660,7 +667,7 @@ document.addEventListener('DOMContentLoaded',()=>{
                 })
             }            
         }, 500);       
-    }
+    
     //#endregion
 })
 
@@ -774,7 +781,6 @@ async function decrement(e){
     
     else {   // для товара в корзине
         if(e.closest('.product-info__count')){
-            // debugger
             let count = +e.nextElementSibling.value - 1
             count = count < 1 ? 1 : count
             e.nextElementSibling.value = count
@@ -914,8 +920,6 @@ function cartInitProducts(cart){
 
     }
     rootElement.prepend(title);
-
-
     //#region  Удаление из корзины
     $(".delete-item").on('click', function(e){    
             
@@ -937,6 +941,15 @@ function cartInitProducts(cart){
         if( $(".sugess_promo")[0].classList.contains("hide")) $(".sugess_promo")[0].classList.remove("hide")
         $(".error_promo")[0].classList.add("hide")
     } 
+    let client_data = JSON.parse(localStorage.getItem("client_data") || "[]"); 
+    if(client_data.order_id != ""){
+        $("input[name='order_id']")[0].value = client_data.order_id 
+        $("span.order_number_data")[0].innerHTML = client_data.order_id
+        $(".order_number_data")[0].style.display = "block"
+        $(".pay-cart__title")[0].style.cssText= `display: flex;`
+    }
+    
+
 }
 function summCalculation(cart){
 
@@ -1325,7 +1338,6 @@ if($("#cart").length)
     {name: 'Zimbabwe', iso2: 'zw', dialCode: '263', priority: 0, areaCodes: null, maskNum:0 },
     {name: 'Åland Islands', iso2: 'ax', dialCode: '358', priority: 1, areaCodes: Array(1), maskNum:0 } ]}
 
-    // debugger
     // $(".phone-mask")[0].innerHTML = ``
     // $(".phone-mask").append(`<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>`)
     // $(".phone-mask").append(`<p>Телефон *</p>`)
@@ -1449,37 +1461,51 @@ if($("#cart").length)
             }, 1000);
     });
     
-    $("form.form-cart1").on("submit", function() {
+    $("form.form-cart1").on("submit", function(e) {
                 
-        window.scrollTo(0, 0);
-        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-        let promo = JSON.parse(localStorage.getItem("promo") || "[]");
-        let response = {products: cart, promo_code: promo.name}
+        window.scrollTo(0, 0); 
+        setOrderDate()
+        
         let telIsValide = telValidator($("#user-phone")[0].value) 
-
         if(!telIsValide || cart.length == 0) return false
-
         let str =  $(".iti__selected-dial-code")[0].innerHTML
         let phone = str.substring(str.indexOf("+"))+ " -" + $("input[name='user-phone']")[0].value
         phone = phone.replace(/-/g, '')
         $("input[name='phone']")[0].value = phone
-        $("input[name='order_data']")[0].value = JSON.stringify(response)
+        const formData = new FormData(e.currentTarget);
+        var client_data = {};
+        client_data.phone = formData.get("phone")
+        client_data.clientName = formData.get("clientName")
+        client_data.clientBirthDay = formData.get("clientBirthDay")
+        client_data.email = formData.get("email")        
+        client_data.order_id = formData.get("order_id") == "undefined" ? "" : formData.get("order_id")
+        localStorage.setItem("client_data", JSON.stringify(client_data));
+
     });
 
    
 
-    $("form.form-cart2").on("submit", function() {
-        
-        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-        let promo = JSON.parse(localStorage.getItem("promo") || "[]");
-        let response = {products: cart, promo_code: promo.name}
+    $("form.form-cart2").on("submit", function() {        
+
+        setOrderDate()
+        let client_data = JSON.parse(localStorage.getItem("client_data") || "[]");
+        client_data.order_id = $("input[name='order_id']")[0].value || ""
+        localStorage.setItem("client_data", JSON.stringify(client_data));
         let str =  $(".iti__selected-dial-code")[0].innerHTML
         let phone = str.substring(str.indexOf("+"))+ " -" + $("input[name='user-phone']")[0].value
         phone = phone.replace(/-/g, '')        
         $("input[name='delivery_method']")[0].value = $("input[name='delivery']:checked")[0].value
         $("input[name='user-phone']")[0].value = phone        
-        $("input[name='order_data']")[0].value = JSON.stringify(response)
+       
     });
+    
+    function setOrderDate(){
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        let promo = JSON.parse(localStorage.getItem("promo") || "[]");
+        let response = {products: cart, promo_code: promo.name}
+        $("input[name='order_data']")[0].value = JSON.stringify(response)
+    }
+
 }
 
 function telValidator(tel){
@@ -1600,10 +1626,10 @@ $(".city_name").keyup(function(){
         $(".city-list li").on('click', function(e) {                        
             $(".city_name")[0].value = this.innerText            
             for (let i = 0; i < cityes.citys_all.length; i++) {
-                if(cityes.citys_all[i].en == this.innerText) cityId = i
-                if(cityes.citys_all[i].he == this.innerText) cityId = i
-                if(cityes.citys_all[i].ru == this.innerText) cityId = i
-                if(cityId != -1) break
+                if(cityes.citys_all[i].en == this.innerText){ cityId = i; $("input[name='city_id']")[0].value = cityId.toString() } 
+                if(cityes.citys_all[i].he == this.innerText){ cityId = i; $("input[name='city_id']")[0].value = cityId.toString() }
+                if(cityes.citys_all[i].ru == this.innerText){ cityId = i; $("input[name='city_id']")[0].value = cityId.toString() }
+                if(cityId != -1) { $("input[name='city_id']").value = ""; break } 
             }            
             if(cityId != -1){               
                 summDelivery(cityId)                
@@ -1619,6 +1645,7 @@ $(".city_name").blur(function(){
     setTimeout(() => {        
         if($('.city-list').length == 0) return
         $(".city_name")[0].value =""
+        $("input[name='city_id']").value = "";
         cityId = -1
         let el = $('.city-list');
         if(el) el.remove(); 
@@ -1633,7 +1660,8 @@ $("input[name='delivery']").change(function(){   // переключалка с�
         $(".delivery label .pickup").each(function() { this.style.display = "block" });
         $(".delivery_address")[0].style.display = "none"
         $(".other-man")[0].style.display = "none"
-        $(".city_name")[0].value = ""  
+        $(".city_name")[0].value = ""
+        $("input[name='city_id']").value = ""; 
         cityId = -1
         $(".delivery_price")[0].innerHTML = 0 + " ₪"
         $(".delivery input.show_calendar.date")[0].placeholder = $(".delivery input.show_calendar.date")[0].dataset.text_delivery
@@ -1690,8 +1718,7 @@ function summDelivery(cityId){
     const deliveryParams = delivery.delivery[delivery.cityes_data[cityId]]
     if(!deliveryParams){
         return
-    }                 
-    
+    }   
     let totalAmmount = +$("#total-ammount")[0].innerHTML                
     if(deliveryParams && deliveryParams.rate_delivery_to_summ_order.length){
         let isRate_delivery_to_summ_orderActivated = false
@@ -1714,7 +1741,7 @@ function summDelivery(cityId){
     let deliverySumm =  +deliveryPrice * koefTime 
     if (koefTime == 1.3 ) $(".delivery_price")[0].classList.add("time")
     if( $("input[name='time']")[0].value) $(".delivery_price")[0].innerHTML = roundNumber( +deliverySumm)  + " ₪"               
-    $("#summ-for-payment")[0].innerHTML = roundNumber(+$("#total-ammount")[0].innerHTML + +deliverySumm)
+    $("#summ-for-payment")[0].innerHTML = roundNumber(+$("#total-ammount")[0].innerHTML - +$(".discount")[0].innerHTML +deliverySumm)
 }
 //#endregion
 

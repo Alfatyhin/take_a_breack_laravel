@@ -7,6 +7,13 @@
         </div>
 
 
+        @error('order_data')
+        <p class="errors">{{ $message }}</p><p></p>
+        @enderror
+
+        <h3>{{ __('shop-cart.Ваш заказ') }} #{{ $order_number }}
+        </h3>
+
         <div class="pay__form">
 
             <form class="form-cart{{ $step }}" action="{{ route("new_order", ['lang' => $lang]) }}" method="POST">
@@ -21,10 +28,25 @@
                     {{ __('shop-cart.Выберите способ оплаты') }}
                 </p>
                 <div class="pay-types">
-                    <label><input checked name="methodPay" type="radio" value="1"><span class="text">{{ __('shop-cart.Кредитная карта') }}</span></label>
-                    <label><input name="methodPay" type="radio" value="3"><span class="text">Pay Pal</span></label>
-                    <label><input name="methodPay" type="radio" value="4"><span class="text">BIT</span></label>
-                    <label><input name="methodPay" type="radio" value="2"><span class="text">{{ __('shop-cart.Наличные') }}</span></label>
+                    <label>
+                        <input checked name="methodPay" type="radio" value="1">
+                        <span></span>
+                        <p class="text">{{ __('shop-cart.Кредитная карта') }}</p>
+                    </label>
+                    <label>
+                        <input name="methodPay" type="radio" value="3">
+                        <span></span>
+                        <p class="text">Pay Pal</p>
+                    </label>
+                    <label><input name="methodPay" type="radio" value="4">
+                        <span></span>
+                        <p class="text">BIT</p>
+                    </label>
+                    <label>
+                        <input name="methodPay" type="radio" value="2">
+                        <span></span>
+                        <p class="text">{{ __('shop-cart.Наличные') }}</p>
+                    </label>
                 </div>
                 <p>
                     {{ __('shop-cart.Поддержите наш проект чаевыми') }}
@@ -36,7 +58,8 @@
                     <label><input value="15" name="premium" type="radio"><span></span><p>15%</p></label>
                 </div>
                 <p class="total-pay"><span class="order_price" style="display: none;">{{ $order_data['order_data']['order_total'] }}</span>
-                    {{ __('shop-cart.Общая сумма к оплате') }}  <span class="total_order_price">{{ $order_data['order_data']['order_total'] + $order_data['order_data']['order_total'] * 0.1 }}</span> ₪
+                    {{ __('shop-cart.Общая сумма к оплате') }}
+                    <span class="total_order_price">{{ round($order_data['order_data']['order_total'] + $order_data['order_data']['order_total'] * 0.1, 1) }}0</span> ₪
                 </p>
 
                 <div>
@@ -46,11 +69,13 @@
 
                 <div class="pay__acttion">
                     <button>
-                        <a href="{{ route('cart', ['lang' => $lang]) }}">
+                        <a href="{{ back() }}">
                         </a>
                         {{ __('shop.Назад') }}
                     </button>
-                    <button class="main-btn go-pay" type="submit">
+                    <button class="main-btn go-pay" type="submit"
+                            data-text_pay="{{ __('shop-cart.Оплатить') }}"
+                            data-text_checkout="{{ __('shop-cart.оформить заказ') }}">
                         {{ __('shop-cart.Оплатить') }}
                     </button>
                 </div>

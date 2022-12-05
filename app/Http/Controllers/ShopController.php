@@ -14,18 +14,21 @@ use App\Services\AmoCrmServise;
 use App\Services\AppServise;
 use App\Services\IcreditServise;
 use App\Services\OrderService;
+use App\Services\PayPalService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Mockery\Exception;
 use phpDocumentor\Reflection\Utils;
 use SoapClient;
+use function PHPUnit\Framework\matches;
 
 class ShopController extends Controller
 {
 
-    private $v = '2.1.2';
+    private $v = '2.1.3';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -256,6 +259,7 @@ class ShopController extends Controller
 
         if ($step == 2 ) {
 
+
             if (!empty($post)) {
                 $pattern_phone = "/^[+0-9]{2,4} \([0-9]{3}\) [0-9]{3} [0-9]{2} [0-9]{2,4}$/";
                 $validate_array = [
@@ -275,6 +279,16 @@ class ShopController extends Controller
                 $post['email'] = strtolower($post['email']);
                 $post['email'] = str_replace(' ', '', $post['email']);
                 $post['order_data'] = json_decode($post['order_data'], true);
+
+
+                if (empty($post['order_data']['products'])) {
+                    $post['order_data'] = '';
+                    $messages = [
+                        'order_data.required' => __('shop-cart.пустая корзина'),
+                    ];
+                    $validate_array['order_data'] = "required";
+                    Validator::make($post, $validate_array, $messages )->validate();
+                }
 
                 /////////////////////////////////////////////
 
@@ -359,6 +373,23 @@ class ShopController extends Controller
                 'order_data' => 'required|json'
             ];
 
+            $this->validate($request, $validate_array);
+
+            unset($validate_array['order_data']);
+
+            $post['order_data'] = json_decode($post['order_data'], true);
+
+
+            if (empty($post['order_data']['products'])) {
+                $post['order_data'] = '';
+                $messages = [
+                    'order_data.required' => __('shop-cart.пустая корзина'),
+                ];
+                $validate_array['order_data'] = "required";
+                Validator::make($post, $validate_array, $messages )->validate();
+            }
+
+
             if ($post['delivery'] == 'delivery') {
                 $delivery_json = Storage::disk('local')->get('js/delivery.json');
                 $cityes_json = Storage::disk('local')->get('js/israel-city.json');
@@ -376,11 +407,42 @@ class ShopController extends Controller
                             }
                         }
                     }
+                } else {
+                    if ($post['city']) {
+                        foreach ($cityes['citys_all'] as $k => $item) {
+                            if ($item['ru'] == $post['city'] || $item['en'] == $post['city'] || $item['he'] == $post['city']  ) {
+                                $post['city_id'] = $k;
+                            }
+                        }
+                    }
+                }
+
+                $data_price['order_data'] = json_decode($post['order_data'], true);
+                $data_price = OrderService::getShopOrderData($data_price);
+                $order_price = $data_price['order_data']['order_total'];
+
+                $deliv_id = $delivery_setting['cityes_data'][$post['city_id']][0];
+
+                $delivery = $delivery_setting['delivery'][$deliv_id];
+
+                $min_summ_order = $delivery['min_sum_order'];
+                if ($order_price < $min_summ_order) {
+                    $messages = [
+                        'min_summ_order.required' => __('shop-cart.минимальная сумма заказа') . ' ' . $min_summ_order . ' ₪ !',
+                    ];
+                    $validate_array['min_summ_order'] = "required";
+                    Validator::make($post, $validate_array, $messages )->validate();
+                }
+
+                if (empty($delivery['rate_delivery_to_summ_order'])) {
+                    $post['order_data']['delivery_price'] = $delivery['rate_delivery'];
+                    if (!empty($post['time']) && preg_match('/[0-9]{2}:00-[0-9]{2}:00/', $post['time'])) {
+                        $post['order_data']['delivery_price'] += $post['order_data']['delivery_price'] / 100 * 30;
+                        $post['order_data']['delivery_price'] = round($post['order_data']['delivery_price'], 2);
+                    }
                 }
 
 
-                $validate_array['city_id'] = 'required';
-                $validate_array['city'] = 'required|regex:/^'.$city_pattern.'/i';
                 $validate_array['street'] = 'required';
                 $validate_array['house'] = 'required';
             }
@@ -395,16 +457,14 @@ class ShopController extends Controller
             $order = Orders::where('order_id', $post['order_id'])->first();
             if ($order) {
                 $order_data = json_decode($order->orderData, true);
-                $post['order_data'] = json_decode($post['order_data'], true);
+
                 $orderData = OrderService::getShopOrderData($post);
+
                 foreach ($orderData as $k => $v) {
                     $order_data[$k] = $v;
                 }
                 $order_data['order_data_jsonform'] = $post['order_data'];
 
-                if ($order_data['clientName'] == 'test') {
-//                    dd($order_data);
-                }
                 $order->orderPrice = $orderData['order_data']['order_total'];
                 $order->orderData = json_encode($order_data);
                 $order->save();
@@ -528,6 +588,38 @@ class ShopController extends Controller
     }
 
 
+    public function getButtonPaypal(Request $request)
+    {
+
+        $order_id = $request->get('order_id');
+        $order = false;
+        $paypalService = new PayPalService('live');
+        $client_id = $paypalService->getClientId();
+
+
+        if ($order_id) {
+            $order = Orders::where('order_id', $order_id)->first();
+        }
+
+        $orderData = json_decode($order->orderData, true);
+
+        if (isset($orderData['order_data'])) {
+            if ($orderData['clientName'] == 'test') {
+                $orderData['order_data']['order_total'] = 1;
+            }
+        }
+        $lang = $orderData['lang'];
+
+        return view('paypal.button', [
+            'v' => $this->v,
+            'noindex' => $request->noindex,
+            'client_id'  => $client_id,
+            'orderData'  => $orderData,
+            'order_id'   => $order_id,
+            'lang'       => $lang
+        ]);
+    }
+
     public function OrderThanksView(Request $request, $lang)
     {
         App::setLocale($lang);
@@ -545,6 +637,7 @@ class ShopController extends Controller
             dd($order);
         }
 
+
         if ($order_id) {
             $order = Orders::where('order_id', $order_id)->first();
             WebhookLog::addLog('OrderThanksView last order', $order);
@@ -561,12 +654,10 @@ class ShopController extends Controller
         $OrderService = new OrderService();
         $OrderService->changeProductsCount($order);
 
-        if (isset($test)) {
-            $client_id = $order->clientId;
-            $client = Clients::find($client_id);
-        } else {
-            $client = session('client');
-        }
+
+        $client_id = $order->clientId;
+        $client = Clients::find($client_id);
+
         $client = $client->toArray();
         if (is_string($client['data'])) {
             $client['data'] = json_decode($client['data'], true);
@@ -576,7 +667,7 @@ class ShopController extends Controller
         $dataJson = Storage::disk('local')->get('data/app-setting.json');
         $invoiceSettingData = json_decode($dataJson, true);
 
-
+        session(['order_id' => false]);
 
         return view("shop.new.order_thanks", [
             'v' => $v,

@@ -1,4 +1,4 @@
-@extends('shop.message-master')
+@extends('shop.new.shop_master')
 
 @section('title', 'PayPal')
 
@@ -9,6 +9,9 @@
             margin: auto;
             max-width: 400px;
             padding-top: 20%;
+        }
+        .main__wrap div {
+            margin: auto;
         }
     </style>
 
@@ -23,7 +26,7 @@
                 <!-- Set up a container element for the button -->
                 <div id="paypal-button-container"></div>
             </div>
-            <div class="hide pay_success">
+            <div class="pay_success" style="display: none;">
                 <h1>Thank You</h1>
             </div>
             <script src="https://www.paypal.com/sdk/js?client-id={{ $client_id }}&currency=ILS"></script>

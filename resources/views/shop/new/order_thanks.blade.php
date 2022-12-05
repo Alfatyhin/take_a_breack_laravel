@@ -16,7 +16,12 @@
 
 @section('head')
 
-
+<script>
+    localStorage.removeItem("cart");
+    let client_data = JSON.parse(localStorage.getItem("client_data") || "[]");
+    client_data.order_id = '';
+    localStorage.setItem("client_data", JSON.stringify(client_data));
+</script>
 @stop
 
 
