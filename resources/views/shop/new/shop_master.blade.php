@@ -96,11 +96,11 @@
                     @include('shop.new.layouts.components.bag-badge')
                 </a>
             </div>
-            <div>
-                <a href="#" class="mark-link">
-                    <img src="/assets/images/icons/user.svg" alt="">
-                </a>
-            </div>
+{{--            <div>--}}
+{{--                <a href="#" class="mark-link">--}}
+{{--                    <img src="/assets/images/icons/user.svg" alt="">--}}
+{{--                </a>--}}
+{{--            </div>--}}
             <div>
                 <ul class="lang_select mark_lang">
                     @include('shop.new.layouts.components.lang-select')

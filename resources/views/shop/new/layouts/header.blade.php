@@ -16,7 +16,7 @@
                     <img src="/assets/images/icons/bag.svg" alt="">
                     @include('shop.new.layouts.components.bag-badge')
                 </a>
-                <a href="#" class="mark-link"><img src="/assets/images/icons/user.svg" alt=""></a>
+{{--                <a href="#" class="mark-link"><img src="/assets/images/icons/user.svg" alt=""></a>--}}
 
             </div>
             <div class="header__title">

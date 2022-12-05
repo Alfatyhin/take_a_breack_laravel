@@ -66,7 +66,7 @@
     </div>
 </div>
 
-<div class="feedback__form">
+<div class="feedback__form" style="display: none;">
     <form action="{{ route('send_contact_form') }}" method="POST">
         @csrf
         <label>
