@@ -23,6 +23,8 @@
 @section('content')
 
 
+
+
     <div class="checkout__item thank">
         <h2>
             {{ __('shop-thanks.благодарим за ваш заказ') }}!
