@@ -600,6 +600,7 @@ class ShopSettingController extends Controller
 
     public function delivery(Request $request)
     {
+        $week_days = ['Вс','ПН','Вт','Ср','Чт','Пт','Сб',];
 
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
 
@@ -621,6 +622,7 @@ class ShopSettingController extends Controller
             'cityes'     => $cityes,
             'delivery'   => $delivery,
             'shop_setting' => $shop_setting,
+            'week_days' => $week_days,
         ]);
     }
 
@@ -629,16 +631,15 @@ class ShopSettingController extends Controller
 
         $shop_setting = $request->get('shop');
 
+
         if (!empty($shop_setting)) {
             $res = Storage::disk('local')->put('js/shop_setting.json', json_encode($shop_setting));
             if($res) {
                 session()->flash('message', ['shop setting date-time delivery save']);
-                return redirect(back());
             }
         }
 
         $delivery = $request->post('delivery');
-        dd($delivery);
 
         if (!empty($delivery)) {
             $delivery_cityes = $request->post('city');
@@ -667,7 +668,6 @@ class ShopSettingController extends Controller
             $res = Storage::disk('local')->put('js/delivery.json', json_encode($delivery_data));
             if($res) {
                 session()->flash('message', ['delivery save']);
-                return redirect(route('delivery'));
             }
         }
 
@@ -687,10 +687,9 @@ class ShopSettingController extends Controller
             $res = Storage::disk('local')->put('js/israel-city.json', json_encode($cityes));
             if($res) {
                 session()->flash('message', ['city save']);
-                return back();
             }
         }
-
+        return redirect(route('crm_delivery'));
     }
 
     public function appInvoiceSetting(Request $request)
@@ -817,7 +816,8 @@ class ShopSettingController extends Controller
             }
             foreach ($post['translite'] as $kstr => $vstr) {
                 if (!empty($vstr)) {
-                    $str = "    '$kstr' => '$vstr',";
+                    $vstr = str_replace('"', '\\"', $vstr);
+                    $str = "    \"$kstr\" => \"$vstr\",";
                     Storage::disk('views_lang')->append($file_path, $str);
                 }
             }

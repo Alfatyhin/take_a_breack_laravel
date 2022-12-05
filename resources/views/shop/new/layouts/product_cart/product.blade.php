@@ -111,9 +111,9 @@
                 @if(isset($product->data['attributes']) && (isset($product->data['attributes']['composition'][$lang]) || $product->data['attributes']['calories'] || $category_data['attributes']['keeping']))
 
                     <div class="product-info__tabs-btns">
-                        <button class="product-info__tabs-btn">{{ __('shop.Состав') }}</button>
-                        <button class="product-info__tabs-btn">{{ __('shop.Калорийность') }}</button>
-                        <button class="product-info__tabs-btn">{{ __('shop.Хранение') }}</button>
+                        <span class="product-info__tabs-btn">{{ __('shop.Состав') }}</span>
+                        <span class="product-info__tabs-btn">{{ __('shop.Калорийность') }}</span>
+                        <span class="product-info__tabs-btn">{{ __('shop.Хранение') }}</span>
                     </div>
                     <div class="product-info__tab-text">
                         @isset($product->data['attributes']['composition'][$lang])

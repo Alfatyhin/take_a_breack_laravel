@@ -1,5 +1,5 @@
 <li>
-    <a href="#">
+   <a href="{{ route('about', ['lang' => $lang]) }}">
         {{ __('shop-header.О нас') }}
     </a>
 </li>
@@ -14,7 +14,7 @@
     </a>
 </li>
 <li>
-    <a href="#">
+    <a href="{{ route('contacts', ['lang' => $lang]) }}">
         {{ __('shop-header.Контакты') }}
     </a>
 </li>

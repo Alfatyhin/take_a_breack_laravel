@@ -121,8 +121,9 @@
             <p>
                 {{ __('shop-delivery.Если вашего города нет в списке') }}
             </p>
-            <button class="black-btn">
-                {{ __('shop-delivery.написать в') }}  whatsapp <img src="assets/images/icons/checkout-svg.svg" alt=""></button>
+            <a  class="black-btn" href="https://wa.me/9720559475812">
+                {{ __('shop-delivery.написать в') }}  whatsapp <img src="/assets/images/icons/checkout-svg.svg" alt="">
+            </a>
         </div>
     </div>
 

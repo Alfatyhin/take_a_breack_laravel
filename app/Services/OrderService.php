@@ -691,9 +691,10 @@ class OrderService
             $id = $item['id'];
             $product = Product::where('id', $id)->first();
             $translate = json_decode($product->translate, true);
+            $item_total = false;
 
             $item['product_price'] = $product->price;
-            if ($item['variant'] >= 0) {
+            if ($item['variant'] !== false ) {
                 $var_key = $item['variant'];
                 if (!empty($product->variables)) {
                     $variables = json_decode($product->variables, true);
@@ -707,15 +708,17 @@ class OrderService
                     $item['variant_price'] = $variant['defaultDisplayedPrice'];
                     $item['price'] = $variant['defaultDisplayedPrice'];
                     $item['sku'] = $variant['sku'];
+                } else {
+                    dd($product->variables, $item);
                 }
 
             } else {
-                dd('test 1', $item);
-                $item_total = $product->price * $item['count'];
+
                 $item['price'] = $product->price;
                 $item['sku'] = $product->sku;
             }
             $item['name'] = $translate['nameTranslated'];
+
 
             if (isset($item['options'])) {
                 $options = json_decode($product->options, true);
@@ -737,7 +740,7 @@ class OrderService
                     if ($choice['priceModifier'] != 0) {
                         if ($choice['priceModifierType'] == 'ABSOLUTE') {
                             if (!isset($item['price'])) {
-                                dd($item);
+                                dd('not price', $item);
                             }
                             $price_item =  $item['price'] + $choice['priceModifier'] / 1;
                         } else {
@@ -769,12 +772,22 @@ class OrderService
                     }
                 }
             }
-
-            if (!isset($item_total)) {
-                dd($item, $product, $options);
+            if (empty($item['options']) && empty($item['variant'])) {
+                $item_total = $product->price * $item['count'];
             }
 
+            if ($item['count'] > 1) {
+//                dd($item, $item_total);
+            }
+
+            if (!$item_total) {
+                dd('not isset item total', $item, $product, $options);
+            }
+//            print_r("<p>$products_total + $item_total ");
             $products_total += $item_total;
+//            print_r(" = $products_total </p>");
+//            print_r("<hr>");
+
         }
         $data['products'] = $products;
         $order_total = $products_total;
@@ -803,23 +816,22 @@ class OrderService
             }
         }
 
-        // проверяем чаевые
-        if (!empty($order['premium'])) {
-            $tips = $order_total  / 100 * $order['premium'];
-            $tips = round($tips, 1);
-            $data['tips'] = $tips;
-            $order_total += $tips;
-        }
-
         // delivery
         if (isset($order['delivery'])) {
             if ($order['delivery'] != 'pickup') {
                 $data['delivery_price'] = (int) $order['order_data']['delivery_price'];
                 $order_total += (int) $order['order_data']['delivery_price'];
             } else {
-                $data['delivery_discount'] = round($order_total / 100 * $order['order_data']['delivery_discount'], 1);
-                $order_total -= $data['delivery_discount'];
+
             }
+        }
+
+        // проверяем чаевые
+        if (!empty($order['premium'])) {
+            $tips = $order_total  / 100 * $order['premium'];
+            $tips = round($tips, 1);
+            $data['tips'] = $tips;
+            $order_total += $tips;
         }
 
 

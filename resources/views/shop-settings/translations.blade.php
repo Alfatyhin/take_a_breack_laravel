@@ -62,29 +62,10 @@
                                     <p>
                                         {{ $file_path }}
                                     </p>
+                                    <p>
+                                        <input type="submit" value="сохранить">
+                                    </p>
                                     <table>
-                                        <tr>
-                                            <td>
-                                                ключ строки <br>
-                                                <small>(*может быть коротким)</small>
-                                            </td>
-                                            <td>
-                                                значение перевода
-                                            </td>
-                                        </tr>
-                                        @foreach($files[$klang]['contents'][$file_path] as $kstr => $str)
-                                            @if(!empty($kstr))
-                                                <tr>
-                                                    <td>
-                                                        <div class="pre">{{ $kstr }}</div>
-                                                    </td>
-                                                    <td>
-                                                        <textarea name="translite[{{ $kstr }}]">{{ $str }}</textarea>
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        @endforeach
-
                                         @if(Auth::user()->user_role == 'admin' )
                                             <tr>
                                                 <th colspan="2">
@@ -101,6 +82,29 @@
                                                 </td>
                                             </tr>
                                         @endif
+                                        <tr>
+                                            <th>
+                                                ключ строки <br>
+                                                <small>(*может быть коротким)</small>
+                                            </th>
+                                            <th>
+                                                значение перевода
+                                            </th>
+                                        </tr>
+                                        @foreach($files[$klang]['contents'][$file_path] as $kstr => $str)
+                                            @if(!empty($kstr))
+                                                <tr>
+                                                    <td>
+                                                        <div class="pre">{{ $kstr }}</div>
+                                                    </td>
+                                                    <td>
+                                                        <textarea name="translite[{{ $kstr }}]">{{ $str }}</textarea>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+
+
                                     </table>
                                     <p>
                                         <input type="submit" value="сохранить">

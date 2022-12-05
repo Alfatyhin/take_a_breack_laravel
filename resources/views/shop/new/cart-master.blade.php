@@ -40,9 +40,20 @@
 
 
 @section('scripts')
+    <script>
+        if(typeof ga !== 'undefined') {
+            ga(function(tracker) {
+                var clientId = tracker.get('clientId');
+                $("input[name='gClientId']").val(clientId);
+            });
+        } else {
+            console.log('no function');
+        }
+    </script>
     <script src="{{ asset('/assets/libs/mask-lib.js') }}?{{ $v }}" defer></script>
-    <script src="{{ asset('js/calendar.js') }}?{{ $v }}" defer></script>
-
+    @if ($step == 2)
+        <script src="{{ asset('js/calendar.js') }}?{{ $v }}" defer></script>
+    @endif
 @stop
 
 

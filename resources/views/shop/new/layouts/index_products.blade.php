@@ -37,7 +37,11 @@
                             </p>
                         </div>
                         <div class="card-price">
-                            {{--                    <span>400 ₪</span>--}}
+                            <span>
+                                @if(!empty($product->compareToPrice))
+                                    {{ $product->compareToPrice }} ₪
+                                @endif
+                            </span>
                             <p>
                                 @if(!empty($product->variables))
                                     {{ __('shop.от') }}

@@ -21,12 +21,11 @@
             </div>
             <div class="header__title">
                 @if ($lang == 'en')
-
-                    <a href="{{ route("index") }}">
-                        @else
-
-                            <a href="{{ route("index", ['lang' => $lang]) }}">
-                                @endif
+                    @php($url = route("index") )
+                @else
+                    @php($url = route("index", ['lang' => $lang]) )
+                @endif
+                <a href="{{ $url }}">
                     <img src="/assets/images/logo.png" alt="">
                 </a>
             </div>

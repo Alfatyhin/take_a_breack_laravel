@@ -5,24 +5,17 @@
             <div >02 <span>{{ __('shop-cart.ДОСТАВКА') }}</span></div>
             <div >03 <span>{{ __('shop-cart.ОПЛАТА') }}</span></div>
         </div>
-        @if($order_number)
-            <h3>Order #{{ $order_number }}</h3>
-        @endif
-        @if ($errors->any())
-            <div class="alert alert-danger" style="color: brown;">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+
+        <h3>Order #{{ $order_number }}</h3>
+
+        @include("shop.new.layouts.cart.errors")
+
         <div class="pay__form">
             <form class="form-cart{{ $step }}" action="{{ route("cart", ['lang' => $lang, 'step' => 2]) }}" method="POST">
                 @csrf
                 <input hidden name="lang" value="{{ $lang }}">
                 <input hidden name="gClientId" value="">
-                <input hidden name="order_id" value="{{ $order_number }}">
+                <input hidden name="order_id" value="">
                 <label class="phone-mask" for="" class="@error('phone') error @enderror">
                     <input hidden class="phone" name="phone" value="">
                     <p>
@@ -58,13 +51,24 @@
                 </label>
 
                 <span>{{ __('shop-cart.Согласен с') }} <a href="#">{{ __('shop-cart.политикой конфиденциальности') }}</a></span>
+
+                <div>
+
+                    <input class="order_data" type="hidden" name="order_data">
+                    @error('order_data')
+                    <p class="errors">error get products data</p>
+                    @enderror
+                </div>
                 <div class="pay__acttion">
-                    <button>{{ __('shop-cart.Вернуться к товарам') }}</button>
+                    <button>
+                        <a href="{{ url()->previous() }}">
+                        </a>
+                        {{ __('shop-cart.Вернуться к товарам') }}
+                    </button>
                     <button class="main-btn go-pay" type="submit">
                         {{ __('shop-cart.продолжить оформление') }}
                     </button>
                 </div>
-                <input class="order_data" type="hidden" name="order_data">
             </form>
         </div>
     </div>

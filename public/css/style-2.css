@@ -5,3 +5,316 @@
     width: 100% !important;
     column-count: 2;
 }
+.card__item .card-price > p {
+    white-space: nowrap;
+}
+button {
+    position: relative;
+}
+button a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.main-btn {
+    display: block;
+    width: 100%;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    padding: 25px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: "Roboto", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1;
+}
+
+/*contacts*/
+
+.contacts {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    padding: 40px 0;
+}
+
+.feedback__text {
+    width: 50%;
+    max-width: 550px;
+    font-family: "Roboto", sans-serif;
+    margin-right: 35px;
+}
+
+.feedback__text > p {
+    font-weight: 400;
+    margin: 0;
+    font-size: 16px;
+    color: #979797;
+    margin-bottom: 30px;
+}
+
+.feedback__text .items .item {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    margin-bottom: 35px;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.feedback__text .items .item:last-child {
+    margin-bottom: 0;
+}
+
+.feedback__text .items .item p, .feedback__text .items .item a {
+    margin: 0;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.4;
+    color: #391400;
+}
+
+.feedback__text .items .item .icon {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 100%;
+    max-width: 240px;
+}
+
+.feedback__text .items .item .icon span {
+    display: block;
+    font-weight: 600;
+    font-size: 16px;
+    color: #121212;
+}
+
+.feedback__text .items .item .icon .img {
+    margin-right: 30px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #CCABD1;
+}
+
+.feedback__text .items .item .icon .img img {
+    width: 24px;
+    height: 24px;
+    -o-object-fit: contain;
+    object-fit: contain;
+    display: inline-block;
+}
+
+.feedback__form {
+    width: 60%;
+    max-width: 675px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 50px 40px;
+    background: #F6F4EC;
+}
+
+.feedback__form form {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.feedback__form form label {
+    margin-bottom: 20px;
+}
+
+.feedback__form form label span {
+    display: block;
+    font-weight: 400;
+    font-size: 16px;
+    color: #121212;
+    line-height: 1.2;
+    margin-bottom: 10px;
+}
+
+.feedback__form form label input {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.1;
+    padding: 20px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: transparent;
+    border: 1px solid #000;
+}
+
+.feedback__form form label textarea {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.1;
+    padding: 20px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: transparent;
+    border: 1px solid #000;
+    resize: none;
+    min-height: 100px;
+}
+.pay__form {
+    min-height: 72vh;
+}
+.pay__form > form.form-cart3 > div > label > input {
+    width: min-content;
+    margin-right: 10px;
+}
+.pay__form > form .pay-tips {
+    display: block !important;
+}
+.pay__form > form .pay-tips > label {
+    display: inline-block !important;
+}
+.pay-cart.step_3 {
+    display: none;
+}
+.form-cart3 p {
+    width: 100%;
+}
+.form-cart3 textarea {
+    width: 100%;
+    height: 100px;
+    border: 2px solid;
+    padding: 5px;
+}
+p.errors {
+    color: red;
+    margin: 0 5px;
+    text-align: left;
+    width: 100%;
+    background: #ffd1d1;
+    padding: 2px;
+}
+
+@media (max-width: 1200px) {
+    .contacts {
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+    }
+    .feedback__text {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 50px;
+    }
+    .feedback__form {
+        width: 100%;
+        max-width: none;
+    }
+    .pay-cart__box.active {
+        max-height: -webkit-max-content;
+        max-height: -moz-max-content;
+        max-height: max-content;
+    }
+}
+
+@media (max-width: 768px) {
+    .feedback__text .items .item .icon {
+        width: 80px;
+        margin-right: 45px;
+    }
+    .feedback__text .items .item .icon span {
+        font-size: 16px;
+    }
+    .feedback__text .items .item .icon .img {
+        display: none;
+    }
+    .feedback__text .items .item p {
+        font-size: 20px;
+    }
+    .feedback__form {
+        padding: 40px 20px;
+    }
+}
+
+.title-custom {
+    position: relative;
+}
+
+.title-custom h1 {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-size: 34px;
+    display: block;
+    margin: 0;
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+}
+
+.title-custom h1 span {
+    display: block;
+    font-size: 60px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.title-custom::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 60%;
+    height: 4px;
+    background-color: #CCABD1;
+    border-radius: 2px;
+}
+
+@media (max-width: 1024px) {
+    .title-custom {
+        position: relative;
+    }
+    .title-custom::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 70%;
+        height: 2px;
+        background-color: #CCABD1;
+    }
+    .title-custom h1 {
+        font-size: 34px;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+        border-bottom: none;
+    }
+    .title-custom h1 span {
+        font-size: 48px;
+    }
+}

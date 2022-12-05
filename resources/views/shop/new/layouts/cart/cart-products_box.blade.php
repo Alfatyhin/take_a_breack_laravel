@@ -1,11 +1,12 @@
 
-<div class="pay-cart">
+<div class="pay-cart step_{{ $step }}">
     <div class="pay-cart__box">
 
         <div class="pay-cart__title">
-                                <span>
-                                    {{ __('shop-cart.Ваш заказ') }}
-                                </span>
+            <span>
+                {{ __('shop-cart.Ваш заказ') }}
+            </span>
+            <span class="order_number_data" style="display: none;">#<span class="order_number">{{ $order_number }}</span></span>
         </div>
         <div class="pay-cart__items">
         </div>
@@ -41,9 +42,9 @@
         </div>
     </div>
     <div class="pay-cart__total-sum">
-                            <span>
-                                {{ __('shop-cart.сумма к оплате') }}
-                            </span>
+        <span>
+            {{ __('shop-cart.сумма к оплате') }}
+        </span>
         <span><span id="summ-for-payment"></span> ₪</span>
     </div>
 </div>

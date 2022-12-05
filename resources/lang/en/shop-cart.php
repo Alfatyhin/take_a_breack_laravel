@@ -34,7 +34,7 @@ return [
     'Выберите дату доставки' => 'Select delivery date',
     'Выберите дату самовывоза' => 'Select pickup date',
     'Выбрать время доставки' => 'Choose the delivery time (+30% to the shipping cost)',
-    'Выбрать время самовывоза' => 'Pick-up time from 11:00 to 20:00',
+    'Выбрать время самовывоза' => 'Please select an approximate pickup time',
     'Заказ для другого человека' => 'Order for another person',
     'Город' => 'City',
     'Улица' => 'Street',

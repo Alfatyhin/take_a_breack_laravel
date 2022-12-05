@@ -132,7 +132,8 @@ $(function(){
             $('input.date').val(date_delivery);
             $('.calendar_table').addClass('hidden');
 
-            var times = shop_setting['delivery_date_time']['time_day'][week_day];
+
+            var times = shop_setting[delivery_mode + '_date_time']['time_day'][week_day];
             $('ul.delivery_time li').each(function () {
 
                 if ($(this).hasClass('default')) {
