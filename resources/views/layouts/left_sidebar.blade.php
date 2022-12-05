@@ -25,7 +25,7 @@
             <a href="{{ route('coupons_discount') }}" >Купоны на скидку</a>
         </li>
         <li class="delivery" data_name="delivery">
-            <a href="{{ route('delivery') }}" >Доставка</a>
+            <a href="{{ route('crm_delivery') }}" >Доставка</a>
         </li>
         <li class="invoice_setting" data_name="invoice_setting">
             <a href="{{ route('invoice_setting') }}" >чеки</a>
@@ -36,5 +36,15 @@
         <li class="users" data_name="users">
             <a href="{{ route('users') }}" >персонал</a>
         </li>
+        <li class="products_options" data_name="products_options">
+            <a href="{{ route('shop_settings_products_options') }}" >Product Options</a>
+        </li>
+
     @endif
+
+        @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'content manager' )
+            <li class="translations" data_name="translations">
+                <a href="{{ route('translations') }}" >Переводы</a>
+            </li>
+        @endif
 </ul>

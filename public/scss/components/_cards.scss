@@ -1,0 +1,190 @@
+.card {
+
+    // .card__items
+
+    &__items {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    // .card__item
+
+    &__item {
+        box-sizing: border-box;
+        width: calc(33.33% - 40px);
+        position: relative;
+        margin: 0 20px 20px;
+        text-decoration: none;
+        color: $black;
+        font-family: $rob;
+        transition: .45s ease;
+        padding-top: 5px;
+        .card-label {
+            box-sizing: border-box;
+            padding: 15px;
+            position: absolute;
+            z-index: 15;
+            color: #fff;
+            display: flex;
+            width: 100%;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: $rob;
+            >img {
+                object-fit: cover;
+                width: 30px;
+                height: 30px;
+                margin-right: 5px;
+                display: inline-block;
+                &:last-of-type {
+                    margin-right: 10px;
+                }
+            }
+            >div {
+                text-align: left;
+            }
+        }
+        @media(min-width:768px){
+            &:hover {
+                .card-img {
+                    opacity: .8;
+                }
+            }
+        }
+        .card-img {
+            position: relative;
+            max-width: 320px;
+            text-align: center;
+            margin: 0 auto;
+            transition: .35s ease;
+            >img{
+                max-width: 100%;
+                object-fit: cover;
+            }
+        }
+        .card-name {
+            max-width: 165px;
+            margin-right: 20px;
+            >p{
+                font-weight: 300;
+                font-size: 18px;
+                margin: 0;
+            }
+        }
+        .card-price {
+            font-weight: 400;
+            text-align: right;
+            >span{
+                display: block;
+                color: $gray;
+                text-decoration:  line-through;
+                margin-bottom: 5px;
+                font-size: 17px;
+            }
+            >p{
+                display: block;
+                margin: 0;
+                font-size: 20px;
+                font-weight: 500;
+            }
+        }
+        
+    }
+
+    // .card__text
+
+    &__text {
+        padding: 20px 5px 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        max-width: 320px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 1260px) {
+    .card {
+        &__items {
+
+        }
+        &__item {
+            margin: 0 10px 20px;
+            width: calc(50% - 20px);
+        }
+    }
+}
+
+
+@media (max-width: 920px){
+    .card {
+        &__text {
+            flex-wrap: wrap;
+            
+            .card-price {
+                margin-top: 10px;
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+            }
+            >.card-name {
+                width: 100%;
+                margin-right: 0;
+                max-width: none;
+                >p {
+                    max-width: none;
+                    width: 100%;
+                }
+            }
+        }
+        &__item {
+           
+        }
+    }
+}
+
+@media (max-width:500px) {
+    .card {
+        &__item {
+            width: 100%;
+            margin: 0 5px 20px;
+        }
+    }
+}
+
+.card__items {
+    position: relative;
+    padding-bottom: 50px;
+}
+.card__pagination {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    display: flex;
+    >a {
+        border-radius: 50%;
+        >svg {
+            fill: #fff;
+            stroke: #fff;
+        }
+        width: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 24px;
+        background-color: #000;
+        margin: 0 10px;
+        transition: .45s ease;
+        
+        &.next {
+            background-color: #fff;
+            >svg {
+                transform: rotate(180deg);
+                fill: #000;
+                stroke: #000;
+            }
+        }
+    }
+}
+

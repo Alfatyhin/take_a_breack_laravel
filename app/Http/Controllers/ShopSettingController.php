@@ -9,6 +9,7 @@ use App\Models\Clients;
 use App\Models\Coupons;
 use App\Models\Orders as OrdersModel;
 use App\Models\Product;
+use App\Models\ProductOptions;
 use App\Models\UtmModel;
 use App\Services\AmoCrmServise;
 use App\Services\AppServise;
@@ -194,12 +195,14 @@ class ShopSettingController extends Controller
         $categories = Categories::all()->sortBy('index_num')->keyBy('id');
         $products = Product::all()->sortBy('index_num')->keyBy('id');
 
-        $empty_categories = [];
-        foreach ($products as $product) {
-            if ($product->category_id < 1 && empty($product->categories)) {
-                $empty_categories[] = $product->id;
-            }
+        $product_options = ProductOptions::all()->keyBy('id')->toArray();
+
+        foreach ($product_options as &$item) {
+            $item['options'] = json_decode($item['options'], true);
         }
+
+
+        $empty_categories = [];
 
 
 
@@ -616,6 +619,7 @@ class ShopSettingController extends Controller
 
     public function delivery(Request $request)
     {
+        $week_days = ['Вс','ПН','Вт','Ср','Чт','Пт','Сб',];
 
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
 
@@ -637,6 +641,7 @@ class ShopSettingController extends Controller
             'cityes'     => $cityes,
             'delivery'   => $delivery,
             'shop_setting' => $shop_setting,
+            'week_days' => $week_days,
         ]);
     }
 
@@ -644,15 +649,17 @@ class ShopSettingController extends Controller
     {
 
         $shop_setting = $request->get('shop');
+
+
         if (!empty($shop_setting)) {
             $res = Storage::disk('local')->put('js/shop_setting.json', json_encode($shop_setting));
             if($res) {
                 session()->flash('message', ['shop setting date-time delivery save']);
-                return redirect(route('delivery'));
             }
         }
 
         $delivery = $request->post('delivery');
+
         if (!empty($delivery)) {
             $delivery_cityes = $request->post('city');
             foreach ($delivery as $k => $value) {
@@ -680,7 +687,6 @@ class ShopSettingController extends Controller
             $res = Storage::disk('local')->put('js/delivery.json', json_encode($delivery_data));
             if($res) {
                 session()->flash('message', ['delivery save']);
-                return redirect(route('delivery'));
             }
         }
 
@@ -700,10 +706,9 @@ class ShopSettingController extends Controller
             $res = Storage::disk('local')->put('js/israel-city.json', json_encode($cityes));
             if($res) {
                 session()->flash('message', ['city save']);
-                return back();
             }
         }
-
+        return redirect(route('crm_delivery'));
     }
 
     public function appInvoiceSetting(Request $request)
@@ -771,6 +776,103 @@ class ShopSettingController extends Controller
         $OrderService->changeProductsCountTest($order);
 
     }
+
+    public function scriptsModules(Request $request)
+    {
+        $files = Storage::disk('views_shop')->files('layouts/seo');
+
+        foreach ($files as $file_path) {
+            $file_name = last(explode('/', $file_path));
+            $files_data[] = [
+                'file_path' => $file_path,
+                'file_name' => $file_name,
+                'file_text' => Storage::disk('views_shop')->get($file_path)
+            ];
+        }
+        dd($files_data);
+    }
+
+    public function productOptions (Request $request)
+    {
+        $products_options = ProductOptions::all()->keyBy('id');
+        $shop_langs = AppServise::getLangs();
+
+        $options_select = ['SELECT' => 'список', 'SIZE' => 'размер', 'RADIO' => 'выбор', 'CHECKBOX' => 'флажки', 'TEXT' => 'текстовое поле'];
+
+
+//        dd($products_options);
+
+
+        return view('shop-settings.products_options', [
+            'message' => $request->message,
+            'products_options' => $products_options,
+            'options_select' => $options_select,
+            'shop_langs' => $shop_langs
+        ]);
+    }
+
+    public function translations(Request $request)
+    {
+
+        $products_options = ProductOptions::all()->keyBy('id');
+        $shop_langs = AppServise::getLangs();
+
+        $post = $request->post();
+
+        if ($post) {
+            $file_path = $post['file_path'];
+            $str = "<?php"."\n"."\n"."return [";
+            Storage::disk('views_lang')->put($file_path, $str);
+
+            if (!empty($post['translite_add']['key']) && !empty($post['translite_add']['value'])) {
+                $key = $post['translite_add']['key'];
+                $value = $post['translite_add']['value'];
+                if (!isset($post['translite'][$key])) {
+                    $post['translite'][$key] = $value;
+                } else {
+                    dd("item key [$key] isset");
+                }
+            }
+            foreach ($post['translite'] as $kstr => $vstr) {
+                if (!empty($vstr)) {
+                    $vstr = str_replace('"', '\\"', $vstr);
+                    $str = "    \"$kstr\" => \"$vstr\",";
+                    Storage::disk('views_lang')->append($file_path, $str);
+                }
+            }
+            $str =  "\n".'];';
+            Storage::disk('views_lang')->append($file_path, $str);
+
+            session()->flash('message', ["file $file_path save"]);
+
+            return back();
+        }
+
+        foreach ($shop_langs as $key => $item) {
+            $lang = $key;
+            $files_lang = Storage::disk('views_lang')->files("$lang");
+            $files_test[$lang] = Storage::disk('views_lang')->files("$lang");
+            foreach ($files_lang as $file_name) {
+                if (preg_match('/shop/', $file_name)) {
+
+                    $files[$lang]['names'][] = $file_name;
+                    $files[$lang]['contents'][$file_name] = include_once("../resources/lang/$file_name");
+
+                }
+            }
+        }
+
+//        dd($files);
+
+
+        return view('shop-settings.translations', [
+            'message' => $request->message,
+            'products_options' => $products_options,
+            'files' => $files,
+            'shop_langs' => $shop_langs
+        ]);
+    }
+
 
 
 }

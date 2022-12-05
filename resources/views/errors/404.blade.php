@@ -18,14 +18,14 @@
                     </div>
                     <div class="page404__text">
                         <p>Вы легко можете найти всю необходимую информацию на сайте</p>
-                    </div><a class="page404__btn" href="{{ route("index_$lang") }}">на главную страницу</a>
+                    </div><a class="page404__btn" href="{{ route("index", ['lang' => 'ru']) }}">на главную страницу</a>
                 @else
                     <div class="page404__subtitle">
                         <p>This page was not found, it may have been moved or deleted</p>
                     </div>
                     <div class="page404__text">
                         <p>You can easily find all the information you need on the website</p>
-                    </div><a class="page404__btn" href="{{ route("index_$lang") }}">back to main page</a>
+                    </div><a class="page404__btn" href="{{ route("index") }}">back to main page</a>
                 @endif
             </div>
         </div>

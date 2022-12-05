@@ -13,6 +13,7 @@ use App\Models\Coupons;
 use App\Models\Orders;
 use App\Models\Orders as OrdersModel;
 use App\Models\Product;
+use App\Models\ProductOptions;
 use App\Models\UtmModel;
 use App\Models\WebhookLog;
 use App\Services\EcwidService;
@@ -20,6 +21,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use phpDocumentor\Reflection\Types\Self_;
 
 class OrderService
@@ -677,29 +679,46 @@ class OrderService
 
         $products = $order['order_data']['products'];
 
+        $product_options = ProductOptions::all()->keyBy('id')->toArray();
+        foreach ($product_options as $k => $item) {
+            $product_options[$k]['options'] = json_decode($item['options'], true);
+            $product_options[$k]['nameTranslate'] = json_decode($item['nameTranslate'], true);
+        }
+
+//        dd($products);
         $products_total = 0;
         foreach ($products as &$item) {
             $id = $item['id'];
             $product = Product::where('id', $id)->first();
             $translate = json_decode($product->translate, true);
+            $item_total = false;
 
-            if (isset($item['variant'])) {
+            $item['product_price'] = $product->price;
+            if ($item['variant'] !== false ) {
                 $var_key = $item['variant'];
-                $variables = json_decode($product->variables, true);
-                $variant = $variables[$var_key];
-                $price = $variant['defaultDisplayedPrice'];
+                if (!empty($product->variables)) {
+                    $variables = json_decode($product->variables, true);
 
-                $item_total = $price * $item['count'];
+                    if (!isset($variables[$var_key])) {
+                        dd($item, $variables, $product->toArray());
+                    }
+                    $variant = $variables[$var_key];
+//                    print_r('variant - '.$var_key);
 
-                $item['price'] = $variant['defaultDisplayedPrice'];
-                $item['sku'] = $variant['sku'];
+                    $item['variant_price'] = $variant['defaultDisplayedPrice'];
+                    $item['price'] = $variant['defaultDisplayedPrice'];
+                    $item['sku'] = $variant['sku'];
+                } else {
+                    dd($product->variables, $item);
+                }
 
             } else {
-                $item_total = $product->price * $item['count'];
+
                 $item['price'] = $product->price;
                 $item['sku'] = $product->sku;
             }
             $item['name'] = $translate['nameTranslated'];
+
 
             if (isset($item['options'])) {
                 $options = json_decode($product->options, true);
@@ -709,22 +728,66 @@ class OrderService
                     $option_choice_key = $item_option['value'];
                     $option = $options[$option_key];
                     $choice = $option['choices'][$option_choice_key];
+
+                    if (isset($choice['variant_number'])) {
+                        $choice_variant_key = $choice['variant_number'];
+                        $variant = $variables[$choice_variant_key];
+                        $price = $variant['defaultDisplayedPrice'];
+                    } else {
+//                        dd('test', $item_option);
+                        $price = $product->price;
+                    }
                     if ($choice['priceModifier'] != 0) {
                         if ($choice['priceModifierType'] == 'ABSOLUTE') {
-                            $price =  $product->price + $choice['priceModifier'] / 1;
+                            if (!isset($item['price'])) {
+                                dd('not price', $item);
+                            }
+                            $price_item =  $item['price'] + $choice['priceModifier'] / 1;
                         } else {
-                            $price =  $product->price + ($product->price / 100 * $choice['priceModifier']);
+                            $price_item =  $item['price'] + ($price / 100 * $choice['priceModifier']);
                         }
-                        $item['price'] = $price;
-                        $item_total = $price * $item['count'];
+
+                        $item_total = $price_item * $item['count'];
                         $item['total'] = $item_total;
+                    } else {
+                        $item_total = $item['price'] * $item['count'];
                     }
-                    $item_option['name'] = $option['nameTranslated'];
-                    $item_option['value'] = $option['choices'][$option_choice_key];
+                    $options_id = $option['options_id'];
+                    $option_value = $choice['var_option_id'];
+                    $item_option['name'] = $product_options[$options_id]['nameTranslate'];
+                    if ($product_options[$options_id]['type'] == 'TEXT') {
+
+                        $item_option['value'] = [
+                            'text' => $product_options[$options_id]['name'],
+                            'textTranslated' => $product_options[$options_id]['nameTranslate']
+                        ];
+
+                    } else {
+                        $item_option['value'] = $product_options[$options_id]['options'][$option_value];
+                    }
+                    $item_option['value']['priceModifier'] = $choice['priceModifier'];
+                    $item_option['value']['priceModifierType'] = $choice['priceModifierType'];
+                    if (isset($item_option['text'])) {
+                        $item_option['text'] = Str::remove(["\n", "   "], $item_option['text']);
+                    }
                 }
             }
+            if (empty($item['options']) && empty($item['variant'])) {
+                $item_total = $product->price * $item['count'];
+            }
 
+            if ($item['count'] > 1) {
+//                dd($item, $item_total);
+            }
+
+            if (!$item_total) {
+                dd('not isset item total', $item, $product, $options);
+            }
+//            print_r("<p>$products_total + $item_total ");
             $products_total += $item_total;
+//            print_r(" = $products_total </p>");
+//            print_r("<hr>");
+
         }
         $data['products'] = $products;
         $order_total = $products_total;
@@ -753,6 +816,16 @@ class OrderService
             }
         }
 
+        // delivery
+        if (isset($order['delivery'])) {
+            if ($order['delivery'] != 'pickup') {
+                $data['delivery_price'] = (int) $order['order_data']['delivery_price'];
+                $order_total += (int) $order['order_data']['delivery_price'];
+            } else {
+
+            }
+        }
+
         // проверяем чаевые
         if (!empty($order['premium'])) {
             $tips = $order_total  / 100 * $order['premium'];
@@ -761,17 +834,8 @@ class OrderService
             $order_total += $tips;
         }
 
-        // delivery
-        if ($order['delivery'] != 'pickup') {
-            $data['delivery_price'] = (int) $order['order_data']['delivery_price'];
-            $order_total += (int) $order['order_data']['delivery_price'];
-        } else {
-            $data['delivery_discount'] = round($order_total / 100 * $order['order_data']['delivery_discount'], 1);
-            $order_total -= $data['delivery_discount'];
-        }
 
-
-        $data['items'] = $products;
+//        $data['items'] = $products;
         $data['products_total'] = round($products_total, 1);
         $data['order_total'] = round($order_total, 1);
         $order['order_data'] = $data;
@@ -1061,6 +1125,8 @@ class OrderService
 
         $phone = str_replace(' ', '', $phone);
         $phone = str_replace('-', '', $phone);
+        $phone = str_replace('(', '', $phone);
+        $phone = str_replace(')', '', $phone);
 
         if (preg_match('/972/', $phone)) {
             $phone = str_replace('9720', '972', $phone);

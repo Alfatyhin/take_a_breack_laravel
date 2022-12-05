@@ -63,7 +63,7 @@
                             $.ajax(settings).done(function (response) {
                                 var data = JSON.parse(response);
                                 console.log(data);
-                                window.location = '{{ route('order_thanks_'.$lang) }}';
+                                window.location = '{{ route('order_thanks', ['lang' => $lang]) }}';
 
                             });
 

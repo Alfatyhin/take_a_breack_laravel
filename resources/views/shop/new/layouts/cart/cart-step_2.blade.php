@@ -1,0 +1,177 @@
+
+    <div class="pay step_{{ $step }}" id="cart">
+        <div class="pay__header">
+            <div class="active">01 <span>{{ __('shop-cart.КОНТАКТНАЯ ИНФОРМАЦИЯ') }}</span></div>
+            <div class="active">02 <span>{{ __('shop-cart.ДОСТАВКА') }}</span></div>
+            <div >03 <span>{{ __('shop-cart.ОПЛАТА') }}</span></div>
+        </div>
+
+        <h3>Order #{{ $order_number }}</h3>
+
+        <label class="delivery">
+            <input type="radio" name="delivery" value="delivery" checked form="form">
+            <span>{{ __('shop-cart.Доставка по Израилю') }}</span>
+        </label>
+        <label class="pickup">
+            <input type="radio" name="delivery" value="pickup"  form="form">
+            <span>{{ __('shop-cart.Самовывоз по адресу') }}</span>
+        </label>
+
+        <div class="pay__form">
+            <form id="form" class="form-cart{{ $step }}" action="{{ route("cart", ['lang' => $lang, 'step' => 3]) }}" method="POST">
+                @csrf
+
+                <input hidden name="lang" value="{{ $lang }}">
+                <input hidden name="gClientId" value="">
+                <input hidden name="order_id" value="{{ $order_number }}">
+                <input hidden name="delivery_method" value="{{ old('delivery_method') }}">
+
+                <div class="delivery">
+                    <div class="calendar-wrapper calendar_box">
+                        <div class="calendar_table hidden"></div>
+                    </div>
+                    <label class="@if($errors->has('date')) errors @endif">
+                        <p>{{ __('shop-cart.Дата доставки') }}  *</p>
+                        <input class="show_calendar date"
+                               required autocomplete="off"
+                               placeholder="{{ __('shop-cart.Выберите дату доставки') }}"
+                               data-text_delivery="{{ __('shop-cart.Выберите дату доставки') }}"
+                               data-text_pickup="{{ __('shop-cart.Выберите дату самовывоза') }}"
+                               type="text" name="date" readonly value="{{ old('date') }}">
+                    </label>
+                    @error('date')
+                        <p class="errors">{{ $message }}</p>
+                    @enderror
+
+
+                    <label class="@if($errors->has('time')) errors @endif">
+                        <p class="delivery">{{ __('shop-cart.Выбрать время доставки') }}</p>
+                        <p class="pickup" style="display: none;">{{ __('shop-cart.Выбрать время самовывоза') }}</p>
+
+                        <input class="delivery_time" type="text" name="time" value="{{ old('time') }}" placeholder="{{ __('shop-cart.Укажите удобное вам время') }}" readonly>
+                        <ul class="delivery_time city-lis">
+                            <li class="default" data-time="">{{ __('shop-cart.любое время') }}</li>
+                        </ul>
+
+
+                    </label>
+
+                    @error('time')
+                        <p class="errors">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <p class="other-man">
+                    <label>
+                        <input type="checkbox" name="otherPerson" value="otherPerson" @if(old('otherPerson')) checked @endif>
+                        {{ __('shop-cart.Заказ для другого человека') }}
+                    </label>
+                </p>
+                <div @if(!old('otherPerson')) style="display: none; @endif ">
+                    <input hidden class="phone" name="phoneOtherPerson">
+                    <label class="phone-mask @if($errors->has('phone')) errors @endif" for="">
+                        <p>
+                            {{ __('shop-cart.Телефон') }} *
+                        </p>
+                    </label>
+
+                    @error('phoneOtherPerson')
+                    <p class="errors">{{ $message }}</p>
+                    @enderror
+
+                    <label class="@if($errors->has('nameOtherPerson')) errors @endif" for="">
+                        <p>
+                            {{ __('shop-cart.Имя') }} *
+                        </p>
+                        <input type="text" name="nameOtherPerson">
+                    </label>
+
+                    @error('nameOtherPerson')
+                    <p class="errors">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="delivery_address">
+
+                    <label class="@if($errors->has('city')) errors @endif @if($errors->has('city_id')) errors @endif" for="">
+                        <input type="hidden" name="city_id">
+                        <p>
+                            {{ __('shop-cart.Город') }} *
+                        </p>
+                        <input class="city_name" type="text" name="city" >
+                    </label>
+
+                    @error('city')
+                        <p class="errors">{{ $message }}</p>
+                    @enderror
+
+                    @error('city_id')
+                        <p class="errors">{{ $message }}</p>
+                    @enderror
+                    <label class="@if($errors->has('street')) errors @endif" for="">
+                        <p>
+                            {{ __('shop-cart.Улица') }} *
+                        </p>
+                        <input type="text" name="street">
+
+                        @error('street')
+                        <p class="errors">{{ $message }}</p>
+                        @enderror
+                    </label>
+                    <div>
+                        <label class="@if($errors->has('house')) errors @endif" for="">
+                            <p>
+                                {{ __('shop-cart.Дом') }} *
+                            </p>
+                            <input type="text" name="house">
+
+                            @error('house')
+                            <p class="errors">{{ $message }}</p>
+                            @enderror
+                        </label>
+                        <label for="">
+                            <p>
+                                {{ __('shop-cart.Квартира') }}
+                            </p>
+                            <input type="text" name="flat">
+                            @error('flat')
+                            <p class="errors">{{ $message }}</p>
+                            @enderror
+                        </label>
+                    </div>
+                    <div>
+                        <label for="">
+                            <p>
+                                {{ __('shop-cart.Этаж') }}
+                            </p>
+                            <input type="text" name="floor">
+                        </label>
+                        <label for="">
+                            <p>
+                                {{ __('shop-cart.Код подьезда') }}
+                            </p>
+                            <input type="text" name="house_code">
+                        </label>
+                    </div>
+                </div>
+                <div>
+
+                    <input class="order_data" type="hidden" name="order_data">
+                    @error('order_data')
+                    <p class="errors">error get products data</p>
+                    @enderror
+                </div>
+
+                <div class="pay__acttion">
+                    <button>
+                        <a href="{{ route('cart', ['lang' => $lang]) }}">
+                        </a>
+                        {{ __('shop.Назад') }}
+                    </button>
+                    <button class="main-btn go-pay" type="submit">
+                        {{ __('shop-cart.продолжить оформление') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>

@@ -1,0 +1,110 @@
+.category-about {
+    display: flex;
+    padding: 90px 0 20px;
+    // .category-about__col
+
+    &__col {
+        width: 50%;
+        font-family: $rob;
+        &:first-child {
+            margin-right: 40px;
+        }
+        >h2 {
+            font-weight: 400;
+            font-size: 48px;
+            line-height: 1.2;
+            color: $black;
+            margin: 0;
+            display: block;
+            margin-bottom: 25px;
+        }
+        p {
+            font-weight: 300;
+            margin: 0;
+            margin-bottom: 25px;
+            font-size: 16px;
+            color: #767679;
+        }
+        h3 {
+            margin: 0;
+            font-weight: 400;
+            font-size: 20px;
+            line-height: 1.2;
+            color: $black;
+            margin-bottom: 20px;
+        }
+    }
+
+    // .category-about__list
+
+    &__list {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -15px;
+        .listitem {
+            margin: 0 15px 15px;
+            width: calc(50% - 30px);
+        }
+    }
+    .btn-more {
+        display: none;
+        >button {
+            max-width: 350px;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0 auto;
+            display: block;
+        }
+    }
+    // .category-about__img
+
+    &__img {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 25px;
+        height: 135px;        
+        background-image: url(assets/images/category-img.jpg);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+}
+
+@media (max-width:768px) {
+    .category-about {
+        .btn-more {
+            display: block;
+        }
+        flex-direction: column;
+        &__col {
+            >h2 {
+                font-size: 36px;
+            }
+            p {
+                font-size: 16px;
+            }
+            h3 {
+                font-size: 18px;
+            }
+            width: 100%;
+            &:first-child {
+                margin-right: 0;
+                margin-bottom: 30px;
+            }
+            &:last-of-type {
+                max-height: 0;
+                opacity: 0;
+                overflow: hidden;
+                transition: .55s ease;
+            }
+        }
+        &__list {
+            margin: 0;
+            .listitem {
+                width: 100%;
+                margin: 0 0 20px;
+            }
+        }
+    }
+}

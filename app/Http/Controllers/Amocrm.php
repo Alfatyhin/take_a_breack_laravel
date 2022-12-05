@@ -30,13 +30,14 @@ class Amocrm extends Controller
         $amoCrmService = new AmoCrmServise();
         $ownerDetails = $amoCrmService->getAccount();
 
-        if ($ownerDetails->getName()) {
+        if ($ownerDetails && $ownerDetails->getName()) {
             $messages[] = $ownerDetails->getName() . ' Integration is Work';
         } else {
             $messages[] = "error token ";
             $amoCrmService = new AmoCrmServise();
             $messages[] = $amoCrmService->getButton();
         }
+//        dd($messages);
 //        $messages[] = $amoCrmService->getButton();
 
         return view('amocrm.index', [

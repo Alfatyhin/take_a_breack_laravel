@@ -1500,6 +1500,7 @@ class AmoCrmServise
         } catch (AmoCRMoAuthApiException $e) {
             echo 'AmoCRMoAuthApiException <hr>';
             $this->printError($e);
+            return false;
         } catch (AmoCRMApiException $e) {
             echo 'AmoCRMApiException <hr>';
             $this->printError($e);

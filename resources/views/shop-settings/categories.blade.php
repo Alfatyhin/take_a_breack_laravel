@@ -17,6 +17,9 @@
         .page_box li a.fa {
             width: auto;
         }
+        .product-info__edge-item.swiper-slide {
+            display: inline-block;
+        }
     </style>
 
 @stop
@@ -26,6 +29,7 @@
 @stop
 
 @section('content')
+
 
     <div class="box_inline box_list box_border">
         <ul class="sortable list categories_list">
@@ -193,10 +197,10 @@
                         <form action="{{ route('category_products_save') }}" method="POST">
                             @csrf
                             <h3>товары в категории</h3>
+                            <input type="hidden" name="id" value="{{ $category->id }}" />
                             @if(!empty($category->products))
                                 @php($prod_ids = json_decode($category->products))
 
-                                <input type="hidden" name="id" value="{{ $category->id }}" />
                                 <ul class="category_products_list sortable">
                                     @foreach($prod_ids as $prod_id)
                                         @isset($products[$prod_id])
@@ -249,7 +253,7 @@
                                 @endisset
                                 <input type="submit" value="сохранить">
                                 <br>
-                                @include("shop.ru.desc_slider")
+                                @include("shop.new.layouts.product_cart.desc_slider")
                             </div>
                             <div class="box_border">
                                 Хранение <br>

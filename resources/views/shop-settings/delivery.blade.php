@@ -304,11 +304,11 @@
                         @csrf
                         <div class="box_inline box_list">
                             <ul class="list options_list">
-                                <li data_name="all">
-                                    <a >общая информация</a>
-                                </li>
                                 <li data_name="days">
-                                    <a data_name="days">настройка по дням недели</a>
+                                    <a data_name="days">время для доставки</a>
+                                </li>
+                                <li data_name="days_pickup">
+                                    <a data_name="days_pickup">время для самовывоза</a>
                                 </li>
                                 <li data_name="date_close">
                                     <a data_name="date_close">даты исключения</a>
@@ -321,196 +321,74 @@
 
                         <div class="box_inline content_list">
 
-                            <div class="content_item all" >
-
-                                ru: <br>
-                                <textarea name="shop[delivery_date_time][note][ru]">{{ $shop_setting['delivery_date_time']['note']['ru'] }}</textarea> <br>
-                                en: <br>
-                                <textarea name="shop[delivery_date_time][note][en]">{{ $shop_setting['delivery_date_time']['note']['en'] }}</textarea> <br>
-                                he: <br>
-                                <textarea name="shop[delivery_date_time][note][he]">{{ $shop_setting['delivery_date_time']['note']['he'] }}</textarea> <br>
-                                <input class="button" type="submit" value="сохранить"><br>
-                            </div>
-
                             <div class="content_item days" >
 
                                 <table>
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="shop[delivery_date_time][weeks_day][0]"
-                                                   @if (isset($shop_setting['delivery_date_time']['weeks_day'][0]))
-                                                   checked
-                                                @endif
-                                            > Вс <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][0][0]"
-                                                   value="11:00-14:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][0][0]))
-                                                   checked
-                                                @endif
-                                            >11:00-14:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][0][1]"
-                                                   value="14:00-17:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][0][1]))
-                                                   checked
-                                                @endif
-                                            >14:00-17:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][0][2]"
-                                                   value="17:00-20:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][0][2]))
-                                                   checked
-                                                @endif
-                                            >17:00-20:00
-                                            <hr> <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][weeks_day][1]"
-                                                   @if (isset($shop_setting['delivery_date_time']['weeks_day'][1]))
-                                                   checked
-                                                @endif
-                                            > Пн <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][1][0]"
-                                                   value="11:00-14:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][1][0]))
-                                                   checked
-                                                @endif
-                                            >11:00-14:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][1][1]"
-                                                   value="14:00-17:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][1][1]))
-                                                   checked
-                                                @endif
-                                            >14:00-17:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][1][2]"
-                                                   value="17:00-20:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][1][2]))
-                                                   checked
-                                                @endif
-                                            >17:00-20:00
-                                            <hr> <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][weeks_day][2]"
-                                                   @if (isset($shop_setting['delivery_date_time']['weeks_day'][2]))
-                                                   checked
-                                                @endif
-                                            > Вт <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][2][0]"
-                                                   value="11:00-14:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][2][0]))
-                                                   checked
-                                                @endif
-                                            >11:00-14:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][2][1]"
-                                                   value="14:00-17:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][2][1]))
-                                                   checked
-                                                @endif
-                                            >14:00-17:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][2][2]"
-                                                   value="17:00-20:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][2][2]))
-                                                   checked
-                                                @endif
-                                            >17:00-20:00
-                                            <hr> <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][weeks_day][3]"
-                                                   @if (isset($shop_setting['delivery_date_time']['weeks_day'][3]))
-                                                   checked
-                                                @endif
-                                            > Ср <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][3][0]"
-                                                   value="11:00-14:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][3][0]))
-                                                   checked
-                                                @endif
-                                            >11:00-14:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][3][1]"
-                                                   value="14:00-17:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][3][1]))
-                                                   checked
-                                                @endif
-                                            >14:00-17:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][3][2]"
-                                                   value="17:00-20:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][3][2]))
-                                                   checked
-                                                @endif
-                                            >17:00-20:00
-                                            <hr> <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][weeks_day][4]"
-                                                   @if (isset($shop_setting['delivery_date_time']['weeks_day'][4]))
-                                                   checked
-                                                @endif
-                                            > Чт <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][4][0]"
-                                                   value="11:00-14:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][4][0]))
-                                                   checked
-                                                @endif
-                                            >11:00-14:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][4][1]"
-                                                   value="14:00-17:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][4][1]))
-                                                   checked
-                                                @endif
-                                            >14:00-17:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][4][2]"
-                                                   value="17:00-20:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][4][2]))
-                                                   checked
-                                                @endif
-                                            >17:00-20:00
-                                            <hr> <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][weeks_day][5]"
-                                                   @if (isset($shop_setting['delivery_date_time']['weeks_day'][5]))
-                                                   checked
-                                                @endif
-                                            > Пт <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][5][0]"
-                                                   value="11:00-14:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][5][0]))
-                                                   checked
-                                                @endif
-                                            >11:00-14:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][5][1]"
-                                                   value="14:00-17:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][5][1]))
-                                                   checked
-                                                @endif
-                                            >14:00-17:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][5][2]"
-                                                   value="17:00-20:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][5][2]))
-                                                   checked
-                                                @endif
-                                            >17:00-20:00
-                                            <hr> <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][weeks_day][6]"
-                                                   @if (isset($shop_setting['delivery_date_time']['weeks_day'][6]))
-                                                   checked
-                                                @endif
-                                            > Сб <br>
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][6][0]"
-                                                   value="11:00-14:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][6][0]))
-                                                   checked
-                                                @endif
-                                            >11:00-14:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][6][1]"
-                                                   value="14:00-17:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][6][1]))
-                                                   checked
-                                                @endif
-                                            >14:00-17:00
-                                            <input type="checkbox" name="shop[delivery_date_time][time_day][6][2]"
-                                                   value="17:00-20:00"
-                                                   @if (isset($shop_setting['delivery_date_time']['time_day'][6][2]))
-                                                   checked
-                                                @endif
-                                            >17:00-20:00
-                                            <hr>
+
+                                            @for($week_day = 0; $week_day <= 6; $week_day++)
+                                                <input type="checkbox" name="shop[delivery_date_time][weeks_day][{{ $week_day }}]"
+                                                       @if (isset($shop_setting['delivery_date_time']['weeks_day'][$week_day]))
+                                                       checked
+                                                        @endif
+                                                > {{ $week_days[$week_day] }} <br>
+
+                                                @php($xstart = 10)
+                                                @php($xstep = 2)
+                                                @for($xt = 0; $xt <= 4; $xt++)
+                                                    @if ($xt == 3 || $xt == 6) <br> @endif
+                                                    <input type="checkbox" name="shop[delivery_date_time][time_day][{{ $week_day }}][{{ $xt }}]"
+                                                           value="{{ $xstart }}:00-{{ $xstart + $xstep }}:00"
+                                                           @if (isset($shop_setting['delivery_date_time']['time_day'][$week_day][$xt]))
+                                                           checked
+                                                            @endif
+                                                    >{{ $xstart }}:00-{{ $xstart + $xstep }}:00
+                                                    @php($xstart += $xstep)
+                                                @endfor
+                                                <hr> <br>
+                                            @endfor
                                         </td>
                                     </tr>
                                 </table>
                                 <br>
                                 <input class="button" type="submit" value="сохранить">
                             </div>
+
+                            <div class="content_item days_pickup" >
+
+                                <table>
+                                    <tr>
+                                        <td>
+                                            @for($week_day = 0; $week_day <= 6; $week_day++)
+                                                <input type="checkbox" name="shop[pickup_date_time][weeks_day][{{ $week_day }}]"
+                                                       @if (isset($shop_setting['pickup_date_time']['weeks_day'][$week_day]))
+                                                       checked
+                                                        @endif
+                                                > {{ $week_days[$week_day] }} <br>
+
+                                                @php($xstart = 10)
+                                                @php($xstep = 2)
+                                                @for($xt = 0; $xt <= 4; $xt++)
+                                                    @if ($xt == 3 || $xt == 6) <br> @endif
+                                                    <input type="checkbox" name="shop[pickup_date_time][time_day][{{ $week_day }}][{{ $xt }}]"
+                                                           value="{{ $xstart }}:00-{{ $xstart + $xstep }}:00"
+                                                           @if (isset($shop_setting['pickup_date_time']['time_day'][$week_day][$xt]))
+                                                           checked
+                                                            @endif
+                                                    >{{ $xstart }}:00-{{ $xstart + $xstep }}:00
+                                                    @php($xstart += $xstep)
+                                                @endfor
+                                                <hr> <br>
+                                            @endfor
+
+                                        </td>
+                                    </tr>
+                                </table>
+                                <br>
+                                <input class="button" type="submit" value="сохранить">
+                            </div>
+
 
                             <div class="content_item date_close">
                                 <div>

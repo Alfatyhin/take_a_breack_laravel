@@ -29,9 +29,8 @@
 </head>
 <body>
 
-@include('shop.layouts.seo.body_top')
 <div class="wrapper">
-    @include("shop.$lang.header")
+    @include("shop.new.layouts.header")
 
     <main class="main lang_{{ $lang }}">
 
@@ -41,14 +40,13 @@
 
     </main>
 
-    @include("shop.$lang.footer")
+    @include("shop.new.layouts.footer")
 </div>
 <script src="{{ asset('js/jquery-3.6.0.min.js') }}" defer></script>
 @section('scripts')
 
 @show
 
-@include('shop.layouts.seo.footer-scripts')
 </body>
 </html>
 

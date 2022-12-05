@@ -1,0 +1,30 @@
+$black: #2A2A2A;
+$gray:  #979797;
+$gray2: #6B6B6B;
+@import 'normalize';
+
+@import 'fonts';
+
+@import 'global';
+
+@import 'components/header';
+
+@import 'components/category';
+
+@import 'components/cards';
+
+@import 'components/product';
+
+@import 'components/pay';
+
+@import 'components/recblock';
+
+@import 'components/category-about';
+
+@import 'components/checkout';
+
+@import 'components/deliv';
+
+@import 'components/faq';
+
+@import 'components/footer';
