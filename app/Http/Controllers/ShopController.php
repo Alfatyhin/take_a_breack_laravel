@@ -502,7 +502,6 @@ class ShopController extends Controller
 
         $shop_setting = Storage::disk('local')->get('js/shop_setting.json');
         ////////////////////////////////////////////////////
-        $jsfile = Storage::disk('local')->get('js/translit-ekwid-store.js');
 
         $ip = $request->ip();
         $user_country = AppServise::getCountryFromIP($ip);
@@ -520,7 +519,6 @@ class ShopController extends Controller
             'shop_setting' => $shop_setting,
             'delivery' => $delivery,
             'cityes' => $cityes,
-            'jsfile' => $jsfile,
             'post' => $post,
             'noindex' => $request->noindex,
             'user_country' => $user_country,
