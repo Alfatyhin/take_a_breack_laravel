@@ -28,7 +28,13 @@ class ShopThanks
 
     public function terminate(Request $request)
     {
-        $order = session('order');
+
+        WebhookLog::addLog('OrderThanks After', "start");
+        $order_id = session('last_order_id');
+
+        if ($order_id) {
+            $order = Orders::where('order_id', $order_id)->first();
+        }
         $utm = session('utm');
         if ($utm) {
             $utm_new = new UtmModel();
@@ -55,6 +61,8 @@ class ShopThanks
                     $promo_code->count += 1;
                     if ($coupon_data['count_limit'] != 0 && $promo_code->count >= $coupon_data['count_limit']) {
                         $promo_code->status = 'disable';
+
+                        WebhookLog::addLog('OrderThanks After code', 'disable');
                     }
                     $promo_code->save();
                 }
@@ -66,20 +74,23 @@ class ShopThanks
             if (empty($order->amoId)) {
                 $order_id = $order->order_id;
 
-                OrderService::sendMailNewOrder($order_id, 'send');
-
                 try {
                     $OrderService->createOrderToAmocrm($order_id);
+                    WebhookLog::addLog('OrderThanks After create AMO Lead', "$order_id");
                 } catch (Exception $e) {
-                    AppErrors::addError('error create amo lead ', $order);
+                    WebhookLog::addLog('OrderThanks After error create AMO Lead', "$order_id");
                 }
 
-                $request->session()->forget('order');
-                session('last_order_id', $order->order_id);
+
+                OrderService::sendMailNewOrder($order_id, 'send');
+                WebhookLog::addLog('OrderThanks After send mail', "$order_id");
+                $request->session()->forget('last_order_id');
             } else {
                 dd($order->amoId);
             }
 
+        } else {
+            WebhookLog::addLog('OrderThanks After not order', "--");
         }
 
     }

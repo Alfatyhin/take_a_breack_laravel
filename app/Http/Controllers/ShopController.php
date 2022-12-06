@@ -259,7 +259,7 @@ class ShopController extends Controller
 
         if ($step == 2 ) {
 
-            WebhookLog::addLog('new order step 1 request', $post);
+            WebhookLog::addLog('new order step 2 request', $post);
 
             if (!empty($post)) {
                 $pattern_phone = "/^[+0-9]{2,4} \([0-9]{3}\) [0-9]{3} [0-9]{2} [0-9]{2,4}$/";
@@ -348,7 +348,7 @@ class ShopController extends Controller
                     $order_id = rand(100, 999);
                     $order->order_id = AppServise::generateOrderId($order_id, 'S');
                 }
-                WebhookLog::addLog('new order step 1 order_id', $order->order_id);
+                WebhookLog::addLog('new order step 2 order_id', $order->order_id);
 
 
                 $orderData = OrderService::getShopOrderData($post);
@@ -367,7 +367,7 @@ class ShopController extends Controller
 
         } elseif($step == 3 ) {
 
-            WebhookLog::addLog('new order step 2', $post);
+            WebhookLog::addLog('new order step 3 post', $post);
 
             $validate_array = [
                 'date' => 'required|date_format:Y-n-j',
@@ -469,6 +469,8 @@ class ShopController extends Controller
                 $order->orderPrice = $orderData['order_data']['order_total'];
                 $order->orderData = json_encode($order_data);
                 $order->save();
+
+                WebhookLog::addLog('new order step 3 order_data', $order_data);
             }
 
         }
@@ -535,7 +537,7 @@ class ShopController extends Controller
         if (!empty($post)) {
 
 
-            WebhookLog::addLog('new order step 3 order_id', $post);
+            WebhookLog::addLog('new order step 4 post', $post);
 
             $order = Orders::where('order_id', $post['order_id'])->first();
             $order_data = json_decode($order->orderData, true);
@@ -546,6 +548,7 @@ class ShopController extends Controller
             }
 
             $orderData = OrderService::getShopOrderData($order_data);
+            WebhookLog::addLog('new order step 4 order_data', $orderData);
 
             $orderData['client_comment'] = $post['client_comment'];
             $orderData['methodPay'] = $post['methodPay'];
@@ -566,6 +569,7 @@ class ShopController extends Controller
             } elseif ($order->paymentMethod == 1) {
 
                 $icreditOrderData = OrderService::getShopIcreditOrderData($order);
+                WebhookLog::addLog('new order step 4 icreditOrderData', $icreditOrderData);
                 $iCreditService = new IcreditServise();
                 $result = $iCreditService->getUrl($icreditOrderData);
                 if (!empty($result['URL'])) {
@@ -605,11 +609,6 @@ class ShopController extends Controller
 
         $orderData = json_decode($order->orderData, true);
 
-        if (isset($orderData['order_data'])) {
-            if ($orderData['clientName'] == 'test') {
-                $orderData['order_data']['order_total'] = 1;
-            }
-        }
         $lang = $orderData['lang'];
 
         return view('paypal.button', [
