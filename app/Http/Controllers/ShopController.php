@@ -396,7 +396,7 @@ class ShopController extends Controller
                 $cityes_json = Storage::disk('local')->get('js/israel-city.json');
                 $cityes = json_decode($cityes_json, true);
                 $delivery_setting = json_decode($delivery_json, true);
-                $order_data = json_decode($post['order_data'], true);
+                $order_data = $post['order_data'];
 
                 $city_pattern = 'no_city';
                 if (!empty($post['city_id'])) {
@@ -418,7 +418,7 @@ class ShopController extends Controller
                     }
                 }
 
-                $data_price['order_data'] = json_decode($post['order_data'], true);
+                $data_price['order_data'] = $post['order_data'];
                 $data_price = OrderService::getShopOrderData($data_price);
                 $order_price = $data_price['order_data']['order_total'];
 
