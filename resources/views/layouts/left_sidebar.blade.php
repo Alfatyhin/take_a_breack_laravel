@@ -39,6 +39,9 @@
         <li class="products_options" data_name="products_options">
             <a href="{{ route('shop_settings_products_options') }}" >Product Options</a>
         </li>
+        <li class="orders_log" data_name="orders_log">
+            <a href="{{ route('orders_log') }}" >Orders Log</a>
+        </li>
 
     @endif
 

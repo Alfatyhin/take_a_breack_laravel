@@ -173,8 +173,8 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
     Route::any('/shop-settings/translations', [ShopSettingController::class, 'translations'])
         ->name('translations');
 
-
-
+    Route::any('/orders/log-view', [Orders::class, 'OrderLogView'])
+        ->name('orders_log');
 
 
 

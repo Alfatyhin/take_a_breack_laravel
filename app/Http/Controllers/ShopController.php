@@ -259,6 +259,7 @@ class ShopController extends Controller
 
         if ($step == 2 ) {
 
+            WebhookLog::addLog('new order step 1 request', $post);
 
             if (!empty($post)) {
                 $pattern_phone = "/^[+0-9]{2,4} \([0-9]{3}\) [0-9]{3} [0-9]{2} [0-9]{2,4}$/";
@@ -347,7 +348,7 @@ class ShopController extends Controller
                     $order_id = rand(100, 999);
                     $order->order_id = AppServise::generateOrderId($order_id, 'S');
                 }
-                WebhookLog::addLog('new order step 1', $order->order_id);
+                WebhookLog::addLog('new order step 1 order_id', $order->order_id);
 
 
                 $orderData = OrderService::getShopOrderData($post);
@@ -532,6 +533,9 @@ class ShopController extends Controller
         $post = $request->post();
 
         if (!empty($post)) {
+
+
+            WebhookLog::addLog('new order step 3 order_id', $post);
 
             $order = Orders::where('order_id', $post['order_id'])->first();
             $order_data = json_decode($order->orderData, true);

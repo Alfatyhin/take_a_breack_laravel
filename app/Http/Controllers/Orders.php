@@ -980,4 +980,35 @@ class Orders extends Controller
 
     }
 
+    public function OrderLogView(Request $request)
+    {
+
+        $date = $request->get('date');
+        if ($date) {
+            $date_nau = new Carbon($date);
+        } else {
+            $date_nau = new Carbon();
+        }
+
+        $date_str = $date_nau->format("Y-m-d");
+        $date_pre = $date_nau->addDays(-1);
+
+        if (Storage::disk('logs')->exists("orders-$date_str.log")) {
+            $monolog = Storage::disk('logs')->get("orders-$date_str.log");
+        } else {
+            $monolog = 'not file';
+        }
+        $monolog = htmlspecialchars($monolog);
+        $monolog = str_replace('['.$date_nau->format('Y'), '<hr><b>['.$date_nau->format('Y'), $monolog);
+        $monolog = str_replace('] ', ']</b> ', $monolog);
+
+
+        return view('logs.index', [
+            'route' => 'orders_log',
+            'log' => $monolog,
+            'date_str' => $date_str,
+            'date_pre' => $date_pre
+        ]);
+    }
+
 }
