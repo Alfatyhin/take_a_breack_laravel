@@ -38,6 +38,12 @@
 
 @stop
 
+@section('popup')
+    <p>test</p>
+@stop
+
+
+
 
 @section('scripts')
     <script>

@@ -59,7 +59,7 @@
                 </div>
                 <p class="total-pay"><span class="order_price" style="display: none;">{{ $order_data['order_data']['order_total'] }}</span>
                     {{ __('shop-cart.Общая сумма к оплате') }}
-                    <span class="total_order_price">{{ round($order_data['order_data']['order_total'] + $order_data['order_data']['order_total'] * 0.1, 1) }}0</span> ₪
+                    <span class="total_order_price">{{ round($order_data['order_data']['order_total'] + $order_data['order_data']['order_total'] * 0.1, 1) }}</span> ₪
                 </p>
 
                 <div>
