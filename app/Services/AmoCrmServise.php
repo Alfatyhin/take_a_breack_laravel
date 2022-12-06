@@ -26,6 +26,7 @@ use AmoCRM\Models\ContactModel;
 use AmoCRM\Models\CustomFields\TextareaCustomFieldModel;
 use AmoCRM\Models\CustomFieldsValues\BirthdayCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\CheckboxCustomFieldValuesModel;
+use AmoCRM\Models\CustomFieldsValues\DateCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\DateTimeCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\ItemsCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\LinkedEntityCustomFieldValuesModel;
@@ -973,11 +974,11 @@ class AmoCrmServise
         }
 
         if (!empty($amoData['date'])) {
-            $leadCustomFieldsValues = $this->addDateTimeCustomFieldValuesModel($leadCustomFieldsValues, 508997, $amoData['date']);
+            $leadCustomFieldsValues = $this->addDateCustomFieldValuesModel($leadCustomFieldsValues, 520559, $amoData['date']);
         }
 
         if (!empty($amoData['time'])) {
-            $leadCustomFieldsValues = $this->addMultiselectCustomFieldValuesModel($leadCustomFieldsValues, 462331, $amoData['time']);
+            $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 520561, $amoData['time']);
         }
 
         if (!empty($amoData['tags'])) {
@@ -1048,6 +1049,20 @@ class AmoCrmServise
                 ->add((new SelectCustomFieldValueModel())->setValue($value))
         );
         $leadCustomFieldsValues->add($selectCustomFieldValueModel);
+
+        return $leadCustomFieldsValues;
+    }
+
+    public function addDateCustomFieldValuesModel($leadCustomFieldsValues, $field_id, $value)
+    {
+        // тип поля дата-время
+        $dateCustomFieldValueModel = new DateCustomFieldValuesModel();
+        $dateCustomFieldValueModel->setFieldId($field_id);
+        $dateCustomFieldValueModel->setValues(
+            (new DateCustomFieldValueCollection())
+                ->add((new DateCustomFieldValueModel())->setValue($value))
+        );
+        $leadCustomFieldsValues->add($dateCustomFieldValueModel);
 
         return $leadCustomFieldsValues;
     }
