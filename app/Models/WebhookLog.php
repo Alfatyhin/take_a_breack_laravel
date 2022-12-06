@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class WebhookLog extends Model
 {
@@ -11,9 +12,9 @@ class WebhookLog extends Model
 
     public static function addLog($name, $data)
     {
-        $webhookLog = new WebhookLog();
-        $webhookLog->name = $name;
-        $webhookLog->data = json_encode($data);
-        $webhookLog->save();
+        if (is_array($data) || is_object($data)) {
+            $data = json_encode($data);
+        }
+        Log::channel('orders')->info("$name - $data");
     }
 }

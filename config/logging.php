@@ -47,6 +47,14 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
         ],
 
+        'orders' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/orders.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => 30,
+            'permission' => 0775
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
