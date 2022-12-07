@@ -39,7 +39,8 @@
 @stop
 
 @section('popup')
-    <p>test</p>
+    <h3>{{ __('shop-thanks.ваш заказ оформлен') }}</h3>
+    <p>{{ __('shop-thanks.Ожидайте подтверждение заказа!') }}</p>
 @stop
 
 
