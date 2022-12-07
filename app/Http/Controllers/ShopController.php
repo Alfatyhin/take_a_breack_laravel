@@ -431,6 +431,15 @@ class ShopController extends Controller
                 $data_price = OrderService::getShopOrderData($data_price);
                 $order_price = $data_price['order_data']['order_total'];
 
+                if (!isset($delivery_setting['cityes_data'][$post['city_id']])) {
+
+                    $messages = [
+                        'city.required' => 'there is no delivery to the city ' . $post['city'],
+                    ];
+                    $validate_array['city'] = "required";
+                    $post['city'] = '';
+                    Validator::make($post, $validate_array, $messages )->validate();
+                }
                 $deliv_id = $delivery_setting['cityes_data'][$post['city_id']][0];
 
                 $delivery = $delivery_setting['delivery'][$deliv_id];
