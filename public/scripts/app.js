@@ -1495,7 +1495,26 @@ if($("#cart").length)
         let phone = str.substring(str.indexOf("+"))+ " -" + $("input[name='user-phone']")[0].value
         phone = phone.replace(/-/g, '')        
         $("input[name='delivery_method']")[0].value = $("input[name='delivery']:checked")[0].value
-        $("input[name='user-phone']")[0].value = phone        
+        $("input[name='user-phone']")[0].value = phone   
+       
+       
+    });
+
+    $("form.form-cart3").on("submit", function() {        
+
+        // setOrderDate()
+        // let client_data = JSON.parse(localStorage.getItem("client_data") || "[]");
+        // client_data.order_id = $("input[name='order_id']")[0].value || ""
+        // localStorage.setItem("client_data", JSON.stringify(client_data));
+        // let str =  $(".iti__selected-dial-code")[0].innerHTML
+        // let phone = str.substring(str.indexOf("+"))+ " -" + $("input[name='user-phone']")[0].value
+        // phone = phone.replace(/-/g, '')        
+        // $("input[name='delivery_method']")[0].value = $("input[name='delivery']:checked")[0].value
+        // $("input[name='user-phone']")[0].value = phone   
+        window.scrollTo(0, 0); 
+        $(".popup").fadeIn(500);
+        
+        return false
        
     });
     
@@ -1579,9 +1598,12 @@ async function promoAction(){
 let cityId = -1
 $(".city_name").keyup(function(){
     
-    let searchString = this.value
+    
+
+    let searchString = this.value    
     let el = $('.city-list');
-    if(el) el.remove();    
+    if(el) el.remove();
+    if(searchString == "") return 
     cityesNew =[]
     langIsSearch = ""
     cityesNew = cityes.citys_all.filter( e =>{
@@ -1661,7 +1683,8 @@ $("input[name='delivery']").change(function(){   // переключалка с�
         $(".delivery_address")[0].style.display = "none"
         $(".other-man")[0].style.display = "none"
         $(".city_name")[0].value = ""
-        $("input[name='city_id']").value = ""; 
+        $("input[name='time']")[0].value = "";
+        $("input[name='city_id']")[0].value = ""; 
         cityId = -1
         $(".delivery_price")[0].innerHTML = 0 + " ₪"
         $(".delivery input.show_calendar.date")[0].placeholder = $(".delivery input.show_calendar.date")[0].dataset.text_delivery
@@ -1680,6 +1703,7 @@ $("input[name='delivery']").change(function(){   // переключалка с�
 
 
 $("input.delivery_time").on('click',async function(e){
+    
     summDelivery(cityId)     
     if($(".show_calendar.date").val() != "" && $(".delivery_time.city-lis")[0].style.display != "block") $(".delivery_time.city-lis")[0].style.display = "block"  
     else    $(".delivery_time.city-lis")[0].style.display = "none" 
@@ -1689,9 +1713,8 @@ $("input.delivery_time").on('click',async function(e){
     $(".delivery_time li").mouseleave(function() {
         this.style.background = "none";
     });   
-    $(".delivery_time.city-lis li").on('click',async function(e){          
-        if(this.innerText == "not time")   $("input.delivery_time")[0].value = "" 
-        else  $("input.delivery_time")[0].value = this.innerText
+    $(".delivery_time.city-lis li").on('click',async function(e){ 
+        $("input.delivery_time")[0].value = this.innerText
         summDelivery(cityId) 
     }); 
 });
@@ -1735,7 +1758,7 @@ function summDelivery(cityId){
         $(".delivery_price")[0].innerHTML = +deliveryParams.rate_delivery +  " ₪"
     }
     let koefTime = 1
-    if($("input[name='time']")[0].value != "")  koefTime = 1.3
+    if($("input[name='time']")[0].value.indexOf("-") != -1 && $("input[name='time']")[0].value.indexOf(":") != -1)  koefTime = 1.3
     let deliveryPrice = $(".delivery_price")[0].innerHTML 
     if (deliveryPrice.length < 10) deliveryPrice = deliveryPrice.substring(0, $(".delivery_price")[0].innerHTML.length -2 )
     let deliverySumm =  +deliveryPrice * koefTime 
@@ -1762,5 +1785,7 @@ function clearSelected(action){
     $("input[name='Box']").each(function() {this.checked = false });
 }
 
-
-
+$("input[name='methodPay']").change(function(e){ 
+    if( this.value == 1 || this.value == 3 )  $(".main-btn.go-pay")[0].innerHTML = $(".main-btn.go-pay")[0].dataset.text_pay
+    else if (this.value == 2 ||this.value == 4)  $(".main-btn.go-pay")[0].innerHTML = $(".main-btn.go-pay")[0].dataset.text_checkout
+});

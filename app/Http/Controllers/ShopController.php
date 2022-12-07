@@ -367,6 +367,7 @@ class ShopController extends Controller
 
         } elseif($step == 3 ) {
 
+
             WebhookLog::addLog('new order step 3 post', $post);
 
             $validate_array = [
@@ -377,6 +378,8 @@ class ShopController extends Controller
             $this->validate($request, $validate_array);
 
             unset($validate_array['order_data']);
+
+            $post['order_data'] = trim($post['order_data']);
 
             $post['order_data'] = json_decode($post['order_data'], true);
 
@@ -392,6 +395,12 @@ class ShopController extends Controller
 
 
             if ($post['delivery'] == 'delivery') {
+
+                $validate_array['street'] = 'required';
+                $validate_array['house'] = 'required';
+                $validate_array['city'] = 'required';
+                $this->validate($request, $validate_array);
+
                 $delivery_json = Storage::disk('local')->get('js/delivery.json');
                 $cityes_json = Storage::disk('local')->get('js/israel-city.json');
                 $cityes = json_decode($cityes_json, true);
