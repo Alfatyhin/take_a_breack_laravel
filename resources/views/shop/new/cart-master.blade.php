@@ -10,7 +10,7 @@
 @parent
 
 <link rel="stylesheet" href="{{ asset('/dist/intlTelInput.css') }}?{{ $v }}">
-<script src="{{ asset('/scripts/jquery.maskedinput.js') }}?{{ $v }}" defer></script>
+<script src="{{ asset('/scripts/jquery.maskedinput.min.js') }}?{{ $v }}" defer></script>
 
     <script>
         var delivery = @json($delivery);
