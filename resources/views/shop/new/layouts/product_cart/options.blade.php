@@ -129,7 +129,7 @@
             @elseif($option['choices'][0]['priceModifierType'] == 'PERCENT' && $option['choices'][0]['priceModifier'] != 0)
                 @php($price = round($product->price * $option['choices'][0]['priceModifier'] / 100, 2))
             @else
-                @php($price = $price)
+                @php($price = $product->price)
             @endif
 
             @if(!empty($option['nameTranslated'][$lang]))
