@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded',()=>{
 
     let intervalSelect
-    if($(".main__wrap .product").length){
+    if($(".main__wrap .product .product-info__size.product_option.required").length){
         try {
             let elem = $(".product-size.open-size-table")[0];
             intervalSelect = setInterval(() => {
@@ -79,9 +79,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     if($(".main__wrap .product").length){
         updateProductPage()        
 
-        $('.product-info__add input[type="radio"]').each(function() { this.disabled = true });    //убрать после добавления в верстке
-        $('.product-info__add input[type="checkbox"]').each(function() { this.disabled = true });    //убрать после добавления в верстке
-    }
+       }
     // $(".popup")[0].innerHTML = ` 
     //                             <div class="popup__content">
     //                                 <div class="text_add">Малиновый торт с нежным бисквитом добавлен в корзину!</div>

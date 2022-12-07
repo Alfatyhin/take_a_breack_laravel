@@ -72,15 +72,38 @@
                 </span>
             </div>
             <div class="product_options">
-                @include("shop.new.layouts.product_cart.options")
+
+                @if($lang == 'en')
+                    @php($rout = route("product", ['category' => $category->slag, 'product' => $product->slag]))
+                @else
+                    @php($rout = route("product", ['lang' => $lang, 'category' => $category->slag, 'product' => $product->slag]))
+                @endif
+
+                @php($size = false)
+
+                    @isset($product->options)
+                        @foreach($product->options as $key => $option)
+
+                            @if ($option['type'] == 'SIZE')
+                                @php($size = true)
+                            @endif
+                            @php($name = $option['name'])
+                            @php($name_lang = $option['nameTranslated'][$lang])
+                            @php($name_lang_lower = strtolower($name_lang))
+                            @php($name_lower = strtolower($name))
+                            @include("shop.new.layouts.product_cart.options")
+                        @endforeach
+                    @else
+
+                    @endisset
             </div>
             <div class="product-info__action">
                 <div class="product-info__count">
-                    <button class="product-info-decrement" disabled="true" onclick="decrement(this)">-</button>
-                    <input id="count-product" class="product-info-count-input" value="1" type="number" name="product-count" min="1" max="999" disabled="true">
-                    <button class="product-info-increment" disabled="true" onclick="increment(this)">+</button>
+                    <button class="product-info-decrement" @if($size) disabled="true" @endif onclick="decrement(this)">-</button>
+                    <input id="count-product" class="product-info-count-input" value="1" type="number" name="product-count" min="1" max="999" @if($size) disabled="true" @endif>
+                    <button class="product-info-increment" @if($size) disabled="true" @endif onclick="increment(this)">+</button>
                 </div>
-                <button class="main-btn go-to-cart">{{ __('shop.Добавить в корзину') }}</button>
+                <button class="main-btn go-to-cart" @if($size) disabled="true" @else style="opacity: 1;" @endif>{{ __('shop.Добавить в корзину') }}</button>
             </div>
             <div class="product-info__edge swiper">
                 <div class="product-info__edge-wrapper swiper-wrapper">
