@@ -14,8 +14,6 @@
 @section('content')
 
 
-    @include('shop-settings.layouts.popapp_message')
-
     <table>
         <tr>
             <th>id</th>

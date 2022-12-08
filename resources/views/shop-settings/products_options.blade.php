@@ -13,7 +13,6 @@
 
 @section('content')
 
-    @include('shop-settings.layouts.popapp_message')
 
 
     <div class="box_inline box_list box_border">

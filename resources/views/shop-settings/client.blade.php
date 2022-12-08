@@ -22,8 +22,6 @@
 @section('content')
 
 
-    @include('shop-settings.layouts.popapp_message')
-
 
     <div>
         <h3> Информация о клиенте №{{ $client->id }}</h3>

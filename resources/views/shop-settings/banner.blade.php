@@ -13,7 +13,6 @@
 
 @section('content')
 
-   @include('shop-settings.layouts.popapp_message')
 
    <form action="{{ route('banner') }}" method="POST">
        @csrf

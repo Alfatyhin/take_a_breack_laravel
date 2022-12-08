@@ -22,8 +22,6 @@
 
 @section('content')
 
-    @include('shop-settings.layouts.popapp_message')
-
 
     <div class="box_inline">
         <div class="content_list_menu">
