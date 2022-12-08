@@ -108,7 +108,6 @@ class ShopSettingController extends Controller
         $orders = DB::table('orders')
             ->where('orders.deleted_at', null)
             ->whereBetween('orders.created_at', [$date_from, $date_to])
-            ->whereBetween('orders.paymentStatus', [2, 4])
             ->latest('orders.id')
             ->join('clients', 'orders.clientId', '=', 'clients.id')
             ->select('orders.*', 'clients.name', 'clients.email')
