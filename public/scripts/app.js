@@ -1499,7 +1499,7 @@ if($("#cart").length)
     });
 
     $("form.form-cart3").on("submit", function() {        
-        
+
         window.scrollTo(0, 0); 
         $(".popup").fadeIn(500);
         $(this).submit();
