@@ -378,7 +378,6 @@ class ShopController extends Controller
             ];
 
             $this->validate($request, $validate_array);
-
             unset($validate_array['order_data']);
 
             $post['order_data'] = trim($post['order_data']);
@@ -409,6 +408,7 @@ class ShopController extends Controller
                 $delivery_setting = json_decode($delivery_json, true);
                 $order_data = $post['order_data'];
 
+
                 $city_pattern = 'no_city';
                 if (!empty($post['city_id'])) {
                     if (isset($delivery_setting['cityes_data'][$post['city_id']])) {
@@ -429,6 +429,7 @@ class ShopController extends Controller
                     }
                 }
 
+
                 $data_price['order_data'] = $post['order_data'];
                 $data_price = OrderService::getShopOrderData($data_price);
                 $order_price = $data_price['order_data']['order_total'];
@@ -442,17 +443,21 @@ class ShopController extends Controller
                     $post['city'] = '';
                     Validator::make($post, $validate_array, $messages )->validate();
                 }
+
                 $deliv_id = $delivery_setting['cityes_data'][$post['city_id']][0];
 
                 $delivery = $delivery_setting['delivery'][$deliv_id];
 
                 $min_summ_order = $delivery['min_sum_order'];
                 if ($order_price < $min_summ_order) {
+                    dd(__('shop-cart.минимальная сумма заказа') . ' ' . $min_summ_order . ' ₪ !');
                     $messages = [
                         'min_summ_order.required' => __('shop-cart.минимальная сумма заказа') . ' ' . $min_summ_order . ' ₪ !',
                     ];
-                    $validate_array['min_summ_order'] = "required";
-                    Validator::make($post, $validate_array, $messages )->validate();
+
+                    dd('test 3', $min_summ_order, $messages );
+                    $validate_array1['min_summ_order'] = "required";
+                    Validator::make($post, $validate_array1, $messages )->validate();
                 }
 
                 if (empty($delivery['rate_delivery_to_summ_order'])) {
@@ -464,9 +469,8 @@ class ShopController extends Controller
                 }
 
 
-                $validate_array['street'] = 'required';
-                $validate_array['house'] = 'required';
             }
+
 
             if(isset($post['otherPerson'])) {
                 $validate_array['nameOtherPerson'] = 'required';
