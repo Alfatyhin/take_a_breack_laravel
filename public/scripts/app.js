@@ -1499,19 +1499,10 @@ if($("#cart").length)
     });
 
     $("form.form-cart3").on("submit", function() {        
-
-        // setOrderDate()
-        // let client_data = JSON.parse(localStorage.getItem("client_data") || "[]");
-        // client_data.order_id = $("input[name='order_id']")[0].value || ""
-        // localStorage.setItem("client_data", JSON.stringify(client_data));
-        // let str =  $(".iti__selected-dial-code")[0].innerHTML
-        // let phone = str.substring(str.indexOf("+"))+ " -" + $("input[name='user-phone']")[0].value
-        // phone = phone.replace(/-/g, '')        
-        // $("input[name='delivery_method']")[0].value = $("input[name='delivery']:checked")[0].value
-        // $("input[name='user-phone']")[0].value = phone   
+        
         window.scrollTo(0, 0); 
         $(".popup").fadeIn(500);
-        
+        $(this).submit();
         return false
        
     });
