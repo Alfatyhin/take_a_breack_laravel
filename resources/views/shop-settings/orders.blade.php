@@ -71,7 +71,9 @@
 
     <table>
         @if ($orderSearch)
-
+            @php
+                $orderData = json_decode($orderSearch->orderData, true);
+            @endphp
             <tr>
                 <td>
                     @if (!empty($orderSearch->deleted_at))
@@ -96,7 +98,12 @@
                     <br>
                     Оллата <b>{{ $paymentMethod[$orderSearch->paymentMethod] }}</b>
                     статус <b>{{ $paymentStatus[$orderSearch->paymentStatus] }}</b>
-                    дата <b>{{ $orderSearch->paymentDate }}</b>
+                        <br>
+                        @isset($orderData['step'])
+                            step -  <b>{{ $orderData['step'] }}</b>
+                            <br>
+                        @endisset
+                    дата опл  <b>{{ $orderSearch->paymentDate }}</b>
                     <br>
                     Инвойс <b>{{ $invoiceStatus[$orderSearch->invoiceStatus] }}</b>
                     <hr>
@@ -110,10 +117,6 @@
                     <span class="position-absolute text-small button show-hide"></span>
 
                     Детали: <br>
-
-                    @php
-                        $orderData = json_decode($orderSearch->orderData, true);
-                    @endphp
 
                     <p>
                         <b>имя:</b> {{ $orderSearch->name }}
@@ -258,6 +261,9 @@
 
         @if(isset($orders))
             @foreach($orders as $item)
+                @php
+                    $orderData = json_decode($item->orderData, true);
+                @endphp
                 <tr>
                     <td>
                         @if (!empty($item->deleted_at))
@@ -281,6 +287,10 @@
                         Оллата <b>{{ $paymentMethod[$item->paymentMethod] }}</b>
                         статус <b>{{ $paymentStatus[$item->paymentStatus] }}</b>
                         <br>
+                        @isset($orderData['step'])
+                            step -  <b>{{ $orderData['step'] }}</b>
+                            <br>
+                        @endisset
                         дата опл <b>{{ $item->paymentDate }}</b>
                         <br>
                         Инвойс <b>{{ $invoiceStatus[$item->invoiceStatus] }}</b>
@@ -309,162 +319,92 @@
 
                         Детали: <br>
 
-                        @php
-                            $orderData = json_decode($item->orderData, true);
-                        @endphp
 
-                        @if (isset($orderData['Cart']))
-                            {{ $orderData['Cart']['person']['name'] }} <br>
-                            {{ $orderData['Cart']['person']['email'] }} <br>
-                            {{ $orderData['Cart']['person']['phone'] }} <br>
 
-                            <hr>
-                            @foreach($orderData['Cart']['items'] as $product)
+                        <p>
+                            <b>имя:</b>{{ $item->name }}
+                            <a class="button" href="{{ route('client_data', ['client' => $item->clientId]) }}" > карточка клиента </a>
+                            <br>
+                            <b>email:</b> {{ $item->email }} <br>
+                            @isset($orderData['phone'])
+                                <b>tel:</b> {{ $orderData['phone'] }}
+                            @endisset
+                        </p>
+
+                        <hr>
+                        @isset($orderData['order_data']['products'])
+                            @foreach($orderData['order_data']['products'] as $product)
                                 <b>
-                                    @if (!empty($product['nameTranslated']['ru']))
-                                        {{ $product['nameTranslated']['ru'] }}
+                                    @if (!empty($product['name']['ru']))
+                                        {{ $product['name']['ru'] }}
 
                                     @else
-                                        {{ $product['name'] }}
+                                        {{ $product['name']['en'] }}
                                     @endif
                                 </b>
 
-                                @if (isset($product['info']))
-                                    {{ $product['info'] }}
+                                @if (isset($product['options']))
+                                    @foreach($product['options'] as $option)
+                                        {{ $option['name']['ru'] }} -
+                                        {{ $option['value']['text'] }}
+                                        ( {{ $option['value']['textTranslated']['ru'] }} )
+                                    @endforeach
                                 @endif
                                 - {{ $product['count'] }} шт
 
                                 <br>
                             @endforeach
+                        @endisset
+                        @isset($orderData['otherPerson'])
                             <hr>
-
-                            @if (isset($orderData['option']['tips_value']))
-                                Tips: {{ $orderData['option']['tips_price'] }}% - {{ $orderData['option']['tips_value'] }}
-                                <hr>
-                            @endif
-
-                            @if (!empty($orderData['option']['comment']))
-                                Коментарий:
-                                <p>{{ $orderData['option']['comment'] }}</p>
-                            @endif
-                            @if (!empty($orderData['option']['promo_code']))
-                                <p>
-                                    купон: {{ $orderData['option']['promo_code'] }}
-                                </p>
-                            @endif
+                            <b>заказ для друга:</b> <br>
+                            <b>имя:</b> {{ $orderData['nameOtherPerson'] }} <br>
+                            <b>tel:</b> {{ $orderData['phoneOtherPerson'] }}
+                        @endisset
+                        @isset($orderData['client_comment'])
                             <hr>
-
-                            <p>
-                                @if ($orderData['option']['delivery_method'] == 'pickup')
-                                    Самовывоз
-                                @else
-                                    Доставка:
-                                @endif
-                                @if (isset($orderData['option']['delivery_variant']))
-                                    {{ $orderData['option']['delivery_variant'] }}
-                                @endif
-                                <br>
-                                Дата: {{ $orderData['option']['delivery_date'] }} <br>
-                                время: {{ $orderData['option']['delivery_time'] }} <br>
-                                @if (isset($orderData['Cart']['person']['address']))
-                                    @foreach($orderData['Cart']['person']['address'] as $k=>$v)
-                                        {{ $k }} - {{ $v }} <br>
-                                    @endforeach
-                                @endif
-                            </p>
-
-                            <hr>
-                            <div class="hide">
-                                {{ $item->orderData }}
+                            <b>комментарий клиента:</b> <br>
+                            <div class="text_block">
+                                {{ $orderData['client_comment'] }}
                             </div>
+                        @endisset
+                        @isset($orderData['order_data']['tips'])
+                            <hr>
+                            <b>чаевые:</b>
+                            {{ $orderData['order_data']['tips'] }}
+                        @endisset
 
-                        @else
-
-                            <p>
-                                <b>имя:</b>{{ $item->name }}
-                                <a class="button" href="{{ route('client_data', ['client' => $item->clientId]) }}" > карточка клиента </a>
-                                <br>
-                                <b>email:</b> {{ $item->email }} <br>
-                                @isset($orderData['phone'])
-                                    <b>tel:</b> {{ $orderData['phone'] }}
+                        @isset($orderData['order_data']['discount'])
+                            <hr>
+                            <b>Скидка купон:</b>
+                        @endisset
+                        @isset($orderData['delivery'])
+                            @if($orderData['delivery'] == 'delivery')
+                                <hr>
+                                <b>Доставка:</b>
+                                г-{{ $orderData['city'] }} <br>
+                                ул-{{ $orderData['street'] }}
+                                {{ $orderData['house'] }}
+                                кв-{{ $orderData['flat'] }}
+                                @isset($orderData['floor'])
+                                    эт-{{ $orderData['floor'] }}
                                 @endisset
-                            </p>
-
+                            @else
+                                <hr>
+                                <b>Самовывоз</b>
+                                @isset($orderData['order_data']['delivery_discount'])
+                                    <br> <b>скидка:</b>
+                                    {{ $orderData['order_data']['delivery_discount'] }}
+                                @endisset
+                            @endif
                             <hr>
-                            @isset($orderData['order_data']['products'])
-                                @foreach($orderData['order_data']['products'] as $product)
-                                    <b>
-                                        @if (!empty($product['name']['ru']))
-                                            {{ $product['name']['ru'] }}
+                            <b>Дата:</b>
+                            {{ $orderData['date'] }} {{ $orderData['time'] }}
 
-                                        @else
-                                            {{ $product['name']['en'] }}
-                                        @endif
-                                    </b>
-
-                                    @if (isset($product['options']))
-                                        @foreach($product['options'] as $option)
-                                            {{ $option['name']['ru'] }} -
-                                            {{ $option['value']['text'] }}
-                                            ( {{ $option['value']['textTranslated']['ru'] }} )
-                                        @endforeach
-                                    @endif
-                                    - {{ $product['count'] }} шт
-
-                                    <br>
-                                @endforeach
-                            @endisset
-                            @isset($orderData['otherPerson'])
-                                <hr>
-                                <b>заказ для друга:</b> <br>
-                                <b>имя:</b> {{ $orderData['nameOtherPerson'] }} <br>
-                                <b>tel:</b> {{ $orderData['phoneOtherPerson'] }}
-                            @endisset
-                            @isset($orderData['client_comment'])
-                                <hr>
-                                <b>комментарий клиента:</b> <br>
-                                <div class="text_block">
-                                    {{ $orderData['client_comment'] }}
-                                </div>
-                            @endisset
-                            @isset($orderData['order_data']['tips'])
-                                <hr>
-                                <b>чаевые:</b>
-                                {{ $orderData['order_data']['tips'] }}
-                            @endisset
-
-                            @isset($orderData['order_data']['discount'])
-                                <hr>
-                                <b>Скидка купон:</b>
-                            @endisset
-                            @isset($orderData['delivery'])
-                                @if($orderData['delivery'] == 'delivery')
-                                    <hr>
-                                    <b>Доставка:</b>
-                                    г-{{ $orderData['city'] }} <br>
-                                    ул-{{ $orderData['street'] }}
-                                    {{ $orderData['house'] }}
-                                    кв-{{ $orderData['flat'] }}
-                                    @isset($orderData['floor'])
-                                        эт-{{ $orderData['floor'] }}
-                                    @endisset
-                                @else
-                                    <hr>
-                                    <b>Самовывоз</b>
-                                    @isset($orderData['order_data']['delivery_discount'])
-                                        <br> <b>скидка:</b>
-                                        {{ $orderData['order_data']['delivery_discount'] }}
-                                    @endisset
-                                @endif
-                                <hr>
-                                <b>Дата:</b>
-                                {{ $orderData['date'] }} {{ $orderData['time'] }}
-
-                            @endisset
-                            <div class="hide">
-                                {{ $item->orderData }}
-                            </div>
-                        @endif
+                        @endisset
+                        <div class="hide">
+                            {{ $item->orderData }}
+                        </div>
 
                     </td>
 
