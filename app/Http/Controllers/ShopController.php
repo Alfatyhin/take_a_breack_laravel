@@ -259,6 +259,7 @@ class ShopController extends Controller
 
         if ($step == 2 ) {
 
+            $post['step'] = $step;
             WebhookLog::addLog('new order step 2 request', $post);
 
             if (!empty($post)) {
@@ -368,6 +369,7 @@ class ShopController extends Controller
         } elseif($step == 3 ) {
 
 
+            $post['step'] = $step;
             WebhookLog::addLog('new order step 3 post', $post);
 
             $validate_array = [
@@ -554,6 +556,7 @@ class ShopController extends Controller
 
         if (!empty($post)) {
 
+            $post['step'] = 4;
 
             WebhookLog::addLog('new order step 4 post', $post);
 
