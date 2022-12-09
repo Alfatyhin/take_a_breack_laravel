@@ -305,7 +305,7 @@
                                 @isset($orderData['step'])
                                     step -  <b>{{ $orderData['step'] }}</b>
                                     <a class="button" href="{{ route('cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $item->order_id]) }}" >
-                                        проверить на ошибки
+                                        проверить корзину
                                     </a>
                                 @endisset
                             @endif
@@ -336,7 +336,7 @@
 
 
                     <td>
-                        <span class="position-absolute text-small button show-hide"></span>
+                        <span class="position-absolute text-small button show-hide fa fa-eye"></span>
 
                         Детали: <br>
 
@@ -431,7 +431,7 @@
 
 
                     <td>
-                        <span class="position-absolute text-small button show-hide"></span>
+                        <span class="position-absolute text-small button show-hide fa fa-eye"></span>
 
 
 
@@ -442,7 +442,7 @@
                             </a>
                         @endif
 
-                        @if ($item->invoiceStatus == 0)
+                        @if ($item->invoiceStatus == 0 && $item->paymentStatus != 0)
                             <div class="hide">
                                 <br>
                                 <a class="button" href="{{ route('invoice_create', ['orderId' => $item->order_id]) }}" >
@@ -452,12 +452,8 @@
                         @endif
 
 
+                        @if($item->paymentStatus != 0)
 
-                        @if($item->paymentStatus == 0)
-                            <a class="button" href="{{ route('cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $item->order_id]) }}" >
-                                test CART
-                            </a>
-                        @else
                             <a class="hide button" href="{{ route('amo_create_invoice_to_order', ['order' => $item->id]) }}" >
                                 add amo invoice to lead
                             </a>
