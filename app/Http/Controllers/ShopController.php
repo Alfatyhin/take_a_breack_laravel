@@ -262,7 +262,7 @@ class ShopController extends Controller
         }
         $orderData = false;
 
-        if ($step == 2 ) {
+        if ($step == 2 && !$lost_order) {
 
             if (!empty($post)) {
                 $post['step'] = $step;
@@ -278,7 +278,7 @@ class ShopController extends Controller
                         'order_data' => 'required|json'
                     ];
                     if (!isset($post['clientName'])) {
-                        dd($post, );
+                        dd($post);
                     }
 
                     if (!empty($post['clientBirthDay'])) {
@@ -391,7 +391,7 @@ class ShopController extends Controller
 
                     $validator = Validator::make($post, $validate_array, $messages);
                     if ($validator->fails()) {
-                        return redirect(route('cart', ['lang' => $lang, 'step' => 2]))
+                        return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
                             ->withErrors($validator)
                             ->withInput();
                     }
