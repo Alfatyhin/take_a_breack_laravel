@@ -381,13 +381,27 @@ class ShopController extends Controller
                 $post['step'] = $step;
                 WebhookLog::addLog('new order step 3 post', $post);
 
-                if (!empty($post['test'])) {
-                    $post = json_decode($post['data'], true);
-                    $post['test'] = 'test';
+                if ($lost_order) {
+                    $validate_array = [
+                        'date' => 'required',
+                        'delivery' => 'required'
+                    ];
+                    $messages['delivery.required'] = 'delivery required';
+                    $messages['date.required'] = 'data required';
+
+                    $validator = Validator::make($post, $validate_array, $messages);
+                    if ($validator->fails()) {
+                        return redirect(route('cart', ['lang' => $lang, 'step' => 2]))
+                            ->withErrors($validator)
+                            ->withInput();
+                    }
+                    $validator->validate();
+                    unset($validate_array);
                 } else {
                     $validate_array = [
                         'date' => 'required|date_format:Y-n-j',
-                        'order_data' => 'required|json'
+                        'order_data' => 'required|json',
+                        'delivery' => 'required'
                     ];
                     $this->validate($request, $validate_array);
                     unset($validate_array);
@@ -403,7 +417,7 @@ class ShopController extends Controller
                     ];
                     $validate_array['order_data'] = "required";
 
-                    if (!empty($post['test'])) {
+                    if ($lost_order) {
                         dd($messages);
                     } else {
                         Validator::make($post, $validate_array, $messages)->validate();
@@ -415,7 +429,7 @@ class ShopController extends Controller
                     $validate_array['street'] = 'required';
                     $validate_array['house'] = 'required';
                     $validate_array['city'] = 'required';
-                    if (!empty($post['test'])) {
+                    if ($lost_order) {
 
                         $messages['street.required'] = 'required';
                         $messages['house.required'] = 'required';
@@ -454,7 +468,7 @@ class ShopController extends Controller
                         }
                     }
 
-                    if (!empty($post['test'])) {
+                    if ($lost_order) {
                         $post['order_data'] = $post['order_data_jsonform'];
                     }
 
