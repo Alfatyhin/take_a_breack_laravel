@@ -395,7 +395,7 @@ Route::middleware(["Shop"])->group(function () {
         ->name('index_filter');
 
 
-    Route::any('/{lang}/cart/{step?}', [ShopController::class, 'CartView'])
+    Route::any('/{lang}/cart/{step?}/{order_id?}', [ShopController::class, 'CartView'])
         ->where('lang', '[a-z]{2}')
         ->name('cart');
 

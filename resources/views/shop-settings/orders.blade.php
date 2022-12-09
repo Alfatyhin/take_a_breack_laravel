@@ -253,6 +253,19 @@
                     <a class="button" href="{{ route('api_order_view', [ 'order_id' => $orderSearch->order_id]) }}" >
                         распечатать заказ
                     </a> <br>
+
+                    <a class="button" href="{{ route('cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $orderSearch->order_id]) }}" >
+                        test step 3
+                    </a>
+                    <hr>
+                    @if ($errors->any())
+                        <h3>errors</h3>
+                        <div class="alert alert-danger" style="color: brown;">
+                            @foreach ($errors->all() as $error)
+                                <p class="errors">{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
                 </td>
 
             </tr>
