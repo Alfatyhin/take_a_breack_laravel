@@ -349,8 +349,7 @@ class ShopController extends Controller
 
                         if (!$order) {
                             $order = new Orders();
-                            $order_id = rand(100, 999);
-                            $order->order_id = AppServise::generateOrderId($order_id, 'S');
+                            $order->order_id = $post['order_id'];
                         }
 
                     } else {
@@ -517,6 +516,7 @@ class ShopController extends Controller
                 }
 
                 $order = Orders::where('order_id', $post['order_id'])->first();
+
                 if ($order) {
                     $order_data = json_decode($order->orderData, true);
 
@@ -532,7 +532,11 @@ class ShopController extends Controller
                     $order->save();
 
                     WebhookLog::addLog('new order step 3 order_data', $order_data);
+                } else {
+
+                    dd('error get order data');
                 }
+
             }
         }
 
