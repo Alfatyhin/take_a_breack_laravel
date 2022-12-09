@@ -98,11 +98,11 @@
                     <br>
                     Оллата <b>{{ $paymentMethod[$orderSearch->paymentMethod] }}</b>
                     статус <b>{{ $paymentStatus[$orderSearch->paymentStatus] }}</b>
+                    <br>
+                    @isset($orderData['step'])
+                        step -  <b>{{ $orderData['step'] }}</b>
                         <br>
-                        @isset($orderData['step'])
-                            step -  <b>{{ $orderData['step'] }}</b>
-                            <br>
-                        @endisset
+                    @endisset
                     дата опл  <b>{{ $orderSearch->paymentDate }}</b>
                     <br>
                     Инвойс <b>{{ $invoiceStatus[$orderSearch->invoiceStatus] }}</b>
@@ -287,7 +287,7 @@
                         @endif
                         ( {{ $item->id }} ) <b>#{{ $item->order_id }}</b> | <b>gId:</b>{{ $item->gclientId }}  <br>
                         Дата: {{ $item->created_at }} <br>
-                        @if(empty($item->amoId))
+                        @if(empty($item->amoId) && ($item->paymentMethod != 0 || $item->paymentStatus != 0))
                             <a class="button" href="{{ route('api_create_amo_order', ['id' => $item->order_id]) }}" >
                                 api create amo lead
                             </a>
@@ -297,13 +297,20 @@
                             </a>
                         @endif
                         <br>
-                        Оллата <b>{{ $paymentMethod[$item->paymentMethod] }}</b>
-                        статус <b>{{ $paymentStatus[$item->paymentStatus] }}</b>
+                            @if($item->paymentMethod != 0 || $item->paymentStatus != 0)
+                                Оллата <b>{{ $paymentMethod[$item->paymentMethod] }}</b>
+                                статус <b>{{ $paymentStatus[$item->paymentStatus] }}</b>
+                            @else
+                                статус <b> не оформлен </b>
+                                @isset($orderData['step'])
+                                    step -  <b>{{ $orderData['step'] }}</b>
+                                    <a class="button" href="{{ route('cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $item->order_id]) }}" >
+                                        test CART
+                                    </a>
+                                @endisset
+                            @endif
                         <br>
-                        @isset($orderData['step'])
-                            step -  <b>{{ $orderData['step'] }}</b>
-                            <br>
-                        @endisset
+
                         дата опл <b>{{ $item->paymentDate }}</b>
                         <br>
                         Инвойс <b>{{ $invoiceStatus[$item->invoiceStatus] }}</b>
@@ -425,25 +432,7 @@
                     <td>
                         <span class="position-absolute text-small button show-hide"></span>
 
-                        <a class="hide button" href="{{ route('amo_create_invoice_to_order', ['order' => $item->id]) }}" >
-                            add amo invoice to lead
-                        </a>
-                        <br>
 
-                        <a class="hide button" href="{{ route('delete_order', ['id' => $item->order_id]) }}" >delete</a><br>
-                        <a class=" button" href="{{ route('orders_test_mail', ['id' => $item->order_id]) }}" >test mail</a><br>
-                        <a class=" button" href="{{ route('orders_test_sendpulse', ['order' => $item->id]) }}" >test sendpulse</a>
-                        <br>
-
-                        <a class="hide button" href="{{ route('api_create_amo_order', ['id' => $item->order_id]) }}" >
-                            api create amo lead
-                        </a>
-                        <div class="hide">
-                            <hr><br>
-                            <a class="button" href="{{ route('paypal_button', ['id' => $item->order_id]) }}" >
-                                test paypal button
-                            </a>
-                        </div>
 
                         @if ($item->paymentMethod == 1 && $item->paymentStatus != 4)
                             <hr>
@@ -460,22 +449,51 @@
                                 </a> <br>
                             </div>
                         @endif
-                        <div class="hide">
+
+
+
+                        @if($item->paymentStatus == 0)
+                            <a class="button" href="{{ route('cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $item->order_id]) }}" >
+                                test CART
+                            </a>
+                        @else
+                            <a class="hide button" href="{{ route('amo_create_invoice_to_order', ['order' => $item->id]) }}" >
+                                add amo invoice to lead
+                            </a>
                             <br>
-                            <a class="button" href="{{ route('test_get_url', [ 'order_id' => $item->id]) }}" >
-                                test Icredit
-                            </a> <br>
-                        </div>
-                        <div class="hide">
+
+                            <a class="hide button" href="{{ route('delete_order', ['id' => $item->order_id]) }}" >delete</a><br>
+                            <a class=" button" href="{{ route('orders_test_mail', ['id' => $item->order_id]) }}" >test mail</a><br>
+                            <a class=" button" href="{{ route('orders_test_sendpulse', ['order' => $item->id]) }}" >test sendpulse</a>
                             <br>
-                            <a class="button" href="{{ route('paypal_button', [ 'order_id' => $item->order_id]) }}" >
-                                test PayPal
+
+                            <a class="hide button" href="{{ route('api_create_amo_order', ['id' => $item->order_id]) }}" >
+                                api create amo lead
+                            </a>
+                            <div class="hide">
+                                <hr><br>
+                                <a class="button" href="{{ route('paypal_button', ['id' => $item->order_id]) }}" >
+                                    test paypal button
+                                </a>
+                            </div>
+
+                            <div class="hide">
+                                <br>
+                                <a class="button" href="{{ route('test_get_url', [ 'order_id' => $item->id]) }}" >
+                                    test Icredit
+                                </a> <br>
+                            </div>
+                            <div class="hide">
+                                <br>
+                                <a class="button" href="{{ route('paypal_button', [ 'order_id' => $item->order_id]) }}" >
+                                    test PayPal
+                                </a> <br>
+                            </div>
+                            <br>
+                            <a class="button" href="{{ route('api_order_view', [ 'order_id' => $item->order_id]) }}" >
+                                распечатать заказ
                             </a> <br>
-                        </div>
-                        <br>
-                        <a class="button" href="{{ route('api_order_view', [ 'order_id' => $item->order_id]) }}" >
-                            распечатать заказ
-                        </a> <br>
+                        @endif
                     </td>
 
                 </tr>
