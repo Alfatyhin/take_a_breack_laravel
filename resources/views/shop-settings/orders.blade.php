@@ -442,6 +442,7 @@
                             </a>
                         @endif
 
+
                         @if ($item->invoiceStatus == 0 && $item->paymentStatus != 0)
                             <div class="hide">
                                 <br>
