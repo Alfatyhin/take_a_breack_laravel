@@ -305,11 +305,12 @@
                                 @isset($orderData['step'])
                                     step -  <b>{{ $orderData['step'] }}</b>
                                     <a class="button" href="{{ route('cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $item->order_id]) }}" >
-                                        test CART
+                                        проверить на ошибки
                                     </a>
                                 @endisset
                             @endif
                         <br>
+
 
                         дата опл <b>{{ $item->paymentDate }}</b>
                         <br>
