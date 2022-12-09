@@ -728,9 +728,11 @@
                                                 @else
                                                     <select name="variables[{{ $kv }}][options][{{ $ko }}][var_option_id]">
                                                         <option value="">not value</option>
-                                                        @foreach($option_data_values as $kc => $data_value)
-                                                            <option value="{{ $kc }}">{{ $data_value['text'] }}</option>
-                                                        @endforeach
+                                                        @isset($option_data_values)
+                                                            @foreach($option_data_values as $kc => $data_value)
+                                                                <option value="{{ $kc }}">{{ $data_value['text'] }}</option>
+                                                            @endforeach
+                                                        @endisset
                                                     </select>
                                                 @endisset
                                                 <br>

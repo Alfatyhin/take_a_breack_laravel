@@ -390,12 +390,7 @@ class ShopController extends Controller
                         'date' => 'required|date_format:Y-n-j',
                         'order_data' => 'required|json'
                     ];
-                    $messages['date.required'] = 'required';
-                    $messages['date.date_format'] = 'format:Y-n-j';
-                    $messages['order_data.required'] = 'required';
-                    $messages['order_data.json'] = 'required';
-
-                    Validator::make($post, $validate_array, $messages)->validate();
+                    $this->validate($request, $validate_array);
                     unset($validate_array);
 
                     $post['order_data'] = json_decode($post['order_data'], true);
