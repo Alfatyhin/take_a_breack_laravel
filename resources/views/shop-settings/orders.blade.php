@@ -436,7 +436,7 @@
                             <hr>
                             <hr>
                             @foreach($orderData as $k => $v)
-                                @if(is_string($v) && empty($v))
+                                @if(is_string($v) || empty($v))
                                     <p>{{ $k }} - {{ $v }}</p>
                                 @else
                                     <hr>
