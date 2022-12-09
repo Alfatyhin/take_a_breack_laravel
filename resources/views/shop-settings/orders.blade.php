@@ -255,7 +255,7 @@
                     </a> <br>
 
                     <a class="button" href="{{ route('cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $orderSearch->order_id]) }}" >
-                        test step 3
+                        test CART
                     </a>
                     <hr>
                     @if ($errors->any())
