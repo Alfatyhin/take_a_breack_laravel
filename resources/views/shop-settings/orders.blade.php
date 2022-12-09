@@ -403,7 +403,10 @@
 
                         @isset($orderData['order_data']['discount'])
                             <hr>
-                            <b>Скидка купон:</b>
+                            <b>Скидка купон:
+                            </b>
+                                {{ $orderData['order_data']['discount']['code'] }} -
+                                {{ $orderData['order_data']['discount']['text'] }}
                         @endisset
                         @isset($orderData['delivery'])
                             @if($orderData['delivery'] == 'delivery')
@@ -430,7 +433,17 @@
 
                         @endisset
                         <div class="hide">
-                            {{ $item->orderData }}
+                            <hr>
+                            <hr>
+                            @foreach($orderData as $k => $v)
+                                @if(is_string($v) && empty($v))
+                                    <p>{{ $k }} - {{ $v }}</p>
+                                @else
+                                    <hr>
+                                    <p>{{ $k }} - @php(print_r($v))</p>
+                                    <hr>
+                                @endif
+                            @endforeach
                         </div>
 
                     </td>
