@@ -96,8 +96,18 @@
                         </a>
                     @endif
                     <br>
-                    Оллата <b>{{ $paymentMethod[$orderSearch->paymentMethod] }}</b>
-                    статус <b>{{ $paymentStatus[$orderSearch->paymentStatus] }}</b>
+                        @if($orderSearch->paymentMethod != 0 || $orderSearch->paymentStatus != 0)
+                            Оллата <b>{{ $paymentMethod[$orderSearch->paymentMethod] }}</b>
+                            статус <b>{{ $paymentStatus[$orderSearch->paymentStatus] }}</b>
+                        @else
+                            статус <b> не оформлен </b>
+                            @isset($orderData['step'])
+                                step -  <b>{{ $orderData['step'] }}</b>
+                                <a class="button" href="{{ route('cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $orderSearch->order_id]) }}" >
+                                    проверить корзину
+                                </a>
+                            @endisset
+                        @endif
                     <br>
                     @isset($orderData['step'])
                         step -  <b>{{ $orderData['step'] }}</b>
@@ -253,10 +263,6 @@
                     <a class="button" href="{{ route('api_order_view', [ 'order_id' => $orderSearch->order_id]) }}" >
                         распечатать заказ
                     </a> <br>
-
-                    <a class="button" href="{{ route('cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $orderSearch->order_id]) }}" >
-                        test CART
-                    </a>
                     <hr>
                     @if ($errors->any())
                         <h3>errors</h3>
