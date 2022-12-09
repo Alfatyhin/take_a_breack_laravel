@@ -418,7 +418,15 @@ class ShopController extends Controller
                     $validate_array['order_data'] = "required";
 
                     if ($lost_order) {
-                        dd($messages);
+
+                        $validator = Validator::make($post, $validate_array, $messages);
+                        if ($validator->fails()) {
+                            return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
+                                ->withErrors($validator)
+                                ->withInput();
+                        }
+                        $validator->validate();
+                        unset($validate_array);
                     } else {
                         Validator::make($post, $validate_array, $messages)->validate();
                     }
@@ -435,7 +443,13 @@ class ShopController extends Controller
                         $messages['house.required'] = 'required';
                         $messages['city.required'] = 'required';
 
-                        Validator::make($post, $validate_array, $messages)->validate();
+                        $validator = Validator::make($post, $validate_array, $messages);
+                        if ($validator->fails()) {
+                            return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
+                                ->withErrors($validator)
+                                ->withInput();
+                        }
+                        $validator->validate();
                         unset($validate_array);
                     } else {
                         $this->validate($request, $validate_array);
@@ -485,8 +499,18 @@ class ShopController extends Controller
                         ];
                         $validate_array['city'] = "required";
                         $post['city'] = '';
-                        if (!empty($post['test'])) {
-                            dd($messages);
+
+
+                        if ($lost_order) {
+
+                            $validator = Validator::make($post, $validate_array, $messages);
+                            if ($validator->fails()) {
+                                return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
+                                    ->withErrors($validator)
+                                    ->withInput();
+                            }
+                            $validator->validate();
+                            unset($validate_array);
                         } else {
                             Validator::make($post, $validate_array, $messages)->validate();
                         }
@@ -498,14 +522,30 @@ class ShopController extends Controller
 
                     $min_summ_order = $delivery['min_sum_order'];
                     if ($order_price < $min_summ_order) {
-                        dd(__('shop-cart.минимальная сумма заказа') . ' ' . $min_summ_order . ' ₪ !');
+//                        dd(__('shop-cart.минимальная сумма заказа') . ' ' . $min_summ_order . ' ₪ !');
                         $messages = [
                             'min_summ_order.required' => __('shop-cart.минимальная сумма заказа') . ' ' . $min_summ_order . ' ₪ !',
                         ];
 
-                        dd('test 3', $min_summ_order, $messages );
-                        $validate_array1['min_summ_order'] = "required";
-                        Validator::make($post, $validate_array1, $messages )->validate();
+                        $validate_array['min_summ_order'] = "required";
+
+                        $validator = Validator::make($post, $validate_array, $messages);
+                        if ($lost_order) {
+                            if ($validator->fails()) {
+                                return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
+                                    ->withErrors($validator)
+                                    ->withInput();
+                            }
+                        } else {
+                            if ($validator->fails()) {
+                                return redirect(route('cart', ['lang' => $lang, 'step' => 2]))
+                                    ->withErrors($validator)
+                                    ->withInput();
+                            }
+                        }
+
+                        $validator->validate();
+                        unset($validate_array);
                     }
 
                     if (empty($delivery['rate_delivery_to_summ_order'])) {
@@ -521,12 +561,22 @@ class ShopController extends Controller
 
 
                 if(isset($post['otherPerson'])) {
+                    $validate_array['user-phone'] = 'required';
                     $validate_array['nameOtherPerson'] = 'required';
-                    $validate_array['phoneOtherPerson'] = 'required';
+                    $post['phoneOtherPerson'] = $post['user-phone'];
                 }
 
                 if (isset($validate_array)) {
-                    $this->validate($request, $validate_array);
+                    if ($lost_order) {
+                        $validator = Validator::make($post, $validate_array);
+                        if ($validator->fails()) {
+                            return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
+                                ->withErrors($validator)
+                                ->withInput();
+                        }
+                    } else {
+                        $this->validate($request, $validate_array);
+                    }
                 }
 
                 $order = Orders::where('order_id', $post['order_id'])->first();
