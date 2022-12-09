@@ -469,17 +469,17 @@
                                 </a> <br>
                             </div>
                         @endif
+                        <a class="hide button" href="{{ route('delete_order', ['id' => $item->order_id]) }}" >delete</a><br>
 
 
-                        @if($item->paymentStatus != 0)
+                    @if($item->paymentStatus != 0)
 
                             <a class="hide button" href="{{ route('amo_create_invoice_to_order', ['order' => $item->id]) }}" >
                                 add amo invoice to lead
                             </a>
                             <br>
 
-                            <a class="hide button" href="{{ route('delete_order', ['id' => $item->order_id]) }}" >delete</a><br>
-                            <a class=" button" href="{{ route('orders_test_mail', ['id' => $item->order_id]) }}" >test mail</a><br>
+                             <a class=" button" href="{{ route('orders_test_mail', ['id' => $item->order_id]) }}" >test mail</a><br>
                             <a class=" button" href="{{ route('orders_test_sendpulse', ['order' => $item->id]) }}" >test sendpulse</a>
                             <br>
 
