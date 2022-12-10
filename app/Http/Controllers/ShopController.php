@@ -256,13 +256,16 @@ class ShopController extends Controller
 
         $post = $request->post();
 
+        $orderData = false;
         if ($lost_order) {
             $order = Orders::where('order_id', $lost_order)->first();
             $post = json_decode($order->orderData, true);
+            if (isset($post['order_data_jsonform'])) {
+                $post['order_data'] = json_encode($post['order_data_jsonform']);
+            }
         }
-        $orderData = false;
 
-        if ($step == 2 && !$lost_order) {
+        if ($step == 2) {
 
             if (!empty($post)) {
                 $post['step'] = $step;
@@ -277,15 +280,14 @@ class ShopController extends Controller
                         'email' => 'required|email:rfc,dns',
                         'order_data' => 'required|json'
                     ];
-                    if (!isset($post['clientName'])) {
-                        dd($post);
-                    }
 
-                    if (!empty($post['clientBirthDay'])) {
-                        $validate_array['clientBirthDay'] = 'required|date_format:Y-m-d';
+                    $validator = Validator::make($post, $validate_array);
+                    if ($validator->fails()) {
+                        return redirect(route('cart', ['lang' => $lang, 'step' => 1, 'order_id' => $lost_order]))
+                            ->withErrors($validator)
+                            ->withInput();
                     }
-
-                    $this->validate($request, $validate_array);
+                    $validator->validate();
 
                     $post['email'] = strtolower($post['email']);
                     $post['email'] = str_replace(' ', '', $post['email']);
@@ -360,7 +362,9 @@ class ShopController extends Controller
                     WebhookLog::addLog('new order step 2 order_id', $order->order_id);
 
 
+                    $order_data_jsonform = $post['order_data'];
                     $orderData = OrderService::getShopOrderData($post);
+                    $orderData['order_data_jsonform'] = $order_data_jsonform;
                     $order->clientId = $client->id;
                     if (isset($post['gClientId'])) {
                         $order->gclientId = $post['gClientId'];
@@ -639,6 +643,11 @@ class ShopController extends Controller
         $user_country = AppServise::getCountryFromIP($ip);
         $all_countries = AppServise::getAllCountries();
 
+        if (!$lost_order) {
+            $orderData['order_data_jsonform'] = false;
+        }
+
+
         return view("shop.new.cart-master", [
             'v' => $this->v,
             'lang' => $lang,
@@ -648,6 +657,8 @@ class ShopController extends Controller
             'rand_keys' => $rand_keys,
             'order_number' => $order_number,
             'order_data' => $orderData,
+            'lost_order' => $lost_order,
+            'order_data_jsonform' => $orderData['order_data_jsonform'],
             'shop_setting' => $shop_setting,
             'delivery' => $delivery,
             'cityes' => $cityes,

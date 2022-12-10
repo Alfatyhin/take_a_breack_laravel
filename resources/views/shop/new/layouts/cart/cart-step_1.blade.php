@@ -51,15 +51,12 @@
                 <span>{{ __('shop-cart.Согласен с') }} <a href="#">{{ __('shop-cart.политикой конфиденциальности') }}</a></span>
 
                 <div>
-
-                    <input class="order_data" type="hidden" name="order_data">
-                    @error('order_data')
-                    <p class="errors">error get products data</p>
-                    @enderror
+                    @include('shop.new.layouts.cart.order_data')
                 </div>
+
                 <div class="pay__acttion">
                     <button>
-                        <a href="{{ url()->previous() }}">
+                        <a href="{{ route('index', ['lang' => $lang]) }}">
                         </a>
                         {{ __('shop-cart.Вернуться к товарам') }}
                     </button>

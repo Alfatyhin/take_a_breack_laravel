@@ -7,6 +7,7 @@
         </div>
 
 
+        <h3>Order {{ $order_number }}</h3>
         @error('order_data')
         <p class="errors">{{ $message }}</p><p></p>
         @enderror
@@ -163,17 +164,14 @@
                         </label>
                     </div>
                 </div>
-                <div>
 
-                    <input class="order_data" type="hidden" name="order_data">
-                    @error('order_data')
-                    <p class="errors">error get products data</p>
-                    @enderror
+                <div>
+                    @include('shop.new.layouts.cart.order_data')
                 </div>
 
                 <div class="pay__acttion">
                     <button>
-                        <a href="{{ route('cart', ['lang' => $lang]) }}">
+                        <a href="{{ route('cart', ['lang' => $lang, 'step' => 2, $lost_order]) }}">
                         </a>
                         {{ __('shop.Назад') }}
                     </button>

@@ -67,9 +67,13 @@
                     <textarea name="client_comment" class="order__comment blockTextField" ></textarea>
                 </div>
 
+                <div>
+                  @include('shop.new.layouts.cart.order_data')
+                </div>
+
                 <div class="pay__acttion">
                     <button>
-                        <a href="{{ back() }}">
+                        <a href="{{ route('cart', ['lang' => $lang, 'step' => 2, $lost_order]) }}">
                         </a>
                         {{ __('shop.Назад') }}
                     </button>
@@ -79,7 +83,6 @@
                         {{ __('shop-cart.Оплатить') }}
                     </button>
                 </div>
-                <input class="order_data" type="hidden" name="order_data">
             </form>
         </div>
     </div>
