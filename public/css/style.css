@@ -343,7 +343,7 @@
  }
  
  .container {
-   max-width: 90%;
+   /*max-width: 90%;*/
    padding: 0 15px;
    margin: 0 auto;
  }
@@ -1049,6 +1049,7 @@
    margin-right: 10px;
    margin-top: 5px;
    margin-bottom: 50px;
+     padding-left: 20px;
  }
  
  .category::before {
@@ -1163,9 +1164,12 @@
  .card__item {
    -webkit-box-sizing: border-box;
            box-sizing: border-box;
-   width: calc(33.33% - 40px);
-   position: relative;
-   margin: 0 20px 20px;
+   /*width: calc(33.33% - 40px);*/
+   /*position: relative;*/
+   /*margin: 0 20px 20px;*/
+     width: calc(33.33% - 20px);
+     position: relative;
+     margin: 0 10px 10px;
    text-decoration: none;
    color: #2A2A2A;
    font-family: "Roboto", sans-serif;
@@ -1224,7 +1228,7 @@
  
  .card__item .card-img {
    position: relative;
-   max-width: 320px;
+   /*max-width: 320px;*/
    text-align: center;
    margin: 0 auto;
    -webkit-transition: .35s ease;
