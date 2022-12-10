@@ -499,7 +499,7 @@ class ShopController extends Controller
                     if (!isset($delivery_setting['cityes_data'][$post['city_id']])) {
 
                         $messages = [
-                            'city.required' => 'there is no delivery to the city ' . $post['city'],
+                            'city.required' => __('shop-cart.нет доставки в город') . " " . $post['city'],
                         ];
                         $validate_array['city'] = "required";
                         $post['city'] = '';
