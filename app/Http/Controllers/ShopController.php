@@ -281,6 +281,10 @@ class ShopController extends Controller
                         'order_data' => 'required|json'
                     ];
 
+                    if ($lost_order) {
+                        unset($validate_array['order_data']);
+                    }
+
                     $validator = Validator::make($post, $validate_array);
                     if ($validator->fails()) {
                         return redirect(route('cart', ['lang' => $lang, 'step' => 1, 'order_id' => $lost_order]))
@@ -345,13 +349,16 @@ class ShopController extends Controller
                     session(['client' => $client]);
                     ////////////////////////////////////////////
 
-
                     if (isset($post['order_id'])) {
-                        $order = Orders::where('order_id', $post['order_id'])->first();
+
+                        $order = Orders::withTrashed()->where('order_id', $post['order_id'])->first();
+
+                        if ($order->trashed()) {
+                            $order->restore();
+                        }
 
                         if (!$order) {
-                            $order = new Orders();
-                            $order->order_id = $post['order_id'];
+                            dd('order not found');
                         }
 
                     } else {
@@ -583,7 +590,11 @@ class ShopController extends Controller
                     }
                 }
 
-                $order = Orders::where('order_id', $post['order_id'])->first();
+                $order = Orders::withTrashed()->where('order_id', $post['order_id'])->first();
+
+                if ($order->trashed()) {
+                    $order->restore();
+                }
 
                 if ($order) {
                     $order_data = json_decode($order->orderData, true);
