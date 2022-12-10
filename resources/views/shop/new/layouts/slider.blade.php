@@ -13,7 +13,7 @@
         <a href="{{ $rout }}"
            class="recblock__item">
             <div class="item-img">
-                <img src="{{ $product->image['image160pxUrl'] }}" title="{{ $product->name }}" alt="{{ $product->name }}">
+                <img src="{{ $product->image['image400pxUrl'] }}" title="{{ $product->name }}" alt="{{ $product->name }}">
             </div>
             <div class="item__text">
                 <p>
