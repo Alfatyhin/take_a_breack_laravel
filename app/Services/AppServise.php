@@ -122,7 +122,7 @@ class AppServise
             $product_options[$k]['nameTranslated'] = json_decode($item['nameTranslate'], true);
         }
 
-        foreach ($products as &$product) {
+        foreach ($products as $product_key => &$product) {
             $product->in_stock = false;
             $product->sale = false;
             unset($options);
@@ -217,8 +217,19 @@ class AppServise
                 }
                 $product->variables = $variables;
             } else {
-                if ($product->unlimited == 1 && $product->count > 0) {
+
+                if ($product->unlimited == 0 && $product->count > 0) {
                     $product->in_stock = true;
+                }
+
+
+                if ($product->unlimited == 0 && $product->count <= 0) {
+                    $product->count = 0;
+                    $product->enabled = 0;
+                    unset($product->in_stock);
+                    unset($product->sale);
+                    $product->save();
+                    unset($products[$product_key]);
                 }
             }
 

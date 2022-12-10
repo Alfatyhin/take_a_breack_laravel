@@ -73,7 +73,7 @@ class ShopController extends Controller
 
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
         $categories = AppServise::CategoriesShopPrepeare($categories);
-        $products_all = Product::where('enabled', 1)->whereIn('id', $category_products)->get()->sortBy('index_num')->keyBy('id');
+        $products_all = Product::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
         $products = AppServise::ProductsShopPrepeare($products_all, $categories);
 
 
