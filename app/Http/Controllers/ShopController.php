@@ -643,8 +643,8 @@ class ShopController extends Controller
         $user_country = AppServise::getCountryFromIP($ip);
         $all_countries = AppServise::getAllCountries();
 
-        if (!$lost_order) {
-            $orderData['order_data_jsonform'] = false;
+        if (!$lost_order || !$orderData || !$orderData['order_data_jsonform']) {
+            $orderData['order_data_jsonform'] = '';
         }
 
 
