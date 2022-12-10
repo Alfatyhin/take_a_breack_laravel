@@ -39,8 +39,12 @@
 @stop
 
 @section('popup')
-    <h3>{{ __('shop-thanks.ваш заказ оформлен') }}</h3>
-    <p>{{ __('shop-thanks.Ожидайте подтверждение заказа!') }}</p>
+    @if($step == 3)
+        <div class="shop-thanks">
+            <h3 class="shop-thanks">{{ __('shop-thanks.ваш заказ оформлен') }}</h3>
+            <p class="shop-thanks">{{ __('shop-thanks.Ожидайте подтверждение заказа!') }}</p>
+        </div>
+    @endif
 @stop
 
 
