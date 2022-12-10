@@ -4420,7 +4420,7 @@ p.errors.errors.errors.errors.errors.errors.errors.errors.errors.errors {
 
 
 
-.popup__content .shop-thanks{
+.popup__content > .shop-thanks{
   padding: 70px;
 }
 
