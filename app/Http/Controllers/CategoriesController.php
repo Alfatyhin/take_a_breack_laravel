@@ -66,11 +66,14 @@ class CategoriesController extends Controller
 
         if (!empty($category->id)) {
 
-            $validate_array = [
-                'slag' => 'required|unique:categories,slag',
-            ];
+            if ($category->id != $category_id) {
 
-            $this->validate($request, $validate_array);
+                $validate_array = [
+                    'slag' => 'required|unique:categories,slag',
+                ];
+
+                $this->validate($request, $validate_array);
+            }
 
             if (!empty($post['name'])) {
                 $category->name = $post['name'];
