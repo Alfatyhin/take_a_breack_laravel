@@ -878,17 +878,10 @@ class ShopSettingController extends Controller
         $old_amo_id = '23566915';
 
         $order = OrdersModel::where('id', $orderId)->first();
-        $new_order = new OrdersModel();
         $order_id = rand(100, 999);
-        $new_order->order_id = AppServise::generateOrderId($order_id, 'S');
-        $new_order->clientId = $order->clientId;
-        $new_order->gclientId = $order->gclientId;
-        $new_order->paymentMethod = $order->paymentMethod;
-        $new_order->paymentStatus = $order->paymentStatus;
-        $new_order->orderPrice = $order->orderPrice;
-        $new_order->orderData = $order->orderData;
-        $new_order->save();
-        dd($order->toArray(), $new_order->toArray());
+        $order->order_id = AppServise::generateOrderId($order_id, 'S');
+
+        dd($order->toArray());
     }
 
 }
