@@ -104,9 +104,6 @@ class Amocrm extends Controller
 
             foreach ($post['leads'] as $event => $items) {
 
-                if($request->get('test') != 1) {
-                    WebhookLog::addLog('amo web hook leads ' . $event, $post);
-                }
 
                 if ($event == 'status' || $event == 'update') { // изменение статуса
                     foreach ($items as $item) {
@@ -128,6 +125,9 @@ class Amocrm extends Controller
                         if (isset($orer_id)) {
 
 
+                            if($request->get('test') != 1) {
+                                WebhookLog::addLog('amo web hook leads ' . $event, $post);
+                            }
 
                             $order = Orders::where('order_id', $orer_id)->first();
 
