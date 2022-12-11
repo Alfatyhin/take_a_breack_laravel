@@ -880,7 +880,7 @@ class ShopSettingController extends Controller
         $order = OrdersModel::where('id', $orderId)->first();
         $new_order = new OrdersModel();
         $order_id = rand(100, 999);
-        $order->order_id = AppServise::generateOrderId($order_id, 'S');
+        $new_order->order_id = AppServise::generateOrderId($order_id, 'S');
         $new_order->clientId = $order->clientId;
         $new_order->gclientId = $order->gclientId;
         $new_order->paymentMethod = $order->paymentMethod;
