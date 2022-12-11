@@ -826,10 +826,22 @@ function cartInitProducts(cart){
         el[i].remove();            
     }
     let rootElement = $(".pay-cart__box");
-    if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
-    else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
-
     let isPromoCodeActive = JSON.parse(localStorage.getItem("promo") || "[]");
+
+    let ordData = $("input.order_data")
+    if( ordData[0].value != "" ){
+        cart =  JSON.parse(ordData[0].value).products
+        isPromoCodeActive =  JSON.parse(ordData[0].value).promo
+    } 
+    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem("promo", JSON.stringify(isPromoCodeActive));
+
+
+    if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
+    else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"    
+     
+   
+
     if(isPromoCodeActive.result != "sugess") $(".discount")[0].closest("p").style.display = "none"
     else if(isPromoCodeActive.result == "sugess")  $(".discount")[0].closest("p").style.display = "flex"
     for (let i = cart.length-1; i > -1 ; i--) {
@@ -1510,7 +1522,7 @@ if($("#cart").length)
     function setOrderDate(){
         let cart = JSON.parse(localStorage.getItem("cart") || "[]");
         let promo = JSON.parse(localStorage.getItem("promo") || "[]");
-        let response = {products: cart, promo_code: promo.name}
+        let response = {products: cart, promo_code: promo.name, promo: promo}
         $("input[name='order_data']")[0].value = JSON.stringify(response)
     }
 
