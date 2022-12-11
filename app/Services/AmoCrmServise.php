@@ -857,7 +857,7 @@ class AmoCrmServise
     }
 
     public function updateLead($lead, $amoData)
-    {;
+    {
         $apiClient = $this->getApiClient();
         $leadsService = $apiClient->leads();
         ///////////////////////////////////////////////////////////////////////////
@@ -986,14 +986,23 @@ class AmoCrmServise
         }
         $leadCustomFieldsValues = $this->addUrlCustomFieldValuesModel($leadCustomFieldsValues, 519327, "https://takeabreak.co.il/api/orders/view-order/" . $amoData['order_id']);
 
+        if(isset($amoData['order name'])) {
+            $lead = $lead->setName($amoData['order name']);
+        }
+        if(isset($amoData['order price'])) {
+            $lead->setName($amoData['order price']);
+        }
+        if(isset($amoData['pipelineId'])) {
+            $lead->setName($amoData['pipelineId']);
+        }
+        if(isset($amoData['statusId'])) {
+            $lead->setName($amoData['statusId']);
+        }
+        if(isset($amoData['order_id'])) {
+            $lead->setName($amoData['order_id']);
+        }
 
-        // комнплексное создание сделки
-        $lead->setName($amoData['order name'])
-            ->setPrice($amoData['order price'])
-            ->setCustomFieldsValues($leadCustomFieldsValues) // прикрепление к сделке значений из полей выше
-            ->setPipelineId($amoData['pipelineId'])
-            ->setStatusId($amoData['statusId'])
-            ->setRequestId($amoData['order_id']);
+        $lead->setCustomFieldsValues($leadCustomFieldsValues);
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
