@@ -426,6 +426,12 @@ class GreenInvoiceService
 
         ];
 
+        $site = env('APP_NAME');
+
+        if ($site == 'Take a Break Server') {
+            dd('invoice to '.$site.' create disabled');
+        }
+
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => $url,
