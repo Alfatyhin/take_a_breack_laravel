@@ -107,10 +107,10 @@
                 </ul>
             </div>
             <div>
-                <a class="social-link" href="#">Facebook</a>
+                <a class="social-link" href="https://www.facebook.com/TABdesserts/">Facebook</a>
             </div>
             <div>
-                <a class="social-link" href="#">Instagram</a>
+                <a class="social-link" href="https://www.instagram.com/takeabreak_desserts/">Instagram</a>
             </div>
             @auth()
                 @if(Auth::user()->user_role == 'admin' )
