@@ -220,7 +220,7 @@ class ProductController extends Controller
             $new_variable['defaultDisplayedPrice'] = 0;
 
             foreach ($new_variable['options'] as $ko => $optionv) {
-                if ($optionv['var_option_id'] == '') {
+                if (!isset($optionv['var_option_id']) || $optionv['var_option_id'] == '') {
                     unset($new_variable['options'][$ko]);
                 }
             }
