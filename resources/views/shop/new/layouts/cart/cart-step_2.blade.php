@@ -7,7 +7,10 @@
         </div>
 
 
-        <h3>Order {{ $order_number }}</h3>
+        @if(env('APP_NAME') == 'Take a Break Server')
+            <h3>Order {{ $order_number }}</h3>
+        @endif
+
         @error('order_data')
         <p class="errors">{{ $message }}</p><p></p>
         @enderror

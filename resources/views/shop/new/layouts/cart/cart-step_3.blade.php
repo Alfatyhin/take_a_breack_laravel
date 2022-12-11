@@ -6,6 +6,9 @@
             <div class="active">03 <span>{{ __('shop-cart.ОПЛАТА') }}</span></div>
         </div>
 
+        @if(env('APP_NAME') == 'Take a Break Server')
+            <h3>Order {{ $order_number }}</h3>
+        @endif
 
         @error('order_data')
         <p class="errors">{{ $message }}</p><p></p>
