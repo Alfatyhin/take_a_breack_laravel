@@ -92,11 +92,11 @@ class Amocrm extends Controller
             $test = true;
         } else {
             $test = false;
-            $post = $request->post();
+            $post = $request->all();
         }
 
 
-        WebhookLog::addLog('amo web hook ', $post);
+        WebhookLog::addLog('amo web hook', $post);
 
         if (!empty($post['leads'])) {
 //            WebhookLog::addLog('amo web hook ', $post);

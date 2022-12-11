@@ -48,7 +48,7 @@ Route::any('crm', array(ShopSettingController::class, 'index'))->name('crm_index
 ////////////////////////////////////////////////////////////////////////////
 
 
-Route::get('/amocrm/callback', [Amocrm::class, 'callBack']);
+Route::any('/amocrm/callback', [Amocrm::class, 'callBack']);
 
 Route::any('/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
     ->name('amo_webhook');
