@@ -886,6 +886,10 @@ class ShopSettingController extends Controller
 
         $AmoService = new AmoCrmServise();
         $amo_order = $AmoService->getOrderById($order->amoId);
+
+        $amoData = json_decode($order['orderData'], true);
+        $orderService = new OrderService();
+        $amoData = $orderService::getShopAmoDataLead($amoData);
         $amoData['order_id'] = $order->order_id;
         $AmoService->updateLead($amo_order, $amoData);
         $amo_order_new = $AmoService->getOrderById($order->amoId);
