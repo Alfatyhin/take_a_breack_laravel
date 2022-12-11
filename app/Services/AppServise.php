@@ -142,9 +142,12 @@ class AppServise
                 }
             } else {
                 foreach ($product->variables as $variable) {
-                    if ($variable['defaultDisplayedPrice'] < $variable['compareToPrice']) {
-                        $product->sale = true;
+                    if (isset($variable['compareToPrice'])) {
+                        if ($variable['compareToPrice'] && $variable['defaultDisplayedPrice'] < $variable['compareToPrice']) {
+                            $product->sale = true;
+                        }
                     }
+
                 }
             }
 
