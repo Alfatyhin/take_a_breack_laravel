@@ -887,6 +887,7 @@ class ShopSettingController extends Controller
         $new_order->paymentStatus = $order->paymentStatus;
         $new_order->orderPrice = $order->orderPrice;
         $new_order->orderData = $order->orderData;
+        $new_order->save();
         dd($order->toArray(), $new_order->toArray());
     }
 
