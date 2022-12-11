@@ -85,11 +85,14 @@ class Amocrm extends Controller
     public function amoWebhook(Request $request)
     {
         $test = false;
-        $post = $request->all();
+        $post = $request->post();
+
+
+        WebhookLog::addLog('amo web hook', $post);
 
         http_response_code(200);
 
-        WebhookLog::addLog('amo web hook', $post);
+        print_r($post);
 
         if (!empty($post['leads'])) {
 //            WebhookLog::addLog('amo web hook ', $post);
