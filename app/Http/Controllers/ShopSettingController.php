@@ -886,8 +886,11 @@ class ShopSettingController extends Controller
 
         $AmoService = new AmoCrmServise();
         $amo_order = $AmoService->getOrderById($order->amoId);
+        $amoData['order_id'] = $order->order_id;
+        $AmoService->updateLead($amoData);
+        $amo_order_new = $AmoService->getOrderById($order->amoId);
 
-        dd($amo_order);
+        dd($amo_order, $amo_order_new);
     }
 
 }
