@@ -46,10 +46,10 @@
                                data-text_delivery="{{ __('shop-cart.Выберите дату доставки') }}"
                                data-text_pickup="{{ __('shop-cart.Выберите дату самовывоза') }}"
                                type="text" name="date" readonly value="{{ old('date') }}">
-                    </label>
-                    @error('date')
+                        @error('date')
                         <p class="errors">{{ $message }}</p>
-                    @enderror
+                        @enderror
+                    </label>
 
 
                     <label class="@if($errors->has('time')) errors @endif">
@@ -64,11 +64,11 @@
                         </ul>
 
 
+                        @error('time')
+                        <p class="errors">{{ $message }}</p>
+                        @enderror
                     </label>
 
-                    @error('time')
-                        <p class="errors">{{ $message }}</p>
-                    @enderror
                 </div>
 
                 <p class="other-man">
@@ -104,16 +104,16 @@
                 <div class="delivery_address">
 
                     <label class="@if($errors->has('city')) errors @endif @if($errors->has('city_id')) errors @endif" for="">
-                        <input type="hidden" name="city_id">
+                        <input type="hidden" name="city_id" value="{{ old('city_id') }}">
                         <p>
                             {{ __('shop-cart.Город') }} *
                         </p>
-                        <input class="city_name" type="text" name="city"  value="">
-                    </label>
+                        <input class="city_name" type="text" name="city"  value="{{ old('city') }}">
 
-                    @error('city')
+                        @error('city')
                         <p class="errors">{{ $message }}</p>
-                    @enderror
+                        @enderror
+                    </label>
 
                     @error('city_id')
                         <p class="errors">{{ $message }}</p>
@@ -171,7 +171,7 @@
 
                 <div class="pay__acttion">
                     <button>
-                        <a href="{{ route('cart', ['lang' => $lang, 'step' => 2, $lost_order]) }}">
+                        <a href="{{ route('cart', ['lang' => $lang, 'step' => '', $lost_order]) }}">
                         </a>
                         {{ __('shop.Назад') }}
                     </button>
@@ -182,3 +182,10 @@
             </form>
         </div>
     </div>
+
+    <script>
+        $('.errors .show_calendar.date').on('change', function () {
+            var parent = $(this).parent();
+
+        });
+    </script>
