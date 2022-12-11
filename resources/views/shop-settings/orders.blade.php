@@ -499,6 +499,13 @@
                                     test Icredit
                                 </a> <br>
                             </div>
+
+                            <div class="hide">
+                                <br>
+                                <a class="button" href="{{ route('icredit_order_thanks', [ 'order_id' => $item->id]) }}" >
+                                    test Icredit thanks
+                                </a> <br>
+                            </div>
                             <div class="hide">
                                 <br>
                                 <a class="button" href="{{ route('paypal_button', [ 'order_id' => $item->order_id]) }}" >

@@ -226,7 +226,7 @@ Route::any('/api/test_request', [ApiRest::class, 'testRequest']);
 Route::get('/icredit', [IcreditController::class, 'index'])
     ->middleware(['isAdmin'])->name('icredit_index');
 Route::any('/orders/thanks', [IcreditController::class, 'orderThanksIcredit'])
-    ->name('order_thanks');
+    ->name('icredit_order_thanks');
 Route::any('/orders/response', [IcreditController::class, 'orderRequestIcredit'])
     ->name('icredit_hebhook');
 
