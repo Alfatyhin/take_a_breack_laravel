@@ -84,17 +84,14 @@ class Amocrm extends Controller
 
     public function amoWebhook(Request $request)
     {
-
+        $test = false;
+        $post = $request->all();
         $testData = $request->post('data-test');
         if (!empty($testData)) {
             echo "<p>test amo webhook</p><pre>";
             $post = json_decode($testData, true);
             $test = true;
-        } else {
-            $test = false;
-            $post = $request->all();
-        }
-
+        } 
 
         WebhookLog::addLog('amo web hook', $post);
 
