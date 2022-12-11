@@ -14,6 +14,7 @@ use App\Services\GreenInvoiceService;
 use App\Services\OrderService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
@@ -86,24 +87,30 @@ class Amocrm extends Controller
     {
         $test = false;
         $post = $request->post();
+        $site = env('APP_NAME');
 
+        if($request->get('test') == 1) {
+            $test = '';
+            $post = json_decode($test, true);
+            dd($post);
+        }
 
-        WebhookLog::addLog('amo web hook', $post);
 
         http_response_code(200);
 
 
         if (!empty($post['leads'])) {
-//            WebhookLog::addLog('amo web hook ', $post);
+
 
             foreach ($post['leads'] as $event => $items) {
 
-                if ($event == 'status') { // изменение статуса
+                if($request->get('test') != 1) {
+                    WebhookLog::addLog('amo web hook leads ' . $event, $post);
+                }
+
+                if ($event == 'status' || $event == 'update') { // изменение статуса
                     foreach ($items as $item) {
 
-                        echo "<hr>";
-                        var_dump($item['custom_fields']);
-                        echo "<hr>";
 
                         foreach ($item['custom_fields'] as $field) {
                             if ($field['id'] == 489653) {
@@ -131,10 +138,7 @@ class Amocrm extends Controller
                             // меняем статус
                             if($status_id != $old_status_id) {
 
-                                if ($test) {
-                                    print_r($status_id);
-//                                    dd($old_status_id);
-                                }
+
                                 $paymentStatusArray = array_flip(AppServise::getOrderPaymentStatus());
 
                                 switch ($statusPaidAmo) {
@@ -144,11 +148,13 @@ class Amocrm extends Controller
                                     case 436783:
                                         $paymentStatus = 'AWAITING_PAYMENT';
                                         break;
+                                    case 547421:
+                                        $paymentStatus = 'AWAITING_PAYMENT';
+                                        break;
                                     default:
                                         $paymentStatus = 'INCOMPLETE';
                                         break;
                                 }
-//                                dd($paymentStatus);
 
                                 $order->amoStatus = $status_id;
                                 $order->paymentStatus = $paymentStatusArray[$paymentStatus];
@@ -157,7 +163,7 @@ class Amocrm extends Controller
 
 
                                 // отправка инвойса
-                                if ($statusPaidAmo == '436781' && $order->invoiceStatus == 0) {
+                                if ($statusPaidAmo == '436781' && $order->invoiceStatus == 0 && $site != 'Take a Break Server') {
 
                                     // статус оплачено
                                     $paymentDate = new Carbon();
