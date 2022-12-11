@@ -516,6 +516,12 @@
                             <a class="button" href="{{ route('api_order_view', [ 'order_id' => $item->order_id]) }}" >
                                 распечатать заказ
                             </a> <br>
+                            <div class="hide">
+                                <br>
+                                <a class="button" href="{{ route('change_order_id', [ 'id' => $item->id]) }}" >
+                                    change order id
+                                </a> <br>
+                            </div>
                         @endif
                     </td>
 

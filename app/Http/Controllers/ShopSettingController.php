@@ -873,5 +873,9 @@ class ShopSettingController extends Controller
     }
 
 
+    public function ChangeOrderId(Request $request, OrdersModel $order)
+    {
+        dd($order);
+    }
 
 }
