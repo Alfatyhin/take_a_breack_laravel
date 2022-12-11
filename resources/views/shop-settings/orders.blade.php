@@ -502,7 +502,7 @@
 
                             <div class="hide">
                                 <br>
-                                <a class="button" href="{{ route('icredit_order_thanks', [ 'order_id' => $item->id]) }}" >
+                                <a class="button" href="{{ route('icredit_order_thanks', [ 'id' => $item->id]) }}" >
                                     test Icredit thanks
                                 </a> <br>
                             </div>
