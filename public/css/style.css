@@ -343,7 +343,7 @@
  }
  
  .container {
-   /*max-width: 90%;*/
+   max-width: 90%;
    padding: 0 15px;
    margin: 0 auto;
  }
@@ -1049,7 +1049,6 @@
    margin-right: 10px;
    margin-top: 5px;
    margin-bottom: 50px;
-     padding-left: 20px;
  }
  
  .category::before {
@@ -1478,6 +1477,7 @@
    line-height: 1.3;
    color: #2A2A2A;
    margin: 0;
+   text-align: left;
  }
  
  .product-info__price {
@@ -2637,7 +2637,8 @@
    }
    
    .pay.step_1 .pay__acttion > button.go-pay,
-   .pay.step_2 .pay__acttion > button.go-pay {
+   .pay.step_2 .pay__acttion > button.go-pay,
+   .pay.step_3 .pay__acttion > button.go-pay {
     margin-bottom: 25px;
    }
    
@@ -4461,7 +4462,7 @@ p.errors.errors.errors.errors.errors.errors.errors.errors.errors.errors {
 }
 
 
-.popup__content > .shop-thanks{
+.popup__content.shop-thanks{
   padding: 70px;
 }
 
