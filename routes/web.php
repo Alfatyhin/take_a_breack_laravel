@@ -176,7 +176,7 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
     Route::any('/orders/log-view', [Orders::class, 'OrderLogView'])
         ->name('orders_log');
 
-    Route::any('/orders/change_order_id/{id}', [ShopController::class, 'ChangeOrderId'])
+    Route::any('/orders/change_order_id/{id}', [ShopSettingController::class, 'ChangeOrderId'])
         ->name('change_order_id');
 
 
