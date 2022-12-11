@@ -267,6 +267,10 @@ class ShopController extends Controller
 
         if ($step == 2) {
 
+            if (!$lost_order) {
+//                dd($post);
+            }
+
             if (!empty($post)) {
                 $post['step'] = $step;
                 WebhookLog::addLog('new order step 2 request', $post);
@@ -694,9 +698,8 @@ class ShopController extends Controller
             $order_data = json_decode($order->orderData, true);
 
             $order_data['order_data'] = $order_data['order_data_jsonform'];
-            if ($post['premium'] != '0') {
-                $order_data['premium'] = $post['premium'];
-            }
+            $order_data['premium'] = $post['premium'];
+
 
             $orderData = OrderService::getShopOrderData($order_data);
             WebhookLog::addLog('new order step 4 order_data', $orderData);
