@@ -103,7 +103,7 @@ class IcreditController extends Controller
             $orderData = json_decode($order->orderData, true);
             $lang = $orderData['lang'];
 
-            return redirect(route("order_thanks_$lang"));
+            return redirect(route("order_thanks", ['lang'=> $lang]));
         }
     }
 
