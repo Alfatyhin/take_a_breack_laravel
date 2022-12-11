@@ -47,17 +47,10 @@ Route::any('crm', array(ShopSettingController::class, 'index'))->name('crm_index
 
 ////////////////////////////////////////////////////////////////////////////
 
-Route::get('/shop-settings/amocrm', [Amocrm::class, 'integrationAmoCrm'])
-    ->name('amocrm');
 
-Route::get('/shop-settings/amocrm/order', [Amocrm::class, 'getOrderById'])
-    ->name('amo.get_order');
+Route::get('/amocrm/callback', [Amocrm::class, 'callBack']);
 
-Route::get('/shop-settings/amocrm/callback', [Amocrm::class, 'callBack']);
-
-Route::get('/shop-settings/amocrm/pipeline-test', [Amocrm::class, 'pipelineTest']);
-
-Route::any('/shop-settings/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
+Route::any('/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
     ->name('amo_webhook');
 
 ////////////////////////////////////////////////////////////////////////////
@@ -65,10 +58,17 @@ Route::any('/shop-settings/amocrm/amowebhok', [Amocrm::class, 'amoWebhook'])
 
 Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () {
 
+    Route::get('/amocrm', [Amocrm::class, 'integrationAmoCrm'])
+        ->name('amocrm');
+
+    Route::get('/amocrm/order', [Amocrm::class, 'getOrderById'])
+        ->name('amo.get_order');
+
+    Route::get('/amocrm/pipeline-test', [Amocrm::class, 'pipelineTest']);
 
     Route::any('/users', [Controller::class, 'allUsers'])->name('users');
 
-    Route::any('shop-settings/amo/create-invoice-to-order/{order}', [Orders::class, 'createAmoInvoiceToOrder'])
+    Route::any('amo/create-invoice-to-order/{order}', [Orders::class, 'createAmoInvoiceToOrder'])
         ->name('amo_create_invoice_to_order');
 
 
