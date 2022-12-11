@@ -147,7 +147,6 @@ class AppServise
                             $product->sale = true;
                         }
                     }
-
                 }
             }
 
