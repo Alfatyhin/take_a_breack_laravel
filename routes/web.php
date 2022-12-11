@@ -352,6 +352,11 @@ Route::middleware(["Shop"])->group(function () {
     Route::get('/paypal/payment', [ShopController::class, 'getButtonPaypal'])
         ->name('paypal_button');
 
+
+    Route::any('/{lang}/order_not_found/{order_id?}', [ShopController::class, 'OrderNotFound'])
+        ->where('lang', '[a-z]{2}')
+        ->name('order_not_found');
+
     Route::get('/{lang?}/delivery', [ShopController::class, 'deliveryIndex'])
         ->where('lang', '[a-z]{2}')
         ->name('delivery');

@@ -353,12 +353,11 @@ class ShopController extends Controller
 
                         $order = Orders::withTrashed()->where('order_id', $post['order_id'])->first();
 
+                        if (!$order) {
+                           return redirect(route('order_not_found', ['lang' => $lang, 'order_id' => $post['order_id']]));
+                        }
                         if ($order->trashed()) {
                             $order->restore();
-                        }
-
-                        if (!$order) {
-                            dd('order not found');
                         }
 
                     } else {
@@ -829,6 +828,19 @@ class ShopController extends Controller
             'client' => $client,
             'noindex' => $request->noindex,
             'invoiceSettingData' => $invoiceSettingData
+        ]);
+    }
+
+    public function OrderNotFound(Request $request, $lang, $order_id = '')
+    {
+        App::setLocale($lang);
+
+
+        return view("shop.new.order_not_found", [
+            'v' => $this->v,
+            'lang' => $lang,
+            'noindex' => $request->noindex,
+            'order_id' => $order_id,
         ]);
     }
 
