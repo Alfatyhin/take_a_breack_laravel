@@ -873,8 +873,9 @@ class ShopSettingController extends Controller
     }
 
 
-    public function ChangeOrderId(Request $request, OrdersModel $order)
+    public function ChangeOrderId(Request $request, $orderId)
     {
+        $order = OrdersModel::where('id', $orderId)->first();
         dd($order);
     }
 
