@@ -4,6 +4,13 @@
 
 @section('head')
 
+    <style>
+        .log {
+            width: 98%;
+            max-width: 84vw;
+            overflow-wrap: break-word;
+        }
+    </style>
 @stop
 
 @section('sidebar')
