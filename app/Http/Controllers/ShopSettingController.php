@@ -884,7 +884,10 @@ class ShopSettingController extends Controller
         $order->orderData = $old_data;
         $order->orderPrice = 288;
 
-        dd($order->toArray());
+        $AmoService = new AmoCrmServise();
+        $amo_order = $AmoService->getOrderById($order->amoId);
+
+        dd($amo_order);
     }
 
 }
