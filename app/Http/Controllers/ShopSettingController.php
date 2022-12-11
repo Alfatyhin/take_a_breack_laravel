@@ -883,7 +883,6 @@ class ShopSettingController extends Controller
         $order->clientId = 701;
         $order->orderData = $old_data;
         $order->orderPrice = 288;
-        $order->save();
 
         dd($order->toArray());
     }
