@@ -92,116 +92,115 @@ class Amocrm extends Controller
 
         http_response_code(200);
 
-        print_r($post);
 
         if (!empty($post['leads'])) {
 //            WebhookLog::addLog('amo web hook ', $post);
-//
-//            foreach ($post['leads'] as $event => $items) {
-//
-//                if ($event == 'status') { // изменение статуса
-//                    foreach ($items as $item) {
-//
-//                        echo "<hr>";
-//                        var_dump($item['custom_fields']);
-//                        echo "<hr>";
-//
-//                        foreach ($item['custom_fields'] as $field) {
-//                            if ($field['id'] == 489653) {
-//                                $orer_id = $field['values'][0]['value'];
-//                            }
-//                            if ($field['id'] == 308363) {
-//                                $statusPaidAmo = $field['values']['0']['enum'];
-//                            }
-//                            if ($field['id'] == 511579) {
-//                                $api_mode = $field['values']['0']['value'];
-//                            }
-//                        }
-//
-//                        // если заказ с сайта
-//                        if (isset($orer_id)) {
-//
-//
-//
-//                            $order = Orders::where('order_id', $orer_id)->first();
-//
-//
-//                            $old_status_id = $item['old_status_id'];
-//                            $status_id = $item['status_id'];
-//
-//                            // меняем статус
-//                            if($status_id != $old_status_id) {
-//
-//                                if ($test) {
-//                                    print_r($status_id);
-////                                    dd($old_status_id);
-//                                }
-//                                $paymentStatusArray = array_flip(AppServise::getOrderPaymentStatus());
-//
-//                                switch ($statusPaidAmo) {
-//                                    case 436781:
-//                                        $paymentStatus = 'PAID';
-//                                        break;
-//                                    case 436783:
-//                                        $paymentStatus = 'AWAITING_PAYMENT';
-//                                        break;
-//                                    default:
-//                                        $paymentStatus = 'INCOMPLETE';
-//                                        break;
-//                                }
-////                                dd($paymentStatus);
-//
-//                                $order->amoStatus = $status_id;
-//                                $order->paymentStatus = $paymentStatusArray[$paymentStatus];
-//                                $order->amoId = $item['id'];
-//                                $order->save();
-//
-//
-//                                // отправка инвойса
-//                                if ($statusPaidAmo == '436781' && $order->invoiceStatus == 0) {
-//
-//                                    // статус оплачено
-//                                    $paymentDate = new Carbon();
-//                                    $paymentDateString = $paymentDate->format('Y-m-d H:i:s');
-//                                    $order->paymentDate = $paymentDateString;
-//                                    $order->save();
-//
-//                                    $orderData = json_decode($order->orderData, true);
-//                                    $orderData['id'] = $order->order_id;
-//                                    $invoiceDada = OrderService::getShopOrderDataToGinvoice($order);
-//
-//                                    $invoice = new GreenInvoiceService($order);
-//
-//                                    if (!empty($invoiceDada)) {
-//                                        try {
-//                                            $res = $invoice->newDoc($invoiceDada);
-//                                            if (isset($res['errorCode'])) {
-//                                                AppErrors::addError("invoice create error to " . $order->order_id, json_encode($res));
-//
-//                                            } else {
-//                                                $order->invoiceStatus = 1;
-//                                                $order->invoiceData = json_encode($res);
-//                                                $order->save();
-//                                            }
-//
-//                                        } catch (\Exception $e) {
-//                                            AppErrors::addError("error invoice newDoc to " . $order->order_id, $invoiceDada);
-//                                        }
-//
-//                                    } else {
-//                                        var_dump('empty invoice data');
-//                                    }
-//                                }
-//
-//                            }
-//                        }
-//
-//                    }
-//
-//                } else { // не обновление статуса
-//                    //
-//                }
-//            }
+
+            foreach ($post['leads'] as $event => $items) {
+
+                if ($event == 'status') { // изменение статуса
+                    foreach ($items as $item) {
+
+                        echo "<hr>";
+                        var_dump($item['custom_fields']);
+                        echo "<hr>";
+
+                        foreach ($item['custom_fields'] as $field) {
+                            if ($field['id'] == 489653) {
+                                $orer_id = $field['values'][0]['value'];
+                            }
+                            if ($field['id'] == 308363) {
+                                $statusPaidAmo = $field['values']['0']['enum'];
+                            }
+                            if ($field['id'] == 511579) {
+                                $api_mode = $field['values']['0']['value'];
+                            }
+                        }
+
+                        // если заказ с сайта
+                        if (isset($orer_id)) {
+
+
+
+                            $order = Orders::where('order_id', $orer_id)->first();
+
+
+                            $old_status_id = $item['old_status_id'];
+                            $status_id = $item['status_id'];
+
+                            // меняем статус
+                            if($status_id != $old_status_id) {
+
+                                if ($test) {
+                                    print_r($status_id);
+//                                    dd($old_status_id);
+                                }
+                                $paymentStatusArray = array_flip(AppServise::getOrderPaymentStatus());
+
+                                switch ($statusPaidAmo) {
+                                    case 436781:
+                                        $paymentStatus = 'PAID';
+                                        break;
+                                    case 436783:
+                                        $paymentStatus = 'AWAITING_PAYMENT';
+                                        break;
+                                    default:
+                                        $paymentStatus = 'INCOMPLETE';
+                                        break;
+                                }
+//                                dd($paymentStatus);
+
+                                $order->amoStatus = $status_id;
+                                $order->paymentStatus = $paymentStatusArray[$paymentStatus];
+                                $order->amoId = $item['id'];
+                                $order->save();
+
+
+                                // отправка инвойса
+                                if ($statusPaidAmo == '436781' && $order->invoiceStatus == 0) {
+
+                                    // статус оплачено
+                                    $paymentDate = new Carbon();
+                                    $paymentDateString = $paymentDate->format('Y-m-d H:i:s');
+                                    $order->paymentDate = $paymentDateString;
+                                    $order->save();
+
+                                    $orderData = json_decode($order->orderData, true);
+                                    $orderData['id'] = $order->order_id;
+                                    $invoiceDada = OrderService::getShopOrderDataToGinvoice($order);
+
+                                    $invoice = new GreenInvoiceService($order);
+
+                                    if (!empty($invoiceDada)) {
+                                        try {
+                                            $res = $invoice->newDoc($invoiceDada);
+                                            if (isset($res['errorCode'])) {
+                                                AppErrors::addError("invoice create error to " . $order->order_id, json_encode($res));
+
+                                            } else {
+                                                $order->invoiceStatus = 1;
+                                                $order->invoiceData = json_encode($res);
+                                                $order->save();
+                                            }
+
+                                        } catch (\Exception $e) {
+                                            AppErrors::addError("error invoice newDoc to " . $order->order_id, $invoiceDada);
+                                        }
+
+                                    } else {
+                                        var_dump('empty invoice data');
+                                    }
+                                }
+
+                            }
+                        }
+
+                    }
+
+                } else { // не обновление статуса
+                    //
+                }
+            }
         }
 
     }
