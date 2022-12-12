@@ -766,10 +766,10 @@ class ShopController extends Controller
         $client_id = $paypalService->getClientId();
 
         $order = Orders::where('order_id', $order_id)->first();
-
         $orderData = json_decode($order->orderData, true);
-
         $lang = $orderData['lang'];
+        WebhookLog::addLog('new order step 5 PayPal get button to', $order_id);
+
 
         return view('paypal.button', [
             'v' => $this->v,
