@@ -57,8 +57,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     (function cartInit(){
 
-        let ordData = $("input.order_data")
-        if( ordData[0].value != "" ){
+        let ordData = $("input.order_data");
+        if( ordData.length != 0 && ordData[0].value != "" ){
             let cart =  JSON.parse(ordData[0].value).products
              let isPromoCodeActive =  JSON.parse(ordData[0].value).promo
             localStorage.setItem("cart", JSON.stringify(cart));
