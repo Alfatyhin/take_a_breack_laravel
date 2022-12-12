@@ -245,7 +245,23 @@ class Orders extends Controller
     }
 
 
+    public function getOrderAmoData(Request $request, OrdersModel $order)
+    {
 
+        $paymentMetods = AppServise::getOrderPaymentMethod();
+        $paymentStatuses = AppServise::getOrderPaymentStatus();
+
+        $orderService = new OrderService();
+        $orderData = json_decode($order['orderData'], true);
+        $orderData['paymentMethod'] = $paymentMetods[$order['paymentMethod']];
+        $orderData['paymentStatus'] = $paymentStatuses[$order['paymentStatus']];
+        $orderData['order_id'] = $order->order_id;
+
+
+        $amoData = $orderService::getShopAmoDataLead($orderData);
+
+        dd($amoData);
+    }
 
 
     public function createOrderByEcwidId(Request $request)

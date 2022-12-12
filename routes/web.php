@@ -68,6 +68,7 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
     Route::get('/amocrm', [Amocrm::class, 'integrationAmoCrm'])
         ->name('amocrm');
 
+
     Route::get('/amocrm/order', [Amocrm::class, 'getOrderById'])
         ->name('amo.get_order');
 
@@ -77,6 +78,9 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
 
     Route::any('amo/create-invoice-to-order/{order}', [Orders::class, 'createAmoInvoiceToOrder'])
         ->name('amo_create_invoice_to_order');
+
+    Route::any('amo/get_order_data_to_amo/{order}', [Orders::class, 'getOrderAmoData'])
+        ->name('get_order_data_to_amo');
 
 
     Route::any('/alex-payd', [PaypalController::class, 'alexpayd'])

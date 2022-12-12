@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.2.3';
+    private $v = '2.2.4';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -399,9 +399,10 @@ class ShopController extends Controller
 
             if (!empty($post)) {
                 $post['step'] = $step;
-                WebhookLog::addLog('new order step 3 post', $post);
 
                 if ($lost_order) {
+                    WebhookLog::addLog("lost step 3 post", $lost_order);
+
                     $validate_array = [
                         'date' => 'required',
                         'delivery' => 'required'
@@ -417,7 +418,10 @@ class ShopController extends Controller
                     }
                     $validator->validate();
                     unset($validate_array);
+
                 } else {
+
+                    WebhookLog::addLog("step 3 post {$post['order_id']}", $post);
                     $validate_array = [
                         'date' => 'required|date_format:Y-n-j',
                         'order_data' => 'required|json',
@@ -426,9 +430,9 @@ class ShopController extends Controller
                     $this->validate($request, $validate_array);
                     unset($validate_array);
 
-                    $post['order_data'] = json_decode($post['order_data'], true);
                 }
 
+                $post['order_data'] = json_decode($post['order_data'], true);
 
                 if (empty($post['order_data']['products'])) {
                     $post['order_data'] = '';
@@ -671,6 +675,17 @@ class ShopController extends Controller
         if (!$lost_order || !$orderData || !$orderData['order_data_jsonform']) {
             $orderData['order_data_jsonform'] = '';
         }
+
+        if (!empty($orderData['order_data_jsonform'])) {
+            foreach ($orderData['order_data_jsonform'] as $k => $item) {
+
+            }
+        }
+
+        if ($lost_order) {
+//            dd($orderData);
+        }
+
 
 
 
