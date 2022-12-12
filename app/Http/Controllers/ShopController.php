@@ -623,7 +623,7 @@ class ShopController extends Controller
                     WebhookLog::addLog('new order step 3 order_data', $order_data);
 
                     if ($order->orderPrice <= 0 ) {
-                        dd('error check order price');
+                        dd('error check summ, order price - '.$order->ordrPrice);
                     }
                 } else {
 
