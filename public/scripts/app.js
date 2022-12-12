@@ -49,13 +49,21 @@ document.addEventListener('DOMContentLoaded',()=>{
         }
     }
 
-    
+
     // client_data = JSON.parse(localStorage.getItem("client_data") || "[]");   
     // client_data.order_id = ""
     // localStorage.setItem("client_data", JSON.stringify(client_data));
     // debugger
 
     (function cartInit(){
+
+        let ordData = $("input.order_data")
+        if( ordData[0].value != "" ){
+            let cart =  JSON.parse(ordData[0].value).products
+             let isPromoCodeActive =  JSON.parse(ordData[0].value).promo
+            localStorage.setItem("cart", JSON.stringify(cart));
+            localStorage.setItem("promo", JSON.stringify(isPromoCodeActive));
+        } 
 
         let cart = JSON.parse(localStorage.getItem("cart") || "[]");
         
@@ -70,7 +78,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         
        
         if(!cart.length)  return 
-        if($("#cart").length){           
+        if($("#cart").length){
             cartInitProducts(cart);
         } 
         if($("#cart").length) summCalculation(cart);
@@ -827,14 +835,6 @@ function cartInitProducts(cart){
     }
     let rootElement = $(".pay-cart__box");
     let isPromoCodeActive = JSON.parse(localStorage.getItem("promo") || "[]");
-
-    let ordData = $("input.order_data")
-    if( ordData[0].value != "" ){
-        cart =  JSON.parse(ordData[0].value).products
-        isPromoCodeActive =  JSON.parse(ordData[0].value).promo
-    } 
-    localStorage.setItem("cart", JSON.stringify(cart));
-    localStorage.setItem("promo", JSON.stringify(isPromoCodeActive));
 
     if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
     else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
