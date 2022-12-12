@@ -836,11 +836,8 @@ function cartInitProducts(cart){
     localStorage.setItem("cart", JSON.stringify(cart));
     localStorage.setItem("promo", JSON.stringify(isPromoCodeActive));
 
-
     if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
-    else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"    
-     
-   
+    else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
 
     if(isPromoCodeActive.result != "sugess") $(".discount")[0].closest("p").style.display = "none"
     else if(isPromoCodeActive.result == "sugess")  $(".discount")[0].closest("p").style.display = "flex"
@@ -1546,23 +1543,22 @@ function telValidator(tel){
 
 //#region  ПРОМОКОД
 
-$(".submit-promo").on('click',async function(e){
+$(".submit-promo").on('click',async function(e){    
     promoAction()
 });
-$(".pay-cart__promo input").on('blur',async function(e){
+$(".pay-cart__promo input").on('blur',async function(e){    
     promoAction()
 })
 $(".pay-cart__promo input").keyup(async function(e){
-    if(e.keyCode == 13) {
+    if(e.keyCode == 13) {        
         promoAction()
     }
 })
 async function promoAction(){
     let promoText = $(".pay-cart__promo input").val()
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    // let response = await fetch(`https://takeabreak.website/check-promo-code?promoCode=TAKE10`);
-    let response = await fetch(`https://takeabreak.co.il/check-promo-code?promoCode=${promoText}`);
-    
+    let url = $(".pay-cart__promo button")[0].dataset.url
+    let response = await fetch(`${url}${promoText}`);
     if (response.ok) {  
         try {
             let promo = await response.json();           
@@ -1577,7 +1573,6 @@ async function promoAction(){
                 $(".sugess_promo")[0].classList.add("hide")
                 localStorage.removeItem('promo');
                 summCalculation(cart)
-                // $(".pay-cart__promo input")[0].value = ""
             }
             
 
