@@ -1561,7 +1561,7 @@ async function promoAction(){
     let promoText = $(".pay-cart__promo input").val()
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
     // let response = await fetch(`https://takeabreak.website/check-promo-code?promoCode=TAKE10`);
-    let response = await fetch(`https://takeabreak.website/check-promo-code?promoCode=${promoText}`);
+    let response = await fetch(`https://takeabreak.co.il/check-promo-code?promoCode=${promoText}`);
     
     if (response.ok) {  
         try {
