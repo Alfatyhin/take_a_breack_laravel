@@ -355,7 +355,7 @@ Route::middleware(["Shop"])->group(function () {
 
     Route::get('/utm', [ShopController::class, 'testUtm']);
 
-    Route::get('/paypal/payment', [ShopController::class, 'getButtonPaypal'])
+    Route::get('/paypal/payment/{order_id}', [ShopController::class, 'getButtonPaypal'])
         ->name('paypal_button');
 
 

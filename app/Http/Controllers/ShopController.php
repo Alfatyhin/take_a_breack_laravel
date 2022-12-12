@@ -760,18 +760,12 @@ class ShopController extends Controller
     }
 
 
-    public function getButtonPaypal(Request $request)
+    public function getButtonPaypal(Request $request, $order_id)
     {
-
-        $order_id = $request->get('order_id');
-        $order = false;
         $paypalService = new PayPalService('live');
         $client_id = $paypalService->getClientId();
 
-
-        if ($order_id) {
-            $order = Orders::where('order_id', $order_id)->first();
-        }
+        $order = Orders::where('order_id', $order_id)->first();
 
         $orderData = json_decode($order->orderData, true);
 

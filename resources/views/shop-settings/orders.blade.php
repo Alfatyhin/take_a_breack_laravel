@@ -488,7 +488,7 @@
                             </a>
                             <div class="hide">
                                 <hr><br>
-                                <a class="button" href="{{ route('paypal_button', ['id' => $item->order_id]) }}" >
+                                <a class="button" href="{{ route('paypal_button', ['order_id' => $item->order_id]) }}" >
                                     test paypal button
                                 </a>
                             </div>
