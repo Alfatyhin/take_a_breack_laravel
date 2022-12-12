@@ -74,16 +74,19 @@ class ShopThanks
             if (empty($order->amoId)) {
                 $order_id = $order->order_id;
 
-                try {
-                    $OrderService->createOrderToAmocrm($order_id);
-                    WebhookLog::addLog('OrderThanks After create AMO Lead', "$order_id");
-                } catch (Exception $e) {
-                    WebhookLog::addLog('OrderThanks After error create AMO Lead', "$order_id");
+                if (env('APP_NAME') != "Take a Break Server") {
+                    try {
+                        $OrderService->createOrderToAmocrm($order_id);
+                        WebhookLog::addLog('OrderThanks After create AMO Lead', "$order_id");
+                    } catch (Exception $e) {
+                        WebhookLog::addLog('OrderThanks After error create AMO Lead', "$order_id");
+                    }
+
+
+                    OrderService::sendMailNewOrder($order_id, 'send');
+                    WebhookLog::addLog('OrderThanks After send mail', "$order_id");
                 }
 
-
-                OrderService::sendMailNewOrder($order_id, 'send');
-                WebhookLog::addLog('OrderThanks After send mail', "$order_id");
                 $request->session()->forget('last_order_id');
             } else {
                 dd($order->amoId);

@@ -613,16 +613,21 @@ class ShopController extends Controller
                     foreach ($orderData as $k => $v) {
                         $order_data[$k] = $v;
                     }
-                    $order_data['order_data_jsonform'] = $post['order_data'];
 
+
+                    $order_data['order_data_jsonform'] = $post['order_data'];
                     $order->orderPrice = $orderData['order_data']['order_total'];
                     $order->orderData = json_encode($order_data);
                     $order->save();
 
                     WebhookLog::addLog('new order step 3 order_data', $order_data);
+
+                    if ($order->orderPrice <= 0 ) {
+                        dd('error check order price');
+                    }
                 } else {
 
-                    dd('error get order data');
+                    return redirect(route('order_not_found', ['lang' => $lang, 'order_id' => $post['order_id']]));
                 }
 
             }
@@ -666,6 +671,7 @@ class ShopController extends Controller
         if (!$lost_order || !$orderData || !$orderData['order_data_jsonform']) {
             $orderData['order_data_jsonform'] = '';
         }
+
 
 
         return view("shop.new.cart-master", [
