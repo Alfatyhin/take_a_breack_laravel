@@ -990,16 +990,16 @@ class AmoCrmServise
             $lead = $lead->setName($amoData['order name']);
         }
         if(isset($amoData['order price'])) {
-            $lead->setName($amoData['order price']);
+            $lead->setPrice($amoData['order price']);
         }
         if(isset($amoData['pipelineId'])) {
-            $lead->setName($amoData['pipelineId']);
+            $lead->setPipelineId($amoData['pipelineId']);
         }
         if(isset($amoData['statusId'])) {
-            $lead->setName($amoData['statusId']);
+            $lead->setStatusId($amoData['statusId']);
         }
         if(isset($amoData['order_id'])) {
-            $lead->setName($amoData['order_id']);
+            $lead->setRequestId($amoData['order_id']);
         }
 
         $lead->setCustomFieldsValues($leadCustomFieldsValues);
