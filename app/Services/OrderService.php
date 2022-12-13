@@ -132,6 +132,9 @@ class OrderService
                 foreach ($item['options'] as $option) {
                     $name = $option['name']['en'];
                     $value = $option['value']['textTranslated']['en'];
+                    if ($option['type'] == 'TEXT') {
+                        $value = "-||{$option['input_text']}||";
+                    }
                     $product_name .= " $name $value";
                 }
             }

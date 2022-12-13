@@ -259,8 +259,9 @@ class Orders extends Controller
 
 
         $amoData = $orderService::getShopAmoDataLead($orderData);
+        $amoNotes = $orderService::getShopAmoNotes($orderData);
 
-        dd($amoData);
+        dd($amoData, $amoNotes);
     }
 
 
