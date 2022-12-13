@@ -269,7 +269,7 @@
                         </a>
                     </div><br>
                     <div class="hide">
-                        <a class="button" href="{{ route('get_order_data_to_amo', ['order' => $orderSearch]) }}" >
+                        <a class="button" href="{{ route('get_order_data_to_amo', ['order' => $orderSearch->id]) }}" >
                             get order data to amo
                         </a>
                     </div>
