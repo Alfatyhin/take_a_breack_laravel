@@ -124,7 +124,7 @@
 
 
                 <td>
-                    <span class="position-absolute text-small button show-hide"></span>
+                    <span class="position-absolute text-small button show-hide fa fa-eye"></span>
 
                     Детали: <br>
 
@@ -221,7 +221,7 @@
 
 
                 <td>
-                    <span class="position-absolute text-small button show-hide"></span>
+                    <span class="position-absolute text-small button show-hide fa fa-eye"></span>
 
                     <a class="hide button" href="{{ route('amo_create_invoice_to_order', ['order' => $orderSearch->id]) }}" >
                         add amo invoice to lead
@@ -238,7 +238,7 @@
                     </a>
                     <div class="hide">
                         <hr><br>
-                        <a class="button" href="{{ route('paypal_button', ['id' => $orderSearch->order_id]) }}" >
+                        <a class="button" href="{{ route('paypal_button', ['order_id' => $orderSearch->order_id]) }}" >
                             test paypal button
                         </a>
                     </div>
@@ -263,6 +263,16 @@
                     <a class="button" href="{{ route('api_order_view', [ 'order_id' => $orderSearch->order_id]) }}" >
                         распечатать заказ
                     </a> <br>
+                    <div class="hide">
+                        <a class="button" href="{{ route('cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $orderSearch->order_id]) }}" >
+                            проверить корзину
+                        </a>
+                    </div><br>
+                    <div class="hide">
+                        <a class="button" href="{{ route('get_order_data_to_amo', ['order' => $orderSearch]) }}" >
+                            get order data to amo
+                        </a>
+                    </div>
                     <hr>
                     @if ($errors->any())
                         <h3>errors</h3>
@@ -486,12 +496,6 @@
                             <a class="hide button" href="{{ route('api_create_amo_order', ['id' => $item->order_id]) }}" >
                                 api create amo lead
                             </a>
-                            <div class="hide">
-                                <hr><br>
-                                <a class="button" href="{{ route('paypal_button', ['order_id' => $item->order_id]) }}" >
-                                    test paypal button
-                                </a>
-                            </div>
 
                             <div class="hide">
                                 <br>
@@ -519,6 +523,12 @@
                             <div class="hide">
                                 <a class="button" href="{{ route('change_order_id', [ 'id' => $item->id]) }}" >
                                     change order id
+                                </a>
+                            </div> <br>
+                            <div class="hide">
+                                <a class="button" href="{{ route('cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $item->order_id]) }}" >
+                                    проверить корзину
+                                </a>
                             </div>
                         @endif
                     </td>
