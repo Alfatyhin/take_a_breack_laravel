@@ -1450,6 +1450,7 @@
    max-width: 100%;
    -o-object-fit: cover;
       object-fit: cover;
+   width: 40vw;
  }
  
  .product-preview__item {
