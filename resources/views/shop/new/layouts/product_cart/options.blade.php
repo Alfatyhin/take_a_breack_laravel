@@ -61,8 +61,7 @@
                         @endisset
                 >
 
-
-                    <img src="/assets/images/icons/{{ $name_lower }}{{ $ko+1 }}.png" alt="">
+                    <img src="/assets/images/icons/{{ $name_lower }}{{ $ko+1 }}.png" alt="{{ $name_lower }}">
                     <div class="option-info option_text">
                         <p>
                             @if(!empty($option['nameTranslated'][$lang]))
