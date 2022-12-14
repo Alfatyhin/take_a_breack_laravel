@@ -60,8 +60,6 @@ class ShopController extends Controller
         $category_select = Categories::where('index_num', 0)->select('products', 'slag')->first();
 
         $category_default = $category_select['slag'];
-        $category_products = $category_select['products'];
-        $category_products = json_decode($category_products, true);
 
         $category = Categories::where('slag', $category_default)->first();
         if (!$category) {
@@ -73,9 +71,8 @@ class ShopController extends Controller
 
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
         $categories = AppServise::CategoriesShopPrepeare($categories);
-        $products_all = Product::where('enabled', 1)->whereIn('id', $category_products)->get()->keyBy('id');
-//        dd($products_all);
-        $products_all2 = Product::where('enabled', 1)->whereNotIn('id', $category_products)->get()->sortBy('index_num')->keyBy('id');
+        $products_all = Product::where('enabled', 1)->get()->keyBy('id');
+        $products_all2 = Product::where('enabled', 1)->whereNotIn('id', $category->products)->get()->sortBy('index_num')->keyBy('id');
         $products = AppServise::ProductsShopPrepeare($products_all, $categories);
         if ($products_all2) {
             $products2 = AppServise::ProductsShopPrepeare($products_all2, $categories);
