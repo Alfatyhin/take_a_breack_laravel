@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.2.5';
+    private $v = '2.2.6';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -74,6 +74,7 @@ class ShopController extends Controller
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
         $categories = AppServise::CategoriesShopPrepeare($categories);
         $products_all = Product::where('enabled', 1)->whereIn('id', $category_products)->get()->keyBy('id');
+//        dd($products_all);
         $products_all2 = Product::where('enabled', 1)->whereNotIn('id', $category_products)->get()->sortBy('index_num')->keyBy('id');
         $products = AppServise::ProductsShopPrepeare($products_all, $categories);
         if ($products_all2) {
