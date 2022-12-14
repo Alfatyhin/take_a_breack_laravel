@@ -131,23 +131,29 @@
             </div>
 
             <div class="product-info__tabs">
-                @if(isset($product->data['attributes']) && (isset($product->data['attributes']['composition'][$lang]) || $product->data['attributes']['calories'] || $category_data['attributes']['keeping']))
+                @if(isset($product->data['attributes']) && (isset($product->data['attributes']['composition'][$lang]) || $product->data['attributes']['calories'] || $category_data['attributes']['keeping'][$lang]))
 
                     <div class="product-info__tabs-btns">
-                        <span class="product-info__tabs-btn">{{ __('shop.Состав') }}</span>
-                        <span class="product-info__tabs-btn">{{ __('shop.Калорийность') }}</span>
-                        <span class="product-info__tabs-btn">{{ __('shop.Хранение') }}</span>
-                    </div>
-                    <div class="product-info__tab-text">
                         @isset($product->data['attributes']['composition'][$lang])
+                            <span class="product-info__tabs-btn">{{ __('shop.Состав') }}</span>
+                        @endisset
+                        @isset($product->data['attributes']['calories'])
+                            <span class="product-info__tabs-btn">{{ __('shop.Калорийность') }}</span>
+                        @endisset
+                        @isset($category_data['attributes']['keeping'][$lang])
+                            <span class="product-info__tabs-btn">{{ __('shop.Хранение') }}</span>
+                        @endisset
+                    </div>
+                    @isset($product->data['attributes']['composition'][$lang])
+                        <div class="product-info__tab-text">
                             <p>
                                 <b>{{ __('shop.В составе десерта ингридиенты:') }}</b>
                                 {{ $product->data['attributes']['composition'][$lang] }}
                             </p>
-                        @endisset
-                    </div>
-                    <div class="product-info__tab-text">
-                        @isset($product->data['attributes']['calories'])
+                        </div>
+                    @endisset
+                    @isset($product->data['attributes']['calories'])
+                        <div class="product-info__tab-text">
                             <p>
                                 <b>{{ __('shop.Энергетическая ценность') }}</b>
                             </p>
@@ -167,17 +173,17 @@
                                 <b>{{ __('shop.Углеводы') }}</b>
                                 {{ $product->data['attributes']['calories']['carbohydrate'] }} г
                             </p>
-                        @endisset
-                    </div>
-                    <div class="product-info__tab-text">
+                        </div>
+                    @endisset
 
-                        @isset($category_data['attributes']['keeping'][$lang])
+                    @isset($category_data['attributes']['keeping'][$lang])
+                        <div class="product-info__tab-text">
                             <p>
                                 <b>{{ __('shop.Сроки и условия хранения:') }}</b>
                                 {!! $category_data['attributes']['keeping'][$lang] !!}
                             </p>
-                        @endisset
-                    </div>
+                        </div>
+                    @endisset
                 @endisset
             </div>
         </div>

@@ -73,8 +73,12 @@ class ShopController extends Controller
 
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
         $categories = AppServise::CategoriesShopPrepeare($categories);
-        $products_all = Product::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
+        $products_all = Product::where('enabled', 1)->whereIn('id', $category_products)->get()->sortBy('index_num')->keyBy('id');
+        $products_all2 = Product::where('enabled', 1)->whereNotIn('id', $category_products)->get()->sortBy('index_num')->keyBy('id');
         $products = AppServise::ProductsShopPrepeare($products_all, $categories);
+        if ($products_all2) {
+            $products2 = AppServise::ProductsShopPrepeare($products_all2, $categories);
+        }
 
 
         $dey_offer_data = false;
@@ -110,6 +114,7 @@ class ShopController extends Controller
             'filter' => $filter,
             'categories' => $categories,
             'products' => $products,
+            'products2' => $products2,
             'dey_offer_data' => $dey_offer_data,
             'category_active' => $category_default,
             'popapp_message' => $popapp_message,
