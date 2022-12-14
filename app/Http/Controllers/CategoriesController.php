@@ -31,11 +31,11 @@ class CategoriesController extends Controller
                 $category->products = json_encode($prod_ids);
                 $category->save();
 
-                foreach ($prod_ids as $num => $prod_id) {
-                    $product = Product::find($prod_id);
-                    $product->index_num = $num;
-                    $product->save();
-                }
+//                foreach ($prod_ids as $num => $prod_id) {
+//                    $product = Product::find($prod_id);
+//                    $product->index_num = $num;
+//                    $product->save();
+//                }
 
                 session()->flash('message', ["category {$category->name}  products sortable save"]);
             }
