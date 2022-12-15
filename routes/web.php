@@ -341,9 +341,10 @@ Route::middleware(["Shop"])->group(function () {
 
     Route::get('/market', [ShopController::class, 'marketEn'])->name('market_en');
 
-    Route::get('/ru/short-market', [ShopController::class, 'marketShortRu'])->name('short_market_ru');
+    Route::get('/short-market', [ShopController::class, 'marketShortView'])->name('short_market');
 
-    Route::get('/short-market', [ShopController::class, 'marketShortEn'])->name('short_market_en');
+    Route::get('/{lang}/short-market', [ShopController::class, 'marketShortLang'])
+        ->where('lang', '[a-z]{2}')->name('short_market_lang');
 
     Route::get('/wholesale/', [ShopController::class, 'WholeSaleEn'])->name('wholesale_en');
 

@@ -19,7 +19,7 @@
                                         </span>
             </div>
             <p>
-                0559475812
+                9720559475812
             </p>
         </div>
         <div class="item">
@@ -31,8 +31,8 @@
                                             EMail
                                         </span>
             </div>
-            <a href="tel:info@agency.com">
-                info@agency.com
+            <a href="mailto:Info@takeabreak.co.il">
+                Info@takeabreak.co.il
             </a>
         </div>
         <div class="item">
@@ -59,8 +59,8 @@
                                         </span>
             </div>
             <p>
-                вс - чт с 10:00 до 20:00, <br>
-                пт с 10 до 16, вс - выходной
+                ПН - ЧТ с 10:00 до 20:00, ПТ с 10:00 до 15:00 <br>
+                СБ, ВС - выходной
             </p>
         </div>
     </div>

@@ -1009,7 +1009,7 @@ class ShopController extends Controller
         return $this->marketView($request, $lang);
     }
 
-    public function marketShortView(Request $request, $lang)
+    public function marketShortView(Request $request, $lang = 'en')
     {
         App::setLocale($lang);
 
@@ -1019,7 +1019,7 @@ class ShopController extends Controller
         $categories = AppServise::CategoriesShopPrepeare($categories);
 
 
-        return view("shop.$lang.short-market", [
+        return view("shop.new.short-order-master", [
             'v' => $v,
             'lang' => $lang,
             'categories' => $categories,
@@ -1028,75 +1028,9 @@ class ShopController extends Controller
         ]);
     }
 
-    public function marketShortEn(Request $request)
+    public function marketShortLang(Request $request, $lang)
     {
-        $lang = 'en';
         return $this->marketShortView($request, $lang);
-    }
-
-    public function marketShortRu(Request $request)
-    {
-        $lang = 'ru';
-        return $this->marketShortView($request, $lang);
-    }
-
-    public function ProductRuOld(Product $product, Request $request)
-    {
-        $category = Categories::find($product->category_id);
-        return redirect(route('product', ['category' => $category->slag, 'product' => $product->slag]), 301);
-    }
-
-    public function ProductEnOld(Product $product, Request $request)
-    {
-        $category = Categories::find($product->category_id);
-        return redirect(route('product_en', ['category' => $category->slag, 'product' => $product->slag]), 301);
-    }
-
-    public function changeProductCount(Request $request)
-    {
-        $post = $request->post();
-        $id = $post['id'];
-        $token_key = $post['token_key'];
-        $product = Product::find($id);
-        $date = new Carbon();
-
-        print_r($post);
-        if (isset($post['variant'])) {
-            $var_key = $post['variant'];
-            $variables = json_decode($product->variables, true);
-            $variant = $variables[$var_key];
-
-
-            unset($variant['quantity_orders']);
-            if ($post['product_count'] > 0) {
-                $variant['quantity_orders'][$token_key] = [
-                    'date' => $date->format('Y-m-d H:i:s'),
-                    'product_count' => $post['product_count']
-                ];
-            } else {
-                unset ($variant['quantity_orders'][$token_key]);
-            }
-
-            $variables[$var_key] = $variant;
-            $product->variables = json_encode($variables);
-            print_r($variant);
-        } else {
-            $data = json_decode($product->data, true);
-            unset($data['product_ekwid']);
-            if ($post['product_count'] > 0) {
-                $data['quantity_orders'][$token_key] = [
-                    'date' => $date->format('Y-m-d H:i:s'),
-                    'product_count' => $post['product_count']
-                ];
-            } else {
-                unset ($data['quantity_orders'][$token_key]);
-            }
-
-            print_r($data);
-        }
-
-        $product->save();
-
     }
 
 
@@ -1183,7 +1117,6 @@ class ShopController extends Controller
                 $order->order_id = AppServise::generateOrderId($order_id, 'U');
             }
 
-            session(['order' => $order]);
             $lang = $post['lang'];
 
             $order_total = $post['order_price'] + ($post['order_price'] * $post['premium'] / 100);
@@ -1209,6 +1142,8 @@ class ShopController extends Controller
             $order->orderPrice = $order_total;
             $order->orderData = json_encode($orderData);
             $order->save();
+
+            session(['last_order_id' => $order->order_id]);
 
             WebhookLog::addLog('new order shop ' . $order->order_id, $order);
 
@@ -1242,6 +1177,65 @@ class ShopController extends Controller
                 dd($order->toArray());
             }
         }
+
+    }
+
+    public function ProductRuOld(Product $product, Request $request)
+    {
+        $category = Categories::find($product->category_id);
+        return redirect(route('product', ['category' => $category->slag, 'product' => $product->slag]), 301);
+    }
+
+    public function ProductEnOld(Product $product, Request $request)
+    {
+        $category = Categories::find($product->category_id);
+        return redirect(route('product_en', ['category' => $category->slag, 'product' => $product->slag]), 301);
+    }
+
+    public function changeProductCount(Request $request)
+    {
+        $post = $request->post();
+        $id = $post['id'];
+        $token_key = $post['token_key'];
+        $product = Product::find($id);
+        $date = new Carbon();
+
+        print_r($post);
+        if (isset($post['variant'])) {
+            $var_key = $post['variant'];
+            $variables = json_decode($product->variables, true);
+            $variant = $variables[$var_key];
+
+
+            unset($variant['quantity_orders']);
+            if ($post['product_count'] > 0) {
+                $variant['quantity_orders'][$token_key] = [
+                    'date' => $date->format('Y-m-d H:i:s'),
+                    'product_count' => $post['product_count']
+                ];
+            } else {
+                unset ($variant['quantity_orders'][$token_key]);
+            }
+
+            $variables[$var_key] = $variant;
+            $product->variables = json_encode($variables);
+            print_r($variant);
+        } else {
+            $data = json_decode($product->data, true);
+            unset($data['product_ekwid']);
+            if ($post['product_count'] > 0) {
+                $data['quantity_orders'][$token_key] = [
+                    'date' => $date->format('Y-m-d H:i:s'),
+                    'product_count' => $post['product_count']
+                ];
+            } else {
+                unset ($data['quantity_orders'][$token_key]);
+            }
+
+            print_r($data);
+        }
+
+        $product->save();
 
     }
 

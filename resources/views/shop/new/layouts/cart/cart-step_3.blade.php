@@ -39,7 +39,7 @@
                     <label>
                         <input name="methodPay" type="radio" value="3">
                         <span></span>
-                        <p class="text">Pay Pal</p>
+                        <p class="text">PayPal</p>
                     </label>
                     <label><input name="methodPay" type="radio" value="4">
                         <span></span>

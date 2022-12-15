@@ -18,6 +18,7 @@
                 <input hidden name="lang" value="{{ $lang }}">
                 <input hidden name="gClientId" value="">
                 <input hidden name="order_id" value="{{ $order_number }}">
+
                 <label class="phone-mask" for="" class="@error('phone') error @enderror">
                     <input hidden class="phone" name="phone" value="">
                     <p>

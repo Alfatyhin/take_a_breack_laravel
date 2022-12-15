@@ -33,9 +33,17 @@
                 @csrf
 
                 <input hidden name="lang" value="{{ $lang }}">
-                <input hidden name="gClientId" value="">
+                @if($lost_order)
+                    <input hidden name="gClientId" value="{{ $order_data['gClientId'] }}">
+                @else
+                    <input hidden name="gClientId" value="">
+                @endif
                 <input hidden name="order_id" value="{{ $order_number }}">
-                <input hidden name="delivery_method" value="{{ old('delivery_method') }}">
+                @if($lost_order)
+                    <input hidden name="delivery_method" value="{{ $order_data['delivery_method'] }}">
+                @else
+                    <input hidden name="delivery_method" value="{{ old('delivery_method') }}">
+                @endif
 
                 <div class="delivery">
                     <div class="calendar-wrapper calendar_box">
@@ -174,7 +182,7 @@
 
                 <div class="pay__acttion">
                     <button>
-                        <a href="{{ route('cart', ['lang' => $lang, 'step' => '', $lost_order]) }}">
+                        <a href="{{ route('cart', ['lang' => $lang, 'step' => 1, $lost_order]) }}">
                         </a>
                         {{ __('shop.Назад') }}
                     </button>
@@ -187,8 +195,5 @@
     </div>
 
     <script>
-        $('.errors .show_calendar.date').on('change', function () {
-            var parent = $(this).parent();
 
-        });
     </script>
