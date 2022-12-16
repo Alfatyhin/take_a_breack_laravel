@@ -126,7 +126,7 @@
 @section('scripts')
 
 @show
-<script src="{{ asset('/scripts/app-2.js') }}?{{ $v }}" defer></script>
+{{--<script src="{{ asset('/scripts/app-2.js') }}?{{ $v }}" defer></script>--}}
 <script src="{{ asset('/scripts/app.js') }}?{{ $v }}" defer></script>
 
 @include('shop.layouts.seo.footer-scripts')
