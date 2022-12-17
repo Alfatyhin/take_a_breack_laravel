@@ -38,16 +38,21 @@
                 @foreach($paydPeriodInfo['orders'] as $keypm => $item)
                     &nbsp; &nbsp; &nbsp; <b>{{ $paymentMethod[$keypm] }}</b>  <br>
                     @foreach($item as $kps => $value)
-                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{ $paymentStatus[$kps] }} - summ
-                        <span class="order_summ">{{ $value['summ'] }}</span>, count {{ $value['count'] }} <br>
+                        <label>
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type="checkbox" name="allsumm" @if($paymentStatus[$kps] == 'PAID') checked @endif value="{{ $value['summ'] }}">
+                            {{ $paymentStatus[$kps] }} - summ
+                            <span class="order_summ">{{ $value['summ'] }}</span>, count {{ $value['count'] }} <br>
+                        </label>
                     @endforeach
                 @endforeach
             @endisset
         </p>
-        <div class="out">
-
-        </div>
+        <hr>
+        <p>&nbsp; &nbsp; &nbsp; <b>TOTALL - </b>
+            <span class="summ_out"></span>
+        </p>
     </div>
+    <br>
 
 
     <form action="{{ route('shop_settings_orders') }}" method="get">
@@ -544,6 +549,30 @@
         </div>
     </div>
 
+    <script>
+        jQuery(document).ready(function ($) {
+            // $('.pop-ap .close').click(function () {
+            //     $('.pop-ap').hide();
+            // });
+
+            function setAllSumm() {
+                var all_summ = 0;
+                $('.statistic input:checked').each(function () {
+                    var summ_item = $(this).val() / 1;
+                    console.log(`summ_item - ${summ_item} + all_summ ${all_summ}`);
+                    all_summ += summ_item;
+                    console.log(`= ${all_summ}`);
+                });
+                $('.statistic .summ_out').text(all_summ.toFixed(2));
+            }
+            $('.statistic input').change(function () {
+
+                setAllSumm();
+            })
+
+            setAllSumm();
+        });
+    </script>
 @stop
 
 
