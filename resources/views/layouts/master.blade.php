@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    @php($v = '1.11')
+    @php($v = '1.12')
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -17,16 +17,16 @@
     </style>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/normalize.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/main.css?v1.01.09') }}">
+    <link rel="stylesheet" href="{{ asset('css/normalize.css') }}?{{ $v }}">
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}?{{ $v }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?{{ $v }}">
+    <link rel="stylesheet" href="{{ asset('css/main.css') }}?{{ $v }}">
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}?v{{ $v }}" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
-    <script src="{{ asset('js/main.js?v1.0.0') }}" defer></script>
+    <script src="{{ asset('js/main.js') }}?v{{ $v }}" defer></script>
 
 
     <link rel="stylesheet" href="{{ asset('css/shop-settings.css') }}?{{ $v }}">
