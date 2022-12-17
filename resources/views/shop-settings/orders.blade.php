@@ -482,7 +482,7 @@
                         <a class="hide button" href="{{ route('delete_order', ['id' => $item->order_id]) }}" >delete</a><br>
 
 
-                    @if($item->paymentStatus != 0)
+                    @if($item->paymentStatus != 0 && !empty($order->order_id))
 
                             <a class="hide button" href="{{ route('amo_create_invoice_to_order', ['order' => $item->id]) }}" >
                                 add amo invoice to lead
