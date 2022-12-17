@@ -366,7 +366,7 @@ class ShopController extends Controller
 
                         $order = Orders::withTrashed()->where('order_id', $post['order_id'])->first();
 
-                        if (!$order) {
+                        if (!$order || $post['order_id'] == 'undefined') {
                            return redirect(route('order_not_found', ['lang' => $lang, 'order_id' => $post['order_id']]));
                         }
                         if ($order->trashed()) {
@@ -693,6 +693,7 @@ class ShopController extends Controller
             $order_number = '';
         }
 
+        WebhookLog::addLog("order step $step #$order_number", $post);
 
 
         return view("shop.new.cart-master", [
