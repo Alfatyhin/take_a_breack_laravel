@@ -689,6 +689,9 @@ class ShopController extends Controller
 //            dd($orderData);
         }
 
+        if ($order_number == 'undefined') {
+            $order_number = '';
+        }
 
 
 
@@ -1011,6 +1014,11 @@ class ShopController extends Controller
 
     public function marketShortView(Request $request, $lang = 'en')
     {
+
+        if (env('APP_NAME') == "Take a Break Server") {
+            return redirect('https://takeabreak.co.il/short-market');
+        }
+
         App::setLocale($lang);
 
         $v = $this->v;

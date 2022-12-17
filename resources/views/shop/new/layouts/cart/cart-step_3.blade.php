@@ -25,7 +25,6 @@
                 <input hidden name="lang" value="{{ $lang }}">
                 <input hidden name="gClientId" value="">
                 <input hidden name="order_id" value="{{ $order_number }}">
-                <input hidden name="delivery_method" value="">
 
                 <p>
                     {{ __('shop-cart.Выберите способ оплаты') }}
