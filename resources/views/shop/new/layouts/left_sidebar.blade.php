@@ -27,4 +27,9 @@
     <ul class="for-mobile">
         @include('shop.new.layouts.nav-menu')
     </ul>
+
+    <div class="social-link for-mobile">
+
+        @include('shop.new.layouts.components.social_links')
+    </div>
 </div>
