@@ -80,12 +80,18 @@
 
 
             @if (!empty($product->translate['descriptionTranslated'][$lang]))
-                <meta itemprop="description" content="{{ $product->translate['descriptionTranslated'][$lang] }}" />
+                @php($description = $product->translate['descriptionTranslated'][$lang])
             @elseif(!empty($product->translate['descriptionTranslated']['en']))
-                <meta itemprop="description" content="{{ $product->translate['descriptionTranslated']['en'] }}" />
+                @php($description = $product->translate['descriptionTranslated']['en'])
             @else
-                <meta itemprop="description" content="" />
+                @php($description = '')
             @endif
+
+            @isset($product->data['attributes']['composition'][$lang])
+                @php($description .= ' ' . __('shop.Состав') . ' ' . $product->data['attributes']['composition'][$lang])
+            @endisset
+
+            <meta itemprop="description" content="{{ $description }}" />
 
 
             <div itemprop="offers" itemtype="http://schema.org/Offer" itemscope>
