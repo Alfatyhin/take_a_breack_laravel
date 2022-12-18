@@ -1045,9 +1045,7 @@
    -webkit-box-sizing: border-box;
            box-sizing: border-box;
    padding-top: 60px;
-   /* padding-right: 70px; */
-   padding-right: 30px;
-   padding-left: 20px;
+   padding-right: 70px;
    margin-right: 10px;
    margin-top: 5px;
    margin-bottom: 50px;
@@ -1116,10 +1114,10 @@
    font-weight: 700;
    color: #2A2A2A;
  }
- .social-link.for-mobile, .for-mobile{
-  display: none;   
- }
  
+ .for-mobile {
+   display: none;
+ }
  
  @media (max-width: 768px) {
    .category {
@@ -1148,35 +1146,12 @@
    .category > ul.for-mobile > li > a {
      font-weight: 700;
      font-style: normal;
-     /* font-family: "Raleway", sans-serif; */
-     font-family: "Roboto", sans-serif;
+     font-family: "Raleway", sans-serif;
      color: #2A2A2A;
      text-transform: uppercase;
    }
-   .social-link.for-mobile{
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: space-between;
-    margin-top: 10px;
-  }
-  .social-link.for-mobile div a{
-    text-decoration: none;
-    color: #2A2A2A;
-    font-weight: 700;
-    font-style: normal;
-    font-family: "Roboto", sans-serif;
-    margin-right: 20px;
-  }
- 
-
-
-
-
-
  }
-
  
-
  .card__items {
    display: -webkit-box;
    display: -ms-flexbox;
@@ -1474,7 +1449,8 @@
  .product-slider__slide > img {
    max-width: 100%;
    -o-object-fit: cover;
-      object-fit: cover;      
+      object-fit: cover;
+      
  }
 
  @media (min-width: 1024px){
