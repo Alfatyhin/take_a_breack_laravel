@@ -930,4 +930,11 @@ class ShopSettingController extends Controller
         return Storage::disk('local')->download($file_csv_path);
     }
 
+    public function getComponents (Request $request)
+    {
+        $files = Storage::disk('views')->files("shop/layouts/seo");
+
+        dd($files);
+
+    }
 }
