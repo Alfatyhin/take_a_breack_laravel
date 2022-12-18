@@ -44,6 +44,7 @@
     <script>
         var product = @json($product);
         console.log(product);
+        fbq('track', 'ViewContent');
     </script>
 
     @if($lang == 'en')
