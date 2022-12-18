@@ -83,6 +83,8 @@
                 <meta itemprop="description" content="{{ $product->translate['descriptionTranslated'][$lang] }}" />
             @elseif(!empty($product->translate['descriptionTranslated']['en']))
                 <meta itemprop="description" content="{{ $product->translate['descriptionTranslated']['en'] }}" />
+            @else
+                <meta itemprop="description" content="" />
             @endif
 
 
