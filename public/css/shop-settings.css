@@ -167,11 +167,6 @@ input[type='submit'] {
     border-radius: 5px;
     cursor: pointer;
 }
-[type='checkbox'] {
-    height: 1.35rem;
-    width: 1.35rem;
-    border-radius: 5px;
-}
 .content_list_menu {
     border-bottom: 1px solid;
 }

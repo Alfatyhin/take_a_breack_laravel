@@ -1,7 +1,4 @@
 
-[type='checkbox'] {
-    height: 1.35rem;
-}
 
 .content {
     padding: 40px;
@@ -113,7 +110,20 @@ input[type=number] {
 }
 
 input[type='checkbox'] {
+    border-radius: 5px;
     margin: 2px 10px;
+}
+.statistic input:checked ~ span {
+    font-weight: 800;
+}
+.statistic label {
+    cursor: pointer;
+}
+.statistic label:hover {
+    font-weight: 800;
+}
+.statistic {
+    font-size: 80%;
 }
 input, select {
     margin: 10px;

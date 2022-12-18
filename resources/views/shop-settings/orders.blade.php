@@ -40,8 +40,8 @@
                     @foreach($item as $kps => $value)
                         <label>
                             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type="checkbox" name="allsumm" @if($paymentStatus[$kps] == 'PAID') checked @endif value="{{ $value['summ'] }}">
-                            {{ $paymentStatus[$kps] }} - summ
-                            <span class="order_summ">{{ $value['summ'] }}</span>, count {{ $value['count'] }} <br>
+                            <span>{{ $paymentStatus[$kps] }} - </span>
+                            <span class="order_summ">{{ $value['summ'] }}</span> <span>(count {{ $value['count'] }}) </span><br>
                         </label>
                     @endforeach
                 @endforeach
