@@ -72,21 +72,20 @@
             <meta itemprop="name" content="{{ $name }}f" />
 
 
-            @php($item_category = $categories[$product->category_id])
-            @if (!empty($item_category->translate['nameTranslated'][$lang]))
-                @php($name_category = $item_category->translate['nameTranslated'][$lang])
-            @else
-                @php($name_category = $item_category->name)
-            @endif
-            <meta itemprop="google_product_category" content="{{ $name_category }}" />
-
             @if (!empty($product->image))
                 <link itemprop="image" href="{{ $product->image['image800pxUrl'] }}" />
                 <link itemprop="image" href="{{ $product->image['image400pxUrl'] }}" />
                 <link itemprop="image" href="{{ $product->image['image160pxUrl'] }}" />
             @endif
 
-            <meta itemprop="description" content="{!! $product->translate['descriptionTranslated'][$lang] !!}" />
+
+            @if (!empty($product->translate['descriptionTranslated'][$lang]))
+                <meta itemprop="description" content="{{ $product->translate['descriptionTranslated'][$lang] }}" />
+            @elseif(!empty($product->translate['descriptionTranslated']['en']))
+                <meta itemprop="description" content="{{ $product->translate['descriptionTranslated']['en'] }}" />
+            @endif
+
+
             <div itemprop="offers" itemtype="http://schema.org/Offer" itemscope>
                 <link itemprop="url" href="{{ $rout }}" />
                 <meta itemprop="availability" content="https://schema.org/InStock" />
