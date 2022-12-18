@@ -64,19 +64,21 @@
     <div class="hidden" style="display: none">
         <div itemtype="http://schema.org/Product" itemscope>
             <meta itemprop="mpn" content="{{ $product->id }}" />
-            <meta itemprop="name" content="@if (!empty($product->translate['nameTranslated'][$lang]))
-            {{ $product->translate['nameTranslated'][$lang] }}
+            @if (!empty($product->translate['nameTranslated'][$lang]))
+                @php($name = $product->translate['nameTranslated'][$lang])
             @else
-            {{ $product->name }}
-            @endif" />
+                @php($name = $product->name)
+            @endif
+            <meta itemprop="name" content="{{ $name }}f" />
 
 
             @php($item_category = $categories[$product->category_id])
-            <meta itemprop="google_product_category" content="@if (!empty($item_category->translate['nameTranslated'][$lang]))
-            {{ $item_category->translate['nameTranslated'][$lang] }}
+            @if (!empty($item_category->translate['nameTranslated'][$lang]))
+                @php($name_category = $item_category->translate['nameTranslated'][$lang])
             @else
-            {{ $item_category->name }}
-            @endif" />
+                @php($name_category = $item_category->name)
+            @endif
+            <meta itemprop="google_product_category" content="{{ $name_category }}" />
 
             @if (!empty($product->image))
                 <link itemprop="image" href="{{ $product->image['image800pxUrl'] }}" />
