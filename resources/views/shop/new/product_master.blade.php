@@ -70,6 +70,14 @@
             {{ $product->name }}
             @endif" />
 
+
+            @php($item_category = $categories[$product->category_id])
+            <meta itemprop="google_product_category" content="@if (!empty($item_category->translate['nameTranslated'][$lang]))
+            {{ $item_category->translate['nameTranslated'][$lang] }}
+            @else
+            {{ $item_category->name }}
+            @endif" />
+
             @if (!empty($product->image))
                 <link itemprop="image" href="{{ $product->image['image800pxUrl'] }}" />
                 <link itemprop="image" href="{{ $product->image['image400pxUrl'] }}" />
