@@ -892,4 +892,42 @@ class ShopSettingController extends Controller
         dd($order);
     }
 
+
+
+    public function CsvImport(Request $request)
+    {
+
+        $products_all = Product::all()->keyBy('id');
+        $categories = Categories::all()->keyBy('id');
+        $products = AppServise::ProductsShopPrepeare($products_all, $categories);
+        $products = $products->toArray();
+
+        $file_csv_path = 'csv-import/products.csv';
+        $first_key = key($products);
+        foreach ($products[$first_key] as $k => $v) {
+            $keys[] = $k;
+        }
+        $str = implode(';', $keys);
+        Storage::disk('local')->put($file_csv_path, $str);
+
+        foreach ($products as $item) {
+            $values = [];
+            foreach ($item as $k => $v) {
+                if (!is_array($v)) {
+                    if ($k == 'category_id' && isset($categories[$v])) {
+                        $category = $categories[$v];
+                        $v = $category->name;
+                    }
+                    $values[] = $v;
+                } else {
+                    $values[] = '';
+                }
+            }
+            $str = implode(';', $values);
+            Storage::disk('local')->append($file_csv_path, $str);
+        }
+
+        return Storage::disk('local')->download($file_csv_path);
+    }
+
 }
