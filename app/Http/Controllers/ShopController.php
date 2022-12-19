@@ -383,6 +383,7 @@ class ShopController extends Controller
                     $orderData['order_data_jsonform'] = $order_data_jsonform;
                     $order->clientId = $client->id;
                     if (isset($post['gClientId'])) {
+                        session(['gClientId' => $post['gClientId']]);
                         $order->gclientId = $post['gClientId'];
                     }
                     $order->paymentMethod = 0;
