@@ -17,7 +17,11 @@
                 @csrf
                 <input hidden name="lang" value="{{ $lang }}">
                 <input hidden name="gClientId" value="">
-                <input hidden name="order_id" value="{{ $order_number }}">
+                @if(!empty($order_number) && $order_number != 'undefined')
+                    <input hidden name="order_id" value="{{ $order_number }}">
+                @else
+                    <input hidden name="order_id" >
+                @endif
 
                 <label class="phone-mask" for="" class="@error('phone') error @enderror">
                     <input hidden class="phone" name="phone" value="">
