@@ -69,7 +69,7 @@
             @else
                 @php($name = $product->name)
             @endif
-            <meta itemprop="name" content="{{ $name }}f" />
+            <meta itemprop="name" content="{{ $name }}" />
 
 
             @if (!empty($product->image))
