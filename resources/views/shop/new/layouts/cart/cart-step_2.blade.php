@@ -38,7 +38,13 @@
                 @else
                     <input hidden name="gClientId" value="">
                 @endif
-                <input hidden name="order_id" value="{{ $order_number }}">
+
+                @if(!empty($order_number) && $order_number != 'undefined')
+                    <input hidden name="order_id" value="{{ $order_number }}">
+                @else
+                    <input hidden name="order_id" >
+                @endif
+
                 @if($lost_order)
                     <input hidden name="delivery_method" value="{{ $order_data['delivery_method'] }}">
                 @else
