@@ -367,7 +367,9 @@ class ShopController extends Controller
                         $order = Orders::withTrashed()->where('order_id', $post['order_id'])->first();
 
                         if (!$order || $post['order_id'] == 'undefined') {
-                           return redirect(route('order_not_found', ['lang' => $lang, 'order_id' => $post['order_id']]));
+                            $order = new Orders();
+                            $order_id = rand(100, 999);
+                            $order->order_id = AppServise::generateOrderId($order_id, 'S');
                         }
                         if ($order->trashed()) {
                             $order->restore();
