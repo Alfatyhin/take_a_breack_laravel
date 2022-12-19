@@ -260,11 +260,6 @@ class ShopController extends Controller
         $post = $request->post();
 
 
-        if (isset($post['order_id']) && $post['order_id'] == 'undefined ') {
-            return redirect(route('order_not_found', ['lang' => $lang, 'order_id' => $post['order_id']]));
-        }
-
-
         $orderData = false;
         if ($lost_order) {
             $order = Orders::where('order_id', $lost_order)->first();
