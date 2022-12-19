@@ -73,9 +73,9 @@
 
 
             @if (!empty($product->image))
-                <link itemprop="image" href="{{ $product->image['image800pxUrl'] }}" />
-                <link itemprop="image" href="{{ $product->image['image400pxUrl'] }}" />
-                <link itemprop="image" href="{{ $product->image['image160pxUrl'] }}" />
+                <link itemprop="image" href="{{ route('index') }}{{ $product->image['image800pxUrl'] }}" />
+                <link itemprop="image" href="{{ route('index') }}{{ $product->image['image400pxUrl'] }}" />
+                <link itemprop="image" href="{{ route('index') }}{{ $product->image['image160pxUrl'] }}" />
             @endif
 
 
