@@ -956,8 +956,8 @@ function cartInitProducts(cart){
     } 
     let client_data = JSON.parse(localStorage.getItem("client_data") || "[]"); 
     if(client_data.order_id != ""){
-        $("input[name='order_id']")[0].value = client_data.order_id 
-        $("span.order_number_data")[0].innerHTML = client_data.order_id
+        $("input[name='order_id']")[0].value = client_data.order_id || ""
+        $("span.order_number_data")[0].innerHTML = client_data.order_id || ""
         $(".order_number_data")[0].style.display = "block"
         $(".pay-cart__title")[0].style.cssText= `display: flex;`
     }
