@@ -51,6 +51,9 @@ class ApiController extends Controller
                     } else {
                         $value = $option['value']['textTranslated']['en'];
                     }
+                    if ($option['type'] == 'TEXT') {
+                        $value = ': ' . $option['input_text'];
+                    }
                     $opt_str = " / $name $value";
 
                 }
