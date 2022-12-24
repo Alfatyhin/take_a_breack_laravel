@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.2.9';
+    private $v = '2.3.0';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -359,7 +359,9 @@ class ShopController extends Controller
 
                     if (isset($post['order_id'])) {
 
-                        $order = Orders::withTrashed()->where('order_id', $post['order_id'])->first();
+                        $order = Orders::withTrashed()->where('order_id', $post['order_id'])
+                            ->where('paymentMethod', 0)
+                            ->where('paymentStatus', 0)->first();
 
                         if (!$order || $post['order_id'] == 'undefined') {
                             $order = new Orders();
@@ -371,9 +373,18 @@ class ShopController extends Controller
                         }
 
                     } else {
-                        $order = new Orders();
-                        $order_id = rand(100, 999);
-                        $order->order_id = AppServise::generateOrderId($order_id, 'S');
+
+                        $order = Orders::orderBy('id', 'desc')
+                            ->where('clientId', $client->id)
+                            ->where('paymentMethod', 0)
+                            ->where('paymentStatus', 0)->first();
+
+                        if (!$order) {
+                            $order = new Orders();
+                            $order_id = rand(100, 999);
+                            $order->order_id = AppServise::generateOrderId($order_id, 'S');
+                        }
+
                     }
                     WebhookLog::addLog('new order step 2 order_id', $order->order_id);
 
