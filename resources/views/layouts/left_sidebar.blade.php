@@ -49,5 +49,8 @@
             <li class="translations" data_name="translations">
                 <a href="{{ route('translations') }}" >Переводы</a>
             </li>
+            <li class="components" data_name="components">
+                <a href="{{ route('components') }}" >site components</a>
+            </li>
         @endif
 </ul>

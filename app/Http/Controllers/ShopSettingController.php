@@ -930,11 +930,24 @@ class ShopSettingController extends Controller
         return Storage::disk('local')->download($file_csv_path);
     }
 
-    public function getComponents (Request $request)
+    public function getComponents(Request $request, $component = 'send_pulse')
     {
-        $files = Storage::disk('views')->files("shop/layouts/seo");
+        $files = Storage::disk('views_shop')->allFiles("new/layouts/$component");
 
-        dd($files);
+        foreach ($files as $filepath) {
+            $content = Storage::disk('views_shop')->get($filepath);
+            $name = str_replace("new/layouts/$component/", '', $filepath);
+            $data[] = [
+                'path' => $filepath,
+                'name' => $name,
+                'content' => $content
+            ];
+        }
+
+        return view('shop-settings.components', [
+            'message' => $request->message,
+            'files' => $data,
+        ]);
 
     }
 }
