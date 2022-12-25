@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Products Options')
+@section('title', 'Site components')
 
 
 @section('head')

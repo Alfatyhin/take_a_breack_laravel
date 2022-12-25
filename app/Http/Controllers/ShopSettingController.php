@@ -934,6 +934,17 @@ class ShopSettingController extends Controller
     {
         $files = Storage::disk('views_shop')->allFiles("new/layouts/$component");
 
+
+
+        $post = $request->post();
+
+        if ($post) {
+            Storage::disk('views_shop')->put($post['file_path'], $post['content']);
+            session()->flash('message', ["file {$post['file_path']} save"]);
+            return back();
+        }
+
+
         foreach ($files as $filepath) {
             $content = Storage::disk('views_shop')->get($filepath);
             $name = str_replace("new/layouts/$component/", '', $filepath);
