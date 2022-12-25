@@ -30,7 +30,7 @@
 </head>
 <body>
 
-@include('shop.layouts.seo.body_top')
+@include('shop.layouts.seo_delete.body_top')
 <div class="wrapper">
 
     <main class="main lang_{{ $lang }}">
@@ -52,7 +52,7 @@
 
 @show
 
-@include('shop.layouts.seo.footer-scripts')
+@include('shop.layouts.seo_delete.footer-scripts')
 @include("shop.$lang.popap_sendpulse")
 </body>
 </html>

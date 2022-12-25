@@ -15,7 +15,7 @@
 
     @show
 
-    @include('shop.layouts.seo.head-scripts')
+    @include('shop.layouts.seo_delete.head-scripts')
 </head>
 <body>
 <div class="payOrder">

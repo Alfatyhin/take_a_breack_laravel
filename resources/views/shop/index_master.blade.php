@@ -33,7 +33,7 @@
         <meta name="description" content="Home in the online store Take a Break 🧁 Natural author's desserts ✈ Fast delivery to Gush Dan, Netanya, Ashdod, Haifa and Jerusalem ☎ +972 55-947-5812">
     @endif
 
-    @include('shop.layouts.seo.re_captcha')
+    @include('shop.layouts.seo_delete.re_captcha')
 @stop
 
 @section('content')
