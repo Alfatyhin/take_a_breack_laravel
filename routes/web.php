@@ -194,7 +194,7 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
         ->name('change_order_id');
 
 
-    Route::any('/shop-settings/components/{component?}', [ShopSettingController::class, 'getComponents'])
+    Route::any('/shop-settings/components', [ShopSettingController::class, 'getComponents'])
         ->name('components');
 
 

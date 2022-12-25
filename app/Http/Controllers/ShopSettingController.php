@@ -930,11 +930,8 @@ class ShopSettingController extends Controller
         return Storage::disk('local')->download($file_csv_path);
     }
 
-    public function getComponents(Request $request, $component = 'send_pulse')
+    public function getComponents(Request $request)
     {
-        $files = Storage::disk('views_shop')->allFiles("new/layouts/$component");
-
-
 
         $post = $request->post();
 
@@ -944,16 +941,33 @@ class ShopSettingController extends Controller
             return back();
         }
 
+        $component = 'send_pulse';
+        $files = Storage::disk('views_shop')->allFiles("new/layouts/$component");
 
         foreach ($files as $filepath) {
             $content = Storage::disk('views_shop')->get($filepath);
             $name = str_replace("new/layouts/$component/", '', $filepath);
-            $data[] = [
+            $data[$component][] = [
                 'path' => $filepath,
                 'name' => $name,
                 'content' => $content
             ];
         }
+
+        $component = 'scripts';
+        $files = Storage::disk('views_shop')->allFiles("new/layouts/$component");
+
+        foreach ($files as $filepath) {
+            $content = Storage::disk('views_shop')->get($filepath);
+            $name = str_replace("new/layouts/$component/", '', $filepath);
+            $data[$component][] = [
+                'path' => $filepath,
+                'name' => $name,
+                'content' => $content
+            ];
+        }
+
+//        dd($data);
 
         return view('shop-settings.components', [
             'message' => $request->message,

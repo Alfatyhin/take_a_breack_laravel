@@ -26,7 +26,9 @@
     <div class="box_inline">
         <div class="content_list_menu">
             <div>
-                <span class="box_data  active " data_name="box_list_1">sendpulse</span>
+                @foreach($files as $k => $item)
+                    <span class="box_data @if($loop->first) active @endif" data_name="box_list_{{ $loop->iteration }}">{{ $k }}</span>
+                @endforeach
             </div>
         </div>
 
@@ -34,13 +36,15 @@
         <div class="content_list">
 
 
-                <div class="content_item box_list content_item box_list_1 active " data_name="box_list_1" >
-                    <h2>sendpulse</h2>
+            @foreach($files as $k => $data)
+                <div class="content_item box_list content_item box_list_{{ $loop->iteration }}  @if($loop->first) active @endif"
+                     data_name="box_list_{{ $loop->iteration }}" >
+                    <h2>{{ $k }}</h2>
 
                     <div class="box_inline box_list">
                         <ul class="list options_list">
 
-                            @foreach($files as $k => $item)
+                            @foreach($data as $k => $item)
                                 <li data_name="option_{{ $k }}" data_name="{{ $k }}" >
                                     <a>{{ $item['name'] }}</a>
                                 </li>
@@ -51,7 +55,7 @@
 
                     <div class="box_inline content_list">
 
-                        @foreach($files as $k => $item)
+                        @foreach($data as $k => $item)
                             <div class="content_item option_{{ $k }} ">
                                 <form class="" action="" method="POST">
                                     @csrf
@@ -75,6 +79,9 @@
 
 
                 </div>
+
+            @endforeach
+
 
         </div>
     </div>
