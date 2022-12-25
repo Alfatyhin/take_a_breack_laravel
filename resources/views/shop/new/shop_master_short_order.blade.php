@@ -43,10 +43,10 @@
 
     @show
 
-    @include('shop.layouts.seo.head-scripts')
+    @include('shop.new.layouts.scripts.head-scripts')
 </head>
 <body>
-@include('shop.layouts.seo.body_top')
+@include('shop.new.layouts.scripts.body_top')
 
 <div class="wrapper">
     <div class="content">
@@ -124,7 +124,7 @@
 {{--<script src="{{ asset('/scripts/app-2.js') }}?{{ $v }}" defer></script>--}}
 <script src="{{ asset('/scripts/app.js') }}?{{ $v }}" defer></script>
 
-@include('shop.layouts.seo.footer-scripts')
+@include('shop.new.layouts.scripts.footer-scripts')
 @include("shop.new.layouts.send_pulse.$lang.popap_sendpulse")
 </body>
 </html>

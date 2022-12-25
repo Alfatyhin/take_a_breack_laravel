@@ -87,3 +87,7 @@
         <button type="submit" class="main-btn">Задать  вопрос</button>
     </form>
 </div>
+
+@section('scripts')
+    @include('shop.new.layouts.scripts.re_captcha')
+@stop
