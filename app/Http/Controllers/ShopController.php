@@ -212,6 +212,9 @@ class ShopController extends Controller
         $category_data = json_decode($category->data, true);
         $category->translate = json_decode($category->translate, true);
 
+        if ($category->enabled == 0) {
+            return redirect(route('404'));
+        }
 
         if (empty($product->image)) {
             $product->image = $category->image;
