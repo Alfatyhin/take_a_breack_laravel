@@ -61,7 +61,9 @@
                         @endisset
                 >
 
-                    <img src="/assets/images/icons/{{ $name_lower }}{{ $ko+1 }}.png" alt="{{ $name_lower }}">
+                    @if($option['name'] == 'Size')
+                        <img src="/assets/images/icons/{{ $name_lower }}{{ $ko+1 }}.png" alt="{{ $name_lower }}">
+                    @endif
                     <div class="option-info option_text">
                         <p>
                             @if(!empty($option['nameTranslated'][$lang]))
