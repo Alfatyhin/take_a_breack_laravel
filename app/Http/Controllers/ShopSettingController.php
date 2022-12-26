@@ -967,8 +967,6 @@ class ShopSettingController extends Controller
             ];
         }
 
-//        dd($data);
-
         return view('shop-settings.components', [
             'message' => $request->message,
             'files' => $data,
