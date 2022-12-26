@@ -6,11 +6,13 @@
             <span>
                 {{ __('shop-cart.Ваш заказ') }}
 
-                @if(!empty($order_number) && $order_number != 'undefined')
-                    <span class="order_number_data">#<span class="order_number">{{ $order_number }}</span></span>
-                @endif
             </span>
 
+            @if(!empty($order_number) && $order_number != 'undefined')
+                <span class="order_number_data">{{ $order_number }}</span>
+            @else
+                <span class="order_number_data"></span>
+            @endif
 
         </div>
         <div class="pay-cart__items">
