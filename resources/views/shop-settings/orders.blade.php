@@ -41,8 +41,12 @@
                         <label>
                             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type="checkbox" name="allsumm" @if($paymentStatus[$kps] == 'PAID') checked @endif value="{{ $value['summ'] }}">
                             <span>{{ $paymentStatus[$kps] }} - </span>
-                            <span class="order_summ">{{ $value['summ'] }}</span> <span>(count {{ $value['count'] }}) </span><br>
+                            <span class="order_summ">{{ $value['summ'] }}</span> <span>(count {{ $value['count'] }}) </span>
                         </label>
+                        <a class="button" href="{{ route('shop_settings_orders', ['filter[method]' => $keypm, 'filter[status]' => $kps]) }}">
+                            filter
+                        </a>
+                        <br>
                     @endforeach
                 @endforeach
             @endisset

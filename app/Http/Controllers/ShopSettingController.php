@@ -110,8 +110,14 @@ class ShopSettingController extends Controller
             ->whereBetween('orders.created_at', [$date_from, $date_to])
             ->latest('orders.id')
             ->join('clients', 'orders.clientId', '=', 'clients.id')
-            ->select('orders.*', 'clients.name', 'clients.email')
-            ->paginate(10);
+            ->select('orders.*', 'clients.name', 'clients.email');
+
+        if ($request->get('filter')) {
+            $filter = $request->get('filter');
+            $orders->where('orders.paymentMethod', $filter['method'])
+                ->where('orders.paymentStatus', $filter['status']);
+        }
+        $orders = $orders->paginate(10);
 
         $utm_orders = UtmModel::whereBetween('created_at', [$date_from, $date_to])->get()->keyBy('order_id')->toArray();
 
