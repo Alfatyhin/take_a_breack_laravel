@@ -290,13 +290,14 @@ class OrderService
             $lang = 'Иврит';
         }
         $tags[] = $lang;
+
         if (isset($data['time'])) {
             if ($data['time'] == 'Время доставки') {
-                $data['time'] = '11:00-14:00';
+                $data['time'] = '9:00-21:00';
             }
 
         } else {
-            $data['time'] = '11:00-14:00';
+            $data['time'] = '9:00-21:00';
         }
 
         $timeDelivery = $data['time'];
@@ -1328,6 +1329,22 @@ class OrderService
 
         }
 
+    }
+
+    public static function checkOrders()
+    {
+        $date = now();
+        $date->addDays(-1);
+        $date_from = now()->addDays(-29);
+
+
+        $orders = OrdersModel::where('deleted_at', null)
+            ->whereBetween('updated_at', [$date_from, $date])
+            ->where('amoId', null)->get()->toArray();
+
+        dd($orders);
+
+//        WebhookLog::addLog('check orders', $date->format('H:i:s d-m-Y'));
     }
 
 }
