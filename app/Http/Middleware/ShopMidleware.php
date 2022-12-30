@@ -55,7 +55,6 @@ class ShopMidleware
 
         if(isset($banner['popapp'])) {
             if (!session('popapp')) {
-                session()->forget('popapp');
                 session()->put('popapp', 1);
             } else {
                 unset($banner['popapp']);
