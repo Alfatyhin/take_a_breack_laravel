@@ -65,7 +65,7 @@ class Controller extends BaseController
         }
 
         $users = User::latest('id')->paginate(50);
-        $user_roles = ['user', 'admin', 'content manager'];
+        $user_roles = ['user', 'admin', 'content manager', 'marketer'];
 
 
         return view('users.index', [

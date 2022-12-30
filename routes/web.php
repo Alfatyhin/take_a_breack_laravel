@@ -198,6 +198,19 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
         ->name('components');
 
 
+    Route::any('/db/{tb_name}', [ShopSettingController::class, 'getDbTable'])
+        ->name('db');
+
+
+
+    Route::any('/shop-settings/check_orders', [ShopSettingController::class, 'checkOrders'])
+        ->name('check_orders');
+
+
+    Route::any('/amo/lost_order_create/{order}', [ShopSettingController::class, 'lostCartAmoCreateOrder'])
+        ->name('amo_lost_order_create');
+
+
 
 });
 

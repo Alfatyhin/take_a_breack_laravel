@@ -979,4 +979,30 @@ class ShopSettingController extends Controller
         ]);
 
     }
+
+    public function getDbTable(Request $request, $tb_name)
+    {
+        if ($tb_name == 'utm')
+            $tb_name = 'utm_models';
+
+        $tb_data = DB::table($tb_name)->paginate(50);
+
+
+        return view('shop-settings.table_data', [
+            'message' => $request->message,
+            'tb_data' => $tb_data,
+        ]);
+    }
+
+    public function checkOrders()
+    {
+        OrderService::checkOrders();
+    }
+
+    public function lostCartAmoCreateOrder(Request $request, OrdersModel $order)
+    {
+
+        dd($order);
+
+    }
 }
