@@ -36,9 +36,6 @@
 
 @stop
 
-{{--@section('product_filter')--}}
-{{--    @include('shop.new.layouts.products_filters')--}}
-{{--@stop--}}
 
 @section('content')
 
@@ -58,16 +55,16 @@
 
             </h3>
             <p>
-                {{ __('shop-delivery.Минимальная сумма заказа инфо') }}
+{{--                {{ __('shop-delivery.Минимальная сумма заказа инфо') }}--}}
 
             </p>
         </div>
         <div class="deliv__select">
             <div class="product-info__size">
-                <div class="product-size open-size-table">
-                    <span style="text-transform: uppercase;">
-                {{ __('shop-delivery.введите город доставки') }}</span>
-                </div>
+{{--                <div class="product-size open-size-table">--}}
+{{--                    <span style="text-transform: uppercase;">--}}
+{{--                {{ __('shop-delivery.введите город доставки') }}</span>--}}
+{{--                </div>--}}
                 <div class="product-size__table">
                     @foreach($delivery['cityes_data'] as $city_id => $item)
                         @foreach($item as $delivery_id)
@@ -97,15 +94,18 @@
             </div>
 
             @foreach($delivery['delivery'] as $item)
-                <article class="deliv-item">
-                    <p>
-                        @foreach($item['cityes'] as $city_id)
-                            @if(!$loop->first)
-                                ,
-                            @endif
-                            {{ $cityes['citys_all'][$city_id][$lang] }}
 
-                        @endforeach
+                @php($cityes_out = '')
+                <article class="deliv-item">
+                    @foreach($item['cityes'] as $city_id)
+                        @if(!$loop->first)
+                            @php($cityes_out .= ', ')
+                        @endif
+                        @php($cityes_out .= $cityes['citys_all'][$city_id][$lang])
+
+                    @endforeach
+                    <p>
+                        {{ $cityes_out }}
                     </p>
                     <p>
                         {{ $item['min_sum_order'] }}₪
