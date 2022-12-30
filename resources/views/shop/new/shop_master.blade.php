@@ -68,7 +68,8 @@
                 @show
             </div>
         </main>
-        <section class="popup">
+        <section class="popup" @if(isset($banner['popapp']) && !empty($banner[$lang])) style="display: block" @endif>
+
             <div class="popup__content">
                 <div class="close">
                     <span>
@@ -78,8 +79,10 @@
                     </span>
 
                 </div>
+                @if(isset($banner['popapp']) && !empty($banner[$lang]))
+                    <pre><p class="site_message">{{ $banner[$lang] }}</p></pre>
+                @endif
                 @section('popup')
-
                 @show
             </div>
         </section>

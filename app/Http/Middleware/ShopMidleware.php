@@ -41,8 +41,9 @@ class ShopMidleware
         if ($request->has('utm_campaign'))
             $utm['utm_campaign'] = $request->get('utm_campaign');
 
-        if (!empty($utm))
+        if (!empty($utm)) {
             session(['utm' => $utm]);
+        }
 
 
         if (Storage::disk('local')->exists('data/banner.json')) {
@@ -50,6 +51,15 @@ class ShopMidleware
             $banner = json_decode($banner, true);
         } else {
             $banner = ['en' => '', 'ru' => '', 'he' => ''];
+        }
+
+        if(isset($banner['popapp'])) {
+            if (!session('popapp')) {
+                session()->forget('popapp');
+                session()->put('popapp', 1);
+            } else {
+                unset($banner['popapp']);
+            }
         }
 
         $request->banner = $banner;

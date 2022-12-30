@@ -17,6 +17,14 @@
    <form action="{{ route('banner') }}" method="POST">
        @csrf
        <div>
+           <b>popap </b>
+           режим попап: <br>
+           <label>
+               <input type="checkbox" name="banner[popapp]" value="1" @isset($banner['popapp']) checked @endisset > вкл
+           </label>
+       </div>
+       <hr>
+       <div>
            <b>Язык: en </b>
            Текст: <br>
            <textarea name="banner[en]">{{ $banner['en'] }}</textarea>
