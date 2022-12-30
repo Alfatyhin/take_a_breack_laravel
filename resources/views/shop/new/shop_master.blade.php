@@ -80,7 +80,7 @@
 
                 </div>
                 @if(isset($banner['popapp']) && !empty($banner[$lang]))
-                    <pre><p class="site_message">{{ $banner[$lang] }}</p></pre>
+                    <pre><p class="site_message">{!! $banner[$lang] !!}</p></pre>
                 @endif
                 @section('popup')
                 @show
