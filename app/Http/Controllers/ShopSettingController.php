@@ -205,9 +205,10 @@ class ShopSettingController extends Controller
         foreach ($product_options as &$item) {
             $item['options'] = json_decode($item['options'], true);
         }
-
-
-        $empty_categories = [];
+        foreach ($products as $item) {
+            if (!$item->category_id)
+            $empty_categories[] = $item->id;
+        }
 
 
 
