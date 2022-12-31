@@ -572,6 +572,7 @@
    display: -webkit-box;
    display: -ms-flexbox;
    display: flex;
+   justify-content: space-between;
    -webkit-box-align: stretch;
        -ms-flex-align: stretch;
            align-items: stretch;
@@ -4507,3 +4508,24 @@ h3.shop-thanks{
 p.shop-thanks{
 font-size: 25px;
 }
+
+body .plashka{
+    background: #FFF6D0;
+    height: 127px;
+    text-align: center;
+    font-size: 24px;
+    font-family: 'Roboto';
+}
+
+.plashka .text-plashka:nth-child(1){
+  text-transform: uppercase;
+  padding-top: 31px;
+}
+.plashka .text-plashka:nth-child(2){
+  margin-top: 15px;
+  font-size: 20px;
+}
+.plashka .bold-plashka{
+  display: contents;font-weight: 900;
+}
+
