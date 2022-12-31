@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.3.3';
+    private $v = '2.3.9';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -101,6 +101,7 @@ class ShopController extends Controller
                 }
             }
         }
+
 
 
 
@@ -241,6 +242,7 @@ class ShopController extends Controller
         return view("shop.new.product_master", [
             'v' => $v,
             'lang' => $lang,
+            'banner' => $request->banner,
             'categories' => $categories,
             'category' => $category,
             'category_data' => $category_data,
@@ -620,11 +622,13 @@ class ShopController extends Controller
 
                 $order = Orders::withTrashed()->where('order_id', $post['order_id'])->first();
 
-                if ($order->trashed()) {
-                    $order->restore();
-                }
 
                 if ($order) {
+
+                    if ($order->trashed()) {
+                        $order->restore();
+                    }
+
                     $order_data = json_decode($order->orderData, true);
 
                     $orderData = OrderService::getShopOrderData($post);
@@ -735,6 +739,11 @@ class ShopController extends Controller
         $post = $request->post();
 
         if (!empty($post)) {
+
+            $validate_array = [
+                'order_data' => 'required|json',
+            ];
+            $this->validate($request, $validate_array);
 
             $post['step'] = 4;
 

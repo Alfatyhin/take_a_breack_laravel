@@ -14,9 +14,6 @@
         <p class="errors">{{ $message }}</p><p></p>
         @enderror
 
-        <h3>{{ __('shop-cart.Ваш заказ') }} #{{ $order_number }}
-        </h3>
-
         <div class="pay__form">
 
             <form class="form-cart{{ $step }}" action="{{ route("new_order", ['lang' => $lang]) }}" method="POST">
@@ -63,10 +60,6 @@
                     <label><input value="12" name="premium" type="radio"><span></span><p>12%</p></label>
                     <label><input value="15" name="premium" type="radio"><span></span><p>15%</p></label>
                 </div>
-                <p class="total-pay"><span class="order_price" style="display: none;">{{ $order_data['order_data']['order_total'] }}</span>
-                    {{ __('shop-cart.Общая сумма к оплате') }}
-                    <span class="total_order_price">{{ round($order_data['order_data']['order_total'] + $order_data['order_data']['order_total'] * 0.1, 1) }}</span> ₪
-                </p>
 
                 <div>
                     <p>{{ __('shop-cart.Комментарий к заказу') }}</p>

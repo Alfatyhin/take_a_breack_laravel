@@ -159,6 +159,7 @@
 @stop
 
 @section('popup')
+    @parent
     <div class="text_add">
         @if (!empty($product->translate['nameTranslated'][$lang]))
             {{ $product->translate['nameTranslated'][$lang] }}
