@@ -300,7 +300,7 @@ p.errors {
 }
 .popup_site_message .image-plashka img {
     width: 50%;
-    margin-top: 20px;
+    /* margin-top: 20px; */
 }
 .popup_site_message .popup__content .close span {
     position: absolute;

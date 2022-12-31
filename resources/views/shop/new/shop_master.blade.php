@@ -48,16 +48,16 @@
 <body>
 @include('shop.new.layouts.scripts.body_top')
 
+@if(isset($banner['banner']) && !empty($banner[$lang]))
+    <div class="banner">
+        {!! $banner[$lang] !!}
+    </div>
+@endif
 
 <div class="wrapper">
     <div class="content">
         <div class="modal"></div>
 
-        @if(isset($banner['banner']) && !empty($banner[$lang]))
-            <div class="banner">
-                {!! $banner[$lang] !!}
-            </div>
-        @endif
         @include('shop.new.layouts.header')
 
         <main class="main">
