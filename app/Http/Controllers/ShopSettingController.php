@@ -927,7 +927,12 @@ class ShopSettingController extends Controller
                     }
                     $values[] = $v;
                 } else {
-                    $values[] = '';
+                    if ($k == 'image' && !empty($v)) {
+                        $image_url = url($v['image1500pxUrl']);
+                        $values[] = $image_url;
+                    } else {
+                        $values[] = '';
+                    }
                 }
             }
             $str = implode(';', $values);
