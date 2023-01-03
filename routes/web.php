@@ -91,9 +91,6 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
     Route::get('/artisan/migrate', [ShopSettingController::class, 'migration'])
         ->name('artisan_migrate');
 
-    Route::get('/scv/import', [ShopSettingController::class, 'CsvImport'])
-        ->name('scv_import');
-
     Route::any('/shop-settings/categories', array(ShopSettingController::class, 'Categories'))
         ->name('shop_settings_categories');
 
