@@ -948,6 +948,55 @@ class ShopSettingController extends Controller
         return Storage::disk('local')->download($file_csv_path);
     }
 
+
+
+    public function jsonImport(Request $request)
+    {
+
+        $products_all = Product::all()->keyBy('id');
+        $categories = Categories::all()->keyBy('id');
+        $products = AppServise::ProductsShopPrepeare($products_all, $categories);
+        $products = $products->toArray();
+
+
+//        $file_csv_path = 'csv-import/products.csv';
+//        $first_key = key($products);
+//        foreach ($products[$first_key] as $k => $v) {
+//            $keys[] = $k;
+//        }
+//        $str = implode(';', $keys);
+//        Storage::disk('local')->put($file_csv_path, $str);
+
+        foreach ($products as &$item) {
+//            $values = [];
+            foreach ($item as $k => $v) {
+                if (!is_array($v)) {
+                    if ($k == 'category_id' && isset($categories[$v])) {
+                        $category = $categories[$v];
+//                        $v = $category->name;
+                        $item['category_id'] = $category->name;
+                    }
+//                    $values[] = $v;
+                } else {
+//                    if ($k == 'image' && !empty($v)) {
+//                        $image_url = url($v['image1500pxUrl']);
+//                        $values[] = $image_url;
+//                    } else {
+//                        $values[] = '';
+//                    }
+                }
+            }
+//            $str = implode(';', $values);
+//            Storage::disk('local')->append($file_csv_path, $str);
+        }
+
+
+        $file_csv_path = 'csv-import/products.json';
+
+        Storage::disk('local')->put($file_csv_path, json_encode($products));
+        return Storage::disk('local')->download($file_csv_path);
+    }
+
     public function getComponents(Request $request)
     {
 

@@ -62,6 +62,8 @@ Route::any('/orders/response', [IcreditController::class, 'orderRequestIcredit']
 
 ////////////////////////////////////////////////////////////////////////////
 
+Route::get('/api/json/import', [ShopSettingController::class, 'jsonImport'])
+    ->name('scv_import');
 
 Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () {
 
