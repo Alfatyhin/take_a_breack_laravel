@@ -263,9 +263,9 @@ class ShopController extends Controller
         App::setLocale($lang);
 
         $post = $request->post();
-
-
         $orderData = false;
+        $order_number = false;
+
         if ($lost_order) {
             $order = Orders::where('order_id', $lost_order)->first();
             $post = json_decode($order->orderData, true);
@@ -274,389 +274,19 @@ class ShopController extends Controller
             }
         }
 
-        if ($step == 2) {
 
-            if (!$lost_order) {
-//                dd($post);
+        if (!empty($post)) {
+            $post['step'] = $step;
+            $OrderService = new OrderService();
+
+            $res = $OrderService->validateOrderData($post);
+            if (!isset($res->sugess)) {
+                return $res;
             }
 
-            if (!empty($post)) {
-                $post['step'] = $step;
-                WebhookLog::addLog('new order step 2 request', $post);
-
-                if (!empty($post)) {
-                    $pattern_phone = "/^[+0-9]{2,4} \([0-9]{3}\) [0-9]{3} [0-9]{2} [0-9]{2,4}$/";
-                    $validate_array = [
-                        'clientName' => 'required',
-                        'clientLastName' => 'required',
-                        'phone' => 'required|regex:'.$pattern_phone,
-                        'email' => 'required|email:rfc,dns',
-                        'order_data' => 'required|json'
-                    ];
-
-                    if ($lost_order) {
-                        unset($validate_array['order_data']);
-                    }
-
-                    $validator = Validator::make($post, $validate_array);
-                    if ($validator->fails()) {
-                        return redirect(route('cart', ['lang' => $lang, 'step' => 1, 'order_id' => $lost_order]))
-                            ->withErrors($validator)
-                            ->withInput();
-                    }
-                    $validator->validate();
-
-                    $post['email'] = strtolower($post['email']);
-                    $post['email'] = str_replace(' ', '', $post['email']);
-                    $post['order_data'] = json_decode($post['order_data'], true);
-
-
-                    if (empty($post['order_data']['products'])) {
-                        $post['order_data'] = '';
-                        $messages = [
-                            'order_data.required' => __('shop-cart.пустая корзина'),
-                        ];
-                        $validate_array['order_data'] = "required";
-                        Validator::make($post, $validate_array, $messages )->validate();
-                    }
-
-                    /////////////////////////////////////////////
-
-                    $phone = $post['phone'];
-                    $phone = OrderService::phoneAmoFormater($phone);
-                    $client = Clients::firstOrNew([
-                        'email' => $post['email']
-                    ]);
-                    $data = json_decode($client->data, true);
-                    if (empty($client->name)) {
-                        $client->name = $post['clientName'];
-                    }
-                    if (empty($client->phone)) {
-                        $client->phone = $post['phone'];
-                    }
-                    if (isset($data['phones'])) {
-                        $phones = $data['phones'];
-                        $test_phones = array_reverse($phones);
-                        if (!isset($test_phones[$phone])) {
-                            $phones[] = $phone;
-                        }
-                        $data['phones'] = $phones;
-                    } else {
-                        $data['phones'][] = $phone;
-                    }
-
-                    if($post['clientBirthDay']) {
-
-                        $birth_day = AppServise::dateFormater($post['clientBirthDay']);
-                        if ($birth_day) {
-                            $data['clientBirthDay'] = $birth_day;
-                            $data['clientBirthDayStr'] = $post['clientBirthDay'];
-                        } else {
-                            $data['clientBirthDayStr'] = $post['clientBirthDay'];
-                        }
-                    }
-
-                    $client->data = json_encode($data);
-
-                    $client->save();
-                    session(['client' => $client]);
-                    ////////////////////////////////////////////
-
-                    if (isset($post['order_id'])) {
-
-                        $order = Orders::withTrashed()->where('order_id', $post['order_id'])
-                            ->where('paymentMethod', 0)
-                            ->where('paymentStatus', 0)->first();
-
-                        if (!$order || $post['order_id'] == 'undefined') {
-                            $order = new Orders();
-                            $order_id = rand(100, 999);
-                            $order->order_id = AppServise::generateOrderId($order_id, 'S');
-                        }
-                        if ($order->trashed()) {
-                            $order->restore();
-                        }
-
-                    } else {
-
-                        $order = Orders::orderBy('id', 'desc')
-                            ->where('clientId', $client->id)
-                            ->where('paymentMethod', 0)
-                            ->where('paymentStatus', 0)->first();
-
-                        if (!$order) {
-                            $order = new Orders();
-                            $order_id = rand(100, 999);
-                            $order->order_id = AppServise::generateOrderId($order_id, 'S');
-                        }
-
-                    }
-                    WebhookLog::addLog('new order step 2 order_id', $order->order_id);
-
-
-                    $order_data_jsonform = $post['order_data'];
-                    $orderData = OrderService::getShopOrderData($post);
-                    $orderData['order_data_jsonform'] = $order_data_jsonform;
-                    $order->clientId = $client->id;
-                    if (isset($post['gClientId'])) {
-                        session(['gClientId' => $post['gClientId']]);
-                        $order->gclientId = $post['gClientId'];
-                    }
-                    $order->paymentMethod = 0;
-                    $order->paymentStatus = 0;
-                    $order->orderPrice = $orderData['order_data']['order_total'];
-                    $order->orderData = json_encode($orderData);
-                    $order->save();
-                    session(['order_id' => $order->order_id]);
-
-                }
-            }
-
-        } elseif($step == 3 ) {
-
-            if (!empty($post)) {
-                $post['step'] = $step;
-
-                if ($lost_order) {
-                    WebhookLog::addLog("lost step 3 post", $lost_order);
-
-                    $validate_array = [
-                        'date' => 'required',
-                        'delivery' => 'required'
-                    ];
-                    $messages['delivery.required'] = 'delivery required';
-                    $messages['date.required'] = 'data required';
-
-                    $validator = Validator::make($post, $validate_array, $messages);
-                    if ($validator->fails()) {
-                        return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
-                            ->withErrors($validator)
-                            ->withInput();
-                    }
-                    $validator->validate();
-                    unset($validate_array);
-
-                } else {
-
-                    WebhookLog::addLog("step 3 post {$post['order_id']}", $post);
-                    $validate_array = [
-                        'date' => 'required|date_format:Y-n-j',
-                        'order_data' => 'required|json',
-                        'delivery' => 'required'
-                    ];
-                    $this->validate($request, $validate_array);
-                    unset($validate_array);
-
-                }
-
-                $post['order_data'] = json_decode($post['order_data'], true);
-
-                if (empty($post['order_data']['products'])) {
-                    $post['order_data'] = '';
-                    $messages = [
-                        'order_data.required' => __('shop-cart.пустая корзина'),
-                    ];
-                    $validate_array['order_data'] = "required";
-
-                    if ($lost_order) {
-
-                        $validator = Validator::make($post, $validate_array, $messages);
-                        if ($validator->fails()) {
-                            return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
-                                ->withErrors($validator)
-                                ->withInput();
-                        }
-                        $validator->validate();
-                        unset($validate_array);
-                    } else {
-                        Validator::make($post, $validate_array, $messages)->validate();
-                    }
-                }
-
-                if ($post['delivery'] == 'delivery') {
-
-                    $validate_array['street'] = 'required';
-                    $validate_array['house'] = 'required';
-                    $validate_array['city'] = 'required';
-                    if ($lost_order) {
-
-                        $messages['street.required'] = 'required';
-                        $messages['house.required'] = 'required';
-                        $messages['city.required'] = 'required';
-
-                        $validator = Validator::make($post, $validate_array, $messages);
-                        if ($validator->fails()) {
-                            return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
-                                ->withErrors($validator)
-                                ->withInput();
-                        }
-                        $validator->validate();
-                        unset($validate_array);
-                    } else {
-                        $this->validate($request, $validate_array);
-                    }
-
-                    $delivery_json = Storage::disk('local')->get('js/delivery.json');
-                    $cityes_json = Storage::disk('local')->get('js/israel-city.json');
-                    $cityes = json_decode($cityes_json, true);
-                    $delivery_setting = json_decode($delivery_json, true);
-                    $order_data = $post['order_data'];
-
-
-                    $city_pattern = 'no_city';
-                    if (!empty($post['city_id'])) {
-                        if (isset($delivery_setting['cityes_data'][$post['city_id']])) {
-                            $city_names = $cityes['citys_all'][$post['city_id']];
-                            foreach ($city_names as $city_name) {
-                                if ($post['city'] == $city_name) {
-                                    $city_pattern = $city_name;
-                                }
-                            }
-                        }
-                    } else {
-                        if ($post['city']) {
-                            foreach ($cityes['citys_all'] as $k => $item) {
-                                if ($item['ru'] == $post['city'] || $item['en'] == $post['city'] || $item['he'] == $post['city']  ) {
-                                    $post['city_id'] = $k;
-                                }
-                            }
-                        }
-                    }
-
-                    if ($lost_order) {
-                        $post['order_data'] = $post['order_data_jsonform'];
-                    }
-
-                    $data_price['order_data'] = $post['order_data'];
-
-
-                    $data_price = OrderService::getShopOrderData($data_price);
-                    $order_price = $data_price['order_data']['order_total'];
-
-                    if (!isset($delivery_setting['cityes_data'][$post['city_id']])) {
-
-                        $messages = [
-                            'city.required' => __('shop-cart.нет доставки в город') . " " . $post['city'],
-                        ];
-                        $validate_array['city'] = "required";
-                        $post['city'] = '';
-
-
-                        if ($lost_order) {
-
-                            $validator = Validator::make($post, $validate_array, $messages);
-                            if ($validator->fails()) {
-                                return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
-                                    ->withErrors($validator)
-                                    ->withInput();
-                            }
-                            $validator->validate();
-                            unset($validate_array);
-                        } else {
-                            Validator::make($post, $validate_array, $messages)->validate();
-                        }
-                    }
-
-                    $deliv_id = $delivery_setting['cityes_data'][$post['city_id']][0];
-
-                    $delivery = $delivery_setting['delivery'][$deliv_id];
-
-                    $min_summ_order = $delivery['min_sum_order'];
-                    if ($order_price < $min_summ_order) {
-//                        dd(__('shop-cart.минимальная сумма заказа') . ' ' . $min_summ_order . ' ₪ !');
-                        $messages = [
-                            'min_summ_order.required' => __('shop-cart.минимальная сумма заказа') . ' ' . $min_summ_order . ' ₪ !',
-                        ];
-
-                        $validate_array['min_summ_order'] = "required";
-
-                        $validator = Validator::make($post, $validate_array, $messages);
-                        if ($lost_order) {
-                            if ($validator->fails()) {
-                                return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
-                                    ->withErrors($validator)
-                                    ->withInput();
-                            }
-                        } else {
-                            if ($validator->fails()) {
-                                return redirect(route('cart', ['lang' => $lang, 'step' => 2]))
-                                    ->withErrors($validator)
-                                    ->withInput();
-                            }
-                        }
-
-                        $validator->validate();
-                        unset($validate_array);
-                    }
-
-                    if (empty($delivery['rate_delivery_to_summ_order'])) {
-                        $post['order_data']['delivery_price'] = $delivery['rate_delivery'];
-                        if (!empty($post['time']) && preg_match('/[0-9]{2}:00-[0-9]{2}:00/', $post['time'])) {
-                            $post['order_data']['delivery_price'] += $post['order_data']['delivery_price'] / 100 * 30;
-                            $post['order_data']['delivery_price'] = round($post['order_data']['delivery_price'], 2);
-                        }
-                    }
-
-
-                }
-
-
-                if(isset($post['otherPerson'])) {
-                    $validate_array['user-phone'] = 'required';
-                    $validate_array['nameOtherPerson'] = 'required';
-                    $post['phoneOtherPerson'] = $post['user-phone'];
-                }
-
-                if (isset($validate_array)) {
-                    if ($lost_order) {
-                        $validator = Validator::make($post, $validate_array);
-                        if ($validator->fails()) {
-                            return redirect(route('cart', ['lang' => $lang, 'step' => 2, 'order_id' => $lost_order]))
-                                ->withErrors($validator)
-                                ->withInput();
-                        }
-                    } else {
-                        $this->validate($request, $validate_array);
-                    }
-                }
-
-                $order = Orders::withTrashed()->where('order_id', $post['order_id'])->first();
-
-
-                if ($order) {
-
-                    if ($order->trashed()) {
-                        $order->restore();
-                    }
-
-                    $order_data = json_decode($order->orderData, true);
-
-                    $orderData = OrderService::getShopOrderData($post);
-
-                    foreach ($orderData as $k => $v) {
-                        $order_data[$k] = $v;
-                    }
-
-
-                    $order_data['order_data_jsonform'] = $post['order_data'];
-                    $order->orderPrice = $orderData['order_data']['order_total'];
-                    $order->orderData = json_encode($order_data);
-                    $order->save();
-
-                    WebhookLog::addLog('new order step 3 order_data', $order_data);
-
-                    if ($order->orderPrice <= 0 ) {
-                        dd('error check summ, order price - '.$order->ordrPrice);
-                    }
-                } else {
-
-                    return redirect(route('order_not_found', ['lang' => $lang, 'order_id' => $post['order_id']]));
-                }
-
-            }
+            $OrderService::addOrUpdateOrder($post);
         }
 
-        $order_number = false;
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
         $products_ids = [];
         foreach ($categories as $category) {
@@ -677,6 +307,7 @@ class ShopController extends Controller
             $order_number = $order_id;
         }
 
+        ////////////////////////////////////////////////////
         $cityes = Storage::disk('local')->get('js/israel-city.json');
         $cityes = json_decode($cityes, true);
 
@@ -740,42 +371,23 @@ class ShopController extends Controller
 
         if (!empty($post)) {
 
-            $validate_array = [
-                'order_data' => 'required|json',
-            ];
-            $this->validate($request, $validate_array);
-
             $post['step'] = 4;
 
-            WebhookLog::addLog('new order step 4 post', $post);
+            $OrderService = new OrderService();
 
-            $order = Orders::where('order_id', $post['order_id'])->first();
-            $order_data = json_decode($order->orderData, true);
+            $res = $OrderService->validateOrderData($post);
+            if (!isset($res->sugess)) {
+                return $res;
+            }
 
-            $order_data['order_data'] = $order_data['order_data_jsonform'];
-            $order_data['premium'] = $post['premium'];
-
-
-            $orderData = OrderService::getShopOrderData($order_data);
-            WebhookLog::addLog('new order step 4 order_data', $orderData);
-
-            $orderData['client_comment'] = $post['client_comment'];
-            $orderData['methodPay'] = $post['methodPay'];
+            $order = $OrderService::addOrUpdateOrder($post);
 
 
-            $order->paymentMethod = $orderData['methodPay'];
-            $order->paymentStatus = 3;
-            $order->orderPrice = $orderData['order_data']['order_total'];
-            $order->orderData = json_encode($orderData);
-            $order->save();
-
-            session(['last_order_id' => $order->order_id]);
-
-            if ($order->paymentMethod == 2 || $order->paymentMethod == 4) {
+            if ($post['methodPay'] == 2 || $post['methodPay'] == 4) {
 
                 return redirect(route("order_thanks", ['lang'=> $lang]));
 
-            } elseif ($order->paymentMethod == 1) {
+            } elseif ($post['methodPay'] == 1) {
 
                 $icreditOrderData = OrderService::getShopIcreditOrderData($order);
                 WebhookLog::addLog('new order step 4 icreditOrderData', $icreditOrderData);
@@ -829,7 +441,7 @@ class ShopController extends Controller
         App::setLocale($lang);
 
         $v = $this->v;
-        $order_id = session('last_order_id');
+        $order_id = session('order_id');
 
         $test = $request->get('test');
         if (isset($test)) {
@@ -844,7 +456,7 @@ class ShopController extends Controller
 
         if ($order_id) {
             $order = Orders::where('order_id', $order_id)->first();
-            WebhookLog::addLog('OrderThanksView last order', $order);
+            WebhookLog::addLog('OrderThanksView last order', $order_id);
         } else {
             $order = [
                 'orderPrice' => 0,
@@ -854,9 +466,11 @@ class ShopController extends Controller
             $order = json_decode(json_encode($order));
         }
 
+        if ($order_id) {
+            $OrderService = new OrderService();
+            $OrderService->changeProductsCount($order);
+        }
 
-        $OrderService = new OrderService();
-        $OrderService->changeProductsCount($order);
 
 
         $client_id = $order->clientId;
@@ -871,6 +485,7 @@ class ShopController extends Controller
         $dataJson = Storage::disk('local')->get('data/app-setting.json');
         $invoiceSettingData = json_decode($dataJson, true);
 
+        session(['last_order_id' => $order->order_id]);
         session(['order_id' => false]);
 
         return view("shop.new.order_thanks", [

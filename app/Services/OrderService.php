@@ -4,25 +4,20 @@
 namespace App\Services;
 
 
-use AmoCRM\Models\CustomFieldsValues\ValueCollections\PriceCustomFieldValueCollection;
-use AmoCRM\Models\CustomFieldsValues\ValueModels\PriceCustomFieldValueModel;
 use App\Mail\NewOrder;
 use App\Models\AppErrors;
 use App\Models\Clients;
 use App\Models\Coupons;
 use App\Models\Orders;
-use App\Models\Orders as OrdersModel;
 use App\Models\Product;
 use App\Models\ProductOptions;
 use App\Models\UtmModel;
 use App\Models\WebhookLog;
-use App\Services\EcwidService;
 use Carbon\Carbon;
-use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use phpDocumentor\Reflection\Types\Self_;
 
 class OrderService
 {
@@ -683,6 +678,8 @@ class OrderService
 
         $products = $order['order_data']['products'];
 
+//        dd($order);
+
         $product_options = ProductOptions::all()->keyBy('id')->toArray();
         foreach ($product_options as $k => $item) {
             $product_options[$k]['options'] = json_decode($item['options'], true);
@@ -1176,7 +1173,7 @@ class OrderService
         ];
         $paymentMethods = AppServise::getOrderPaymentMethod();
 
-        $order = OrdersModel::where('order_id', $order_id)->first();
+        $order = Orders::where('order_id', $order_id)->first();
         $client_id = $order->clientId;
         $client = Clients::where('id', $client_id)->first();
 
@@ -1338,13 +1335,300 @@ class OrderService
         $date_from = now()->addDays(-29);
 
 
-        $orders = OrdersModel::where('deleted_at', null)
+        $orders = Orders::where('deleted_at', null)
             ->whereBetween('updated_at', [$date_from, $date])
             ->where('amoId', null)->get()->toArray();
 
         dd($orders);
 
 //        WebhookLog::addLog('check orders', $date->format('H:i:s d-m-Y'));
+    }
+
+    public static function getOrCreateClientOrder($client, $post)
+    {
+
+        if (!empty($post['order_id'])) {
+
+            $order = Orders::withTrashed()->where('order_id', $post['order_id'])
+                ->where('amoId', null)->first();
+
+            if (!$order || $post['order_id'] == 'undefined') {
+                $order = new Orders();
+                $order_id = rand(100, 999);
+                $order->order_id = AppServise::generateOrderId($order_id, 'S');
+            }
+            if ($order->trashed()) {
+                $order->restore();
+            }
+
+        } else {
+
+            $order = Orders::orderBy('id', 'desc')
+                ->where('clientId', $client->id)
+                ->where('amoId', null)->first();
+
+            if (!$order) {
+                $order = new Orders();
+                $order_id = rand(100, 999);
+                $order->order_id = AppServise::generateOrderId($order_id, 'S');
+            }
+
+        }
+
+        return $order;
+    }
+
+    public static function addOrUpdateOrder($post)
+    {
+
+        $post['order_data'] = json_decode($post['order_data'], true);
+        WebhookLog::addLog("new order step {$post['step']} request", $post);
+
+        $client = session('client');
+
+        if (!$client && empty($post['order_id'])) {
+            return redirect(route('cart', ['lang' => $post['lang'], 'step' => 1]));
+        }
+
+        $order = self::getOrCreateClientOrder($client, $post);
+
+        $old_data = json_decode($order->orderData, true);
+        foreach ($old_data as $k => $v) {
+            if (!isset($post[$k]) && $old_data['step'] < $post['step'])
+                $post[$k] = $v;
+        }
+
+        if ($post['step'] == 2){
+
+            $post['email'] = strtolower($post['email']);
+            $post['email'] = str_replace(' ', '', $post['email']);
+            $client = self::clientCreateOrUpdate($post);
+            session(['client' => $client]);
+        }
+        if (isset($post['delivery']) && $post['delivery'] == 'delivery') {
+
+            $delivery_json = Storage::disk('local')->get('js/delivery.json');
+            $cityes_json = Storage::disk('local')->get('js/israel-city.json');
+            $cityes = json_decode($cityes_json, true);
+            $delivery_setting = json_decode($delivery_json, true);
+
+            if ($post['city'] && empty($post['city_id'])) {
+                foreach ($cityes['citys_all'] as $k => $item) {
+                    if ($item['ru'] == $post['city'] || $item['en'] == $post['city'] || $item['he'] == $post['city']  ) {
+                        $post['city_id'] = $k;
+                    }
+                }
+            }
+            $deliv_id = $delivery_setting['cityes_data'][$post['city_id']][0];
+            $delivery = $delivery_setting['delivery'][$deliv_id];
+
+            if (!empty($delivery['rate_delivery_to_summ_order'])) {
+                $data_price['order_data'] = $post['order_data'];
+                $data_price = self::getShopOrderData($data_price);
+                $order_price = $data_price['order_data']['products_total'];
+
+                foreach ($delivery['rate_delivery_to_summ_order'] as $item) {
+
+                    if ($order_price >= $item['sum_order']['min'] && $order_price <= $item['sum_order']['max']) {
+                        $delivery['rate_delivery'] = $item['rate_delivery'];
+                    }
+                }
+            }
+
+            $post['order_data']['delivery_price'] = $delivery['rate_delivery'];
+            if (!empty($post['time']) && preg_match('/[0-9]{2}:00-[0-9]{2}:00/', $post['time'])) {
+                $post['order_data']['delivery_price'] += $post['order_data']['delivery_price'] / 100 * 30;
+                $post['order_data']['delivery_price'] = round($post['order_data']['delivery_price'], 2);
+            }
+        }
+
+
+        if(isset($post['otherPerson'])) {
+            $post['phoneOtherPerson'] = $post['user-phone'];
+        }
+
+
+
+        $order_data_jsonform = $post['order_data'];
+        $orderData = self::getShopOrderData($post);
+        $orderData['order_data_jsonform'] = $order_data_jsonform;
+        $order->clientId = $client->id;
+        if (isset($post['gClientId'])) {
+            $order->gclientId = $post['gClientId'];
+        }
+
+        if (isset($post['methodPay'])) {
+            $order->paymentMethod = $post['methodPay'];
+            $order->paymentStatus = 3;
+        } else {
+            $order->paymentMethod = 0;
+            $order->paymentStatus = 0;
+        }
+
+        $order->orderPrice = $orderData['order_data']['order_total'];
+        $order->orderData = json_encode($orderData);
+        $order->save();
+        session(['order_id' => $order->order_id]);
+
+        WebhookLog::addLog("new order step {$post['step']} order_id", $order->order_id);
+
+        return $order;
+    }
+
+    public function validateOrderData($order_data)
+    {
+
+        $messages = [];
+        if (!empty($order_data['order_id'])) {
+
+            $order = Orders::where('order_id', $order_data['order_id'])->first();
+
+            $old_data = json_decode($order->orderData, true);
+            foreach ($old_data as $k => $v) {
+                if (!isset($order_data[$k]) && $old_data['step'] < $order_data['step'])
+                    $order_data[$k] = $v;
+            }
+
+        }
+
+        if ($order_data['step'] == 2) {
+            $step_back = 1;
+            $pattern_phone = "/^[+0-9]{2,4} \([0-9]{3}\) [0-9]{3} [0-9]{2} [0-9]{2,4}$/";
+            $validate_array = [
+                'clientName' => 'required',
+                'clientLastName' => 'required',
+                'phone' => 'required|regex:'.$pattern_phone,
+                'email' => 'required|email:rfc,dns'
+            ];
+
+        }
+        if ($order_data['step'] == 3) {
+            $step_back = 2;
+            $validate_array = [
+                'date' => 'required|date_format:Y-n-j',
+                'delivery' => 'required'
+            ];
+
+        }
+        if ($order_data['step'] == 4) {
+            $step_back = 3;
+        }
+        if (isset($order_data['delivery']) && $order_data['delivery'] == 'delivery') {
+
+            $validate_array['street'] = 'required';
+            $validate_array['house'] = 'required';
+            $validate_array['city'] = 'required';
+
+
+            $delivery_json = Storage::disk('local')->get('js/delivery.json');
+            $cityes_json = Storage::disk('local')->get('js/israel-city.json');
+            $cityes = json_decode($cityes_json, true);
+            $delivery_setting = json_decode($delivery_json, true);
+
+            if ($order_data['city'] && empty($order_data['city_id'])) {
+                foreach ($cityes['citys_all'] as $k => $item) {
+                    if ($item['ru'] == $order_data['city'] || $item['en'] == $order_data['city'] || $item['he'] == $order_data['city']  ) {
+                        $order_data['city_id'] = $k;
+                    }
+                }
+            }
+
+
+            if (!isset($delivery_setting['cityes_data'][$order_data['city_id']])) {
+
+                $messages['city.required'] = __('shop-cart.нет доставки в город') . " " . $order_data['city'];
+                $validate_array['city'] = "required";
+                $order_data['city'] = '';
+
+            } else {
+
+                $data_price['order_data'] = json_decode($order_data['order_data'], true);
+
+                $data_price = self::getShopOrderData($data_price);
+                $order_price = $data_price['order_data']['products_total'];
+
+                $deliv_id = $delivery_setting['cityes_data'][$order_data['city_id']][0];
+                $delivery = $delivery_setting['delivery'][$deliv_id];
+
+                $min_summ_order = $delivery['min_sum_order'];
+                if ($order_price < $min_summ_order) {
+                    $messages['min_summ_order.required'] = __('shop-cart.минимальная сумма заказа') . ' ' . $min_summ_order . ' ₪ !';
+
+                    $validate_array['min_summ_order'] = "required";
+                }
+
+
+            }
+
+        }
+
+
+        if(isset($post['otherPerson'])) {
+            $validate_array['user-phone'] = 'required';
+            $validate_array['nameOtherPerson'] = 'required';
+        }
+
+
+        $messages['order_data.required'] = __('shop-cart.пустая корзина');
+        $validate_array['order_data'] = 'required|json';
+
+//        dd($validate_array, $messages);
+
+        $validator = Validator::make($order_data, $validate_array, $messages);
+        if ($validator->fails()) {
+            return redirect(route('cart', ['lang' => $order_data['lang'], 'step' => $step_back]))
+                ->withErrors($validator)
+                ->withInput();
+        } else {
+            $res = (object) ['sugess' => true];
+            return $res;
+        }
+
+         return $validator->validate();
+
+    }
+
+    public static function clientCreateOrUpdate($post)
+    {
+
+        $phone = $post['phone'];
+        $phone = OrderService::phoneAmoFormater($phone);
+        $client = Clients::firstOrNew([
+            'email' => $post['email']
+        ]);
+        $data = json_decode($client->data, true);
+        if (empty($client->name)) {
+            $client->name = $post['clientName'];
+        }
+        if (empty($client->phone)) {
+            $client->phone = $post['phone'];
+        }
+        if (isset($data['phones'])) {
+            $phones = $data['phones'];
+            $test_phones = array_reverse($phones);
+            if (!isset($test_phones[$phone])) {
+                $phones[] = $phone;
+            }
+            $data['phones'] = $phones;
+        } else {
+            $data['phones'][] = $phone;
+        }
+
+        if($post['clientBirthDay']) {
+
+            $birth_day = AppServise::dateFormater($post['clientBirthDay']);
+            if ($birth_day) {
+                $data['clientBirthDay'] = $birth_day;
+                $data['clientBirthDayStr'] = $post['clientBirthDay'];
+            } else {
+                $data['clientBirthDayStr'] = $post['clientBirthDay'];
+            }
+        }
+
+        $client->data = json_encode($data);
+        $client->save();
+
+        return $client;
     }
 
 }
