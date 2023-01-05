@@ -170,6 +170,7 @@ class Amocrm extends Controller
                                     $paymentDate = new Carbon();
                                     $paymentDateString = $paymentDate->format('Y-m-d H:i:s');
                                     $order->paymentDate = $paymentDateString;
+                                    $order->invoiceStatus = 1;
                                     $order->save();
 
                                     $orderData = json_decode($order->orderData, true);
