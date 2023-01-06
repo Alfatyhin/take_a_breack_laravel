@@ -81,7 +81,7 @@ class AmoCrmServise
     private static $tokensFile = 'data/amo-assets.json';
     private $apiClient;
     private $url = 'https://www.amocrm.com';
-    private $open_stages = ['42684658' => 1, '42684652' => 1];
+    private $open_stages = ['42684658' => 1, '42684652' => 1, '53836814' => 1];
 
     public function __construct()
     {
