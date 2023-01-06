@@ -955,6 +955,7 @@ class OrderService
 
             $amoData = $orderService::getShopAmoDataLead($orderData);
             if ($order_status) {
+                $amoData['statusId'] = $order_status;
                 dd($amoData);
             }
             $amoNotes = $orderService::getShopAmoNotes($orderData);
