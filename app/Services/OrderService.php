@@ -1350,7 +1350,7 @@ class OrderService
             foreach ($orders as $order) {
                 $OrderService->createOrderToAmocrm($order['order_id'], '53836814');
 
-                WebhookLog::addLog('amo add lost order', $order->order_id);
+                WebhookLog::addLog('amo add lost order', $order['order_id']);
             }
         }
 
