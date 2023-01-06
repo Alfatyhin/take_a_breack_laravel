@@ -260,6 +260,7 @@ class OrderService
         } elseif ($data['paymentMethod'] == 'Bit') {
             $payment = 'Ожидает оплату по Bit';
         } else {
+            $payment = false;
         }
 
         // deliwery adress
