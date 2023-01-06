@@ -339,6 +339,12 @@ p.errors {
     text-align: center;
     z-index: 5;
 }
+.card__item .card-img .sale {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 10;
+}
 @media (max-width: 768px) {
     .popup_site_message .popup__content {
         width: 100%;

@@ -97,12 +97,21 @@
                             @endisset
                         </div>
                     </div>
-                    <p>
                         @isset($variant['compareToPrice'])
-                            {{--                                    ({{ $translate['benefit'][$lang] }} {{ $variant['compareToPrice'] - $variant['defaultDisplayedPrice']  }}₪)--}}
+
+                            <div>
+                                <p>
+                                    <span class="old_price">{{ $variant['compareToPrice'] }}</span> ₪
+                                </p>
+                                <p>
+                                    <span class="price">{{ $price }}</span> ₪
+                                </p>
+                            </div>
+                        @else
+                            <p>
+                                <span class="price">{{ $price }}</span> ₪
+                            </p>
                         @endisset
-                        <span class="price">{{ $price }}</span> ₪
-                    </p>
                 </label>
             @endforeach
 

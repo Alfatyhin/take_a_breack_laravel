@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.4.1';
+    private $v = '2.4.3';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -140,7 +140,7 @@ class ShopController extends Controller
 
         $popapp_message = session('message_popapp');
 
-        $category = Categories::where('slag', $category)->first();
+        $category = Categories::where('slag', $category)->where('enabled', 1)->first();
         if (!$category) {
             return $this->err404($request, $lang);
         }
@@ -189,13 +189,13 @@ class ShopController extends Controller
         $v = $this->v;
 
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
-        $product = Product::where('slag', $product_slag)->first();
-        $products_data[] = $product;
-        $products = AppServise::ProductsShopPrepeare($products_data, $categories);
-        $product = $products[0];
+        $product = Product::where('slag', $product_slag)->where('enabled', 1)->first();
         if (!$product) {
             return $this->err404($request, $lang);
         }
+        $products_data[] = $product;
+        $products = AppServise::ProductsShopPrepeare($products_data, $categories);
+        $product = $products[0];
 
         $products_ids = [];
         foreach ($categories as $category) {
@@ -209,7 +209,10 @@ class ShopController extends Controller
 
         $products = AppServise::ProductsShopPrepeare($products, $categories);
         $rand_keys = array_rand($products->toArray(), 4);
-        $category = Categories::where('slag', $category_slag)->first();
+        $category = Categories::where('slag', $category_slag)->where('enabled', 1)->first();
+        if (!$category) {
+            return $this->err404($request, $lang);
+        }
         $category_data = json_decode($category->data, true);
         $category->translate = json_decode($category->translate, true);
 

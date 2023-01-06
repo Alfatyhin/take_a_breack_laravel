@@ -20,6 +20,12 @@
         @else
             <img src=""  alt="{{ $category_active }} - {{ $product->name }}" title="{{ $product->name }}">
         @endif
+
+        @if ($product->sale)
+            <div class="sale">
+                <img src="/assets/images/icons/sale.svg" alt="sale">
+            </div>
+        @endif
     </div>
     <div class="card__text">
         <div class="card-name">

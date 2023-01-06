@@ -349,6 +349,7 @@ Route::middleware(["Shop"])->group(function () {
 
 
     Route::get('/404', [ShopController::class, 'err404'])->name('404');
+    Route::get('/{lang?}/404', [ShopController::class, 'err404']);
 
     Route::get('/check-promo-code', [ShopController::class, 'getPromoCode'])->name('check_promo_code');
 
@@ -440,7 +441,9 @@ Route::middleware(["Shop"])->group(function () {
         ->where('lang', '[a-z]{2}')
         ->name('category');
 
-    Route::get('/{lang?}/{category}/{product}', [ShopController::class, 'ProductLang'])->name('product');
+    Route::get('/{lang?}/{category}/{product}', [ShopController::class, 'ProductLang'])
+        ->where('lang', '[a-z]{2}')
+        ->name('product');
 
     Route::any('/{lang}/new-order/', [ShopController::class, 'NewOrder'])
         ->where('lang', '[a-z]{2}')
@@ -452,7 +455,9 @@ Route::middleware(["Shop"])->group(function () {
         ->name('order_thanks');
 
 
-    Route::get('/{category}/{product}', [ShopController::class, 'ProductView'])->name('product_index');
+    Route::get('/{category}/{product}', [ShopController::class, 'ProductView'])
+        ->where('category', '[a-z_-]{3,}')
+        ->name('product_index');
 
 
     Route::get('/ru/product/{product}', [ShopController::class, 'ProductRuOld']);

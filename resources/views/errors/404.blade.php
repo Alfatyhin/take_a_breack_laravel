@@ -29,7 +29,6 @@
                 @endif
             </div>
         </div>
-        </div>
     </section>
 
 @stop
