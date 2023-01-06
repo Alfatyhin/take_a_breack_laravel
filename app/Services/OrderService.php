@@ -1347,11 +1347,10 @@ class OrderService
 
         $OrderService = new OrderService();
         foreach ($orders as $order) {
-
-            $OrderService->createOrderToAmocrm($order['order_id'], '53836814');
+            $res = $OrderService->createOrderToAmocrm($order['order_id'], '53836814');
+            dd($res);
         }
 
-        dd($orders, $date_from, $date);
 
 //        WebhookLog::addLog('check orders', $date->format('H:i:s d-m-Y'));
     }
