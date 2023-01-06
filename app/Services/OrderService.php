@@ -1344,7 +1344,7 @@ class OrderService
             ->where('amoId', null)->get()->toArray();
 
 
-        WebhookLog::addLog('check orders', $date->format('H:i:s d-m-Y'));
+        WebhookLog::addLog('check orders '.sizeof($orders), $date->format('H:i:s d-m-Y'));
         if (sizeof($orders) > 0) {
             $OrderService = new OrderService();
             foreach ($orders as $order) {
