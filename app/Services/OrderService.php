@@ -1344,15 +1344,14 @@ class OrderService
             ->where('amoId', null)->get()->toArray();
 
 
-
+        WebhookLog::addLog('check orders', $date->format('H:i:s d-m-Y'));
         $OrderService = new OrderService();
         foreach ($orders as $order) {
             $res = $OrderService->createOrderToAmocrm($order['order_id'], '53836814');
-            dd($res);
+
+            WebhookLog::addLog('amo add lost order', $order->order_id);
         }
 
-
-//        WebhookLog::addLog('check orders', $date->format('H:i:s d-m-Y'));
     }
 
     public static function getOrCreateClientOrder($client, $post)
