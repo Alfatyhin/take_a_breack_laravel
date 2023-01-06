@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.4.3';
+    private $v = '2.4.4';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -261,6 +261,8 @@ class ShopController extends Controller
         return $this->ProductView($request, $category, $product, $lang);
     }
 
+
+
     public function CartView(Request $request, $lang = 'en', $step = 1, $lost_order = false)
     {
         App::setLocale($lang);
@@ -282,13 +284,13 @@ class ShopController extends Controller
             $post['step'] = $step;
             $OrderService = new OrderService();
 
-            $res = $OrderService->validateOrderData($post);
-            if (!isset($res->sugess)) {
-                return $res;
-            }
+            $order = $OrderService::addOrUpdateOrder($post);
 
-            $OrderService::addOrUpdateOrder($post);
+            if (isset($order->error)) {
+                return $order;
+            }
         }
+
 
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
         $products_ids = [];
@@ -378,12 +380,11 @@ class ShopController extends Controller
 
             $OrderService = new OrderService();
 
-            $res = $OrderService->validateOrderData($post);
-            if (!isset($res->sugess)) {
-                return $res;
-            }
-
             $order = $OrderService::addOrUpdateOrder($post);
+
+            if (isset($order->error)) {
+                return $order;
+            }
 
 
             if ($post['methodPay'] == 2 || $post['methodPay'] == 4) {
@@ -396,11 +397,12 @@ class ShopController extends Controller
                 WebhookLog::addLog('new order step 4 icreditOrderData', $icreditOrderData);
                 $iCreditService = new IcreditServise();
                 $result = $iCreditService->getUrl($icreditOrderData);
+
                 if (!empty($result['URL'])) {
                     session('orderPay', $result);
                     return redirect($result['URL']);
                 } else {
-
+                    dd($result);
                     session()->flash('message', ['error get payment url']);
                     return redirect(route("order_thanks", ['lang'=> $lang]));
                 }

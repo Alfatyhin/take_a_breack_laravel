@@ -11,6 +11,9 @@
         @include("shop.new.layouts.product_in_stock_label")
     @endif
     <div class="card-img">
+        @if ($product->sale)
+            <img class="sale" src="/assets/images/icons/sale.svg" alt="sale">
+        @endif
         @if (!empty($product->image))
             <img src="{{ $product->image['image400pxUrl'] }}" alt="{{ $item_category->name }} - {{ $product->name }}" title="{{ $product->name }}">
 
@@ -21,11 +24,7 @@
             <img src=""  alt="{{ $category_active }} - {{ $product->name }}" title="{{ $product->name }}">
         @endif
 
-        @if ($product->sale)
-            <div class="sale">
-                <img src="/assets/images/icons/sale.svg" alt="sale">
-            </div>
-        @endif
+
     </div>
     <div class="card__text">
         <div class="card-name">

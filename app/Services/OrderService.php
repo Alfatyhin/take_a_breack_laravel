@@ -1384,19 +1384,6 @@ class OrderService
         $post['order_data'] = json_decode($post['order_data'], true);
         WebhookLog::addLog("new order step {$post['step']} request", $post);
 
-        $client = session('client');
-
-        if (!$client && empty($post['order_id'])) {
-            return redirect(route('cart', ['lang' => $post['lang'], 'step' => 1]));
-        }
-
-        $order = self::getOrCreateClientOrder($client, $post);
-
-        $old_data = json_decode($order->orderData, true);
-        foreach ($old_data as $k => $v) {
-            if (!isset($post[$k]) && $old_data['step'] < $post['step'])
-                $post[$k] = $v;
-        }
 
         if ($post['step'] == 2){
 
@@ -1405,6 +1392,24 @@ class OrderService
             $client = self::clientCreateOrUpdate($post);
             session(['client' => $client]);
         }
+
+
+        $client = session('client');
+        if (!$client && empty($post['order_id'])) {
+            return redirect(route('cart', ['lang' => $post['lang'], 'step' => 1]));
+        }
+
+        $order = self::getOrCreateClientOrder($client, $post);
+
+
+        $old_data = json_decode($order->orderData, true);
+
+        foreach ($old_data as $k => $v) {
+            if (!isset($post[$k]))
+                $post[$k] = $v;
+        }
+
+
         if (isset($post['delivery']) && $post['delivery'] == 'delivery') {
 
             $delivery_json = Storage::disk('local')->get('js/delivery.json');
@@ -1448,6 +1453,11 @@ class OrderService
         }
 
 
+        $res = self::validateOrderData($post);
+        if (!isset($res->sugess)) {
+            $res->error = true;
+            return $res;
+        }
 
         $order_data_jsonform = $post['order_data'];
         $orderData = self::getShopOrderData($post);
@@ -1475,7 +1485,7 @@ class OrderService
         return $order;
     }
 
-    public function validateOrderData($order_data)
+    public static function validateOrderData($order_data)
     {
 
         $messages = [];
@@ -1491,7 +1501,7 @@ class OrderService
 
         }
 
-        if ($order_data['step'] == 2) {
+        if ($order_data['step'] > 1) {
             $step_back = 1;
             $pattern_phone = "/^[+0-9]{2,4} \([0-9]{3}\) [0-9]{3} [0-9]{2} [0-9]{2,4}$/";
             $validate_array = [
@@ -1502,7 +1512,7 @@ class OrderService
             ];
 
         }
-        if ($order_data['step'] == 3) {
+        if ($order_data['step'] > 2) {
             $step_back = 2;
             $validate_array = [
                 'date' => 'required|date_format:Y-n-j',
@@ -1510,7 +1520,7 @@ class OrderService
             ];
 
         }
-        if ($order_data['step'] == 4) {
+        if ($order_data['step'] > 3) {
             $step_back = 3;
         }
         if (isset($order_data['delivery']) && $order_data['delivery'] == 'delivery') {
@@ -1542,9 +1552,9 @@ class OrderService
 
             } else {
 
-                $data_price['order_data'] = json_decode($order_data['order_data'], true);
+//                $data_price['order_data'] = json_decode($order_data['order_data'], true);
 
-                $data_price = self::getShopOrderData($data_price);
+                $data_price = self::getShopOrderData($order_data);
                 $order_price = $data_price['order_data']['products_total'];
 
                 $deliv_id = $delivery_setting['cityes_data'][$order_data['city_id']][0];
@@ -1570,7 +1580,7 @@ class OrderService
 
 
         $messages['order_data.required'] = __('shop-cart.пустая корзина');
-        $validate_array['order_data'] = 'required|json';
+        $validate_array['order_data'] = 'required';
 
 //        dd($validate_array, $messages);
 
