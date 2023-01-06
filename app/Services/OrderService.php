@@ -921,7 +921,7 @@ class OrderService
         return $order_data;
     }
 
-    public function createOrderToAmocrm($order_id)
+    public function createOrderToAmocrm($order_id, $order_status = false)
     {
 
         if ($order_id) {
@@ -953,6 +953,9 @@ class OrderService
             }
 
             $amoData = $orderService::getShopAmoDataLead($orderData);
+            if ($order_status) {
+                dd($amoData);
+            }
             $amoNotes = $orderService::getShopAmoNotes($orderData);
             $amoData['text_note'] = $amoNotes;
 
@@ -1339,7 +1342,15 @@ class OrderService
             ->whereBetween('updated_at', [$date_from, $date])
             ->where('amoId', null)->get()->toArray();
 
-        dd($orders);
+
+
+        $OrderService = new OrderService();
+        foreach ($orders as $order) {
+
+            $OrderService->createOrderToAmocrm($order['order_id'], '53836814');
+        }
+
+        dd($orders, $date_from, $date);
 
 //        WebhookLog::addLog('check orders', $date->format('H:i:s d-m-Y'));
     }
