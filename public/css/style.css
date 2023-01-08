@@ -1267,7 +1267,13 @@
       object-fit: cover;
    width: 100%; 
  }
- 
+ .card__item .card-img > img.sale{
+    position: absolute;
+    width: 20%;
+    right: 20px;
+    bottom: 20px;
+    z-index: 15;
+ }
  .card__item .card-img > img:nth-child(2) {
    position: absolute;
    left: 0;

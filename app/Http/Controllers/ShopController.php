@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.4.4';
+    private $v = '2.4.5';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -269,15 +269,6 @@ class ShopController extends Controller
 
         $post = $request->post();
         $orderData = false;
-        $order_number = false;
-
-        if ($lost_order) {
-            $order = Orders::where('order_id', $lost_order)->first();
-            $post = json_decode($order->orderData, true);
-            if (isset($post['order_data_jsonform'])) {
-                $post['order_data'] = json_encode($post['order_data_jsonform']);
-            }
-        }
 
 
         if (!empty($post)) {
@@ -290,6 +281,15 @@ class ShopController extends Controller
                 return $order;
             }
         }
+
+        if ($lost_order) {
+            $order = Orders::where('order_id', $lost_order)->where('amoId', null)->first();
+            if ($order) {
+                $orderData = json_decode($order->orderData, true);
+                dd($orderData);
+            }
+        }
+
 
 
         $categories = Categories::where('enabled', 1)->get()->sortBy('index_num')->keyBy('id');
@@ -306,11 +306,8 @@ class ShopController extends Controller
         $rand_keys = array_rand($products->toArray(), 15);
 
 
-        $order_id = session('order_id');
+        $order_number = session('order_id');
 
-        if ($order_id) {
-            $order_number = $order_id;
-        }
 
         ////////////////////////////////////////////////////
         $cityes = Storage::disk('local')->get('js/israel-city.json');

@@ -211,6 +211,10 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
 
 
 
+    Route::any('/{lang}/cart/{step?}/{order_id?}', [ShopController::class, 'CartView'])
+        ->where('lang', '[a-z]{2}')
+        ->name('crm_lost_cart');
+
 });
 
 
@@ -431,7 +435,7 @@ Route::middleware(["Shop"])->group(function () {
         ->name('index_filter');
 
 
-    Route::any('/{lang}/cart/{step?}/{order_id?}', [ShopController::class, 'CartView'])
+    Route::any('/{lang}/cart/{step?}/', [ShopController::class, 'CartView'])
         ->where('lang', '[a-z]{2}')
         ->name('cart');
 
@@ -445,7 +449,7 @@ Route::middleware(["Shop"])->group(function () {
         ->where('lang', '[a-z]{2}')
         ->name('product');
 
-    Route::any('/{lang}/new-order/', [ShopController::class, 'NewOrder'])
+    Route::any('/{lang}/new-order', [ShopController::class, 'NewOrder'])
         ->where('lang', '[a-z]{2}')
         ->name('new_order');
 
