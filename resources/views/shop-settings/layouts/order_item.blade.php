@@ -26,7 +26,7 @@
             @endif
         <br>
         @if($item->paymentMethod != 0 || $item->paymentStatus != 0)
-            Оллата <b>{{ $paymentMethod[$item->paymentMethod] }}</b>
+            Оплата <b>{{ $paymentMethod[$item->paymentMethod] }}</b>
             статус <b>{{ $paymentStatus[$item->paymentStatus] }}</b>
         @else
             статус <b> не оформлен </b>
