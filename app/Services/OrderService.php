@@ -677,9 +677,13 @@ class OrderService
     public static function getShopOrderData($order)
     {
 
-        $products = $order['order_data']['products'];
+        if (isset($order['order_data_jsonform']['products'])) {
 
-//        dd($order);
+            $products = $order['order_data_jsonform']['products'];
+        } else {
+
+            $products = $order['order_data']['products'];
+        }
 
         $product_options = ProductOptions::all()->keyBy('id')->toArray();
         foreach ($product_options as $k => $item) {
@@ -1518,7 +1522,6 @@ class OrderService
         }
 
         if ($order_data['step'] > 1) {
-            $step_back = 1;
             $pattern_phone = "/^[+0-9]{2,4} \([0-9]{3}\) [0-9]{3} [0-9]{2} [0-9]{2,4}$/";
             $validate_array = [
                 'clientName' => 'required',
@@ -1529,7 +1532,6 @@ class OrderService
 
         }
         if ($order_data['step'] > 2) {
-            $step_back = 2;
             $validate_array = [
                 'date' => 'required|date_format:Y-n-j',
                 'delivery' => 'required'
@@ -1539,6 +1541,7 @@ class OrderService
         if ($order_data['step'] > 3) {
             $step_back = 3;
         }
+
         if (isset($order_data['delivery']) && $order_data['delivery'] == 'delivery') {
 
             $validate_array['street'] = 'required';
@@ -1586,13 +1589,30 @@ class OrderService
 
             }
 
+            $step_back = 2;
         }
 
 
+        if(!isset($post['date'])
+            && !isset($post['delivery'])) {
+
+            $step_back = 2;
+        }
         if(isset($post['otherPerson'])) {
             $validate_array['user-phone'] = 'required';
             $validate_array['nameOtherPerson'] = 'required';
+
+            $step_back = 2;
         }
+        if(!isset($post['clientName'])
+            && !isset($post['clientLastName'])
+            && !isset($post['phone'])
+            && !isset($post['email'])) {
+
+            $step_back = 1;
+        }
+
+
 
 
         $messages['order_data.required'] = __('shop-cart.пустая корзина');

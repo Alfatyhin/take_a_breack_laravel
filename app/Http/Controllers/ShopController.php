@@ -444,6 +444,7 @@ class ShopController extends Controller
 
         $v = $this->v;
         $order_id = session('order_id');
+        $OrderService = new OrderService();
 
         $test = $request->get('test');
         if (isset($test)) {
@@ -458,6 +459,13 @@ class ShopController extends Controller
 
         if ($order_id) {
             $order = Orders::where('order_id', $order_id)->first();
+
+            $order_data = json_decode($order->orderData, true);
+            $res = $OrderService::validateOrderData($order_data);
+            if (!isset($res->sugess)) {
+                return $res;
+            }
+
             WebhookLog::addLog('OrderThanksView last order', $order_id);
         } else {
             $order = [
@@ -469,7 +477,6 @@ class ShopController extends Controller
         }
 
         if ($order_id) {
-            $OrderService = new OrderService();
             $OrderService->changeProductsCount($order);
         }
 
