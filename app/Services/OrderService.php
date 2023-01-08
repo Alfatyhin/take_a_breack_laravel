@@ -1414,12 +1414,15 @@ class OrderService
         $order = self::getOrCreateClientOrder($client, $post);
 
 
-        $old_data = json_decode($order->orderData, true);
+        if ($order->orderData) {
+            $old_data = json_decode($order->orderData, true);
 
-        foreach ($old_data as $k => $v) {
-            if (!isset($post[$k]))
-                $post[$k] = $v;
+            foreach ($old_data as $k => $v) {
+                if (!isset($post[$k]))
+                    $post[$k] = $v;
+            }
         }
+
 
 
         if (isset($post['delivery']) && $post['delivery'] == 'delivery') {
