@@ -82,11 +82,8 @@ document.addEventListener('DOMContentLoaded',()=>{
             cartInitProducts(cart);
         } 
         if($("#cart").length) summCalculation(cart);
-
-        
         // $(".header__login a:last-child")[1].style.display = "none"
-        let delivery_params = JSON.parse(localStorage.getItem("deliveryParams") || "[]");
-        if($(".pay.step_3").length != 0)  summDeliveryStep3(delivery_params.cityId)
+        if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId)
        
        
     })();
@@ -759,7 +756,7 @@ async function increment(e){
             let count = +e.previousElementSibling.value + 1
             e.previousElementSibling.value = count
             let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-            
+            debugger
             let cartKey = e.dataset.key
             for (let i = 0; i < cart.length; i++) {
                 if(cart[i].key == cartKey ) {
@@ -771,6 +768,9 @@ async function increment(e){
             localStorage.setItem("cart", JSON.stringify(cart)); 
             cartInitProducts(cart)
             summCalculation(cart)
+            debugger
+            if($(".pay.step_2").length != 0)  summDelivery(cart[0].delivery_params.cityId);
+            if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId);
 
         } else if(e.closest('.product-info__count_additive')){   // для добавочного товара в корзине
             let oldCount = +e.previousElementSibling.value
@@ -811,6 +811,9 @@ async function decrement(e){
             localStorage.setItem("cart", JSON.stringify(cart)); 
             cartInitProducts(cart)
             summCalculation(cart)
+            debugger
+            if($(".pay.step_2").length != 0)  summDelivery(cart[0].delivery_params.cityId);
+            if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId)
 
         } else if(e.closest('.product-info__count_additive')){  // для добавочного товара в корзине
             let oldCount = +e.nextElementSibling.value
@@ -1777,7 +1780,9 @@ function summDelivery(cityId){
     delivery_params.deliveryPrice = deliveryPrice
     delivery_params.cityId = cityId
 
-    localStorage.setItem("deliveryParams", JSON.stringify(delivery_params));
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]") 
+    cart[0].delivery_params =  delivery_params  
+    localStorage.setItem("cart", JSON.stringify(cart));
    
 }
 
@@ -1807,10 +1812,11 @@ function summDeliveryStep3(cityId){
     } else{
         $(".delivery_price")[0].innerHTML = +deliveryParams.rate_delivery +  " ₪"
     }
-    let delivery_params = JSON.parse(localStorage.getItem("deliveryParams") || "[]");
-    let koefTime =  delivery_params.koefTime
-    let deliveryPrice = delivery_params.deliveryPrice
-    let deliverySumm = delivery_params.deliverySumm 
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]")[0] 
+
+    let koefTime =  cart.delivery_params.koefTime
+    let deliveryPrice =cart.delivery_params.deliveryPrice
+    let deliverySumm = cart.delivery_params.deliverySumm 
     if (koefTime == 1.3 ) $(".delivery_price")[0].classList.add("time")
     $(".delivery_price")[0].innerHTML = deliverySumm + " ₪"
     let summ_for_payment = roundNumber(+$("#total-ammount")[0].innerHTML - +$(".discount")[0].innerHTML +deliverySumm)
@@ -1822,8 +1828,8 @@ function summDeliveryStep3(cityId){
 
 //#region   Просчет Чаевых
     $('input[name="premium"]').change(function(e){ 
-        let delivery_params = JSON.parse(localStorage.getItem("deliveryParams") || "[]");
-        summDeliveryStep3(delivery_params.cityId)
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]")[0] 
+        summDeliveryStep3(cart.delivery_params.cityId)
     });
 
 //#endregion
