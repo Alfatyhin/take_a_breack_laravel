@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         } 
 
         let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-        
+
         if($("#cart").length){
             if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
             else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
@@ -756,7 +756,7 @@ async function increment(e){
             let count = +e.previousElementSibling.value + 1
             e.previousElementSibling.value = count
             let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-            debugger
+            
             let cartKey = e.dataset.key
             for (let i = 0; i < cart.length; i++) {
                 if(cart[i].key == cartKey ) {
@@ -768,7 +768,7 @@ async function increment(e){
             localStorage.setItem("cart", JSON.stringify(cart)); 
             cartInitProducts(cart)
             summCalculation(cart)
-            debugger
+            
             if($(".pay.step_2").length != 0)  summDelivery(cart[0].delivery_params.cityId);
             if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId);
 
@@ -811,7 +811,7 @@ async function decrement(e){
             localStorage.setItem("cart", JSON.stringify(cart)); 
             cartInitProducts(cart)
             summCalculation(cart)
-            debugger
+            
             if($(".pay.step_2").length != 0)  summDelivery(cart[0].delivery_params.cityId);
             if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId)
 
@@ -840,7 +840,7 @@ function cartInitProducts(cart){
     }
     let rootElement = $(".pay-cart__box");
     let isPromoCodeActive = JSON.parse(localStorage.getItem("promo") || "[]");
-    debugger
+    
     if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
     else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
 
@@ -1742,8 +1742,13 @@ $("input[name='otherPerson']").change(function(){
 
 function summDelivery(cityId){
     
-    if(cityId == -1){
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]") 
+    if(cityId == -1){        
         $(".delivery_price")[0].innerHTML = 0  + " ₪"
+        if(cart[0].delivery_params){
+            cart[0].delivery_params.deliverySumm = 0
+            localStorage.setItem("cart", JSON.stringify(cart));
+        } 
         return
     } 
     const deliveryParams = delivery.delivery[delivery.cityes_data[cityId]]  
@@ -1779,8 +1784,6 @@ function summDelivery(cityId){
     delivery_params.deliverySumm = deliverySumm
     delivery_params.deliveryPrice = deliveryPrice
     delivery_params.cityId = cityId
-
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]") 
     cart[0].delivery_params =  delivery_params  
     localStorage.setItem("cart", JSON.stringify(cart));
    
@@ -1794,6 +1797,7 @@ function summDeliveryStep3(cityId){
     } 
     const deliveryParams = delivery.delivery[delivery.cityes_data[cityId]]  
     if(!deliveryParams){
+        $(".delivery_price")[0].innerHTML = 0 + " ₪"
         return
     } 
 
