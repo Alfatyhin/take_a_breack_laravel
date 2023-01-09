@@ -339,6 +339,9 @@ p.errors {
     text-align: center;
     z-index: 5;
 }
+.sp-form-outer form .sp-field .pwm-field-icon {
+    right: 10px;
+}
 @media (max-width: 768px) {
     .popup_site_message .popup__content {
         width: 100%;
