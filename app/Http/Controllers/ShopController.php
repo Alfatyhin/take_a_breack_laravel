@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.4.6';
+    private $v = '2.4.7';
 
     public function err404(Request $request, $lang = 'en')
     {
