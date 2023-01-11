@@ -70,26 +70,25 @@ document.addEventListener('DOMContentLoaded',()=>{
             let cart = false;
         } else {
             let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+            if($("#cart").length){
+                if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
+                else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
+            }
+
+            // $(".mark-link")[1].style.display = "none"      // скрываем иконку пользователя/личного кабинета
+            // $(".mark-link")[2].style.display = "none"      // скрываем иконку пользователя/личного кабинета
+
+
+
+            if(!cart.length)  return
+            if($("#cart").length){
+                cartInitProducts(cart);
+            }
+            if($("#cart").length) summCalculation(cart);
+            // $(".header__login a:last-child")[1].style.display = "none"
+            if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId)
         }
-        
-        if($("#cart").length){
-            if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
-            else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
-        } 
-       
-        // $(".mark-link")[1].style.display = "none"      // скрываем иконку пользователя/личного кабинета        
-        // $(".mark-link")[2].style.display = "none"      // скрываем иконку пользователя/личного кабинета    
-         
-        
-       
-        if(!cart.length)  return 
-        if($("#cart").length){
-            cartInitProducts(cart);
-        } 
-        if($("#cart").length) summCalculation(cart);
-        // $(".header__login a:last-child")[1].style.display = "none"
-        if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId)
-       
        
     })();
 
