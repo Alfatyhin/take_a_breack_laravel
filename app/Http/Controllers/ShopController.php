@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.5.5';
+    private $v = '2.5.6';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -461,10 +461,13 @@ class ShopController extends Controller
             $order = Orders::where('order_id', $order_id)->first();
 
             $order_data = json_decode($order->orderData, true);
-            $res = $OrderService::validateOrderData($order_data);
-            if (!isset($res->sugess)) {
-                return $res;
+            if (!isset($order_data['short_order'])) {
+                $res = $OrderService::validateOrderData($order_data);
+                if (!isset($res->sugess)) {
+                    return $res;
+                }
             }
+
 
             WebhookLog::addLog('OrderThanksView last order', $order_id);
         } else {
@@ -476,7 +479,7 @@ class ShopController extends Controller
             $order = json_decode(json_encode($order));
         }
 
-        if ($order_id) {
+        if ($order_id && !isset($order_data['short_order'])) {
             $OrderService->changeProductsCount($order);
         }
 
@@ -662,7 +665,7 @@ class ShopController extends Controller
     {
 
         if (env('APP_NAME') == "Take a Break Server") {
-            return redirect('https://takeabreak.co.il/short-market');
+//            return redirect('https://takeabreak.co.il/short-market');
         }
 
         App::setLocale($lang);
@@ -711,6 +714,8 @@ class ShopController extends Controller
 
 
         if (!empty($post)) {
+
+            $post['short_order'] = 1;
 
             WebhookLog::addLog('new order shop post ', $post);
 
@@ -797,7 +802,7 @@ class ShopController extends Controller
             $order->orderData = json_encode($orderData);
             $order->save();
 
-            session(['last_order_id' => $order->order_id]);
+            session(['order_id' => $order->order_id]);
 
             WebhookLog::addLog('new order shop ' . $order->order_id, $order);
 
