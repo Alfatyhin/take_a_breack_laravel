@@ -1339,8 +1339,8 @@ class OrderService
     public static function checkOrders()
     {
         $date = now();
-        $date->addDays(-1);
-        $date_from = now()->addDays(-29);
+        $date->addMinutes(-30);
+        $date_from = now()->addDays(-5);
 
 
         $orders = Orders::where('deleted_at', null)
