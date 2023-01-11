@@ -845,6 +845,12 @@ function cartInitProducts(cart){
         el[i].remove();            
     }
     let rootElement = $(".pay-cart__box");
+
+    let test = localStorage.getItem("promo");
+    if (test == 'undefined') {
+        localStorage.removeItem("promo");
+    }
+
     let isPromoCodeActive = JSON.parse(localStorage.getItem("promo") || "[]");
     debugger
     if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
