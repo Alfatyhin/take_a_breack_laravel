@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
         let cart_data = localStorage.getItem("cart");
         if (cart_data == 'undefined') {
+            localStorage.removeItem("cart");
             let cart = false;
         } else {
             let cart = JSON.parse(localStorage.getItem("cart") || "[]");
