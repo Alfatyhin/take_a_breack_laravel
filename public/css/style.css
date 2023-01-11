@@ -1097,6 +1097,7 @@
    font-size: 13px;
    font-style: italic;
    text-align: left;
+   margin: 10px 0px;
  }
  
  .category > ul > li > a {
@@ -1142,6 +1143,8 @@
      opacity: 1;
      left: 15px;
      visibility: visible;
+     position: absolute;
+     z-index: 20;
    }
    .category > ul.for-mobile {
      display: block;
