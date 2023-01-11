@@ -142,6 +142,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         })
     }
 
+
     if(closeMenuBtn) {
         closeMenuBtn.addEventListener('click', CloseMenu);
     }
