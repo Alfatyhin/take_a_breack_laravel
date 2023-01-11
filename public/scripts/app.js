@@ -65,7 +65,12 @@ document.addEventListener('DOMContentLoaded',()=>{
             localStorage.setItem("promo", JSON.stringify(isPromoCodeActive));
         } 
 
-        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        let cart_data = localStorage.getItem("cart");
+        if (cart_data == 'undefined') {
+            cart = false;
+        } else {
+            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        }
         
         if($("#cart").length){
             if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
@@ -141,6 +146,7 @@ document.addEventListener('DOMContentLoaded',()=>{
             OpenMenu();
         })
     }
+
 
     if(closeMenuBtn) {
         closeMenuBtn.addEventListener('click', CloseMenu);
