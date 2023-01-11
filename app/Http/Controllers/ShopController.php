@@ -665,7 +665,7 @@ class ShopController extends Controller
     {
 
         if (env('APP_NAME') == "Take a Break Server") {
-//            return redirect('https://takeabreak.co.il/short-market');
+            return redirect('https://takeabreak.co.il/short-market');
         }
 
         App::setLocale($lang);
