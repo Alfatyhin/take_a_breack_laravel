@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
         let cart_data = localStorage.getItem("cart");
         if (cart_data == 'undefined') {
-            cart = false;
+            let cart = false;
         } else {
             let cart = JSON.parse(localStorage.getItem("cart") || "[]");
         }
