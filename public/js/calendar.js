@@ -53,7 +53,7 @@ $(function(){
         console.log(shop_setting['delivery_date_time']);
 
         var delivery_mode = $("input[name='delivery']:checked").val();
-        var stock_mode = 'delivery';
+        var stock_mode = 'pre_order';
 
 
         // let test = localStorage.getItem("cart");
@@ -77,6 +77,8 @@ $(function(){
 
         var add_day = shop_setting['delivery_date_time'][delivery_mode][stock_mode] / 1;
 
+        console.log('add_day');
+        console.log(add_day);
 
         // текущая дата
         var adate=new Date();
