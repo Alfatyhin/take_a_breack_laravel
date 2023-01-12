@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.5.8';
+    private $v = '2.5.9';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -282,8 +282,9 @@ class ShopController extends Controller
             }
         }
 
+
         if ($lost_order) {
-            $order = Orders::where('order_id', $lost_order)->where('amoId', null)->first();
+            $order = Orders::where('order_id', $lost_order)->first();
             if ($order) {
                 $orderData = json_decode($order->orderData, true);
                 dd($orderData);

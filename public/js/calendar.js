@@ -53,8 +53,18 @@ $(function(){
         console.log(shop_setting['delivery_date_time']);
 
         var delivery_mode = $("input[name='delivery']:checked").val();
-        var stock_mode = 'in_stock';
+        var stock_mode = 'delivery';
 
+
+        // let test = localStorage.getItem("cart");
+        //
+        // if (test != 'undefined') {
+        //     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        //
+        //     for (cart)
+        //     console.log('cart');
+        //     console.log(cart);
+        // }
         //////////////////////////////////////////////
 
         //////////////////////////////////////////////
