@@ -1593,18 +1593,18 @@ class OrderService
         }
 
 
-        if(!isset($post['date'])
+        if(!isset($order_data['date'])
             && !isset($post['delivery'])) {
 
             $step_back = 2;
         }
-        if(isset($post['otherPerson'])) {
+        if(isset($order_data['otherPerson'])) {
             $validate_array['user-phone'] = 'required';
             $validate_array['nameOtherPerson'] = 'required';
 
             $step_back = 2;
         }
-        if(!isset($post['clientName'])
+        if(!isset($order_data['clientName'])
             && !isset($post['clientLastName'])
             && !isset($post['phone'])
             && !isset($post['email'])) {
@@ -1618,7 +1618,7 @@ class OrderService
         $messages['order_data.required'] = __('shop-cart.пустая корзина');
         $validate_array['order_data'] = 'required';
 
-//        dd($validate_array, $messages);
+//        dd($validate_array, $messages, $step_back, $order_data);
 
         $validator = Validator::make($order_data, $validate_array, $messages);
         if ($validator->fails()) {
