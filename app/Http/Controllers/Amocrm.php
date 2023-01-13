@@ -92,7 +92,8 @@ class Amocrm extends Controller
         $site = env('APP_NAME');
 
         if($request->get('test') == 1) {
-            $test = '{"leads":{"update":[{"id":"23730089","name":"#S-GQWA- \u043e\u0442\u0434\u0430\u0442\u044c 15 \u0448\u0435\u043a","status_id":"42785650","old_status_id":"50746495","price":"208","responsible_user_id":"216744","last_modified":"1673601199","modified_user_id":"216744","created_user_id":"0","date_create":"1672640336","pipeline_id":"4651807","tags":[{"id":"104617","name":"Instagram"},{"id":"192135","name":"I2CRM (\u0414\u0438\u0440\u0435\u043a\u0442)"},{"id":"223739","name":"\u0414\u0438\u0440\u0435\u043a\u0442"}],"account_id":"29039599","custom_fields":[{"id":"509001","name":"\u0410\u0434\u0440\u0435\u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":[{"value":"Ramat Gan Haroe st 48"}]},{"id":"511647","name":"\u041d\u043e\u043c\u0435\u0440 \u043a\u0432\u0430\u0440\u0442\u0438\u0440\u044b\/\u043e\u0444\u0438\u0441\u0430","values":[{"value":"2"}]},{"id":"514563","name":"\u0418\u043c\u044f \u0437\u0430\u043a\u0430\u0437\u0447\u0438\u043a\u0430","values":[{"value":"Neta"}]},{"id":"514565","name":"\u0422\u0435\u043b\u0435\u0444\u043e\u043d \u0437\u0430\u043a\u0430\u0437\u0447\u0438\u043a\u0430","values":[{"value":"+972 58-785-4798"}]},{"id":"308363","name":"\u041e\u043f\u043b\u0430\u0442\u0430","values":[{"value":"\u041e\u043f\u043b\u0430\u0447\u0435\u043d","enum":"436781"}]},{"id":"520559","name":"\u0414\u0430\u0442\u0430 \u0441\u0430\u043c\u043e\u0432\u044b\u0432\u043e\u0437\u0430\/\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":["1673474400"]},{"id":"520561","name":"\u0412\u0440\u0435\u043c\u044f","values":[{"value":"16:00-18:00"}]},{"id":"512455","name":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430","values":[{"value":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430: #S-GQWA\r\n1x - 150 \u0448\u0435\u043a RAW \u043a\u0430\u043f\u043a\u0435\u0439\u043a\u0438 quantity 4 \r\n ---------------------- \r\n \u0418\u0442\u043e\u0433\u043e: 150 \u0448\u0435\u043a (\u0431\u0435\u0437 \u0441\u043a\u0438\u0434\u043a\u0438)\r\n ---------------------- \r\n\u0441\u043f\u043e\u0441\u043e\u0431 \u043e\u043f\u043b\u0430\u0442\u044b - Credit card \r\n ---------------------- \r\n\u041a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0439 \u043f\u043e\u043a\u0443\u043f\u0430\u0442\u0435\u043b\u044f: \r\n\u041d\u0435\u0442 \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u044f \r\n ---------------------- \r\n\u0414\u043e\u0441\u0442\u0430\u0432\u043a\u0430: \r\n \u0410\u0434\u0440\u0435\u0441 - Ramat Gan Haroe st 48 2\r\n \u0434\u0430\u0442\u0430 - 2023-1-12 \u0432\u0440\u0435\u043c\u044f 16:00-18:00\r\n \u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c - 58.5\u0448\u0435\u043a\r\n ---------------------- \r\n\r\n \u0418\u0442\u043e\u0433\u043e: 208.5 \u0448\u0435\u043a"}]},{"id":"519327","name":"\u0440\u0430\u0441\u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0437\u0430\u043a\u0430\u0437 (\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430)","values":[{"value":"https:\/\/takeabreak.co.il\/api\/orders\/view-order\/S-GQWA"}]},{"id":"516743","name":"\u042f\u0437\u044b\u043a","values":[{"value":"\u0410\u043d\u0433\u043b\u0438\u0439\u0441\u043a\u0438\u0439","enum":"548397"}]},{"id":"489653","name":"Api order ID","values":[{"value":"S-GQWA"}]},{"id":"511579","name":"Api mode","values":[{"value":"ShopTB"}]}],"created_at":"1672640336","updated_at":"1673601199"}]},"account":{"subdomain":"takebreak","id":"29039599","_links":{"self":"https:\/\/takebreak.amocrm.ru"}}}';
+            $test = '{"leads":{"status":[{"id":"23777015","name":"#S-AOEPW","status_id":"50746495","old_status_id":"43471420","price":"325","responsible_user_id":"216744","last_modified":"1673614504","modified_user_id":"216744","created_user_id":"0","date_create":"1673561284","pipeline_id":"4651807","tags":[{"id":"192141","name":"I2CRM (WhatsApp)"},{"id":"222457","name":"WhatsApp"}],"account_id":"29039599","custom_fields":[{"id":"509001","name":"\u0410\u0434\u0440\u0435\u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":[{"value":"Tel Aviv \u05d4\u05db\u05e0\u05e1\u05ea \u05d4\u05d2\u05d3\u05d5\u05dc\u05d4 17"}]},{"id":"514141","name":"\u042d\u0442\u0430\u0436","values":[{"value":"2"}]},{"id":"511647","name":"\u041d\u043e\u043c\u0435\u0440 \u043a\u0432\u0430\u0440\u0442\u0438\u0440\u044b\/\u043e\u0444\u0438\u0441\u0430","values":[{"value":"7"}]},{"id":"514563","name":"\u0418\u043c\u044f \u0437\u0430\u043a\u0430\u0437\u0447\u0438\u043a\u0430","values":[{"value":"Irene Feigin Sudai"}]},{"id":"514565","name":"\u0422\u0435\u043b\u0435\u0444\u043e\u043d \u0437\u0430\u043a\u0430\u0437\u0447\u0438\u043a\u0430","values":[{"value":"+972 50-833-5952"}]},{"id":"308363","name":"\u041e\u043f\u043b\u0430\u0442\u0430","values":[{"value":"\u041e\u043f\u043b\u0430\u0447\u0435\u043d","enum":"436781"}]},{"id":"520559","name":"\u0414\u0430\u0442\u0430 \u0441\u0430\u043c\u043e\u0432\u044b\u0432\u043e\u0437\u0430\/\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":["1673560800"]},{"id":"520561","name":"\u0412\u0440\u0435\u043c\u044f","values":[{"value":"9:00-21:00"}]},{"id":"512455","name":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430","values":[{"value":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430: #S-AOEPW\r\n1x - 280 \u0448\u0435\u043a \u041f\u043e\u0434\u0430\u0440\u043e\u0447\u043d\u044b\u0439 \u043d\u0430\u0431\u043e\u0440 \r\n ---------------------- \r\n \u0418\u0442\u043e\u0433\u043e: 280 \u0448\u0435\u043a (\u0431\u0435\u0437 \u0441\u043a\u0438\u0434\u043a\u0438)\r\n ---------------------- \r\n\u0441\u043f\u043e\u0441\u043e\u0431 \u043e\u043f\u043b\u0430\u0442\u044b - undefined \r\n ---------------------- \r\n\u041a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0439 \u043f\u043e\u043a\u0443\u043f\u0430\u0442\u0435\u043b\u044f: \r\n\u041d\u0435\u0442 \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u044f \r\n ---------------------- \r\n\u0414\u043e\u0441\u0442\u0430\u0432\u043a\u0430: \r\n \u0410\u0434\u0440\u0435\u0441 - Tel Aviv \u05d4\u05db\u05e0\u05e1\u05ea \u05d4\u05d2\u05d3\u05d5\u05dc\u05d4 17 7 \u044d\u0442-2\r\n \u0434\u0430\u0442\u0430 - \r\n \u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c - 45\u0448\u0435\u043a\r\n ---------------------- \r\n\r\n \u0418\u0442\u043e\u0433\u043e: 325 \u0448\u0435\u043a"}]},{"id":"519327","name":"\u0440\u0430\u0441\u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0437\u0430\u043a\u0430\u0437 (\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430)","values":[{"value":"https:\/\/takeabreak.co.il\/api\/orders\/view-order\/S-AOEPW"}]},{"id":"516743","name":"\u042f\u0437\u044b\u043a","values":[{"value":"\u0410\u043d\u0433\u043b\u0438\u0439\u0441\u043a\u0438\u0439","enum":"548397"}]},{"id":"489653","name":"Api order ID","values":[{"value":"S-AOEPW"}]},{"id":"511579","name":"Api mode","values":[{"value":"ShopTB"}]}],"created_at":"1673561284","updated_at":"1673614504"}]},"account":{"subdomain":"takebreak","id":"29039599","_links":{"self":"https:\/\/takebreak.amocrm.ru"}}}';
+
             $post = json_decode($test, true);
 
             dd($post);
@@ -109,96 +110,99 @@ class Amocrm extends Controller
                     foreach ($items as $item) {
 
 
-                        foreach ($item['custom_fields'] as $field) {
-                            if ($field['id'] == 489653) {
-                                $orer_id = $field['values'][0]['value'];
-                            }
-                            if ($field['id'] == 308363) {
-                                $statusPaidAmo = $field['values']['0']['enum'];
-                            }
-                            if ($field['id'] == 511579) {
-                                $api_mode = $field['values']['0']['value'];
-                            }
+                        if($request->get('test') != 1) {
+                            WebhookLog::addLog('amo web hook leads ' . $event, $post);
                         }
 
-                        // если заказ с сайта
-                        if (isset($orer_id)) {
-
-                            if($request->get('test') != 1) {
-                                WebhookLog::addLog('amo web hook leads ' . $event, $post);
+                        if (isset($item['custom_fields'])) {
+                            foreach ($item['custom_fields'] as $field) {
+                                if ($field['id'] == 489653) {
+                                    $orer_id = $field['values'][0]['value'];
+                                }
+                                if ($field['id'] == 308363) {
+                                    $statusPaidAmo = $field['values']['0']['enum'];
+                                }
+                                if ($field['id'] == 511579) {
+                                    $api_mode = $field['values']['0']['value'];
+                                }
                             }
 
-                            $order = Orders::where('order_id', $orer_id)->first();
+                            // если заказ с сайта
+                            if (isset($orer_id)) {
 
-                            $status_id = $item['status_id'];
+                                $order = Orders::where('order_id', $orer_id)->first();
 
-                            // меняем статус
-                            if($status_id && isset($statusPaidAmo) ) {
+                                $status_id = $item['status_id'];
 
-
-                                $paymentStatusArray = array_flip(AppServise::getOrderPaymentStatus());
-
-                                switch ($statusPaidAmo) {
-                                    case 436781:
-                                        $paymentStatus = 'PAID';
-                                        break;
-                                    case 436783:
-                                        $paymentStatus = 'AWAITING_PAYMENT';
-                                        break;
-                                    case 547421:
-                                        $paymentStatus = 'AWAITING_PAYMENT';
-                                        break;
-                                    default:
-                                        $paymentStatus = 'INCOMPLETE';
-                                        break;
-                                }
-
-                                $order->amoStatus = $status_id;
-                                $order->paymentStatus = $paymentStatusArray[$paymentStatus];
-                                $order->amoId = $item['id'];
-                                $order->save();
+                                // меняем статус
+                                if($status_id && isset($statusPaidAmo) ) {
 
 
+                                    $paymentStatusArray = array_flip(AppServise::getOrderPaymentStatus());
 
-                                // отправка инвойса
-                                if ($statusPaidAmo == '436781' && $order->invoiceStatus == 0 && $site != 'Take a Break Server') {
+                                    switch ($statusPaidAmo) {
+                                        case 436781:
+                                            $paymentStatus = 'PAID';
+                                            break;
+                                        case 436783:
+                                            $paymentStatus = 'AWAITING_PAYMENT';
+                                            break;
+                                        case 547421:
+                                            $paymentStatus = 'AWAITING_PAYMENT';
+                                            break;
+                                        default:
+                                            $paymentStatus = 'INCOMPLETE';
+                                            break;
+                                    }
 
-                                    // статус оплачено
-                                    $paymentDate = new Carbon();
-                                    $paymentDateString = $paymentDate->format('Y-m-d H:i:s');
-                                    $order->paymentDate = $paymentDateString;
-                                    $order->invoiceStatus = 1;
+                                    $order->amoStatus = $status_id;
+                                    $order->paymentStatus = $paymentStatusArray[$paymentStatus];
+                                    $order->amoId = $item['id'];
                                     $order->save();
 
-                                    $orderData = json_decode($order->orderData, true);
-                                    $orderData['id'] = $order->order_id;
-                                    $invoiceDada = OrderService::getShopOrderDataToGinvoice($order);
 
-                                    $invoice = new GreenInvoiceService($order);
 
-                                    if (!empty($invoiceDada)) {
-                                        try {
-                                            $res = $invoice->newDoc($invoiceDada);
-                                            if (isset($res['errorCode'])) {
-                                                AppErrors::addError("invoice create error to " . $order->order_id, json_encode($res));
+                                    // отправка инвойса
+                                    if ($statusPaidAmo == '436781' && $order->invoiceStatus == 0 && $site != 'Take a Break Server') {
 
-                                            } else {
-                                                $order->invoiceStatus = 1;
-                                                $order->invoiceData = json_encode($res);
-                                                $order->save();
+                                        // статус оплачено
+                                        $paymentDate = new Carbon();
+                                        $paymentDateString = $paymentDate->format('Y-m-d H:i:s');
+                                        $order->paymentDate = $paymentDateString;
+                                        $order->invoiceStatus = 1;
+                                        $order->save();
+
+                                        $orderData = json_decode($order->orderData, true);
+                                        $orderData['id'] = $order->order_id;
+                                        $invoiceDada = OrderService::getShopOrderDataToGinvoice($order);
+
+                                        $invoice = new GreenInvoiceService($order);
+
+                                        if (!empty($invoiceDada)) {
+                                            try {
+                                                $res = $invoice->newDoc($invoiceDada);
+                                                if (isset($res['errorCode'])) {
+                                                    AppErrors::addError("invoice create error to " . $order->order_id, json_encode($res));
+
+                                                } else {
+                                                    $order->invoiceStatus = 1;
+                                                    $order->invoiceData = json_encode($res);
+                                                    $order->save();
+                                                }
+
+                                            } catch (\Exception $e) {
+                                                AppErrors::addError("error invoice newDoc to " . $order->order_id, $invoiceDada);
                                             }
 
-                                        } catch (\Exception $e) {
-                                            AppErrors::addError("error invoice newDoc to " . $order->order_id, $invoiceDada);
+                                        } else {
+                                            var_dump('empty invoice data');
                                         }
-
-                                    } else {
-                                        var_dump('empty invoice data');
                                     }
-                                }
 
+                                }
                             }
                         }
+
 
                     }
 
