@@ -130,80 +130,80 @@ class Amocrm extends Controller
                             // если заказ с сайта
                             if (isset($orer_id)) {
 
-                                $order = Orders::where('order_id', $orer_id)->first();
-                                if ($order) {
-                                    $status_id = $item['status_id'];
+                                $order = Orders::withTrashed()->where('order_id', $orer_id)->first();
+                                if ($order->trashed()) {
+                                    $order->restore();
+                                }
+                                $status_id = $item['status_id'];
 
-                                    // меняем статус
-                                    if($status_id && isset($statusPaidAmo) ) {
+                                // меняем статус
+                                if($status_id && isset($statusPaidAmo) ) {
 
 
-                                        $paymentStatusArray = array_flip(AppServise::getOrderPaymentStatus());
+                                    $paymentStatusArray = array_flip(AppServise::getOrderPaymentStatus());
 
-                                        switch ($statusPaidAmo) {
-                                            case 436781:
-                                                $paymentStatus = 'PAID';
-                                                break;
-                                            case 436783:
-                                                $paymentStatus = 'AWAITING_PAYMENT';
-                                                break;
-                                            case 547421:
-                                                $paymentStatus = 'AWAITING_PAYMENT';
-                                                break;
-                                            default:
-                                                $paymentStatus = 'INCOMPLETE';
-                                                break;
-                                        }
+                                    switch ($statusPaidAmo) {
+                                        case 436781:
+                                            $paymentStatus = 'PAID';
+                                            break;
+                                        case 436783:
+                                            $paymentStatus = 'AWAITING_PAYMENT';
+                                            break;
+                                        case 547421:
+                                            $paymentStatus = 'AWAITING_PAYMENT';
+                                            break;
+                                        default:
+                                            $paymentStatus = 'INCOMPLETE';
+                                            break;
+                                    }
 
-                                        $order->amoStatus = $status_id;
-                                        $order->paymentStatus = $paymentStatusArray[$paymentStatus];
-                                        $order->amoId = $item['id'];
+                                    $order->amoStatus = $status_id;
+                                    $order->paymentStatus = $paymentStatusArray[$paymentStatus];
+                                    $order->amoId = $item['id'];
+                                    $order->save();
+
+
+
+
+
+                                    // отправка инвойса
+                                    if ($statusPaidAmo == '436781' && $order->invoiceStatus == 0 && $site != 'Take a Break Server') {
+
+                                        // статус оплачено
+                                        $paymentDate = new Carbon();
+                                        $paymentDateString = $paymentDate->format('Y-m-d H:i:s');
+                                        $order->paymentDate = $paymentDateString;
+                                        $order->invoiceStatus = 1;
                                         $order->save();
 
+                                        $orderData = json_decode($order->orderData, true);
+                                        $orderData['id'] = $order->order_id;
+                                        $invoiceDada = OrderService::getShopOrderDataToGinvoice($order);
 
+                                        $invoice = new GreenInvoiceService($order);
 
+                                        if (!empty($invoiceDada)) {
+                                            try {
+                                                $res = $invoice->newDoc($invoiceDada);
+                                                if (isset($res['errorCode'])) {
+                                                    AppErrors::addError("invoice create error to " . $order->order_id, json_encode($res));
 
-
-                                        // отправка инвойса
-                                        if ($statusPaidAmo == '436781' && $order->invoiceStatus == 0 && $site != 'Take a Break Server') {
-
-                                            // статус оплачено
-                                            $paymentDate = new Carbon();
-                                            $paymentDateString = $paymentDate->format('Y-m-d H:i:s');
-                                            $order->paymentDate = $paymentDateString;
-                                            $order->invoiceStatus = 1;
-                                            $order->save();
-
-                                            $orderData = json_decode($order->orderData, true);
-                                            $orderData['id'] = $order->order_id;
-                                            $invoiceDada = OrderService::getShopOrderDataToGinvoice($order);
-
-                                            $invoice = new GreenInvoiceService($order);
-
-                                            if (!empty($invoiceDada)) {
-                                                try {
-                                                    $res = $invoice->newDoc($invoiceDada);
-                                                    if (isset($res['errorCode'])) {
-                                                        AppErrors::addError("invoice create error to " . $order->order_id, json_encode($res));
-
-                                                    } else {
-                                                        $order->invoiceStatus = 1;
-                                                        $order->invoiceData = json_encode($res);
-                                                        $order->save();
-                                                    }
-
-                                                } catch (\Exception $e) {
-                                                    AppErrors::addError("error invoice newDoc to " . $order->order_id, $invoiceDada);
+                                                } else {
+                                                    $order->invoiceStatus = 1;
+                                                    $order->invoiceData = json_encode($res);
+                                                    $order->save();
                                                 }
 
-                                            } else {
-                                                var_dump('empty invoice data');
+                                            } catch (\Exception $e) {
+                                                AppErrors::addError("error invoice newDoc to " . $order->order_id, $invoiceDada);
                                             }
+
+                                        } else {
+                                            var_dump('empty invoice data');
                                         }
-
                                     }
-                                }
 
+                                }
                             }
                         }
 
