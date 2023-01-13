@@ -178,6 +178,24 @@ class Amocrm extends Controller
 
                                         $orderData = json_decode($order->orderData, true);
                                         $orderData['id'] = $order->order_id;
+
+                                        // проверка клиента
+                                        $client_id = $order->clientId;
+                                        $client = Clients::where('id', $client_id)->first();
+
+                                        if (empty($orderData['clientName'])) {
+                                            $orderData['clientName'] = $client->name;
+                                        }
+                                        if (empty($orderData['email'])) {
+                                            $orderData['email'] = $client->email;
+                                        }
+                                        if (empty($orderData['phone'])) {
+                                            $orderData['phone'] = $client->phone;
+                                        }
+
+                                        $order->ordeData = $orderData;
+
+
                                         $invoiceDada = OrderService::getShopOrderDataToGinvoice($order);
 
                                         $invoice = new GreenInvoiceService($order);
