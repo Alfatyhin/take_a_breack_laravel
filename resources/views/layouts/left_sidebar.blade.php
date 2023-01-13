@@ -46,6 +46,9 @@
         <li class="orders_log orders_log" data_name="orders_log">
             <a href="{{ route('orders_log') }}" >Orders Log</a>
         </li>
+        <li class="orders_log app_log" data_name="app_log">
+            <a href="{{ route('app_log') }}" >APP Log</a>
+        </li>
 
     @endif
 
