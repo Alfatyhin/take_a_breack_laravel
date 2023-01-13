@@ -960,7 +960,10 @@ class OrderService
                 $client->save();
             }
 
-            dd($orderData);
+            if (empty($orderData['clientName'])) {
+
+            }
+            dd($orderData, $client);
             $amoData = $orderService::getShopAmoDataLead($orderData);
             if ($order_status) {
                 $amoData['statusId'] = $order_status;
