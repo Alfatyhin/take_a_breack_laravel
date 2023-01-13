@@ -1038,7 +1038,7 @@ class ShopSettingController extends Controller
             $monolog = 'not file';
         }
         $monolog = htmlspecialchars($monolog);
-        $monolog = str_replace('['.$date_nau->format('Y'), '<hr><b>['.$date_nau->format('Y'), $monolog);
+        $monolog = str_replace('['.$date_nau->format('Y'), '<hr size="4" color="brown"><b>['.$date_nau->format('Y'), $monolog);
         $monolog = str_replace('] ', ']</b> ', $monolog);
 
 
