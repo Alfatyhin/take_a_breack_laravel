@@ -1022,15 +1022,8 @@ class ShopSettingController extends Controller
     public function AppLogView(Request $request)
     {
 
-        $date = $request->get('date');
-        if ($date) {
-            $date_nau = new Carbon($date);
-        } else {
-            $date_nau = new Carbon();
-        }
 
-        $date_str = $date_nau->format("Y-m-d");
-        $date_pre = $date_nau->addDays(-1);
+        $date_nau = new Carbon();
 
         if (Storage::disk('logs')->exists("laravel.log")) {
             $monolog = Storage::disk('logs')->get("laravel.log");
@@ -1042,11 +1035,9 @@ class ShopSettingController extends Controller
         $monolog = str_replace('] ', ']</b> ', $monolog);
 
 
-        return view('logs.index', [
+        return view('logs.app_error_log', [
             'route' => 'orders_log',
             'log' => $monolog,
-            'date_str' => $date_str,
-            'date_pre' => $date_pre
         ]);
     }
 }
