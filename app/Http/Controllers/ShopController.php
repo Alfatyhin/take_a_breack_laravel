@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.6.1';
+    private $v = '2.6.2';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -308,7 +308,9 @@ class ShopController extends Controller
 
 
         $order_number = session('order_id');
-
+        if ($lost_order) {
+            $order_number = $lost_order;
+        }
 
         ////////////////////////////////////////////////////
         $cityes = Storage::disk('local')->get('js/israel-city.json');
@@ -329,20 +331,17 @@ class ShopController extends Controller
             $orderData['order_data_jsonform'] = '';
         }
 
-        if (!empty($orderData['order_data_jsonform'])) {
-            foreach ($orderData['order_data_jsonform'] as $k => $item) {
-
-            }
-        }
-
-        if ($lost_order) {
-//            dd($orderData);
-        }
+//        if (!empty($orderData['order_data_jsonform'])) {
+//            foreach ($orderData['order_data_jsonform'] as $k => $item) {
+//
+//            }
+//        }
 
         if ($order_number == 'undefined') {
             $order_number = '';
         }
 
+//        dd($orderData);
         WebhookLog::addLog("order step $step #$order_number", $post);
 
 

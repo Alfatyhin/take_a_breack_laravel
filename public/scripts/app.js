@@ -78,9 +78,9 @@ document.addEventListener('DOMContentLoaded',()=>{
         // $(".mark-link")[1].style.display = "none"      // скрываем иконку пользователя/личного кабинета        
         // $(".mark-link")[2].style.display = "none"      // скрываем иконку пользователя/личного кабинета    
          
-        
-       
-        if(!cart.length)  return 
+
+
+        if(!cart || !cart.length)  return
         if($("#cart").length){
             cartInitProducts(cart);
         } 
@@ -246,9 +246,15 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     // #region Инициализация бейджика количества корзины в карточке товара
 
-    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"))    
-    if(cart.length != 0) $(".badge").each(function() { this.style.opacity = "1" }); 
-    $(".cart-count").each(function() { this.innerText = cart.length })          
+    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart") )
+
+    if (!cart) {
+        cart = [];
+    }
+
+    console.log(cart);
+    if(cart.length != 0) $(".badge").each(function() { this.style.opacity = "1" });
+    $(".cart-count").each(function() { this.innerText = cart.length })
     
 
     //#endregion
@@ -263,6 +269,10 @@ document.addEventListener('DOMContentLoaded',()=>{
         var options = {};
         var cart_key = product.id.toString();
         var variant = false;
+
+        if (!cart) {
+            cart = [];
+        }
         
         $('.product_options .product_option').each(function () {
             
@@ -299,15 +309,20 @@ document.addEventListener('DOMContentLoaded',()=>{
         });
         
         let isContains = false
-        for (let i = 0; i < cart.length; i++) {
-            if(cart_key == cart[i].key ) {
-                isContains = true
-                $(".count_in_cart")[0].innerHTML =  cart[i].count
-                cart[i].count = (+cart[i].count + +$('#count-product').val())
-                cart[i].itemSumm = +cart[i].itemSumm + +$('.current-price')[0].innerHTML
-                break
-            }            
+
+        if (cart.length != 0) {
+            for (let i = 0; i < cart.length; i++) {
+                if(cart_key == cart[i].key ) {
+                    isContains = true
+                    $(".count_in_cart")[0].innerHTML =  cart[i].count
+                    cart[i].count = (+cart[i].count + +$('#count-product').val())
+                    cart[i].itemSumm = +cart[i].itemSumm + +$('.current-price')[0].innerHTML
+                    break
+                }
+            }
         }
+
+
         
         let addedPosition
         console.log(document.location.href)
