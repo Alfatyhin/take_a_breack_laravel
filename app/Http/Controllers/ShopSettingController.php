@@ -1013,8 +1013,7 @@ class ShopSettingController extends Controller
 
     public function lostCartAmoCreateOrder(Request $request, OrdersModel $order)
     {
-
-        dd($order);
-
+        $OrderService = new OrderService();
+        $OrderService->createOrderToAmocrm($order->order_id, '53836814');
     }
 }
