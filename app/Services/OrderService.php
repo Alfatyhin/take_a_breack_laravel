@@ -961,9 +961,20 @@ class OrderService
             }
 
             if (empty($orderData['clientName'])) {
-
+                $orderData['clientName'] = $client->name;
             }
-            dd($orderData, $client);
+            if (empty($orderData['email'])) {
+                $orderData['email'] = $client->email;
+            }
+            if (empty($orderData['phone'])) {
+                $orderData['phone'] = $client->phone;
+            }
+
+            $res = $orderService::validateOrderData($orderData);
+            if (!isset($res->sugess)) {
+                WebhookLog::addLog('error validate order createOrderToAmocrm ', $order_id);
+                return false;
+            }
             $amoData = $orderService::getShopAmoDataLead($orderData);
             if ($order_status) {
                 $amoData['statusId'] = $order_status;
