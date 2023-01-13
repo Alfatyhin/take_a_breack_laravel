@@ -7,15 +7,6 @@
         </div>
 
 
-        @if(env('APP_NAME') == 'Take a Break Server')
-            <h3>Order {{ $order_number }}</h3>
-            @if ($errors->any())
-                @foreach ($errors->all() as $error)
-                    <p class="errors">{{ $error }}</p>
-                @endforeach
-            @endif
-        @endif
-
         @error('order_data')
         <p class="errors">{{ $message }}</p><p></p>
         @enderror

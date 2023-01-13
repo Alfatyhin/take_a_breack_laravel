@@ -46,10 +46,10 @@ class AppServise
             ->put($patch  . $fileName, file_get_contents($url));
     }
 
-    public static function generateOrderId($n, $v = 'T')
+    public static function generateOrderId($v = 'T')
     {
         $nr = rand(100, 999);
-        $n = $nr.$n;
+        $n = $nr.rand(100, 999);;
         $r = '';
 
         for ($i = 1; $n >=0 && $i < 10; $i++) {

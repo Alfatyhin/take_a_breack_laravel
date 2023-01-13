@@ -677,13 +677,16 @@ class OrderService
     public static function getShopOrderData($order)
     {
 
-        if (isset($order['order_data_jsonform']['products'])) {
+//        if (isset($order['order_data_jsonform']['products'])) {
+//
+//            $products = $order['order_data_jsonform']['products'];
+//        } else {
+//
+//            $products = $order['order_data']['products'];
+//        }
+        $products = $order['order_data']['products'];
 
-            $products = $order['order_data_jsonform']['products'];
-        } else {
-
-            $products = $order['order_data']['products'];
-        }
+//        dd($products, $order);
 
         $product_options = ProductOptions::all()->keyBy('id')->toArray();
         foreach ($product_options as $k => $item) {
@@ -1370,8 +1373,7 @@ class OrderService
 
             if (!$order || $post['order_id'] == 'undefined') {
                 $order = new Orders();
-                $order_id = rand(100, 999);
-                $order->order_id = AppServise::generateOrderId($order_id, 'S');
+                $order->order_id = AppServise::generateOrderId('S');
             }
             if ($order->trashed()) {
                 $order->restore();
@@ -1385,18 +1387,18 @@ class OrderService
 
             if (!$order) {
                 $order = new Orders();
-                $order_id = rand(100, 999);
-                $order->order_id = AppServise::generateOrderId($order_id, 'S');
+                $order->order_id = AppServise::generateOrderId('S');
             }
 
         }
+
+        $order->save();
 
         return $order;
     }
 
     public static function addOrUpdateOrder($post)
     {
-
         $post['order_data'] = json_decode($post['order_data'], true);
         WebhookLog::addLog("new order step {$post['step']} request", $post);
 
@@ -1418,6 +1420,12 @@ class OrderService
         $order = self::getOrCreateClientOrder($client, $post);
 
 
+        if ($order->order_id != $post['order_id']) {
+            $post['order_id'] = $order->order_id;
+        }
+
+
+
         if ($order->orderData) {
             $old_data = json_decode($order->orderData, true);
 
@@ -1426,8 +1434,6 @@ class OrderService
                     $post[$k] = $v;
             }
         }
-
-
 
 
         if (isset($post['delivery']) && $post['delivery'] == 'delivery') {
@@ -1473,15 +1479,16 @@ class OrderService
         }
 
 
-        $res = self::validateOrderData($post);
+        $order_data_jsonform = $post['order_data'];
+        $orderData = self::getShopOrderData($post);
+        $orderData['order_data_jsonform'] = $order_data_jsonform;
+
+        $res = self::validateOrderData($orderData);
         if (!isset($res->sugess)) {
             $res->error = true;
             return $res;
         }
 
-        $order_data_jsonform = $post['order_data'];
-        $orderData = self::getShopOrderData($post);
-        $orderData['order_data_jsonform'] = $order_data_jsonform;
         $order->clientId = $client->id;
         if (isset($post['gClientId'])) {
             $order->gclientId = $post['gClientId'];
@@ -1513,11 +1520,20 @@ class OrderService
 
             $order = Orders::where('order_id', $order_data['order_id'])->first();
 
-            $old_data = json_decode($order->orderData, true);
-            foreach ($old_data as $k => $v) {
-                if (!isset($order_data[$k]) && $old_data['step'] < $order_data['step'])
-                    $order_data[$k] = $v;
+            if ($order) {
+                if ($order->orderData){
+                    $old_data = json_decode($order->orderData, true);
+                    foreach ($old_data as $k => $v) {
+                        if (!isset($order_data[$k]) && $old_data['step'] < $order_data['step'])
+                            $order_data[$k] = $v;
+                    }
+                }
+
+            } else {
+                dd($order_data);
             }
+
+
 
         }
 
@@ -1585,7 +1601,6 @@ class OrderService
 
                     $validate_array['min_summ_order'] = "required";
                 }
-
 
             }
 

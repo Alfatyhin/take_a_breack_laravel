@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.6.0';
+    private $v = '2.6.1';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -271,7 +271,7 @@ class ShopController extends Controller
         $orderData = false;
 
 
-        if (!empty($post)) {
+        if (!empty($post)  && $step > 1) {
             $post['step'] = $step;
             $OrderService = new OrderService();
 
