@@ -961,6 +961,7 @@ class OrderService
             }
 
             $amoData = $orderService::getShopAmoDataLead($orderData);
+            dd($amoData);
             if ($order_status) {
                 $amoData['statusId'] = $order_status;
             }
