@@ -55,41 +55,39 @@ document.addEventListener('DOMContentLoaded',()=>{
     // localStorage.setItem("client_data", JSON.stringify(client_data));
     // debugger
 
-    (function cartInit(){
-
+    (function cartInit(){        
+      
         let ordData = $("input.order_data");
         if( ordData.length != 0 && ordData[0].value != "" ){
+            
             let cart =  JSON.parse(ordData[0].value).products
-             let isPromoCodeActive =  JSON.parse(ordData[0].value).promo
+            let isPromoCodeActive =  JSON.parse(ordData[0].value).promo
             localStorage.setItem("cart", JSON.stringify(cart));
             localStorage.setItem("promo", JSON.stringify(isPromoCodeActive));
         } 
-
-        let cart_data = localStorage.getItem("cart");
-        if (cart_data == 'undefined') {
-            localStorage.removeItem("cart");
-            let cart = false;
-        } else {
-            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-            if($("#cart").length){
-                if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
-                else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
-            }
-
-            // $(".mark-link")[1].style.display = "none"      // скрываем иконку пользователя/личного кабинета
-            // $(".mark-link")[2].style.display = "none"      // скрываем иконку пользователя/личного кабинета
-
-
-
-            if(!cart.length)  return
-            if($("#cart").length){
-                cartInitProducts(cart);
-            }
-            if($("#cart").length) summCalculation(cart);
-            // $(".header__login a:last-child")[1].style.display = "none"
-            if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId)
-        }
+        
+        // let cart = JSON.parse(localStorage.getItem("cart") || "[]") 
+        let localCart = localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart")        
+        let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"))
+        
+        if($("#cart").length){
+            if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
+            else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
+        } 
+       
+        // $(".mark-link")[1].style.display = "none"      // скрываем иконку пользователя/личного кабинета        
+        // $(".mark-link")[2].style.display = "none"      // скрываем иконку пользователя/личного кабинета    
+         
+        
+       
+        if(!cart.length)  return 
+        if($("#cart").length){
+            cartInitProducts(cart);
+        } 
+        if($("#cart").length) summCalculation(cart);
+        // $(".header__login a:last-child")[1].style.display = "none"
+        if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId)
+       
        
     })();
 
@@ -146,7 +144,6 @@ document.addEventListener('DOMContentLoaded',()=>{
             OpenMenu();
         })
     }
-
 
     if(closeMenuBtn) {
         closeMenuBtn.addEventListener('click', CloseMenu);
@@ -249,7 +246,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     // #region Инициализация бейджика количества корзины в карточке товара
 
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]")    
+    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"))    
     if(cart.length != 0) $(".badge").each(function() { this.style.opacity = "1" }); 
     $(".cart-count").each(function() { this.innerText = cart.length })          
     
@@ -262,7 +259,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         
         let isReguired = isRequiredChecked()
         if(!isReguired) return
-        let cart = JSON.parse(localStorage.getItem("cart") || "[]");         
+        let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));         
         var options = {};
         var cart_key = product.id.toString();
         var variant = false;
@@ -388,7 +385,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
         
 
-        let cart = JSON.parse(localStorage.getItem("cart") || "[]");  
+        let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));  
         let addedPosition = { 
                                 id:  16/*product.id*/,
                                 name: $(".product-info__title h1")[0].innerText,
@@ -590,7 +587,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     //     if($(".cart-product-info-count-input")[0].value > 999){
     //         $(".cart-product-info-count-input")[0].value = $(".cart-product-info-count-input")[0].value.toString().substring(0,3)
     //     }
-    //     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    //     let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
     //     let cartId = e.currentTarget.dataset.id 
     //     for (let i = 0; i < cart.length; i++) {
     //         if(cart[i].id == cartId ) {
@@ -604,7 +601,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     // });
     // $(".cart-product-info-count-input").change(function(e){ 
     //     if($(".cart-product-info-count-input")[0].value < 1) $(".cart-product-info-count-input")[0].value = 1 
-    //     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    //     let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
     //     let cartId = e.currentTarget.dataset.id
     //     for (let i = 0; i < cart.length; i++) {
     //         if(cart[i].id == cartId ) {
@@ -761,8 +758,8 @@ async function increment(e){
         if(e.closest('.product-info__count')){    // для товара в корзине
             let count = +e.previousElementSibling.value + 1
             e.previousElementSibling.value = count
-            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-            debugger
+            let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
+            
             let cartKey = e.dataset.key
             for (let i = 0; i < cart.length; i++) {
                 if(cart[i].key == cartKey ) {
@@ -774,7 +771,7 @@ async function increment(e){
             localStorage.setItem("cart", JSON.stringify(cart)); 
             cartInitProducts(cart)
             summCalculation(cart)
-            debugger
+            
             if($(".pay.step_2").length != 0)  summDelivery(cart[0].delivery_params.cityId);
             if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId);
 
@@ -804,7 +801,7 @@ async function decrement(e){
             let count = +e.nextElementSibling.value - 1
             count = count < 1 ? 1 : count
             e.nextElementSibling.value = count
-            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
             let cartKey = e.dataset.key
             for (let i = 0; i < cart.length; i++) {
                 if(cart[i].key == cartKey ) {
@@ -817,7 +814,7 @@ async function decrement(e){
             localStorage.setItem("cart", JSON.stringify(cart)); 
             cartInitProducts(cart)
             summCalculation(cart)
-            debugger
+            
             if($(".pay.step_2").length != 0)  summDelivery(cart[0].delivery_params.cityId);
             if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId)
 
@@ -845,14 +842,8 @@ function cartInitProducts(cart){
         el[i].remove();            
     }
     let rootElement = $(".pay-cart__box");
-
-    let test = localStorage.getItem("promo");
-    if (test == 'undefined') {
-        localStorage.removeItem("promo");
-    }
-
     let isPromoCodeActive = JSON.parse(localStorage.getItem("promo") || "[]");
-    debugger
+    
     if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
     else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
 
@@ -924,7 +915,7 @@ function cartInitProducts(cart){
             console.log(this)
             let key = this.dataset.key
             let optionKey = this.dataset.options_key
-            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
             for (let i = 0; i < cart.length; i++) {
                 let newOptions ={}
                 if(key == cart[i].key) {                    
@@ -954,7 +945,7 @@ function cartInitProducts(cart){
     $(".delete-item").on('click', function(e){    
             
         if($("#cart").length) {
-            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
             let cartKey = e.currentTarget.dataset.key 
             const newCart = cart.filter( n => n.key.toString() != cartKey )
             localStorage.setItem("cart", JSON.stringify(newCart)); 
@@ -971,13 +962,16 @@ function cartInitProducts(cart){
         if( $(".sugess_promo")[0].classList.contains("hide")) $(".sugess_promo")[0].classList.remove("hide")
         $(".error_promo")[0].classList.add("hide")
     } 
+
     let client_data = JSON.parse(localStorage.getItem("client_data") || "[]"); 
-    if(client_data.order_id != ""){
-        $("input[name='order_id']")[0].value = client_data.order_id || ""
-        $("span.order_number_data")[0].innerHTML = client_data.order_id || ""
+    //if(client_data.order_id != ""){
+        // $("input[name='order_id']")[0].value = client_data.order_id || ""
+        // $("span.order_number_data")[0].innerHTML = client_data.order_id || ""
+        if($("input[name='order_id']")[0].value != "") $("span.order_number_data")[0].innerHTML = $("input[name='order_id']")[0].value
+        else if ( client_data.order_id != "" ) $("span.order_number_data")[0].innerHTML = client_data.order_id || ""
         $(".order_number_data")[0].style.display = "block"
         $(".pay-cart__title")[0].style.cssText= `display: flex;`
-    }
+    //}
 }
 function summCalculation(cart){
 
@@ -1030,7 +1024,7 @@ function updateProductPage(){
 }
 async function reloadPage(key){   // при переходе из корзины
     
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
     selectedItemPrice = +product.price
     // this.closest(".product_option").firstElementChild.innerHTML = this.dataset.option_text       
     // selectedItemWeightParams = $(this).find('.weight-params')[0] && $(this).find('.weight-params')[0].innerHTML ? $(this).find('.weight-params')[0].innerHTML : ""       
@@ -1535,7 +1529,7 @@ if($("#cart").length)
     
     
     function setOrderDate(){
-        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
         let promo = JSON.parse(localStorage.getItem("promo") || "[]");
         let response = {products: cart, promo_code: promo.id, promo: promo}
         $("input[name='order_data']")[0].value = JSON.stringify(response)
@@ -1574,7 +1568,7 @@ $(".pay-cart__promo input").keyup(async function(e){
 })
 async function promoAction(){
     let promoText = $(".pay-cart__promo input").val()
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
     let url = $(".pay-cart__promo button")[0].dataset.url
     let response = await fetch(`${url}${promoText}`);
     if (response.ok) {  
@@ -1754,8 +1748,13 @@ $("input[name='otherPerson']").change(function(){
 
 function summDelivery(cityId){
     
-    if(cityId == -1){
+    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart")) 
+    if(cityId == -1){        
         $(".delivery_price")[0].innerHTML = 0  + " ₪"
+        if(cart[0].delivery_params){
+            cart[0].delivery_params.deliverySumm = 0
+            localStorage.setItem("cart", JSON.stringify(cart));
+        } 
         return
     } 
     const deliveryParams = delivery.delivery[delivery.cityes_data[cityId]]  
@@ -1791,8 +1790,6 @@ function summDelivery(cityId){
     delivery_params.deliverySumm = deliverySumm
     delivery_params.deliveryPrice = deliveryPrice
     delivery_params.cityId = cityId
-
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]") 
     cart[0].delivery_params =  delivery_params  
     localStorage.setItem("cart", JSON.stringify(cart));
    
@@ -1806,6 +1803,7 @@ function summDeliveryStep3(cityId){
     } 
     const deliveryParams = delivery.delivery[delivery.cityes_data[cityId]]  
     if(!deliveryParams){
+        $(".delivery_price")[0].innerHTML = 0 + " ₪"
         return
     } 
 
@@ -1824,7 +1822,7 @@ function summDeliveryStep3(cityId){
     } else{
         $(".delivery_price")[0].innerHTML = +deliveryParams.rate_delivery +  " ₪"
     }
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]")[0] 
+    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"))[0] 
 
     let koefTime =  cart.delivery_params.koefTime
     let deliveryPrice =cart.delivery_params.deliveryPrice
@@ -1840,7 +1838,7 @@ function summDeliveryStep3(cityId){
 
 //#region   Просчет Чаевых
     $('input[name="premium"]').change(function(e){ 
-        let cart = JSON.parse(localStorage.getItem("cart") || "[]")[0] 
+        let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"))[0] 
         summDeliveryStep3(cart.delivery_params.cityId)
     });
 
@@ -1869,3 +1867,6 @@ $("input[name='methodPay']").change(function(e){
 });
 
 
+$(".main .main__wrap ul").click(function(e) {
+   return
+});
