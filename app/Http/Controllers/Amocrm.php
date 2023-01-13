@@ -131,7 +131,9 @@ class Amocrm extends Controller
                             if (isset($orer_id)) {
 
                                 $order = Orders::where('order_id', $orer_id)->first();
-
+                                if ($order->trashed()) {
+                                    $order->restore();
+                                }
                                 $status_id = $item['status_id'];
 
                                 // меняем статус
@@ -159,6 +161,8 @@ class Amocrm extends Controller
                                     $order->paymentStatus = $paymentStatusArray[$paymentStatus];
                                     $order->amoId = $item['id'];
                                     $order->save();
+
+
 
 
 
