@@ -164,8 +164,6 @@ class Amocrm extends Controller
 
 
 
-
-
                                     // отправка инвойса
                                     if ($statusPaidAmo == '436781' && $order->invoiceStatus == 0 && $site != 'Take a Break Server') {
 
