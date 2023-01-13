@@ -92,9 +92,11 @@ class Amocrm extends Controller
         $site = env('APP_NAME');
 
         if($request->get('test') == 1) {
-            $test = '';
+            $test = '{"leads":{"update":[{"id":"23778283","name":"#S-AKDGZ","status_id":"43924885","price":"715","responsible_user_id":"216744","last_modified":"1673599286","modified_user_id":"0","created_user_id":"0","date_create":"1673599286","pipeline_id":"4651807","account_id":"29039599","custom_fields":[{"id":"509001","name":"\u0410\u0434\u0440\u0435\u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":[{"value":"\u0421\u0430\u043c\u043e\u0432\u044b\u0432\u043e\u0437"}]},{"id":"514563","name":"\u0418\u043c\u044f \u0437\u0430\u043a\u0430\u0437\u0447\u0438\u043a\u0430","values":[{"value":"erwryr"}]},{"id":"514565","name":"\u0422\u0435\u043b\u0435\u0444\u043e\u043d \u0437\u0430\u043a\u0430\u0437\u0447\u0438\u043a\u0430","values":[{"value":"+385 55-555-5555"}]},{"id":"308363","name":"\u041e\u043f\u043b\u0430\u0442\u0430","values":[{"value":"\u041e\u043f\u043b\u0430\u0442\u0430 \u043d\u0430\u043b\u0438\u0447\u043d\u044b\u043c\u0438 \u043f\u043e \u0444\u0430\u043a\u0442\u0443","enum":"436783"}]},{"id":"520559","name":"\u0414\u0430\u0442\u0430 \u0441\u0430\u043c\u043e\u0432\u044b\u0432\u043e\u0437\u0430\/\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":["1673992800"]},{"id":"520561","name":"\u0412\u0440\u0435\u043c\u044f","values":[{"value":"9:00-21:00"}]},{"id":"512455","name":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430","values":[{"value":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430: #S-AKDGZ\n1x - 250 \u0448\u0435\u043a \u0428\u043e\u043a\u043e\u043b\u0430\u0434\u043d\u044b\u0439 \u0442\u043e\u0440\u0442 RAW Size Bento \n1x - 400 \u0448\u0435\u043a \u0428\u043e\u043a\u043e\u043b\u0430\u0434\u043d\u044b\u0439 \u0442\u043e\u0440\u0442 RAW Size Family \n ---------------------- \n \u0418\u0442\u043e\u0433\u043e: 650 \u0448\u0435\u043a (\u0431\u0435\u0437 \u0441\u043a\u0438\u0434\u043a\u0438)\n ---------------------- \n\u0441\u043f\u043e\u0441\u043e\u0431 \u043e\u043f\u043b\u0430\u0442\u044b - \u0421ash payment \n ---------------------- \n\u041a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0439 \u043f\u043e\u043a\u0443\u043f\u0430\u0442\u0435\u043b\u044f: \n\u041d\u0435\u0442 \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u044f \n ---------------------- \n\u0427\u0430\u0435\u0432\u044b\u0435 65 \n\u0421\u0430\u043c\u043e\u0432\u044b\u0432\u043e\u0437 \n ---------------------- \n\n \u0418\u0442\u043e\u0433\u043e: 715 \u0448\u0435\u043a"}]},{"id":"519327","name":"\u0440\u0430\u0441\u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0437\u0430\u043a\u0430\u0437 (\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430)","values":[{"value":"https:\/\/takeabreak.co.il\/api\/orders\/view-order\/S-AKDGZ"}]},{"id":"516743","name":"\u042f\u0437\u044b\u043a","values":[{"value":"\u0410\u043d\u0433\u043b\u0438\u0439\u0441\u043a\u0438\u0439","enum":"548397"}]},{"id":"489653","name":"Api order ID","values":[{"value":"S-AKDGZ"}]},{"id":"511579","name":"Api mode","values":[{"value":"ShopTB"}]}],"link_changed":"1","created_at":"1673599286","updated_at":"1673599286"}]},"account":{"subdomain":"takebreak","id":"29039599","_links":{"self":"https:\/\/takebreak.amocrm.ru"}}}';
 
             $post = json_decode($test, true);
+
+            dd($post);
         }
 
 
@@ -129,12 +131,10 @@ class Amocrm extends Controller
 
                             $order = Orders::where('order_id', $orer_id)->first();
 
-
-                            $old_status_id = $item['old_status_id'];
                             $status_id = $item['status_id'];
 
                             // меняем статус
-                            if(($status_id != $old_status_id) && isset($statusPaidAmo) ) {
+                            if($status_id && isset($statusPaidAmo) ) {
 
 
                                 $paymentStatusArray = array_flip(AppServise::getOrderPaymentStatus());
