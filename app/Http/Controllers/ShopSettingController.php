@@ -159,7 +159,10 @@ class ShopSettingController extends Controller
         $priceYear = OrdersModel::whereYear('created_at', $date_start->format('Y'))
             ->sum('orderPrice');
 
+//        dd($request);
+
         return view('shop-settings.orders', [
+            'error_log'      => $request->error_log,
             'orders'         => $orders,
             'paymentMethod'  => $paymentMethod,
             'paymentStatus'  => $paymentStatus,
@@ -186,6 +189,7 @@ class ShopSettingController extends Controller
 
 
         return view('shop-settings.categories', [
+            'error_log'      => $request->error_log,
             'message' => $request->message,
             'categories' => $categories,
             'products' => $products
@@ -211,8 +215,8 @@ class ShopSettingController extends Controller
         }
 
 
-
         return view('shop-settings.products', [
+            'error_log'      => $request->error_log,
             'message' => $request->message,
             'categories' => $categories,
             'products' => $products,
@@ -252,6 +256,7 @@ class ShopSettingController extends Controller
 
 
         return view('shop-settings.dey_offer', [
+            'error_log'      => $request->error_log,
             'message' => $request->message,
             'categories' => $categories,
             'products' => $products,
@@ -569,6 +574,7 @@ class ShopSettingController extends Controller
 
 
         return view('shop-settings.client', [
+            'error_log'      => $request->error_log,
             'message' => $request->message,
             'paymentMethod'  => $paymentMethod,
             'paymentStatus'  => $paymentStatus,
@@ -642,12 +648,13 @@ class ShopSettingController extends Controller
 
 
         return view('shop-settings.delivery', [
+            'error_log'  => $request->error_log,
             'message'    => $request->message,
             'categories' => $categories,
             'cityes'     => $cityes,
             'delivery'   => $delivery,
             'shop_setting' => $shop_setting,
-            'week_days' => $week_days,
+            'week_days'  => $week_days,
         ]);
     }
 
@@ -744,7 +751,8 @@ class ShopSettingController extends Controller
         }
 
         return view('shop-settings.invoice_setting', [
-            'message'    => $request->message,
+            'error_log'   => $request->error_log,
+            'message'     => $request->message,
             'settingData' => $settingData,
         ]);
     }
@@ -770,8 +778,9 @@ class ShopSettingController extends Controller
         }
 
         return view('shop-settings.banner', [
-            'message' => $request->message,
-            'banner'  => $banner
+            'error_log' => $request->error_log,
+            'message'   => $request->message,
+            'banner'    => $banner
         ]);
     }
 
@@ -810,10 +819,11 @@ class ShopSettingController extends Controller
 
 
         return view('shop-settings.products_options', [
-            'message' => $request->message,
+            'error_log'        => $request->error_log,
+            'message'          => $request->message,
             'products_options' => $products_options,
-            'options_select' => $options_select,
-            'shop_langs' => $shop_langs
+            'options_select'   => $options_select,
+            'shop_langs'       => $shop_langs
         ]);
     }
 
@@ -872,6 +882,7 @@ class ShopSettingController extends Controller
 
 
         return view('shop-settings.translations', [
+            'error_log'      => $request->error_log,
             'message' => $request->message,
             'products_options' => $products_options,
             'files' => $files,
@@ -986,6 +997,7 @@ class ShopSettingController extends Controller
         }
 
         return view('shop-settings.components', [
+            'error_log'      => $request->error_log,
             'message' => $request->message,
             'files' => $data,
         ]);
@@ -1001,6 +1013,7 @@ class ShopSettingController extends Controller
 
 
         return view('shop-settings.table_data', [
+            'error_log'      => $request->error_log,
             'message' => $request->message,
             'tb_data' => $tb_data,
         ]);
@@ -1036,6 +1049,7 @@ class ShopSettingController extends Controller
 
 
         return view('logs.app_error_log', [
+            'error_log'      => $request->error_log,
             'route' => 'orders_log',
             'log' => $monolog,
         ]);
