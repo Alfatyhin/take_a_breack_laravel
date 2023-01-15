@@ -1038,6 +1038,11 @@ class ShopSettingController extends Controller
 
         $date_nau = new Carbon();
 
+        if ($request->get('clear')) {
+            Storage::disk('logs')->delete("laravel.log");
+            return back();
+        }
+
         if (Storage::disk('logs')->exists("laravel.log")) {
             $monolog = Storage::disk('logs')->get("laravel.log");
         } else {

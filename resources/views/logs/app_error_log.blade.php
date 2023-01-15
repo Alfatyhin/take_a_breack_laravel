@@ -20,7 +20,9 @@
 @section('content')
 
     <p>
-
+        @if (!empty($log))
+            <a class="button" href="{{ route('app_log', ['clear' => 1]) }}">clear log</a>
+        @endif
     </p>
 
 
