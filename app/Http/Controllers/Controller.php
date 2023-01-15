@@ -33,7 +33,6 @@ class Controller extends BaseController
     {
 
 
-        return view('index');
     }
 
 
@@ -69,6 +68,7 @@ class Controller extends BaseController
 
 
         return view('users.index', [
+            'error_log'      => $request->error_log,
             'users' => $users,
             'user_roles' => $user_roles
         ]);

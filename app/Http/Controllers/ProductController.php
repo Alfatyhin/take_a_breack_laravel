@@ -61,6 +61,7 @@ class ProductController extends Controller
 
 
         return view('shop-settings.product-redact', [
+            'error_log'      => $request->error_log,
             'message'    => $message,
             'categories' => $categories,
             'product'    => $product,

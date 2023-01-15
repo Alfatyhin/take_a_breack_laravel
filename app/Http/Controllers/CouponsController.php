@@ -44,6 +44,7 @@ class CouponsController extends Controller
 
 
         return view('shop-settings.coupons', [
+            'error_log'      => $request->error_log,
             'message' => $request->message,
             'coupons' => $coupons
         ]);
