@@ -249,6 +249,13 @@
 
         @endif
 
+
+        @if (($item->invoiceStatus == 0 || empty($item->invoiceData)) && $item->paymentStatus != 0 || empty($item->invoiceData))
+                <a class="button" href="{{ route('invoice_create', ['orderId' => $item->order_id]) }}" >
+                    create invoice
+                </a> <br>
+        @endif
+
         @if($item->paymentStatus != 4)
             <a class="button" href="{{ route('order_set_paid_status', ['order' => $item->id, 'status' => 4]) }}" >
                 отметить как оплачен
