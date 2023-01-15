@@ -246,6 +246,13 @@
                     проверить корзину
                 </a>
             </div>
+
+        @endif
+
+        @if($item->paymentStatus != 4)
+            <a class="button" href="{{ route('order_set_paid_status', ['order' => $item->id, 'status' => 4]) }}" >
+                отметить как оплачен
+            </a>
         @endif
     </td>
 

@@ -1037,4 +1037,13 @@ class Orders extends Controller
         ]);
     }
 
+    public function setOrderPaidStatus(Request $request, OrdersModel $order)
+    {
+        $status = $request->get('status');
+        $order->paymentStatus = $status;
+        $order->save();
+
+        return back();
+    }
+
 }

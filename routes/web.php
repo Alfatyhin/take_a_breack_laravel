@@ -189,6 +189,9 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
     Route::any('/orders/log-view', [Orders::class, 'OrderLogView'])
         ->name('orders_log');
 
+    Route::any('/order/set-paid-status/{order}', [Orders::class, 'setOrderPaidStatus'])
+        ->name('order_set_paid_status');
+
     Route::any('/app/log-view', [ShopSettingController::class, 'AppLogView'])
         ->name('app_log');
 
