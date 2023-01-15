@@ -572,6 +572,8 @@ class OrderService
             if (!isset($data['phone']))
                 $data['phone'] = $client->phone;
         }
+        if (!isset($data['methodPay']))
+            $data['methodPay'] = 2;
 
         $orderData['email'] = $data['email'];
 
