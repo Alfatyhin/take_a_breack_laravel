@@ -221,8 +221,8 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () 
 });
 
 
-Route::any('shop-test', array(ShopController::class, 'test'))
-    ->name('test');
+Route::any('cart-test', array(ShopController::class, 'cartTest'))
+    ->name('test_cart');
 
 
 

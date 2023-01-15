@@ -1015,9 +1015,17 @@ class Orders extends Controller
         } else {
             $monolog = 'not file';
         }
-        $monolog = htmlspecialchars($monolog);
+//        $monolog = htmlspecialchars($monolog);
         $monolog = str_replace('['.$date_nau->format('Y'), '<hr><b>['.$date_nau->format('Y'), $monolog);
         $monolog = str_replace('] ', ']</b> ', $monolog);
+
+        $token = csrf_token();
+        $pattern = '/(\{.*})/';
+        $replace = '${1}<form method="POST" action="'.route('test_cart').
+            '"><input type="hidden" name="_token" value="'.$token.
+            '" /> <input hidden name="data" value=\'${1}\'> <input type="submit" class="button" value="test cart" /> </form>';
+        $monolog = preg_replace($pattern, $replace, $monolog);
+
 
 
         return view('logs.index', [

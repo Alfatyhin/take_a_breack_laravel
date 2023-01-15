@@ -28,7 +28,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.6.2';
+    private $v = '2.6.3';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -262,6 +262,21 @@ class ShopController extends Controller
     }
 
 
+    public function cartTest(Request $request)
+    {
+        $post = $request->post();
+
+        $post = json_decode($post['data']);
+
+        if (isset($post->lang) && isset($post->step)) {
+
+            return $this->CartView($request, $post->lang, $post->step);
+        } else {
+
+            dd($post);
+        }
+
+    }
 
     public function CartView(Request $request, $lang = 'en', $step = 1, $lost_order = false)
     {
@@ -269,6 +284,12 @@ class ShopController extends Controller
 
         $post = $request->post();
         $orderData = false;
+
+        if (isset($post['data'])) {
+            $post = json_decode($post['data'], true);
+        } else {
+            WebhookLog::addLog("CartView post", $post);
+        }
 
 
         if (!empty($post)  && $step > 1) {
@@ -342,7 +363,6 @@ class ShopController extends Controller
         }
 
 //        dd($orderData);
-        WebhookLog::addLog("order step $step #$order_number", $post);
 
 
         return view("shop.new.cart-master", [
