@@ -563,7 +563,8 @@ class OrderService
 
         if (!isset($orderData['email']) && !isset($orderData['clientName']) && !isset($orderData['phone'])) {
 
-            dd($order);
+            $client = Clients::find($order->clientId);
+            dd($order, $client);
         }
 
         $orderData['email'] = $data['email'];
