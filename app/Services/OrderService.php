@@ -561,6 +561,11 @@ class OrderService
         $dateObj = new Carbon();
         $date = $dateObj->format('Y-m-d');
 
+        if (!isset($orderData['email']) && !isset($orderData['clientName']) && !isset($orderData['phone'])) {
+
+            dd($order);
+        }
+
         $orderData['email'] = $data['email'];
 
         $name = trim($data['clientName']);
