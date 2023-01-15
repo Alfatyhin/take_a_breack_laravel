@@ -677,14 +677,14 @@ class OrderService
     public static function getShopOrderData($order)
     {
 
-//        if (isset($order['order_data_jsonform']['products'])) {
-//
-//            $products = $order['order_data_jsonform']['products'];
-//        } else {
-//
-//            $products = $order['order_data']['products'];
-//        }
-        $products = $order['order_data']['products'];
+        if (isset($order['order_data_jsonform']['products'])) {
+
+            $products = $order['order_data_jsonform']['products'];
+        } else {
+
+            $products = $order['order_data']['products'];
+        }
+//        $products = $order['order_data']['products'];
 
 //        dd($products, $order);
 
@@ -736,6 +736,11 @@ class OrderService
                     $option_key = $item_option['key'];
                     $option_choice_key = $item_option['value'];
                     $option = $options[$option_key];
+                    if (!is_string($option_choice_key) || !is_numeric($option_choice_key)) {
+                        $option_choice_key = $item_option['value_key'];
+                    } else {
+                        $item_option['value_key'] = $option_choice_key;
+                    }
                     $choice = $option['choices'][$option_choice_key];
 
                     if (isset($choice['variant_number'])) {
@@ -1381,6 +1386,7 @@ class OrderService
     public static function getOrCreateClientOrder($client, $post)
     {
 
+
         if (!empty($post['order_id'])) {
 
             $order = Orders::withTrashed()->where('order_id', $post['order_id'])
@@ -1395,16 +1401,8 @@ class OrderService
             }
 
         } else {
-
-            $order = Orders::orderBy('id', 'desc')
-                ->where('clientId', $client->id)
-                ->where('amoId', null)->first();
-
-            if (!$order) {
-                $order = new Orders();
-                $order->order_id = AppServise::generateOrderId('S');
-            }
-
+            $order = new Orders();
+            $order->order_id = AppServise::generateOrderId('S');
         }
 
         $order->save();
@@ -1417,6 +1415,11 @@ class OrderService
         $post['order_data'] = json_decode($post['order_data'], true);
         WebhookLog::addLog("new order step {$post['step']} request", $post);
 
+        $res = self::validatePostData($post);
+        if (!isset($res->sugess)) {
+            $res->error = true;
+            return $res;
+        }
 
         if ($post['step'] == 2){
 
@@ -1596,7 +1599,9 @@ class OrderService
 
             if (!isset($delivery_setting['cityes_data'][$order_data['city_id']])) {
 
-                $messages['city.required'] = __('shop-cart.нет доставки в город') . " " . $order_data['city'];
+                if ($order_data['city'] != '') {
+                    $messages['city.required'] = __('shop-cart.нет доставки в город') . " " . $order_data['city'];
+                }
                 $validate_array['city'] = "required";
                 $order_data['city'] = '';
 
@@ -1643,6 +1648,103 @@ class OrderService
         }
 
 
+
+
+        $messages['order_data.required'] = __('shop-cart.пустая корзина');
+        $validate_array['order_data'] = 'required';
+
+//        dd($validate_array, $messages, $step_back, $order_data);
+
+        $validator = Validator::make($order_data, $validate_array, $messages);
+        if ($validator->fails()) {
+            return redirect(route('cart', ['lang' => $order_data['lang'], 'step' => $step_back]))
+                ->withErrors($validator)
+                ->withInput();
+        } else {
+            $res = (object) ['sugess' => true];
+            return $res;
+        }
+
+         return $validator->validate();
+
+    }
+
+
+    public static function validatePostData($order_data)
+    {
+
+        $messages = [];
+
+//        dd('validate', $order_data);
+        if ($order_data['step'] == 2) {
+            $pattern_phone = "/^[+0-9]{2,4} \([0-9]{3}\) [0-9]{3} [0-9]{2} [0-9]{2,4}$/";
+            $validate_array = [
+                'clientName' => 'required',
+                'clientLastName' => 'required',
+                'phone' => 'required|regex:'.$pattern_phone,
+                'email' => 'required|email:rfc,dns'
+            ];
+            $step_back = 1;
+
+        }
+        if ($order_data['step'] == 3) {
+            $validate_array = [
+                'date' => 'required|date_format:Y-n-j',
+                'delivery' => 'required'
+            ];
+
+
+            if(isset($order_data['otherPerson'])) {
+                $validate_array['user-phone'] = 'required';
+                $validate_array['nameOtherPerson'] = 'required';
+
+            }
+
+            if (isset($order_data['delivery']) && $order_data['delivery'] == 'delivery') {
+
+                $validate_array['street'] = 'required';
+                $validate_array['house'] = 'required';
+                $validate_array['city'] = 'required';
+
+
+                $delivery_json = Storage::disk('local')->get('js/delivery.json');
+                $cityes_json = Storage::disk('local')->get('js/israel-city.json');
+                $cityes = json_decode($cityes_json, true);
+                $delivery_setting = json_decode($delivery_json, true);
+
+                if ($order_data['city'] && empty($order_data['city_id'])) {
+                    foreach ($cityes['citys_all'] as $k => $item) {
+                        if ($item['ru'] == $order_data['city'] || $item['en'] == $order_data['city'] || $item['he'] == $order_data['city']  ) {
+                            $order_data['city_id'] = $k;
+                        }
+                    }
+                }
+
+
+                if (!isset($delivery_setting['cityes_data'][$order_data['city_id']])) {
+
+                    if ($order_data['city'] != '') {
+                        $messages['city.required'] = __('shop-cart.нет доставки в город') . " " . $order_data['city'];
+                    }
+                    $validate_array['city'] = "required";
+                    $order_data['city'] = '';
+
+                }
+
+            }
+
+            $step_back = 2;
+        }
+
+
+        if ($order_data['step'] == 4) {
+            $validate_array = [
+                'methodPay' => 'required',
+                'premium' => 'required'
+            ];
+
+            $step_back = 3;
+        }
 
 
         $messages['order_data.required'] = __('shop-cart.пустая корзина');

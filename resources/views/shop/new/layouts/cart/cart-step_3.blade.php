@@ -6,31 +6,16 @@
             <div class="active">03 <span>{{ __('shop-cart.ОПЛАТА') }}</span></div>
         </div>
 
-        @if(env('APP_NAME') == 'Take a Break Server')
-            <h3>Order {{ $order_number }}</h3>
-            @if ($errors->any())
-                @foreach ($errors->all() as $error)
-                    <p class="errors">{{ $error }}</p>
-                @endforeach
-            @endif
-        @endif
 
-        @error('order_data')
-        <p class="errors">{{ $message }}</p><p></p>
-        @enderror
+        @include("shop.new.layouts.cart.errors")
 
         <div class="pay__form">
 
             <form class="form-cart{{ $step }}" action="{{ route("new_order", ['lang' => $lang]) }}" method="POST">
                 @csrf
 
-                <input hidden name="lang" value="{{ $lang }}">
-                <input hidden name="gClientId" value="">
-                @if(!empty($order_number) && $order_number != 'undefined')
-                    <input hidden name="order_id" value="{{ $order_number }}">
-                @else
-                    <input hidden name="order_id" >
-                @endif
+
+                @include('shop.new.layouts.cart.input_hidden')
 
                 <p>
                     {{ __('shop-cart.Выберите способ оплаты') }}
@@ -77,8 +62,14 @@
 
                 <div class="pay__acttion">
                     <button>
-                        <a href="{{ route('cart', ['lang' => $lang, 'step' => 2, $lost_order]) }}">
-                        </a>
+                        @if(!$lost_order)
+                            <a href="{{ route('cart', ['lang' => $lang, 'step' => 2, $lost_order]) }}">
+                            </a>
+                        @else
+
+                            <a href="{{ route('crm_lost_cart', ['lang' => $lang, 'step' => 2, $lost_order]) }}">
+                            </a>
+                        @endif
                         {{ __('shop.Назад') }}
                     </button>
                     <button class="main-btn go-pay" type="submit"

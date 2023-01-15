@@ -6,46 +6,50 @@
             <div >03 <span>{{ __('shop-cart.ОПЛАТА') }}</span></div>
         </div>
 
-        @if(env('APP_NAME') == 'Take a Break Server')
-            <h3>Order {{ $order_number }}</h3>
-            @if ($errors->any())
-                @foreach ($errors->all() as $error)
-                    <p class="errors">{{ $error }}</p>
-                @endforeach
-            @endif
-        @endif
 
         @include("shop.new.layouts.cart.errors")
 
         <div class="pay__form">
             <form class="form-cart{{ $step }}" action="{{ route("cart", ['lang' => $lang, 'step' => 2]) }}" method="POST">
                 @csrf
-                <input hidden name="lang" value="{{ $lang }}">
-                <input hidden name="gClientId" value="">
-                @if(!empty($order_number) && $order_number != 'undefined')
-                    <input hidden name="order_id" value="{{ $order_number }}">
-                @else
-                    <input hidden name="order_id" >
-                @endif
 
-                <label class="phone-mask" for="" class="@error('phone') error @enderror">
-                    <input hidden class="phone" name="phone" value="">
+                @include('shop.new.layouts.cart.input_hidden')
+
+                <label class="@if (!$lost_order)phone-mask @endif" for="" class="@error('phone') error @enderror">
                     <p>
                         {{ __('shop-cart.Телефон') }} *
                     </p>
+
+                    @if ($lost_order)
+                        <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                    @else
+                        <input hidden class="phone" name="phone" value="">
+                    @endif
+
+
                 </label>
                 <div>
                     <label for="" class="@error('clientName') error @enderror">
                         <p>
                             {{ __('shop-cart.Имя') }} *
                         </p>
-                        <input required type="text" name="clientName" value="">
+
+                        @if ($lost_order)
+                            <input required type="text" name="clientName" value="{{ isset($order_data['clientName']) ? $order_data['clientName'] : '' }}">
+                        @else
+                            <input required type="text" name="clientName" value="">
+                        @endif
+
                     </label>
                     <label for="" class="@error('clientLastName') error @enderror">
                         <p>
                             {{ __('shop-cart.Фамилия') }} *
                         </p>
-                        <input required type="text" name="clientLastName" value="">
+                        @if ($lost_order)
+                            <input required type="text" name="clientLastName" value="{{ isset($order_data['clientLastName']) ? $order_data['clientLastName'] : '' }}">
+                        @else
+                            <input required type="text" name="clientLastName" value="">
+                        @endif
                     </label>
                 </div>
 
@@ -53,13 +57,24 @@
                     <p>
                         {{ __('shop-cart.Дата Рождения') }}
                     </p>
-                    <input type="date" name="clientBirthDay">
+
+                    @if ($lost_order)
+                        <input type="text" class="phone" name="clientBirthDay" value="{{ isset($order_data['clientBirthDay']) ? $order_data['clientBirthDay'] : '' }}">
+                    @else
+                        <input type="date" name="clientBirthDay">
+                    @endif
+
                 </label>
                 <label for="" class="@error('email') error @enderror">
                     <p>
                         {{ __('shop-cart.Email') }} *
                     </p>
-                    <input required type="email" name="email" value="">
+
+                    @if ($lost_order)
+                        <input  required type="email" value="{{ isset($order_data['email']) ? $order_data['email'] : '' }}">
+                    @else
+                        <input required type="email" name="email" value="">
+                    @endif
                 </label>
 
                 <span>{{ __('shop-cart.Согласен с') }} <a href="#">{{ __('shop-cart.политикой конфиденциальности') }}</a></span>

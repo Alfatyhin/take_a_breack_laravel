@@ -7,20 +7,22 @@
         </div>
 
 
-        @error('order_data')
-        <p class="errors">{{ $message }}</p><p></p>
-        @enderror
-
-        @error('min_summ_order')
-        <p class="errors">{{ $message }}</p><p></p>
-        @enderror
+        @include("shop.new.layouts.cart.errors")
 
         <label class="delivery">
-            <input type="radio" name="delivery" value="delivery" checked form="form">
+            @if ($lost_order)
+                <input type="radio" name="delivery" value="delivery" @if($order_data['delivery'] == 'delivery') checked @endif form="form">
+            @else
+                <input type="radio" name="delivery" value="delivery" checked form="form">
+            @endif
             <span>{{ __('shop-cart.Доставка по Израилю') }}</span>
         </label>
         <label class="pickup">
-            <input type="radio" name="delivery" value="pickup"  form="form">
+            @if ($lost_order)
+                <input type="radio" name="delivery" value="pickup" @if($order_data['delivery'] == 'pickup') checked @endif   form="form">
+            @else
+                <input type="radio" name="delivery" value="pickup"  form="form">
+            @endif
             <span>{{ __('shop-cart.Самовывоз по адресу') }}</span>
         </label>
 
@@ -28,24 +30,10 @@
             <form id="form" class="form-cart{{ $step }}" action="{{ route("cart", ['lang' => $lang, 'step' => 3]) }}" method="POST">
                 @csrf
 
-                <input hidden name="lang" value="{{ $lang }}">
-                @if($lost_order)
-                    <input hidden name="gClientId" value="{{ $order_data['gClientId'] }}">
-                @else
-                    <input hidden name="gClientId" value="">
-                @endif
+                @include('shop.new.layouts.cart.input_hidden')
 
-                @if(!empty($order_number) && $order_number != 'undefined')
-                    <input hidden name="order_id" value="{{ $order_number }}">
-                @else
-                    <input hidden name="order_id" >
-                @endif
 
-                @if($lost_order)
-                    <input hidden name="delivery_method" value="{{ $order_data['delivery_method'] }}">
-                @else
-                    <input hidden name="delivery_method" value="{{ old('delivery_method') }}">
-                @endif
+                <input hidden name="delivery_method" value="{{ old('delivery_method') }}">
 
                 <div class="delivery">
                     <div class="calendar-wrapper calendar_box">
@@ -53,12 +41,25 @@
                     </div>
                     <label class="@if($errors->has('date')) errors @endif">
                         <p>{{ __('shop-cart.Дата доставки') }}  *</p>
-                        <input class="show_calendar date"
-                               required autocomplete="off"
-                               placeholder="{{ __('shop-cart.Выберите дату доставки') }}"
-                               data-text_delivery="{{ __('shop-cart.Выберите дату доставки') }}"
-                               data-text_pickup="{{ __('shop-cart.Выберите дату самовывоза') }}"
-                               type="text" name="date" readonly value="{{ old('date') }}">
+
+                        @if ($lost_order)
+                            <input class="show_calendar date"
+                                   required autocomplete="off"
+                                   placeholder="{{ __('shop-cart.Выберите дату доставки') }}"
+                                   data-text_delivery="{{ __('shop-cart.Выберите дату доставки') }}"
+                                   data-text_pickup="{{ __('shop-cart.Выберите дату самовывоза') }}"
+                                   type="text" name="date" readonly
+                                   value="{{ isset($order_data['date']) ? $order_data['date'] : '' }}">
+                        @else
+                            <input class="show_calendar date"
+                                   required autocomplete="off"
+                                   placeholder="{{ __('shop-cart.Выберите дату доставки') }}"
+                                   data-text_delivery="{{ __('shop-cart.Выберите дату доставки') }}"
+                                   data-text_pickup="{{ __('shop-cart.Выберите дату самовывоза') }}"
+                                   type="text" name="date" readonly value="{{ old('date') }}">
+                        @endif
+
+
                         @error('date')
                         <p class="errors">{{ $message }}</p>
                         @enderror
@@ -69,7 +70,14 @@
                         <p class="delivery">{{ __('shop-cart.Выбрать время доставки') }}</p>
                         <p class="pickup" style="display: none;">{{ __('shop-cart.Выбрать время самовывоза') }}</p>
 
+                        @if ($lost_order)
+                            <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                        @else
+                            <input hidden class="phone" name="phone" value="">
+                        @endif
+
                         <input class="delivery_time" type="text" name="time" value="{{ old('time') }}" placeholder="{{ __('shop-cart.Укажите удобное вам время') }}" readonly>
+
                         <ul class="delivery_time city-lis">
                             <li class="default" data-time="">
 {{--                                {{ __('shop-cart.любое время') }}--}}
@@ -86,11 +94,26 @@
 
                 <p class="other-man">
                     <label>
+
+                        @if ($lost_order)
+                            <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                        @else
+                            <input hidden class="phone" name="phone" value="">
+                        @endif
+
                         <input type="checkbox" name="otherPerson" value="otherPerson" @if(old('otherPerson')) checked @endif>
                         {{ __('shop-cart.Заказ для другого человека') }}
                     </label>
                 </p>
                 <div @if(!old('otherPerson')) style="display: none; @endif ">
+
+                    @if ($lost_order)
+                        <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                    @else
+                        <input hidden class="phone" name="phone" value="">
+                    @endif
+
+
                     <input hidden class="phone" name="phoneOtherPerson">
                     <label class="phone-mask @if($errors->has('phone')) errors @endif" for="">
                         <p>
@@ -106,6 +129,14 @@
                         <p>
                             {{ __('shop-cart.Имя') }} *
                         </p>
+
+                        @if ($lost_order)
+                            <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                        @else
+                            <input hidden class="phone" name="phone" value="">
+                        @endif
+
+
                         <input type="text" name="nameOtherPerson">
                     </label>
 
@@ -121,6 +152,14 @@
                         <p>
                             {{ __('shop-cart.Город') }} *
                         </p>
+
+                        @if ($lost_order)
+                            <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                        @else
+                            <input hidden class="phone" name="phone" value="">
+                        @endif
+
+
                         <input class="city_name" type="text" name="city"  value="{{ old('city') }}">
 
                         @error('city')
@@ -135,6 +174,14 @@
                         <p>
                             {{ __('shop-cart.Улица') }} *
                         </p>
+
+                        @if ($lost_order)
+                            <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                        @else
+                            <input hidden class="phone" name="phone" value="">
+                        @endif
+
+
                         <input type="text" name="street"  value="{{ old('street') }}">
 
                         @error('street')
@@ -146,6 +193,14 @@
                             <p>
                                 {{ __('shop-cart.Дом') }} *
                             </p>
+
+                            @if ($lost_order)
+                                <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                            @else
+                                <input hidden class="phone" name="phone" value="">
+                            @endif
+
+
                             <input type="text" name="house"  value="{{ old('house') }}">
 
                             @error('house')
@@ -156,6 +211,14 @@
                             <p>
                                 {{ __('shop-cart.Квартира') }}
                             </p>
+
+                            @if ($lost_order)
+                                <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                            @else
+                                <input hidden class="phone" name="phone" value="">
+                            @endif
+
+
                             <input type="text" name="flat"  value="{{ old('flat') }}">
                             @error('flat')
                             <p class="errors">{{ $message }}</p>
@@ -167,12 +230,28 @@
                             <p>
                                 {{ __('shop-cart.Этаж') }}
                             </p>
+
+                            @if ($lost_order)
+                                <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                            @else
+                                <input hidden class="phone" name="phone" value="">
+                            @endif
+
+
                             <input type="text" name="floor"  value="{{ old('floor') }}">
                         </label>
                         <label for="">
                             <p>
                                 {{ __('shop-cart.Код подьезда') }}
                             </p>
+
+                            @if ($lost_order)
+                                <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                            @else
+                                <input hidden class="phone" name="phone" value="">
+                            @endif
+
+
                             <input type="text" name="house_code"  value="{{ old('house_code') }}">
                         </label>
                     </div>
@@ -184,8 +263,14 @@
 
                 <div class="pay__acttion">
                     <button>
-                        <a href="{{ route('cart', ['lang' => $lang, 'step' => 1, $lost_order]) }}">
-                        </a>
+                        @if(!$lost_order)
+                            <a href="{{ route('cart', ['lang' => $lang, 'step' => 1, $lost_order]) }}">
+                            </a>
+                        @else
+
+                            <a href="{{ route('crm_lost_cart', ['lang' => $lang, 'step' => 1, $lost_order]) }}">
+                            </a>
+                        @endif
                         {{ __('shop.Назад') }}
                     </button>
                     <button class="main-btn go-pay" type="submit">

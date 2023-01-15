@@ -32,7 +32,7 @@
             статус <b> не оформлен </b>
             @isset($orderData['step'])
                 step -  <b>{{ $orderData['step'] }}</b>
-                <a class="button" href="{{ route('crm_lost_cart', ['lang' => $orderData['lang'], 'step' => $orderData['step'], 'order_id' => $item->order_id]) }}" >
+                <a class="button" href="{{ route('crm_lost_cart', ['lang' => 'ru', 'step' => $orderData['step'], 'order_id' => $item->order_id]) }}" >
                     проверить корзину
                 </a>
             @endisset
@@ -242,7 +242,7 @@
                 </a>
             </div> <br>
             <div class="hide">
-                <a class="button" href="{{ route('crm_lost_cart', ['lang' => $orderData['lang'], 'step' => 3, 'order_id' => $item->order_id]) }}" >
+                <a class="button" href="{{ route('crm_lost_cart', ['lang' => 'ru', 'step' => 3, 'order_id' => $item->order_id]) }}" >
                     проверить корзину
                 </a>
             </div>

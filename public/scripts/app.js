@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     // client_data = JSON.parse(localStorage.getItem("client_data") || "[]");   
     // client_data.order_id = ""
     // localStorage.setItem("client_data", JSON.stringify(client_data));
-    // debugger
 
     (function cartInit(){        
       
@@ -66,21 +65,19 @@ document.addEventListener('DOMContentLoaded',()=>{
             localStorage.setItem("promo", JSON.stringify(isPromoCodeActive));
         } 
         
-        // let cart = JSON.parse(localStorage.getItem("cart") || "[]") 
-        let localCart = localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart")        
-        let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"))
-        
+        //let cart = JSON.parse(localStorage.getItem("cart") || "[]") 
+        //localStorage.setItem("cart", "undefined");
+
+        let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"))
         if($("#cart").length){
             if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
             else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
         } 
        
         // $(".mark-link")[1].style.display = "none"      // скрываем иконку пользователя/личного кабинета        
-        // $(".mark-link")[2].style.display = "none"      // скрываем иконку пользователя/личного кабинета    
-         
+        // $(".mark-link")[2].style.display = "none"      // скрываем иконку пользователя/личного кабинета 
 
-
-        if(!cart || !cart.length)  return
+        if(!cart.length)  return 
         if($("#cart").length){
             cartInitProducts(cart);
         } 
@@ -246,15 +243,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     // #region Инициализация бейджика количества корзины в карточке товара
 
-    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart") )
-
-    if (!cart) {
-        cart = [];
-    }
-
-    console.log(cart);
-    if(cart.length != 0) $(".badge").each(function() { this.style.opacity = "1" });
-    $(".cart-count").each(function() { this.innerText = cart.length })
+    let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"))  
+    if(cart.length != 0) $(".badge").each(function() { this.style.opacity = "1" }); 
+    $(".cart-count").each(function() { this.innerText = cart.length })          
     
 
     //#endregion
@@ -265,14 +256,10 @@ document.addEventListener('DOMContentLoaded',()=>{
         
         let isReguired = isRequiredChecked()
         if(!isReguired) return
-        let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));         
+        let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]")); 
         var options = {};
         var cart_key = product.id.toString();
         var variant = false;
-
-        if (!cart) {
-            cart = [];
-        }
         
         $('.product_options .product_option').each(function () {
             
@@ -309,21 +296,15 @@ document.addEventListener('DOMContentLoaded',()=>{
         });
         
         let isContains = false
-
-        if (cart.length != 0) {
-            for (let i = 0; i < cart.length; i++) {
-                if(cart_key == cart[i].key ) {
-                    isContains = true
-                    $(".count_in_cart")[0].innerHTML =  cart[i].count
-                    cart[i].count = (+cart[i].count + +$('#count-product').val())
-                    cart[i].itemSumm = +cart[i].itemSumm + +$('.current-price')[0].innerHTML
-                    break
-                }
-            }
+        for (let i = 0; i < cart.length; i++) {
+            if(cart_key == cart[i].key ) {
+                isContains = true
+                $(".count_in_cart")[0].innerHTML =  cart[i].count
+                cart[i].count = (+cart[i].count + +$('#count-product').val())
+                cart[i].itemSumm = +cart[i].itemSumm + +$('.current-price')[0].innerHTML
+                break
+            }            
         }
-
-
-        
         let addedPosition
         console.log(document.location.href)
         if(!isContains){
@@ -400,7 +381,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
         
 
-        let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));  
+        let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));  
         let addedPosition = { 
                                 id:  16/*product.id*/,
                                 name: $(".product-info__title h1")[0].innerText,
@@ -602,7 +583,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     //     if($(".cart-product-info-count-input")[0].value > 999){
     //         $(".cart-product-info-count-input")[0].value = $(".cart-product-info-count-input")[0].value.toString().substring(0,3)
     //     }
-    //     let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
+    //     let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
     //     let cartId = e.currentTarget.dataset.id 
     //     for (let i = 0; i < cart.length; i++) {
     //         if(cart[i].id == cartId ) {
@@ -616,7 +597,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     // });
     // $(".cart-product-info-count-input").change(function(e){ 
     //     if($(".cart-product-info-count-input")[0].value < 1) $(".cart-product-info-count-input")[0].value = 1 
-    //     let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
+    //     let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
     //     let cartId = e.currentTarget.dataset.id
     //     for (let i = 0; i < cart.length; i++) {
     //         if(cart[i].id == cartId ) {
@@ -773,7 +754,7 @@ async function increment(e){
         if(e.closest('.product-info__count')){    // для товара в корзине
             let count = +e.previousElementSibling.value + 1
             e.previousElementSibling.value = count
-            let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
+            let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
             
             let cartKey = e.dataset.key
             for (let i = 0; i < cart.length; i++) {
@@ -816,7 +797,7 @@ async function decrement(e){
             let count = +e.nextElementSibling.value - 1
             count = count < 1 ? 1 : count
             e.nextElementSibling.value = count
-            let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
+            let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
             let cartKey = e.dataset.key
             for (let i = 0; i < cart.length; i++) {
                 if(cart[i].key == cartKey ) {
@@ -930,7 +911,7 @@ function cartInitProducts(cart){
             console.log(this)
             let key = this.dataset.key
             let optionKey = this.dataset.options_key
-            let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
+            let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
             for (let i = 0; i < cart.length; i++) {
                 let newOptions ={}
                 if(key == cart[i].key) {                    
@@ -960,7 +941,7 @@ function cartInitProducts(cart){
     $(".delete-item").on('click', function(e){    
             
         if($("#cart").length) {
-            let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
+            let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
             let cartKey = e.currentTarget.dataset.key 
             const newCart = cart.filter( n => n.key.toString() != cartKey )
             localStorage.setItem("cart", JSON.stringify(newCart)); 
@@ -1039,7 +1020,7 @@ function updateProductPage(){
 }
 async function reloadPage(key){   // при переходе из корзины
     
-    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
+    let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
     selectedItemPrice = +product.price
     // this.closest(".product_option").firstElementChild.innerHTML = this.dataset.option_text       
     // selectedItemWeightParams = $(this).find('.weight-params')[0] && $(this).find('.weight-params')[0].innerHTML ? $(this).find('.weight-params')[0].innerHTML : ""       
@@ -1544,7 +1525,7 @@ if($("#cart").length)
     
     
     function setOrderDate(){
-        let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
+        let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
         let promo = JSON.parse(localStorage.getItem("promo") || "[]");
         let response = {products: cart, promo_code: promo.id, promo: promo}
         $("input[name='order_data']")[0].value = JSON.stringify(response)
@@ -1583,7 +1564,7 @@ $(".pay-cart__promo input").keyup(async function(e){
 })
 async function promoAction(){
     let promoText = $(".pay-cart__promo input").val()
-    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"));
+    let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
     let url = $(".pay-cart__promo button")[0].dataset.url
     let response = await fetch(`${url}${promoText}`);
     if (response.ok) {  
@@ -1732,7 +1713,6 @@ $("input[name='delivery']").change(function(){   // переключалка с�
 
 
 $("input.delivery_time").on('click',async function(e){
-    
     summDelivery(cityId)     
     if($(".show_calendar.date").val() != "" && $(".delivery_time.city-lis")[0].style.display != "block") $(".delivery_time.city-lis")[0].style.display = "block"  
     else    $(".delivery_time.city-lis")[0].style.display = "none" 
@@ -1744,6 +1724,7 @@ $("input.delivery_time").on('click',async function(e){
     });   
     $(".delivery_time.city-lis li").on('click',async function(e){ 
         $("input.delivery_time")[0].value = this.innerText
+        $(".delivery_time.city-lis")[0].style.display = "none"
         summDelivery(cityId) 
     }); 
 });
@@ -1763,7 +1744,7 @@ $("input[name='otherPerson']").change(function(){
 
 function summDelivery(cityId){
     
-    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart")) 
+    let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]")) 
     if(cityId == -1){        
         $(".delivery_price")[0].innerHTML = 0  + " ₪"
         if(cart[0].delivery_params){
@@ -1837,7 +1818,7 @@ function summDeliveryStep3(cityId){
     } else{
         $(".delivery_price")[0].innerHTML = +deliveryParams.rate_delivery +  " ₪"
     }
-    let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"))[0] 
+    let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"))[0] 
 
     let koefTime =  cart.delivery_params.koefTime
     let deliveryPrice =cart.delivery_params.deliveryPrice
@@ -1853,7 +1834,7 @@ function summDeliveryStep3(cityId){
 
 //#region   Просчет Чаевых
     $('input[name="premium"]').change(function(e){ 
-        let cart = JSON.parse(localStorage.getItem("cart") == "undefined" ? "[]" : localStorage.getItem("cart"))[0] 
+        let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"))[0]
         summDeliveryStep3(cart.delivery_params.cityId)
     });
 

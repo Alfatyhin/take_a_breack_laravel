@@ -287,6 +287,7 @@ class ShopController extends Controller
 
         if (isset($post['data'])) {
             $post = json_decode($post['data'], true);
+            dd($post);
         } else {
             WebhookLog::addLog("CartView post", $post);
         }
