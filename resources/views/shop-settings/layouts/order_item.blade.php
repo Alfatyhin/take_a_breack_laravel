@@ -250,7 +250,7 @@
         @endif
 
 
-        @if (($item->invoiceStatus == 0 || empty($item->invoiceData)) && $item->paymentStatus != 0 || empty($item->invoiceData))
+        @if (($item->invoiceStatus == 0 || empty($item->invoiceData)) && $item->paymentStatus == 4 )
                 <a class="button" href="{{ route('invoice_create', ['orderId' => $item->order_id]) }}" >
                     create invoice
                 </a> <br>
