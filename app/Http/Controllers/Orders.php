@@ -1021,6 +1021,7 @@ class Orders extends Controller
 
 
         return view('logs.index', [
+            'error_log'      => $request->error_log,
             'route' => 'orders_log',
             'log' => $monolog,
             'date_str' => $date_str,
