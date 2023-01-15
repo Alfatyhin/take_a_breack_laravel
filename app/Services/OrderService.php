@@ -561,16 +561,16 @@ class OrderService
         $dateObj = new Carbon();
         $date = $dateObj->format('Y-m-d');
 
-        if (!isset($orderData['email']) && !isset($orderData['clientName']) && !isset($orderData['phone'])) {
+        if (!isset($data['email']) && !isset($data['clientName']) && !isset($data['phone'])) {
 
             $client = Clients::find($order->clientId);
 
-            if (!isset($orderData['email']))
-                $orderData['email'] = $client->email;
-            if (!isset($orderData['clientName']))
-                $orderData['clientName'] = $client->name;
-            if (!isset($orderData['phone']))
-                $orderData['phone'] = $client->phone;
+            if (!isset($data['email']))
+                $data['email'] = $client->email;
+            if (!isset($data['clientName']))
+                $data['clientName'] = $client->name;
+            if (!isset($data['phone']))
+                $data['phone'] = $client->phone;
         }
 
         $orderData['email'] = $data['email'];
