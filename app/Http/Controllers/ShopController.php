@@ -303,7 +303,8 @@ class ShopController extends Controller
                 if (!$order) {
                     throw new InvalidOrderException('Order wrong ');
                 }
-            } catch (InvalidOrderException $e) {
+            }  catch(Throwable $e) {
+                $OrderService::orderError($e, $post);
             }
 
             if (isset($order->error)) {
