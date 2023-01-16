@@ -288,7 +288,11 @@ class ShopController extends Controller
 
         if (isset($post['data'])) {
             $post = json_decode($post['data'], true);
-            dd($post);
+
+            if ($post['step'] == 4) {
+                return $this->NewOrder($request, $post['lang']);
+            }
+//            dd($post);
         } else {
             WebhookLog::addLog("CartView post", $post);
         }
@@ -401,6 +405,13 @@ class ShopController extends Controller
         $post = $request->post();
 
         if (!empty($post)) {
+
+            if (isset($post['data'])) {
+                $post = json_decode($post['data'], true);
+
+            } else {
+                WebhookLog::addLog("CartView post", $post);
+            }
 
             $post['step'] = 4;
 
