@@ -271,7 +271,7 @@ class ShopController extends Controller
 
         if (isset($post['lang']) && isset($post['step'])) {
 
-            return $this->CartView($request, $post->lang, $post->step);
+            return $this->CartView($request, $post['lang'], $post['step']);
         } else {
 
             dd($post);
