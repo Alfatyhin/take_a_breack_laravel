@@ -35,8 +35,12 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+
         });
+//        $this->renderable(function (InvalidOrderException $e, $request) {
+//            dd('$e', $request);
+//            return response()->view('errors.invalid-order', [], 500);
+//        });
     }
 
     public function render($request, Throwable $exception)
@@ -46,6 +50,10 @@ class Handler extends ExceptionHandler
             if ($exception->getStatusCode() == 404) {
                 return redirect(route('404'));
             }
+        }
+        if ($exception instanceof \App\Exceptions\InvalidOrderException)  {
+            dd('test');
+            return $exception->render($request);
         }
 
         return parent::render($request, $exception);

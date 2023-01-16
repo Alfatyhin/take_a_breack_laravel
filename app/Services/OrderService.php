@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Exceptions\InvalidOrderException;
+use Throwable;
 
 class OrderService
 {
@@ -1427,6 +1429,15 @@ class OrderService
     public static function addOrUpdateOrder($post)
     {
         $post['order_data'] = json_decode($post['order_data'], true);
+
+        try {
+            if (!isset($post['step'])) {
+                throw new InvalidOrderException('OrderService wrong');
+            }
+        } catch(Throwable $e) {
+           self::orderError($e, $post);
+        }
+
         WebhookLog::addLog("new order step {$post['step']} request", $post);
 
         $res = self::validatePostData($post);
@@ -1821,6 +1832,20 @@ class OrderService
         $client->save();
 
         return $client;
+    }
+
+    public static function orderError($e, $data = false)
+    {
+        $file = $e->getFile();
+        $file = str_replace('/home/l98123/public_html', ' ', $file);
+        $line = $e->getLine();
+        $message = $e->getMessage();
+
+        $message = "$message - $file -- $line";
+
+        WebhookLog::addLog("<b style='color:brown'>Error Order data </b>($message)", $data);
+
+        return $e->render($message, $data);
     }
 
 }
