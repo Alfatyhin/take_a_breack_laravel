@@ -356,8 +356,6 @@ Route::middleware(["Shop"])->group(function () {
 //    Route::get('/site_map.xml', [ShopController::class, 'sitemap']);
 
 
-
-
     Route::get('/404', [ShopController::class, 'err404'])->name('404');
     Route::get('/{lang?}/404', [ShopController::class, 'err404']);
 

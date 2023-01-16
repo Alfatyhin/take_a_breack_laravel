@@ -71,18 +71,19 @@
                         <p class="pickup" style="display: none;">{{ __('shop-cart.Выбрать время самовывоза') }}</p>
 
                         @if ($lost_order)
-                            <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
-                        @else
-                            <input hidden class="phone" name="phone" value="">
-                        @endif
+                            <input class="delivery_time" type="text" name="time"  value="{{ isset($order_data['time']) ? $order_data['time'] : '' }}">
 
-                        <input class="delivery_time" type="text" name="time" value="{{ old('time') }}" placeholder="{{ __('shop-cart.Укажите удобное вам время') }}" readonly>
+                        @else
+                            <input class="delivery_time" type="text" name="time" value="{{ old('time') }}" placeholder="{{ __('shop-cart.Укажите удобное вам время') }}" readonly>
+
+                        @endif
 
                         <ul class="delivery_time city-lis">
                             <li class="default" data-time="">
-{{--                                {{ __('shop-cart.любое время') }}--}}
+                                {{--                                {{ __('shop-cart.любое время') }}--}}
                             </li>
                         </ul>
+
 
 
                         @error('time')
@@ -96,30 +97,37 @@
                     <label>
 
                         @if ($lost_order)
-                            <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                            <input type="checkbox" name="otherPerson" value="otherPerson" @isset($order_data['otherPerson']) checked @endisset >
+
                         @else
-                            <input hidden class="phone" name="phone" value="">
+                            <input type="checkbox" name="otherPerson" value="otherPerson" @if(old('otherPerson')) checked @endif>
                         @endif
 
-                        <input type="checkbox" name="otherPerson" value="otherPerson" @if(old('otherPerson')) checked @endif>
                         {{ __('shop-cart.Заказ для другого человека') }}
                     </label>
                 </p>
-                <div @if(!old('otherPerson')) style="display: none; @endif ">
+                <div @if(!old('otherPerson') && !isset($order_data['otherPerson'])) style="display: none; " @endif >
 
                     @if ($lost_order)
-                        <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+
+                        <label>
+                            <p>
+                                {{ __('shop-cart.Телефон') }} *
+                            </p>
+                            <input type="text" name="phoneOtherPerson" value="{{ isset($order_data['phoneOtherPerson']) ? $order_data['phoneOtherPerson'] : '' }}">
+
+                        </label>
                     @else
-                        <input hidden class="phone" name="phone" value="">
+                        <input hidden class="phone" name="phoneOtherPerson">
+
+
+                        <label class="phone-mask @if($errors->has('phone')) errors @endif" for="">
+                            <p>
+                                {{ __('shop-cart.Телефон') }} *
+                            </p>
+                        </label>
                     @endif
 
-
-                    <input hidden class="phone" name="phoneOtherPerson">
-                    <label class="phone-mask @if($errors->has('phone')) errors @endif" for="">
-                        <p>
-                            {{ __('shop-cart.Телефон') }} *
-                        </p>
-                    </label>
 
                     @error('phoneOtherPerson')
                     <p class="errors">{{ $message }}</p>
@@ -131,13 +139,12 @@
                         </p>
 
                         @if ($lost_order)
-                            <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                            <input type="text" name="nameOtherPerson" value="{{ isset($order_data['nameOtherPerson']) ? $order_data['nameOtherPerson'] : '' }}">
                         @else
-                            <input hidden class="phone" name="phone" value="">
+                            <input type="text" name="nameOtherPerson">
                         @endif
 
 
-                        <input type="text" name="nameOtherPerson">
                     </label>
 
                     @error('nameOtherPerson')
@@ -154,13 +161,12 @@
                         </p>
 
                         @if ($lost_order)
-                            <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                            <input class="city_name" type="text" name="city"  value="{{ isset($order_data['city']) ? $order_data['city'] : '' }}">
                         @else
-                            <input hidden class="phone" name="phone" value="">
+                            <input class="city_name" type="text" name="city"  value="{{ old('city') }}">
                         @endif
 
 
-                        <input class="city_name" type="text" name="city"  value="{{ old('city') }}">
 
                         @error('city')
                         <p class="errors">{{ $message }}</p>
@@ -176,13 +182,12 @@
                         </p>
 
                         @if ($lost_order)
-                            <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                            <input type="text" name="street" value="{{ isset($order_data['street']) ? $order_data['street'] : '' }}">
                         @else
-                            <input hidden class="phone" name="phone" value="">
+                            <input type="text" name="street"  value="{{ old('street') }}">
                         @endif
 
 
-                        <input type="text" name="street"  value="{{ old('street') }}">
 
                         @error('street')
                         <p class="errors">{{ $message }}</p>
@@ -195,13 +200,12 @@
                             </p>
 
                             @if ($lost_order)
-                                <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                                <input type="text" name="house" value="{{ isset($order_data['house']) ? $order_data['house'] : '' }}">
                             @else
-                                <input hidden class="phone" name="phone" value="">
+
+                                <input type="text" name="house"  value="{{ old('house') }}">
                             @endif
 
-
-                            <input type="text" name="house"  value="{{ old('house') }}">
 
                             @error('house')
                             <p class="errors">{{ $message }}</p>
@@ -213,13 +217,12 @@
                             </p>
 
                             @if ($lost_order)
-                                <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                                <input type="text" name="flat" value="{{ isset($order_data['flat']) ? $order_data['flat'] : '' }}">
                             @else
-                                <input hidden class="phone" name="phone" value="">
+
+                                <input type="text" name="flat"  value="{{ old('flat') }}">
                             @endif
 
-
-                            <input type="text" name="flat"  value="{{ old('flat') }}">
                             @error('flat')
                             <p class="errors">{{ $message }}</p>
                             @enderror
@@ -232,13 +235,12 @@
                             </p>
 
                             @if ($lost_order)
-                                <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                                <input type="text" name="floor" value="{{ isset($order_data['floor']) ? $order_data['floor'] : '' }}">
                             @else
-                                <input hidden class="phone" name="phone" value="">
+                                <input type="text" name="floor"  value="{{ old('floor') }}">
                             @endif
 
 
-                            <input type="text" name="floor"  value="{{ old('floor') }}">
                         </label>
                         <label for="">
                             <p>
@@ -246,13 +248,12 @@
                             </p>
 
                             @if ($lost_order)
-                                <input type="text" class="phone" name="phone" value="{{ isset($order_data['phone']) ? $order_data['phone'] : '' }}">
+                                <input type="text" name="house_code" value="{{ isset($order_data['house_code']) ? $order_data['house_code'] : '' }}">
                             @else
-                                <input hidden class="phone" name="phone" value="">
+                                <input type="text" name="house_code"  value="{{ old('house_code') }}">
                             @endif
 
 
-                            <input type="text" name="house_code"  value="{{ old('house_code') }}">
                         </label>
                     </div>
                 </div>
