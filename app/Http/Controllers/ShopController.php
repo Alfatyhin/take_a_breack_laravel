@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Mockery\Exception;
+use Mockery\Exception\InvalidOrderException;
 use phpDocumentor\Reflection\Utils;
 use SoapClient;
 use function PHPUnit\Framework\matches;
@@ -266,9 +267,9 @@ class ShopController extends Controller
     {
         $post = $request->post();
 
-        $post = json_decode($post['data']);
+        $post = json_decode($post['data'], true);
 
-        if (isset($post->lang) && isset($post->step)) {
+        if (isset($post['lang']) && isset($post['step'])) {
 
             return $this->CartView($request, $post->lang, $post->step);
         } else {
@@ -297,7 +298,15 @@ class ShopController extends Controller
             $post['step'] = $step;
             $OrderService = new OrderService();
 
-            $order = $OrderService::addOrUpdateOrder($post);
+            unset ($post['step']);
+//            dd($post);
+            try {
+                $order = $OrderService::addOrUpdateOrder($post);
+                if (!$order) {
+                    throw new InvalidOrderException('Order wrong ');
+                }
+            } catch (InvalidOrderException $e) {
+            }
 
             if (isset($order->error)) {
                 return $order;
