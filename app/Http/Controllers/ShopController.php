@@ -47,6 +47,21 @@ class ShopController extends Controller
         ]);
     }
 
+    public function shopError(Request $request, $lang = 'en')
+    {
+
+        App::setLocale($lang);
+
+        $message = session('shop_error_message');
+
+        return view("shop.new.shop_error", [
+            'v' => $this->v,
+            'lang' => $lang,
+            'noindex' => $request->noindex,
+            'message' => $message,
+        ]);
+    }
+
     public function indexView(Request $request, $lang = 'en', $filter = 'all')
     {
 
@@ -302,14 +317,7 @@ class ShopController extends Controller
             $post['step'] = $step;
             $OrderService = new OrderService();
 
-            try {
-                $order = $OrderService::addOrUpdateOrder($post);
-                if (!$order) {
-                    throw new InvalidOrderException('Order wrong ');
-                }
-            }  catch(Throwable $e) {
-                $OrderService::orderError($e, $post);
-            }
+            $order = $OrderService::addOrUpdateOrder($post);
 
             if (isset($order->error)) {
                 return $order;

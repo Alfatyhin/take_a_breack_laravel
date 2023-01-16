@@ -2,7 +2,10 @@
 
 namespace App\Exceptions;
 
+use App\Models\WebhookLog;
+use Carbon\Carbon;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -51,9 +54,24 @@ class Handler extends ExceptionHandler
                 return redirect(route('404'));
             }
         }
-        if ($exception instanceof \App\Exceptions\InvalidOrderException)  {
-            dd('test');
-            return $exception->render($request);
+        if (Auth::guest())  {
+
+            $file = $exception->getFile();
+            $file = str_replace('/home/l98123/public_html', ' ', $file);
+            $line = $exception->getLine();
+            $message = $exception->getMessage();
+
+            $date = new Carbon();
+            $date_str = $date->format('Ymd-His');
+            $message = "<b style='color:brown'>Error #$date_str</b>($message) - $file -- $line";
+
+            WebhookLog::addLog($message, $request->post());
+
+            $message_user = "<b style='color:brown'>Error #$date_str</b>";
+
+            session()->flash('shop_error_message', $message_user);
+
+            return redirect(route('shop_error'));
         }
 
         return parent::render($request, $exception);

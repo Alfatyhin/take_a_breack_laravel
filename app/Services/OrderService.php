@@ -1430,14 +1430,6 @@ class OrderService
     {
         $post['order_data'] = json_decode($post['order_data'], true);
 
-        try {
-            if (!isset($post['step'])) {
-                throw new InvalidOrderException('OrderService wrong');
-            }
-        } catch(Throwable $e) {
-           self::orderError($e, $post);
-        }
-
         WebhookLog::addLog("new order step {$post['step']} request", $post);
 
         $res = self::validatePostData($post);
