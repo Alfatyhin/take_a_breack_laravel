@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     // localStorage.setItem("client_data", JSON.stringify(client_data));
 
     (function cartInit(){        
-      
+        debugger
         let ordData = $("input.order_data");
         if( ordData.length != 0 && ordData[0].value != "" ){
             
@@ -83,7 +83,13 @@ document.addEventListener('DOMContentLoaded',()=>{
         } 
         if($("#cart").length) summCalculation(cart);
         // $(".header__login a:last-child")[1].style.display = "none"
-        if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId)
+
+        
+        if($(".pay.step_3").length != 0) {            
+            if(cart[0] && cart[0].delivery_params && cart[0].delivery_params.cityId) summDeliveryStep3(cart[0].delivery_params.cityId)
+            else(summDeliveryStep3(-1))
+        } 
+       
        
        
     })();
@@ -679,6 +685,16 @@ document.addEventListener('DOMContentLoaded',()=>{
         }, 500);       
     
     //#endregion
+
+    
+
+    window.addEventListener('beforeunload', (event) => {
+        // Отмените событие, как указано в стандарте.
+        alert("beforeunload")
+        event.preventDefault();
+        // Chrome требует установки возвратного значения.
+        event.returnValue = '';
+      });
 })
 
 let selectedItemPrice;
@@ -745,6 +761,9 @@ async function increment(e){
         let count = +e.previousElementSibling.value + 1
         $(".current-price")[0].innerHTML = roundNumber($(".current-price")[0].innerHTML/+e.previousElementSibling.value*count)
         e.previousElementSibling.value = count
+        
+        if($(".pay.step_2").length != 0)  summDelivery((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
+        if($(".pay.step_3").length != 0)  summDeliveryStep3((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
     } 
     
     
@@ -768,8 +787,8 @@ async function increment(e){
             cartInitProducts(cart)
             summCalculation(cart)
             
-            if($(".pay.step_2").length != 0)  summDelivery(cart[0].delivery_params.cityId);
-            if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId);
+            if($(".pay.step_2").length != 0)  summDelivery((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
+            if($(".pay.step_3").length != 0)  summDeliveryStep3((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
 
         } else if(e.closest('.product-info__count_additive')){   // для добавочного товара в корзине
             let oldCount = +e.previousElementSibling.value
@@ -788,7 +807,9 @@ async function decrement(e){
         let summ = await currentSumm(count)
         $(".current-price")[0].innerHTML = roundNumber($(".current-price")[0].innerHTML/+e.nextElementSibling.value*count)
         e.nextElementSibling.value = count
-
+        
+        if($(".pay.step_2").length != 0)  summDelivery((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
+        if($(".pay.step_3").length != 0)  summDeliveryStep3((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
     } 
 
     
@@ -811,8 +832,8 @@ async function decrement(e){
             cartInitProducts(cart)
             summCalculation(cart)
             
-            if($(".pay.step_2").length != 0)  summDelivery(cart[0].delivery_params.cityId);
-            if($(".pay.step_3").length != 0)  summDeliveryStep3(cart[0].delivery_params.cityId)
+            if($(".pay.step_2").length != 0)  summDelivery((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
+            if($(".pay.step_3").length != 0)  summDeliveryStep3((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
 
         } else if(e.closest('.product-info__count_additive')){  // для добавочного товара в корзине
             let oldCount = +e.nextElementSibling.value
@@ -1698,6 +1719,9 @@ $("input[name='delivery']").change(function(){   // переключалка с�
         cityId = -1
         $(".delivery_price")[0].innerHTML = 0 + " ₪"
         $(".delivery input.show_calendar.date")[0].placeholder = $(".delivery input.show_calendar.date")[0].dataset.text_delivery
+        let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
+        if(cart[0] && cart[0].delivery_params && cart[0].delivery_params.cityId) cart[0].delivery_params.cityId = -1
+        localStorage.setItem("cart", JSON.stringify(cart));
         summDelivery(cityId)
     }    
     else if (this.value == "delivery"){
@@ -1723,8 +1747,9 @@ $("input.delivery_time").on('click',async function(e){
         this.style.background = "none";
     });   
     $(".delivery_time.city-lis li").on('click',async function(e){ 
+        
         $("input.delivery_time")[0].value = this.innerText
-        $(".delivery_time.city-lis")[0].style.display = "none"
+        //$(".delivery_time.city-lis")[0].style.display = "none"
         summDelivery(cityId) 
     }); 
 });
@@ -1749,7 +1774,9 @@ function summDelivery(cityId){
         $(".delivery_price")[0].innerHTML = 0  + " ₪"
         if(cart[0].delivery_params){
             cart[0].delivery_params.deliverySumm = 0
+            cart[0].delivery_params.cityId = -1
             localStorage.setItem("cart", JSON.stringify(cart));
+            $("#summ-for-payment")[0].innerHTML = roundNumber(+$("#total-ammount")[0].innerHTML)
         } 
         return
     } 
@@ -1795,6 +1822,11 @@ function summDeliveryStep3(cityId){
     
     if(cityId == -1){
         $(".delivery_price")[0].innerHTML = 0  + " ₪"
+        let totalAmmount = +$("#total-ammount")[0].innerHTML
+        let summ_for_payment = roundNumber(+$("#total-ammount")[0].innerHTML - +$(".discount")[0].innerHTML)
+        let pay_tips_value = +$('input[name="premium"]:checked').val() 
+        summ_for_payment = roundNumber(summ_for_payment * (1 + pay_tips_value/100))
+        $("#summ-for-payment")[0].innerHTML = summ_for_payment
         return
     } 
     const deliveryParams = delivery.delivery[delivery.cityes_data[cityId]]  
@@ -1833,9 +1865,12 @@ function summDeliveryStep3(cityId){
 //#endregion
 
 //#region   Просчет Чаевых
-    $('input[name="premium"]').change(function(e){ 
-        let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"))[0]
-        summDeliveryStep3(cart.delivery_params.cityId)
+    $('input[name="premium"]').change(function(e){         
+        let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"))[0] 
+        if(cart[0] && cart[0].delivery_params && cart[0].delivery_params.cityId){
+            summDeliveryStep3(cart[0].delivery_params.cityId)
+        } 
+        else(summDeliveryStep3(-1))
     });
 
 //#endregion

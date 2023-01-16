@@ -29,7 +29,7 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.6.3';
+    private $v = '2.6.5';
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -329,7 +329,7 @@ class ShopController extends Controller
             $order = Orders::where('order_id', $lost_order)->first();
             if ($order) {
                 $orderData = json_decode($order->orderData, true);
-                dd($orderData);
+//                dd($orderData);
             }
         }
 
