@@ -161,6 +161,8 @@ class OrderService
 
             if (isset($data['time'])) {
                 $timeDelivery .= ' время ' . $data['time'];
+            } else {
+                $timeDelivery .= ' время не указано';
             }
         } else {
             $timeDelivery = '';
