@@ -1026,12 +1026,16 @@ class Orders extends Controller
             '" /> <input hidden name="data" value=\'${1}\'> <input type="submit" class="button" value="test cart" /> </form>';
         $monolog = preg_replace($pattern, $replace, $monolog);
 
+        preg_match_all('/Error #/',  $monolog, $matches);
+
+        $error_count = sizeof($matches[0]);
 
 
         return view('logs.index', [
             'error_log'      => $request->error_log,
             'route' => 'orders_log',
             'log' => $monolog,
+            'error_count' => $error_count,
             'date_str' => $date_str,
             'date_pre' => $date_pre
         ]);
