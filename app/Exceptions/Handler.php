@@ -76,7 +76,7 @@ class Handler extends ExceptionHandler
 
             WebhookLog::addLog($message, $request->post());
 
-            $message_user = "<b style='color:brown'>Error #$date_str</b>";
+            $message_user = "<b style='color:brown'>Error #$date_str</b><br>";
 
             session()->flash('shop_error_message', $message_user);
 
