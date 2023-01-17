@@ -72,7 +72,9 @@
 
         <p>
             <b>имя:</b>{{ $item->name }}
-            <a class="button" href="{{ route('client_data', ['client' => $item->clientId]) }}" > карточка клиента </a>
+            @isset($item->clientId)
+                <a class="button" href="{{ route('client_data', ['client' => $item->clientId]) }}" > карточка клиента </a>
+            @endisset
             <br>
             <b>email:</b> {{ $item->email }} <br>
             @isset($orderData['phone'])

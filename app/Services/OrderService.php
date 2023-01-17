@@ -1391,9 +1391,8 @@ class OrderService
             WebhookLog::addLog('check orders '.sizeof($orders), $date->format('H:i:s d-m-Y'));
             $OrderService = new OrderService();
             foreach ($orders as $order) {
-                $OrderService->createOrderToAmocrm($order['order_id'], '53836814');
-
                 WebhookLog::addLog('amo add lost order', $order['order_id']);
+                $OrderService->createOrderToAmocrm($order['order_id'], '53836814');
             }
         }
 
