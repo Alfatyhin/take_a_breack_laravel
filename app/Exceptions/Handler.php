@@ -61,10 +61,11 @@ class Handler extends ExceptionHandler
             $line = $exception->getLine();
             $message = $exception->getMessage();
             $url = $request->getUri();
+            $ip = $request->getClientIp();
 
             $date = new Carbon();
             $date_str = $date->format('Ymd-His');
-            $message = "<b style='color:brown'>Error #$date_str</b>($message) - $file -- $line <br><b>| $url |</b>";
+            $message = "<b style='color:brown'>Error #$date_str</b>($message) - $file -- $line <br><b>| $url |</b><br><b>$ip</b>";
 
             $lang = 'en';
             $post = $request->post();
