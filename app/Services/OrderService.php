@@ -155,9 +155,13 @@ class OrderService
             \n ---------------------- \n";
         }
 
-        if (isset($data['date']) && isset($data['time'])) {
+        if (isset($data['date'])) {
 
-            $timeDelivery = $data['date'] . ' время ' . $data['time'];
+            $timeDelivery = $data['date'];
+
+            if (isset($data['time'])) {
+                $timeDelivery .= ' время ' . $data['time'];
+            }
         } else {
             $timeDelivery = '';
         }
