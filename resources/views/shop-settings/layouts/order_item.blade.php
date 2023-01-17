@@ -159,15 +159,18 @@
         <div class="hide">
             <hr>
             <hr>
-            @foreach($orderData as $k => $v)
-                @if(is_string($v) || empty($v))
-                    <p>{{ $k }} - {{ $v }}</p>
-                @else
-                    <hr>
-                    <p>{{ $k }} - @php(print_r($v))</p>
-                    <hr>
-                @endif
-            @endforeach
+
+            @isset($orderData['order_data']['products'])
+                @foreach($orderData as $k => $v)
+                    @if(is_string($v) || empty($v))
+                        <p>{{ $k }} - {{ $v }}</p>
+                    @else
+                        <hr>
+                        <p>{{ $k }} - @php(print_r($v))</p>
+                        <hr>
+                    @endif
+                @endforeach
+            @endisset
         </div>
 
     </td>
