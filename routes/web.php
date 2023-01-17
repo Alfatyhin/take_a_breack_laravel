@@ -33,9 +33,9 @@ use Illuminate\Support\Facades\Route;
 //    return view('welcome');
 //});
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard', array(ShopSettingController::class, 'index'))
+    ->middleware(['isAdmin', "ShopSetting", "ip_bloked"])
+    ->name('dashboard');
 
 require __DIR__.'/auth.php';
 
@@ -43,7 +43,6 @@ require __DIR__.'/auth.php';
 Route::get('/test_get_url/', [IcreditController::class, 'testGetPaymentUrl'])->name('test_get_url');
 
 
-Route::any('crm', array(ShopSettingController::class, 'index'))->name('crm_index');
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -66,6 +65,8 @@ Route::get('/api/json/import', [ShopSettingController::class, 'jsonImport'])
     ->name('scv_import');
 
 Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group(function () {
+
+    Route::any('/', array(ShopSettingController::class, 'index'))->name('crm_index');
 
     Route::get('/amocrm', [Amocrm::class, 'integrationAmoCrm'])
         ->name('amocrm');
