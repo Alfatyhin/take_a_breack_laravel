@@ -73,10 +73,6 @@ class Handler extends ExceptionHandler
                 $lang = $post['lang'];
             }
 
-            if ($ip == '5.188.62.76') {
-                dd('go home ...');
-            }
-
             WebhookLog::addLog($message, $request->post());
 
             $message_user = "<b style='color:brown'>Error #$date_str</b><br>";
