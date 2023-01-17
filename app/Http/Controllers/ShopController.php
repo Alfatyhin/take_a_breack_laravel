@@ -297,6 +297,7 @@ class ShopController extends Controller
     public function CartView(Request $request, $lang = 'en', $step = 1, $lost_order = false)
     {
         App::setLocale($lang);
+        header("Cache-Control: no-cache, no-store, must-revalidate");
 
         $post = $request->post();
         $orderData = false;
@@ -317,6 +318,7 @@ class ShopController extends Controller
             $post['step'] = $step;
             $OrderService = new OrderService();
 
+//            unset($post['step']);
             $order = $OrderService::addOrUpdateOrder($post);
 
             if (isset($order->error)) {

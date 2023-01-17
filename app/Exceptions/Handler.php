@@ -60,10 +60,18 @@ class Handler extends ExceptionHandler
             $file = str_replace('/home/l98123/public_html', ' ', $file);
             $line = $exception->getLine();
             $message = $exception->getMessage();
+            $url = $request->getUri();
 
             $date = new Carbon();
             $date_str = $date->format('Ymd-His');
-            $message = "<b style='color:brown'>Error #$date_str</b>($message) - $file -- $line";
+            $message = "<b style='color:brown'>Error #$date_str</b>($message) - $file -- $line <br><b>| $url |</b>";
+
+            $lang = 'en';
+            $post = $request->post();
+            if (isset($post['lang'])) {
+                $lang = $post['lang'];
+            }
+
 
             WebhookLog::addLog($message, $request->post());
 
@@ -71,7 +79,8 @@ class Handler extends ExceptionHandler
 
             session()->flash('shop_error_message', $message_user);
 
-            return redirect(route('shop_error'));
+            return redirect(route('shop_error', ['lang' => $lang]));
+
         }
 
         return parent::render($request, $exception);

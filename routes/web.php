@@ -359,7 +359,7 @@ Route::middleware(["Shop"])->group(function () {
     Route::get('/404', [ShopController::class, 'err404'])->name('404');
     Route::get('/{lang?}/404', [ShopController::class, 'err404']);
 
-    Route::get('/shop-error', [ShopController::class, 'shopError'])->name('shop_error');
+    Route::get('/{lang?}/shop-error', [ShopController::class, 'shopError'])->name('shop_error');
 
 
     Route::get('/check-promo-code', [ShopController::class, 'getPromoCode'])->name('check_promo_code');
