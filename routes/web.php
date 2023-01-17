@@ -65,7 +65,7 @@ Route::any('/orders/response', [IcreditController::class, 'orderRequestIcredit']
 Route::get('/api/json/import', [ShopSettingController::class, 'jsonImport'])
     ->name('scv_import');
 
-Route::prefix('crm')->middleware(['isAdmin', "ShopSetting"])->group(function () {
+Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group(function () {
 
     Route::get('/amocrm', [Amocrm::class, 'integrationAmoCrm'])
         ->name('amocrm');

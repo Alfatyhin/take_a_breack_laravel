@@ -10,7 +10,7 @@ class WebhookLog extends Model
 {
     use HasFactory;
 
-    public static function addLog($name, $data)
+    public static function addLog($name, $data = false)
     {
         if (is_array($data) || is_object($data)) {
             $data = json_encode($data);

@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\IpBloked;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\ShopMidleware;
 use App\Http\Middleware\ShopSettingMiddleware;
@@ -70,5 +71,6 @@ class Kernel extends HttpKernel
         'ShopSetting' => ShopSettingMiddleware::class,
         'Shop' => ShopMidleware::class,
         'ShopThanks' => ShopThanks::class,
+        'ip_bloked' => IpBloked::class,
     ];
 }
