@@ -73,6 +73,9 @@ class Handler extends ExceptionHandler
                 $lang = $post['lang'];
             }
 
+            if ($ip == '5.188.62.76') {
+                dd('go home ...');
+            }
 
             WebhookLog::addLog($message, $request->post());
 
