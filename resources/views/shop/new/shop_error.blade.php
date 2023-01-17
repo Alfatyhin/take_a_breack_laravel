@@ -28,17 +28,9 @@
 
         <div class="checkout__action">
             <p>
-                Привет, на сайте при оформлении заказа произошел сбой, но всё хорошо,
-                мы увидели ваш заказ и перезвоним вам в течение дня.
-                Если заказ срочный, свяжитесь с нами по WhatsApp для подтверждения заказа, пожалуйста.
+                {{ __('shop.Привет, на сайте при оформлении заказа произошел сбой') }}
             </p>
 
-
-            <p>
-                Hello, there was an error on the site when placing an order, but everything is fine,
-                we saw your order and will call you back within a day.
-                If the order is urgent, please contact us via whatsapp to confirm the order.
-            </p>
             <div class="checkout__action">
                 <button class="black-btn">
                     <a href="https://wa.me/9720559475812"></a>
