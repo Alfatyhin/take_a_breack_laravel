@@ -222,6 +222,11 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
         ->where('lang', '[a-z]{2}')
         ->name('crm_lost_cart');
 
+
+
+    Route::any('/black-list-ip', [ShopSettingController::class, 'BlackListIp'])
+        ->name('black_list_ip');
+
 });
 
 

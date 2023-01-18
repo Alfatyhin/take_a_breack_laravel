@@ -1063,4 +1063,39 @@ class ShopSettingController extends Controller
             'log' => $monolog,
         ]);
     }
+
+    public function BlackListIp(Request $request)
+    {
+        $file = "data/black_list_ip.json";
+        $black_list = false;
+
+        $post = $request->post();
+
+
+        if (isset($post['ips'])) {
+            foreach ($post['ips'] as $ip) {
+                if (!empty($ip)) {
+                    $save[$ip] = true;
+                }
+            }
+            if (isset($save)) {
+                Storage::put($file, json_encode($save));
+            } else {
+                Storage::delete($file);
+            }
+        }
+
+
+
+
+        if (Storage::exists($file)) {
+            $black_list = Storage::get($file);
+            $black_list = json_decode($black_list, true);
+        }
+
+        return view('shop-settings.black_list', [
+            'error_log'      => $request->error_log,
+            'black_list' => $black_list,
+        ]);
+    }
 }
