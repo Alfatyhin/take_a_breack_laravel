@@ -219,7 +219,7 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
 
 
     Route::any('/{lang}/cart/{step?}/{order_id?}', [ShopController::class, 'CartView'])
-        ->where('lang', '[a-z]{2}')
+        ->where('lang', '|ru|en|he|')
         ->name('crm_lost_cart');
 
 
@@ -363,9 +363,12 @@ Route::middleware(["Shop"])->group(function () {
 
 
     Route::get('/404', [ShopController::class, 'err404'])->name('404');
-    Route::get('/{lang?}/404', [ShopController::class, 'err404']);
+    Route::get('/{lang?}/404', [ShopController::class, 'err404'])
+        ->where('lang', 'ru|en|he');
 
-    Route::get('/{lang?}/shop-error', [ShopController::class, 'shopError'])->name('shop_error');
+    Route::get('/{lang?}/shop-error', [ShopController::class, 'shopError'])
+        ->where('lang', 'ru|en|he')
+        ->name('shop_error');
 
 
     Route::get('/check-promo-code', [ShopController::class, 'getPromoCode'])->name('check_promo_code');
@@ -381,11 +384,12 @@ Route::middleware(["Shop"])->group(function () {
     Route::get('/short-market', [ShopController::class, 'marketShortView'])->name('short_market');
 
     Route::get('/{lang}/short-market', [ShopController::class, 'marketShortLang'])
-        ->where('lang', '[a-z]{2}')->name('short_market_lang');
+        ->where('lang', 'ru|en|he')
+        ->name('short_market_lang');
 
-    Route::get('/wholesale/', [ShopController::class, 'WholeSaleEn'])->name('wholesale_en');
-
-    Route::get('/ru/wholesale/', [ShopController::class, 'WholeSaleRU'])->name('wholesale_ru');
+//    Route::get('/wholesale/', [ShopController::class, 'WholeSaleEn'])->name('wholesale_en');
+//
+//    Route::get('/ru/wholesale/', [ShopController::class, 'WholeSaleRU'])->name('wholesale_ru');
 
     Route::any('/new-short-order/', [ShopController::class, 'NewShortOrder'])->name('new_short_order');
 
@@ -402,11 +406,11 @@ Route::middleware(["Shop"])->group(function () {
 
 
     Route::any('/{lang}/order_not_found/{order_id?}', [ShopController::class, 'OrderNotFound'])
-        ->where('lang', '[a-z]{2}')
+        ->where('lang', 'ru|en|he')
         ->name('order_not_found');
 
     Route::get('/{lang?}/delivery', [ShopController::class, 'deliveryIndex'])
-        ->where('lang', '[a-z]{2}')
+        ->where('lang', 'ru|en|he')
         ->name('delivery');
 
     Route::get('/about', [ShopController::class, 'aboutIndex'])
@@ -414,7 +418,7 @@ Route::middleware(["Shop"])->group(function () {
 
 
     Route::get('/{lang}/about', [ShopController::class, 'aboutIndex'])
-        ->where('lang', '[a-z]{2}')
+        ->where('lang', 'ru|en|he')
         ->name('about');
 
     Route::get('/contacts', [ShopController::class, 'contactsIndex'])
@@ -422,53 +426,45 @@ Route::middleware(["Shop"])->group(function () {
 
 
     Route::get('/{lang}/contacts', [ShopController::class, 'contactsIndex'])
-        ->where('lang', '[a-z]{2}')
+        ->where('lang', 'ru|en|he')
         ->name('contacts');
 
     Route::get('/{lang?}', [ShopController::class, 'indexView'])
-        ->where('lang', '[a-z]{2}')
+        ->where('lang', 'ru|en|he')
         ->name('index');
 
 
     Route::get('/{filter?}', [ShopController::class, 'indexFilterEn'])
-        ->where('filter', '(in_stock)||(sale)')
+        ->where('filter', 'in_stock|sale')
         ->name('index_filter_en');
 
     Route::get('/{lang?}/{filter?}', [ShopController::class, 'indexView'])
-        ->where('filter', '(in_stock)||(sale)')
-        ->name('index_filter');
-
-    Route::get('/{filter?}', [ShopController::class, 'indexFilterEn'])
-        ->where('filter', '(in_stock)||(sale)')
-        ->name('index_filter_en');
-
-    Route::get('/{lang?}/{filter?}', [ShopController::class, 'indexView'])
-        ->where('lang', '[a-z]{2}')
-        ->where('filter', '(in_stock)||(sale)')
+        ->where('lang', 'ru|en|he')
+        ->where('filter', 'in_stock|sale')
         ->name('index_filter');
 
 
     Route::any('/{lang}/cart/{step?}/', [ShopController::class, 'CartView'])
-        ->where('lang', '[a-z]{2}')
+        ->where('lang', 'ru|en|he')
         ->name('cart');
 
     Route::get('/category/{category?}', [ShopController::class, 'categoryView'])->name('category_index');
 
     Route::get('/{lang}/category/{category}', [ShopController::class, 'categoryLang'])
-        ->where('lang', '[a-z]{2}')
+        ->where('lang', 'ru|en|he')
         ->name('category');
 
     Route::get('/{lang?}/{category}/{product}', [ShopController::class, 'ProductLang'])
-        ->where('lang', '[a-z]{2}')
+        ->where('lang', 'ru|en|he')
         ->name('product');
 
     Route::any('/{lang}/new-order', [ShopController::class, 'NewOrder'])
-        ->where('lang', '[a-z]{2}')
+        ->where('lang', 'ru|en|he')
         ->name('new_order');
 
     Route::any('/{lang}/order_thanks/', [ShopController::class, 'OrderThanksView'])
         ->middleware('ShopThanks')
-        ->where('lang', '[a-z]{2}')
+        ->where('lang', 'ru|en|he')
         ->name('order_thanks');
 
 
