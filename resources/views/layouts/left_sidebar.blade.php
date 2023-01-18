@@ -76,12 +76,12 @@
 
     @if(Auth::user()->user_role == 'admin' )
 
-            <li class="orders_log app_log" data_name="app_log"
+            <li class="app_log" data_name="app_log"
                 @if($error_log) style="color: brown; font-weight: 900;"  @endif>
                 <a href="{{ route('app_log') }}" >APP Errors</a>
             </li>
 
-            <li class="orders_log black_list_ip" data_name="black_list_ip">
+            <li class="black_list_ip" data_name="black_list_ip">
                 <a href="{{ route('black_list_ip') }}" >black list ip</a>
             </li>
     @endif
