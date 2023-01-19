@@ -314,6 +314,7 @@ class ShopController extends Controller
 
             if ($post['step'] == 4) {
                 return $this->NewOrder($request, $post['lang']);
+                dd($post);
             }
 //            dd($post);
         } else {
@@ -668,7 +669,8 @@ class ShopController extends Controller
         $categories = AppServise::CategoriesShopPrepeare($categories);
 
         foreach ($categories as $item) {
-            $product_ids = json_decode($item->products, true);
+
+            $product_ids = $item->products;
 
             foreach ($product_ids as $id) {
                 $products[$id] = Product::where('id', $id)->first();
