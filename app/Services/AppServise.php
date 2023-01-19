@@ -15,6 +15,27 @@ class AppServise
     private static $orderPaymentMethod = array('undefined', 'Credit card', 'Сash payment', 'PayPal', 'Bit');
     private static $orderPaymentStatus = array('undefined', 'LOST_CART', 'INCOMPLETE', 'AWAITING_PAYMENT', 'PAID');
 
+    public static function getAppVerse()
+    {
+        $files = [
+            'css/style.css',
+            'css/style-2.css',
+            'scripts/app.js',
+            'scripts/app-2.js',
+            'js/calendar.js',
+        ];
+
+        $last_mod_max = 0;
+        foreach ($files as $file) {
+            $last_mod = Storage::disk('public_root')->lastModified($file);
+            if ($last_mod > $last_mod_max) {
+                $last_mod_max = $last_mod;
+            }
+        }
+
+        return $last_mod_max;
+    }
+
     public static function TransLit($str) {
         $rus = array(' ', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я', 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я');
         $lat = array(' ', 'A', 'B', 'V', 'G', 'D', 'E', 'Yo', 'Gh', 'Z', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'F', 'H', 'C', 'Ch', 'Sh', 'Sh', '', 'Yi', '', 'Ye', 'Yu', 'Ya', 'a', 'b', 'v', 'g', 'd', 'e', 'yo', 'gh', 'z', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'h', 'c', 'ch', 'sh', 'sh', '', 'yi', '', 'ye', 'yu', 'ya');

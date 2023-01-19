@@ -29,7 +29,12 @@ use function PHPUnit\Framework\matches;
 class ShopController extends Controller
 {
 
-    private $v = '2.6.5';
+    private $v;
+
+    public function __construct()
+    {
+        $this->v = AppServise::getAppVerse();
+    }
 
     public function err404(Request $request, $lang = 'en')
     {
@@ -240,6 +245,7 @@ class ShopController extends Controller
             $product->image = $category->image;
         }
 
+        
 
         if (!empty($product->variables)) {
             if (sizeof($product->variables) > 1) {
@@ -297,7 +303,8 @@ class ShopController extends Controller
     public function CartView(Request $request, $lang = 'en', $step = 1, $lost_order = false)
     {
         App::setLocale($lang);
-        header("Cache-Control: no-cache, no-store, must-revalidate");
+//        header("Cache-Control: no-cache, no-store, must-revalidate");
+        
 
         $post = $request->post();
         $orderData = false;
