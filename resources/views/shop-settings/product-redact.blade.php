@@ -779,7 +779,6 @@
                                         <span class="fa fa-trash"></span>
                                     </td>
 
-
                                 </tr>
 
                             @endforeach

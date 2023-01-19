@@ -21,6 +21,7 @@
 
     @include('shop.layouts.seo_delete.head-scripts')
 </head>
+
 <body>
 {{--<script>--}}
 {{--    fbq('track', 'Purchase', {--}}
