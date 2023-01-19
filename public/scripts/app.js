@@ -686,15 +686,14 @@ document.addEventListener('DOMContentLoaded',()=>{
     
     //#endregion
 
-    
-
-    window.addEventListener('beforeunload', (event) => {
-        // Отмените событие, как указано в стандарте.
-        // alert("beforeunload")
-        event.preventDefault();
-        // Chrome требует установки возвратного значения.
-        event.returnValue = '';
-      });
+    //
+    // window.addEventListener('beforeunload', (event) => {
+    //     // Отмените событие, как указано в стандарте.
+    //     // alert("beforeunload")
+    //     event.preventDefault();
+    //     // Chrome требует установки возвратного значения.
+    //     event.returnValue = '';
+    //   });
 })
 
 let selectedItemPrice;

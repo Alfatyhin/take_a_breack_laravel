@@ -30,6 +30,7 @@ class AppServise
             $last_mod = Storage::disk('public_root')->lastModified($file);
             if ($last_mod > $last_mod_max) {
                 $last_mod_max = $last_mod;
+                $file_max = $file;
             }
         }
 
