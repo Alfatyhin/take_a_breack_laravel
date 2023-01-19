@@ -690,7 +690,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     window.addEventListener('beforeunload', (event) => {
         // Отмените событие, как указано в стандарте.
-        alert("beforeunload")
+        // alert("beforeunload")
         event.preventDefault();
         // Chrome требует установки возвратного значения.
         event.returnValue = '';
