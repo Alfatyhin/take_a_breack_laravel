@@ -1029,7 +1029,7 @@ class ShopSettingController extends Controller
     public function Statistic(Request $request)
     {
         $date = new Carbon();
-        $date_from = new Carbon($date->format('Y-m-d 00:00'));
+        $date_from = new Carbon($date->format('Y-m-d'));
         $date_to = new Carbon($date->format('Y-m-d 23:59:59'));
         $statistics = StatisticService::getStatistics($date_from, $date_to);
 
