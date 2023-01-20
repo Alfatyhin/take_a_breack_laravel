@@ -54,8 +54,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     // client_data.order_id = ""
     // localStorage.setItem("client_data", JSON.stringify(client_data));
 
-    (function cartInit(){        
-        debugger
+    (function cartInit(){  
         let ordData = $("input.order_data");
         if( ordData.length != 0 && ordData[0].value != "" ){
             
@@ -85,8 +84,9 @@ document.addEventListener('DOMContentLoaded',()=>{
         // $(".header__login a:last-child")[1].style.display = "none"
 
         
-        if($(".pay.step_3").length != 0) {            
-            if(cart[0] && cart[0].delivery_params && cart[0].delivery_params.cityId) summDeliveryStep3(cart[0].delivery_params.cityId)
+        if($(".pay.step_3").length != 0) {      
+            debugger      
+            if(cart[0] && cart[0].delivery_params && cart[0].delivery_params.cityId) summDeliveryStep3(cart[0].delivery_params.cityId)            
             else(summDeliveryStep3(-1))
         } 
        
@@ -686,10 +686,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     
     //#endregion
 
-    //
+    
+        // перехват перехода на страницу
     // window.addEventListener('beforeunload', (event) => {
     //     // Отмените событие, как указано в стандарте.
-    //     // alert("beforeunload")
+    //     alert("beforeunload")
     //     event.preventDefault();
     //     // Chrome требует установки возвратного значения.
     //     event.returnValue = '';
@@ -762,6 +763,7 @@ async function increment(e){
         e.previousElementSibling.value = count
         
         if($(".pay.step_2").length != 0)  summDelivery((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
+        debugger
         if($(".pay.step_3").length != 0)  summDeliveryStep3((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
     } 
     
@@ -808,6 +810,7 @@ async function decrement(e){
         e.nextElementSibling.value = count
         
         if($(".pay.step_2").length != 0)  summDelivery((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
+        debugger
         if($(".pay.step_3").length != 0)  summDeliveryStep3((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
     } 
 
@@ -1668,14 +1671,15 @@ $(".city_name").keyup(function(){
         $(".city-list li").mouseleave(function() {
             this.style.background = "none";
         });
-        $(".city-list li").on('click', function(e) {                        
+        $(".city-list li").on('click', function(e) {  
+            cityId = -1            
             $(".city_name")[0].value = this.innerText            
             for (let i = 0; i < cityes.citys_all.length; i++) {
                 if(cityes.citys_all[i].en == this.innerText){ cityId = i; $("input[name='city_id']")[0].value = cityId.toString(); } 
                 if(cityes.citys_all[i].he == this.innerText){ cityId = i; $("input[name='city_id']")[0].value = cityId.toString(); }
                 if(cityes.citys_all[i].ru == this.innerText){ cityId = i; $("input[name='city_id']")[0].value = cityId.toString(); }
                 if(cityId != -1) { $("input[name='city_id']").value = ""; break } 
-            }            
+            }  
             if(cityId != -1){               
                 summDelivery(cityId)                
             }
@@ -1767,7 +1771,6 @@ $("input[name='otherPerson']").change(function(){
 });
 
 function summDelivery(cityId){
-    
     let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]")) 
     if(cityId == -1){        
         $(".delivery_price")[0].innerHTML = 0  + " ₪"
@@ -1818,7 +1821,7 @@ function summDelivery(cityId){
 }
 
 function summDeliveryStep3(cityId){
-    
+    debugger
     if(cityId == -1){
         $(".delivery_price")[0].innerHTML = 0  + " ₪"
         let totalAmmount = +$("#total-ammount")[0].innerHTML
@@ -1865,7 +1868,8 @@ function summDeliveryStep3(cityId){
 
 //#region   Просчет Чаевых
     $('input[name="premium"]').change(function(e){         
-        let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"))[0] 
+        let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"))
+        debugger
         if(cart[0] && cart[0].delivery_params && cart[0].delivery_params.cityId){
             summDeliveryStep3(cart[0].delivery_params.cityId)
         } 
