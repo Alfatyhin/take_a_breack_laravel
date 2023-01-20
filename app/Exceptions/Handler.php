@@ -6,6 +6,7 @@ use App\Models\WebhookLog;
 use Carbon\Carbon;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -62,10 +63,11 @@ class Handler extends ExceptionHandler
             $message = $exception->getMessage();
             $url = $request->getUri();
             $ip = $request->getClientIp();
+            $route_name = Route::currentRouteName();
 
             $date = new Carbon();
             $date_str = $date->format('Ymd-His');
-            $message = "<b style='color:brown'>Error #$date_str</b>($message) - $file -- $line <br><b>| $url |</b><br><b>$ip</b>";
+            $message = "<b style='color:brown'>Error #$date_str</b>($message) - $file -- $line <br><b>| $url |</b><br><b>$ip</b><br><b>$route_name</b><br>";
 
             $lang = 'en';
             $post = $request->post();
