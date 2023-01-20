@@ -67,7 +67,7 @@ class Handler extends ExceptionHandler
 
             $date = new Carbon();
             $date_str = $date->format('Ymd-His');
-            $message = "<b style='color:brown'>Error #$date_str</b>($message) - $file -- $line <br><b>| $url |</b><br><b>$ip</b><br><b>$route_name</b><br>";
+            $message = "<b style='color:brown'>Error #$date_str</b>($message) <br> - $file -- $line <br><b>| $url |</b><br><b>$ip</b><br><b>$route_name</b><br>";
 
             $lang = 'en';
             $post = $request->post();

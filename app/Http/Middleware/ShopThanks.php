@@ -35,15 +35,11 @@ class ShopThanks
         if ($order_id) {
             $order = Orders::where('order_id', $order_id)->first();
         }
-        $utm = session('utm');
-        if ($utm) {
-            $utm_new = new UtmModel();
+        $utm_id = session('utm_id');
+        if ($utm_id) {
+            $utm_new = UtmModel::find($utm_id);
             $utm_new->order_id = $order->order_id;
-            foreach ($utm as $k => $v) {
-                $utm_new->$k = $v;
-            }
             $utm_new->save();
-            $request->session()->forget('utm');
         }
 
         if ($order) {

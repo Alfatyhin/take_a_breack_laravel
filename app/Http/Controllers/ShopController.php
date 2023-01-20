@@ -1152,7 +1152,7 @@ class ShopController extends Controller
 
     public function testUtm()
     {
-        $utm = session('utm');
+        $utm = session('utm_id');
         dd($utm);
     }
 

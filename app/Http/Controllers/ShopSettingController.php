@@ -1013,7 +1013,7 @@ class ShopSettingController extends Controller
         if ($tb_name == 'utm')
             $tb_name = 'utm_models';
 
-        $tb_data = DB::table($tb_name)->paginate(50);
+        $tb_data = DB::table($tb_name)->latest()->paginate(50);
 
 
         return view('shop-settings.table_data', [

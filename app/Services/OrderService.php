@@ -1407,11 +1407,9 @@ class OrderService
     public static function getOrCreateClientOrder($client, $post)
     {
 
-
         if (!empty($post['order_id'])) {
 
-            $order = Orders::withTrashed()->where('order_id', $post['order_id'])
-                ->where('amoId', null)->first();
+            $order = Orders::withTrashed()->where('order_id', $post['order_id'])->first();
 
             if (!$order || $post['order_id'] == 'undefined') {
                 $order = new Orders();

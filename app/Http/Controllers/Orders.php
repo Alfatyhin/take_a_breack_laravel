@@ -257,11 +257,13 @@ class Orders extends Controller
         $orderData['paymentStatus'] = $paymentStatuses[$order['paymentStatus']];
         $orderData['order_id'] = $order->order_id;
 
-
         $amoData = $orderService::getShopAmoDataLead($orderData);
         $amoNotes = $orderService::getShopAmoNotes($orderData);
 
-        dd($amoData, $amoNotes);
+//        $orderData['order_data'] = json_encode($orderData['order_data_jsonform']);
+//        $order2 = $orderService::addOrUpdateOrder($orderData);
+
+        dd('$orderData', $orderData, $amoData, $amoNotes);
     }
 
 

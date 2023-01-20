@@ -2,9 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Statistics;
+use App\Models\UtmModel;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Storage;
 
 class ShopMidleware
@@ -18,6 +19,7 @@ class ShopMidleware
      */
     public function handle(Request $request, Closure $next)
     {
+
 
         if (!empty($request->query())) {
             $request->noindex = true;
@@ -41,9 +43,21 @@ class ShopMidleware
         if ($request->has('utm_campaign'))
             $utm['utm_campaign'] = $request->get('utm_campaign');
 
+
         if (!empty($utm)) {
-            session(['utm' => $utm]);
+            $utm_new = new UtmModel();
+            $utm_new->order_id = '-----';
+            foreach ($utm as $k => $v) {
+                $utm_new->$k = $v;
+            }
+            $utm_new->save();
+            session(['utm_id' => $utm_new->id]);
         }
+
+
+        Statistics::addItem($request, 'page_view', 'shop_midleware');
+
+
 
 
         if (Storage::disk('local')->exists('data/banner.json')) {
