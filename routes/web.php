@@ -64,6 +64,12 @@ Route::any('/orders/response', [IcreditController::class, 'orderRequestIcredit']
 Route::get('/api/json/import', [ShopSettingController::class, 'jsonImport'])
     ->name('scv_import');
 
+
+
+Route::any('data/db/prod-import', [ShopSettingController::class, 'DbProdImport'])
+    ->name('db_prod_import');
+
+
 Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group(function () {
 
     Route::any('/', array(ShopSettingController::class, 'index'))->name('crm_index');
@@ -71,6 +77,9 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
     Route::get('/amocrm', [Amocrm::class, 'integrationAmoCrm'])
         ->name('amocrm');
 
+
+    Route::any('data/db/prod-import', [ShopSettingController::class, 'DbProdImport'])
+        ->name('db_prod_import');
 
     Route::get('/amocrm/order', [Amocrm::class, 'getOrderById'])
         ->name('amo.get_order');

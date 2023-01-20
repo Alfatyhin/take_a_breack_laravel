@@ -16,6 +16,7 @@ use App\Services\AppServise;
 use App\Services\IcreditServise;
 use App\Services\OrderService;
 use App\Services\PayPalService;
+use App\Services\StatisticService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -305,7 +306,8 @@ class ShopController extends Controller
     {
         App::setLocale($lang);
 //        header("Cache-Control: no-cache, no-store, must-revalidate");
-        
+
+        StatisticService::addItem($request, 'process_ordering', 'cart_view');
 
         $post = $request->post();
         $orderData = false;
@@ -506,7 +508,7 @@ class ShopController extends Controller
         $OrderService = new OrderService();
 
 
-        Statistics::addItem($request, 'new_order', 'order_thanks');
+        StatisticService::addItem($request, 'new_order', 'order_thanks');
 
         $test = $request->get('test');
         if (isset($test)) {

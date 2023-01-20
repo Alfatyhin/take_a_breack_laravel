@@ -15,7 +15,7 @@ class CreateProductOptionsTable extends Migration
     {
         Schema::create('product_options', function (Blueprint $table) {
             $table->id();
-            $table->text('name')->unique();
+            $table->string('name')->unique();
             $table->text('type');
             $table->json('nameTranslate')->nullable();
             $table->json('options')->nullable();

@@ -19,6 +19,7 @@ class CreateOrdersTable extends Migration
             $table->string('order_status')->default('AWAITING_PROCESSING');
             $table->string('amoId')->nullable()->index();
             $table->string('amoStatus')->nullable();
+            $table->string('gclientId')->nullable();
             $table->integer('clientId')->nullable()->index();
             $table->smallInteger('paymentMethod')->default(0);
             $table->smallInteger('paymentStatus')->default(0);
@@ -29,6 +30,7 @@ class CreateOrdersTable extends Migration
             $table->json('orderData')->nullable();
             $table->json('amoData')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

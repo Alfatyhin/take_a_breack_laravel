@@ -16,6 +16,7 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
+            $table->string('slag')->unique();
             $table->bigInteger('index_num')->nullable();
             $table->bigInteger('category_id')->nullable();
             $table->string('sku')->unique();

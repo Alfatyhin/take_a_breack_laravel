@@ -11,6 +11,7 @@ use App\Models\Orders as OrdersModel;
 use App\Models\Product;
 use App\Models\ProductOptions;
 use App\Models\Statistics;
+use App\Models\User;
 use App\Models\UtmModel;
 use App\Services\AmoCrmServise;
 use App\Services\AppServise;
@@ -1109,5 +1110,121 @@ class ShopSettingController extends Controller
             'error_log'      => $request->error_log,
             'black_list' => $black_list,
         ]);
+    }
+
+    public function DbProdImport(Request $request)
+    {
+
+
+        $table_name = 'users';
+        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
+
+        foreach ($prod_data as $item) {
+            $new_item = new User();
+            foreach ($item as $k => $v) {
+                $new_item->$k = $v;
+            }
+            $new_item->save();
+        }
+
+
+        $table_name = 'orders';
+        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
+
+        foreach ($prod_data as $item) {
+            $new_item = new OrdersModel();
+            foreach ($item as $k => $v) {
+                $new_item->$k = $v;
+            }
+            $new_item->save();
+        }
+
+
+        $table_name = 'clients';
+        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
+
+        foreach ($prod_data as $item) {
+            $new_item = new Clients();
+            foreach ($item as $k => $v) {
+                $new_item->$k = $v;
+            }
+            $new_item->save();
+        }
+
+
+        $table_name = 'categories';
+        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
+
+        foreach ($prod_data as $item) {
+            $new_item = new Categories();
+            foreach ($item as $k => $v) {
+                $new_item->$k = $v;
+            }
+            $new_item->save();
+        }
+
+
+        $table_name = 'products';
+        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
+
+        foreach ($prod_data as $item) {
+            $test = Product::find($item->id);
+
+            if (!$test) {
+
+                $new_item = new Product();
+                foreach ($item as $k => $v) {
+                    $new_item->$k = $v;
+                }
+
+                $test = Product::where('slag', $item->slag)->get()->first();
+                if ($test) {
+                    $new_item->slag = $item->slag."_".$item->id;
+                }
+                $new_item->save();
+            }
+
+        }
+
+
+        $table_name = 'coupons';
+        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
+
+        foreach ($prod_data as $item) {
+            $new_item = new Coupons();
+            foreach ($item as $k => $v) {
+                $new_item->$k = $v;
+            }
+            $new_item->save();
+        }
+
+
+        $table_name = 'product_options';
+        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
+
+        foreach ($prod_data as $item) {
+            $new_item = new ProductOptions();
+            foreach ($item as $k => $v) {
+                $new_item->$k = $v;
+            }
+            $new_item->save();
+        }
+
+
+
+        $table_name = 'utm_models';
+        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
+
+        foreach ($prod_data as $item) {
+            $new_item = new UtmModel();
+            foreach ($item as $k => $v) {
+                $new_item->$k = $v;
+            }
+            $new_item->save();
+        }
+
+
+        dd('done');
+
     }
 }
