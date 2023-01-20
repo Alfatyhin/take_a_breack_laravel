@@ -71,7 +71,7 @@
         <li class="db utm" data_name="utm">
             <a href="{{ route('db', ['tb_name' => 'utm']) }}" >utm</a>
         </li>
-        <li class="db statistics" data_name="statistics">
+        <li class="statistics" data_name="statistics">
             <a href="{{ route('db', ['tb_name' => 'statistics']) }}" >statistics</a>
         </li>
     @endif
