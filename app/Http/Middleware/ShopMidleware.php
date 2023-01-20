@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Statistics;
 use App\Models\UtmModel;
+use App\Services\StatisticService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -55,7 +55,7 @@ class ShopMidleware
         }
 
 
-        Statistics::addItem($request, 'page_view', 'shop_midleware');
+        StatisticService::addItem($request, 'page_view', 'shop_midleware');
 
 
 

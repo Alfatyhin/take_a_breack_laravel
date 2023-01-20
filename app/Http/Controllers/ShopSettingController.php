@@ -16,6 +16,7 @@ use App\Services\AmoCrmServise;
 use App\Services\AppServise;
 use App\Services\EcwidService;
 use App\Services\OrderService;
+use App\Services\StatisticService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -1029,7 +1030,7 @@ class ShopSettingController extends Controller
         $date = new Carbon();
         $date_from = new Carbon($date->format('Y-m-d'));
         $date_to = new Carbon($date->format('Y-m-d 23:59'));
-        $statistics = Statistics::getStatistics($date_from, $date_to);
+        $statistics = StatisticService::getStatistics($date_from, $date_to);
 
         dd($statistics);
     }
