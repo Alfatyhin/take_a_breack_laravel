@@ -208,6 +208,10 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
         ->name('db');
 
 
+    Route::any('/site-statistics', [ShopSettingController::class, 'Statistic'])
+        ->name('statistics');
+
+
 
     Route::any('/shop-settings/check_orders', [ShopSettingController::class, 'checkOrders'])
         ->name('check_orders');

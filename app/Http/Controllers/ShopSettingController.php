@@ -10,6 +10,7 @@ use App\Models\Coupons;
 use App\Models\Orders as OrdersModel;
 use App\Models\Product;
 use App\Models\ProductOptions;
+use App\Models\Statistics;
 use App\Models\UtmModel;
 use App\Services\AmoCrmServise;
 use App\Services\AppServise;
@@ -1021,6 +1022,16 @@ class ShopSettingController extends Controller
             'message' => $request->message,
             'tb_data' => $tb_data,
         ]);
+    }
+
+    public function Statistic(Request $request)
+    {
+        $date = new Carbon();
+        $date_from = new Carbon($date->format('Y-m-d'));
+        $date_to = new Carbon($date->format('Y-m-d 23:59'));
+        $statistics = Statistics::getStatistics($date_from, $date_to);
+
+        dd($statistics);
     }
 
     public function checkOrders()

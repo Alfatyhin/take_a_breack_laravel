@@ -8,6 +8,7 @@ use App\Models\Clients;
 use App\Models\Coupons;
 use App\Models\Orders;
 use App\Models\Product;
+use App\Models\Statistics;
 use App\Models\UtmModel;
 use App\Models\WebhookLog;
 use App\Services\AmoCrmServise;
@@ -503,6 +504,9 @@ class ShopController extends Controller
         $v = $this->v;
         $order_id = session('order_id');
         $OrderService = new OrderService();
+
+
+        Statistics::addItem($request, 'new_order', 'order_thanks');
 
         $test = $request->get('test');
         if (isset($test)) {
