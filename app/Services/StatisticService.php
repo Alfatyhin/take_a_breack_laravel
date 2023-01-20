@@ -75,7 +75,7 @@ class StatisticService
         $query = Statistics::whereBetween('created_at', [$date_from, $date_to]);
 
         $unic_sid = $query->distinct()->pluck('sid')->count();
-        $statistick['date_from date_to'] = $date_from.'-'.$date_to;
+        $statistick['date_from date_to'] = $date_from.' --- '.$date_to;
         $statistick['clients_count'] = $unic_sid;
 
         $data = $query->distinct()->pluck('url')->toArray();
