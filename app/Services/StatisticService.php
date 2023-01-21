@@ -99,6 +99,13 @@ class StatisticService
             $statistick['notes'][$item] = $count;
         }
 
+        $data = $query->distinct()->pluck('user_agent')->toArray();
+        foreach ($data as $item) {
+            $count = Statistics::whereBetween('created_at', [$date_from, $date_to])
+                ->where('user_agent', $item)->count();
+            $statistick['user_agent'][$item] = $count;
+        }
+
 
         return $statistick;
     }
