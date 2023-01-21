@@ -18,6 +18,8 @@ class StatisticService
             'PetalBot',
             'Googlebot',
             'YandexMetrika',
+            'Applebot',
+            'YandexBot',
             'bingbot',
         ];
 
