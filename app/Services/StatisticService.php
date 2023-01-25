@@ -22,6 +22,7 @@ class StatisticService
             'TelegramBot',
             'Pinterestbot',
             'Applebot',
+            'AdsBot',
             'YandexBot',
             'bingbot',
         ];
