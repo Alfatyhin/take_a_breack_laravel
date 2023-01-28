@@ -100,7 +100,7 @@
             <div class="product-info__action">
                 <div class="product-info__count">
                     <button class="product-info-decrement" @if($size) disabled="true" @endif onclick="decrement(this)">-</button>
-                    <input id="count-product" class="product-info-count-input" value="1" type="number" name="product-count" min="1" max="999" @if($size) disabled="true" @endif>
+                    <input id="count-product" class="product-info-count-input" value="1" type="text" name="product-count" min="1" max="999" @if($size) disabled="true" @endif>
                     <button class="product-info-increment" @if($size) disabled="true" @endif onclick="increment(this)">+</button>
                 </div>
                 <button class="main-btn go-to-cart" @if($size) disabled="true" @else style="opacity: 1;" @endif>{{ __('shop.Добавить в корзину') }}</button>
@@ -167,11 +167,11 @@
                             </p>
                             <p>
                                 <b>{{ __('shop.Жиры') }}</b>
-                                {{ $product->data['attributes']['calories']['fat'] }} г
+                                {{ $product->data['attributes']['calories']['fat'] }} {{ __('shop.г') }}
                             </p>
                             <p>
                                 <b>{{ __('shop.Углеводы') }}</b>
-                                {{ $product->data['attributes']['calories']['carbohydrate'] }} г
+                                {{ $product->data['attributes']['calories']['carbohydrate'] }} {{ __('shop.г') }}
                             </p>
                         </div>
                     @endisset
