@@ -11,19 +11,19 @@
         @endif
         ( {{ $item->id }} ) <b>#{{ $item->order_id }}</b> | <b>gId:</b>{{ $item->gclientId }}  <br>
         Дата: {{ $item->created_at }} <br>
-            @if(empty($item->amoId) && ($item->paymentMethod != 0 || $item->paymentStatus != 0))
-                <a class="button" href="{{ route('api_create_amo_order', ['id' => $item->order_id]) }}" >
-                    api create amo lead
-                </a>
-            @elseif(empty($item->amoId) && ($item->paymentMethod == 0 || $item->paymentStatus != 4))
-                <a class="button" href="{{ route('amo_lost_order_create', ['order' => $item->id]) }}" >
-                    create amo lead
-                </a>
-            @else
-                Amo Id:  <a class="border-bottom" href="{{ 'https://takebreak.amocrm.ru/leads/detail/'.$item->amoId }}" target="_blank">
-                    {{ $item->amoId }}
-                </a>
-            @endif
+        @if(empty($item->amoId) && ($item->paymentMethod != 0 || $item->paymentStatus != 0))
+            <a class="button" href="{{ route('api_create_amo_order', ['id' => $item->order_id]) }}" >
+                api create amo lead
+            </a>
+        @elseif(empty($item->amoId) && ($item->paymentMethod == 0 || $item->paymentStatus != 4))
+            <a class="button" href="{{ route('amo_lost_order_create', ['order' => $item->id]) }}" >
+                create amo lead
+            </a>
+        @else
+            Amo Id:  <a class="border-bottom" href="{{ 'https://takebreak.amocrm.ru/leads/detail/'.$item->amoId }}" target="_blank">
+                {{ $item->amoId }}
+            </a>
+        @endif
         <br>
         @if($item->paymentMethod != 0 || $item->paymentStatus != 0)
             Оплата <b>{{ $paymentMethod[$item->paymentMethod] }}</b>
@@ -59,6 +59,10 @@
         <hr>
         Сумма <b>{{ $item->orderPrice }}</b>
         <br>
+
+        <a class="button" href="{{ route('statistics', ['order_id' => $item->order_id, 'gclientId' => $item->gclientId, 'date' => $item->created_at]) }}" >
+            история запросов
+        </a>
 
     </td>
 
@@ -256,9 +260,9 @@
 
 
         @if (($item->invoiceStatus == 0 || empty($item->invoiceData)) && $item->paymentStatus == 4 )
-                <a class="button" href="{{ route('invoice_create', ['orderId' => $item->order_id]) }}" >
-                    create invoice
-                </a> <br>
+            <a class="button" href="{{ route('invoice_create', ['orderId' => $item->order_id]) }}" >
+                create invoice
+            </a> <br>
         @endif
 
         @if($item->paymentStatus != 4)

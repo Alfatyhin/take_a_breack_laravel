@@ -26,6 +26,7 @@
         start date: <input type="date" name="date-from" value="{{ $date_from->format('Y-m-d') }}">
         end date: <input type="date" name="date-to" value="{{ $date_to->format('Y-m-d') }}">
         <input class="button" type="submit" name="date_filter" value="установить даты">
+        <input formaction="{{ route('shop_settings_orders_segments') }}" class="button" type="submit" name="date_filter" value="сегментировать">
     </form>
     <a class="button" href="{{ route('shop_settings_orders', ['dates' => 'today']) }}"> за сегодня </a>
     <a class="button" href="{{ route('shop_settings_orders', ['dates' => 'month']) }}"> за месяц </a>

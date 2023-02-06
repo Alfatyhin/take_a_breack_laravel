@@ -119,6 +119,9 @@ class ShopSettingController extends Controller
             ->join('clients', 'orders.clientId', '=', 'clients.id')
             ->select('orders.*', 'clients.name', 'clients.email');
 
+
+
+
         if ($request->get('filter')) {
             $filter = $request->get('filter');
             $orders->where('orders.paymentMethod', $filter['method'])
@@ -183,6 +186,126 @@ class ShopSettingController extends Controller
             'orderSearch'    => $orderSearch,
             'message'        => $request->message,
             'utm_orders'     => $utm_orders
+        ]);
+    }
+
+    public function OrderSegments(Request $request)
+    {
+
+        if (!empty($request->get('date-from')) && !empty($request->get('date-to'))) {
+
+            $date_from = new Carbon($request->get('date-from'));
+            $date_to = new Carbon($request->get('date-to') . ' 23:59');
+
+        } elseif ($request->get('dates')) {
+
+            if ($request->get('dates') == 'today') {
+                $date = new Carbon();
+                $date_from = new Carbon($date->format('Y-m-d'));
+                $date_to = new Carbon($date->format('Y-m-d 23:59'));
+
+            }
+            if ($request->get('dates') == 'month') {
+
+                $date = new Carbon('first day of this month');
+                $date_from = new Carbon($date->format('Y-m-d 00:00'));
+
+                $date = new Carbon('last day of this month');
+                $date_to = new Carbon($date->format('Y-m-d 23:59'));
+            }
+
+        } else {
+
+            if (session()->has('dates')) {
+                $dates = session('dates');
+                $date_from = $dates['date_from'];
+                $date_to = $dates['date_to'];
+
+            } else {
+
+                $date_from = new Carbon('first day of this month' . ' 00:00');
+                $date_to = new Carbon('last day of this month' . ' 23:59');
+            }
+
+        }
+
+        $ordersAll = DB::table('orders')
+            ->where('orders.deleted_at', null)
+            ->whereBetween('orders.created_at', [$date_from, $date_to])
+            ->latest('orders.id')
+            ->get();
+
+
+        $categories = Categories::all()->keyBy('id')->toArray();
+        $isset_products = [];
+        $data = [];
+        foreach ($ordersAll as $item) {
+            $orderData = json_decode($item->orderData, true);
+
+            if (isset($orderData['step']) && $orderData['step'] == 4) {
+                $products = $orderData['order_data']['products'];
+
+                $phone = preg_replace("/[)( ]/", '', $orderData['phone']);
+
+                if (sizeof($products) > 1) {
+                    $name_cat = 'Больше 1 позиции в чеке';
+                    $data['categoryes'][$name_cat][$phone][] = $phone;
+                }
+
+                foreach ($products as $pr_item) {
+
+                    if (!isset($isset_products[$pr_item['id']])) {
+                        $product = Product::find($pr_item['id']);
+                        $isset_products[$pr_item['id']] = $product;
+                    } else {
+                        $product = $isset_products[$pr_item['id']];
+                    }
+
+
+                    if (isset($product->name)) {
+                        $data['products'][$product->name][$phone][] = $phone;
+                    }
+
+
+                    if ($product && $product->category_id) {
+                        $category = $categories[$product->category_id];
+
+                        $data['categoryes'][$category['name']][$phone][] = $phone;
+                    }
+
+                }
+            }
+
+        }
+
+
+        if ($request->has('download')) {
+            $name = $request->get('download');
+            $type = $request->get('type');
+
+            $save_data = $data[$type][$name];
+
+            $file_name = str_replace(' ', '_', $name).'.csv';
+            $file_csv_path = '/order-segments-files/'.$file_name;
+
+            Storage::put($file_csv_path, 'phone;count');
+
+            foreach ($save_data as $phone => $v) {
+                $size = sizeof($v);
+                Storage::append($file_csv_path, "$phone;$size");
+            }
+
+            return Storage::disk('local')->download($file_csv_path);
+        }
+
+
+
+        return view('shop-settings.order-segments', [
+            'error_log'      => $request->error_log,
+            'message'        => $request->message,
+            'segments'       => $data,
+            'date_from'      => $date_from,
+            'date_to'        => $date_to,
         ]);
     }
 
@@ -1028,12 +1151,44 @@ class ShopSettingController extends Controller
 
     public function Statistic(Request $request)
     {
-        $date = new Carbon();
+
+        if ($request->has('date')) {
+            $date_str = $request->get('date');
+            $date = new Carbon($date_str);
+        } else {
+            $date = new Carbon();
+        }
+
         $date_from = new Carbon($date->format('Y-m-d'));
         $date_to = new Carbon($date->format('Y-m-d 23:59:59'));
-        $statistics = StatisticService::getStatistics($date_from, $date_to);
 
-        dd($statistics);
+        if ($request->has('order_id') || $request->has('gclientId')) {
+
+            $statistick = Statistics::whereBetween('created_at', [$date_from, $date_to]);
+
+            if ($request->has('order_id')) {
+               $statistick = $statistick->where('order_id', $request->get('order_id'));
+            }
+
+            $res = $statistick->get()->toArray();
+
+            foreach ($res as &$item) {
+                if (!empty($item['post_data'])) {
+                    $item['post_data'] =  json_decode($item['post_data'], true);
+
+                    if (isset($item['post_data']['order_data']) && is_string($item['post_data']['order_data'])) {
+                        $item['post_data']['order_data'] =  json_decode($item['post_data']['order_data'], true);
+                    }
+                }
+            }
+
+            dd($res);
+
+        } else {
+            $statistics = StatisticService::getStatistics($date_from, $date_to);
+            dd($statistics);
+        }
+
     }
 
     public function checkOrders()
@@ -1117,6 +1272,7 @@ class ShopSettingController extends Controller
 
 
         $table_name = 'users';
+        DB::table($table_name)->truncate();
         $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
 
         foreach ($prod_data as $item) {
@@ -1129,6 +1285,7 @@ class ShopSettingController extends Controller
 
 
         $table_name = 'orders';
+        DB::table($table_name)->truncate();
         $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
 
         foreach ($prod_data as $item) {
@@ -1141,6 +1298,7 @@ class ShopSettingController extends Controller
 
 
         $table_name = 'clients';
+        DB::table($table_name)->truncate();
         $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
 
         foreach ($prod_data as $item) {
@@ -1153,6 +1311,7 @@ class ShopSettingController extends Controller
 
 
         $table_name = 'categories';
+        DB::table($table_name)->truncate();
         $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
 
         foreach ($prod_data as $item) {
@@ -1187,19 +1346,20 @@ class ShopSettingController extends Controller
         }
 
 
-        $table_name = 'coupons';
-        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
-
-        foreach ($prod_data as $item) {
-            $new_item = new Coupons();
-            foreach ($item as $k => $v) {
-                $new_item->$k = $v;
-            }
-            $new_item->save();
-        }
+//        $table_name = 'coupons';
+//        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
+//
+//        foreach ($prod_data as $item) {
+//            $new_item = new Coupons();
+//            foreach ($item as $k => $v) {
+//                $new_item->$k = $v;
+//            }
+//            $new_item->save();
+//        }
 
 
         $table_name = 'product_options';
+        DB::table($table_name)->truncate();
         $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
 
         foreach ($prod_data as $item) {
@@ -1213,10 +1373,25 @@ class ShopSettingController extends Controller
 
 
         $table_name = 'utm_models';
+        DB::table($table_name)->truncate();
         $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
 
         foreach ($prod_data as $item) {
             $new_item = new UtmModel();
+            foreach ($item as $k => $v) {
+                $new_item->$k = $v;
+            }
+            $new_item->save();
+        }
+
+
+
+        $table_name = 'statistics';
+        DB::table($table_name)->truncate();
+        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
+
+        foreach ($prod_data as $item) {
+            $new_item = new Statistics();
             foreach ($item as $k => $v) {
                 $new_item->$k = $v;
             }

@@ -148,7 +148,10 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
     Route::any('/shop-settings/orders', array(ShopSettingController::class, 'Orders'))
         ->name('shop_settings_orders');
 
-    Route::any('/shop-settings/coupons-discount', array(CouponsController::class, 'couponsDiscounts'))
+    Route::any('/shop-settings/orders/segments', array(ShopSettingController::class, 'OrderSegments'))
+        ->name('shop_settings_orders_segments');
+
+    Route::any('/shop-settings/coupons-discount/{name?}', array(CouponsController::class, 'couponsDiscounts'))
         ->name('coupons_discount');
 
     Route::any('/shop-settings/save/coupon-status', array(CouponsController::class, 'couponStatusSave'))
@@ -156,6 +159,18 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
 
     Route::any('/shop-settings/coupon-data-change', array(CouponsController::class, 'dataSave'))
         ->name('coupon_data_change');
+
+    Route::any('/shop-settings/coupons-groups', array(CouponsController::class, 'CouponsGroups'))
+        ->name('coupons_groups');
+
+    Route::any('/shop-settings/coupons-groups/generate/{coupon_group}', array(CouponsController::class, 'CouponsGenerate'))
+        ->name('coupons_groups_generate');
+
+    Route::any('/shop-settings/coupons-groups/change/{coupon_group}', array(CouponsController::class, 'CouponsGroupChange'))
+        ->name('coupons_groups_change');
+
+    Route::any('/shop-settings/coupons-groups/list/{coupon_group}', array(CouponsController::class, 'CouponsGroupList'))
+        ->name('coupons_groups_list');
 
     Route::any('/shop-settings/image-download', array(ShopSettingController::class, 'imageDownload'))
         ->name('image_download');
@@ -421,6 +436,9 @@ Route::middleware(["Shop"])->group(function () {
     Route::any('/{lang}/order_not_found/{order_id?}', [ShopController::class, 'OrderNotFound'])
         ->where('lang', 'ru|en|he')
         ->name('order_not_found');
+
+
+    Route::any('/sesssion_forget', [ShopController::class, 'SessionForget']);
 
     Route::get('/{lang?}/delivery', [ShopController::class, 'deliveryIndex'])
         ->where('lang', 'ru|en|he')
