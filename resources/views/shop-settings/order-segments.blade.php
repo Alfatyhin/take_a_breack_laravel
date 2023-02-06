@@ -27,7 +27,7 @@
         @if (!empty($segments))
             @foreach($segments as $ks => $item_data)
                 <tr>
-                    <th colspan="2">
+                    <th colspan="3">
                         <h2 style="color: brown">{{ $ks }}</h2>
                     </th>
                 </tr>
@@ -38,7 +38,7 @@
                         <th>
                             {{ $name }}
                         </th>
-                        <th>
+                        <th >
                             <form method="get" action="{{ route('shop_settings_orders_segments') }}" >
                                 <input type="hidden" name="date-from" value="{{ $date_from->format('Y-m-d') }}">
                                 <input type="hidden" name="date-to" value="{{ $date_to->format('Y-m-d') }}">
@@ -48,6 +48,8 @@
                                     <span class="fa fa-download"></span>
                                 </button>
                             </form>
+                        </th>
+                        <th>
                         </th>
                     </tr>
 
@@ -59,6 +61,17 @@
                             </td>
                             <td>
                                 {{ $size }}
+                            </td>
+
+                            <td>
+                                @if ($name == 'Больше 1 позиции в чеке')
+                                    @foreach($v as $pr_name)
+                                        {{ $pr_name }}
+                                        @if(!$loop->last)
+                                            ,
+                                        @endif
+                                    @endforeach
+                                @endif
                             </td>
                         </tr>
                     @endforeach

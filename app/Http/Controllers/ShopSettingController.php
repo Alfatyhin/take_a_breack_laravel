@@ -247,18 +247,21 @@ class ShopSettingController extends Controller
 
                 $phone = preg_replace("/[)( ]/", '', $orderData['phone']);
 
-                if (sizeof($products) > 1) {
-                    $name_cat = 'Больше 1 позиции в чеке';
-                    $data['categoryes'][$name_cat][$phone][] = $phone;
-                }
 
                 foreach ($products as $pr_item) {
+
 
                     if (!isset($isset_products[$pr_item['id']])) {
                         $product = Product::find($pr_item['id']);
                         $isset_products[$pr_item['id']] = $product;
                     } else {
                         $product = $isset_products[$pr_item['id']];
+                    }
+
+
+                    if (sizeof($products) > 1) {
+                        $name_cat = 'Больше 1 позиции в чеке';
+                        $data['categoryes'][$name_cat][$phone][] = $product->name;
                     }
 
 
@@ -288,11 +291,15 @@ class ShopSettingController extends Controller
             $file_name = str_replace(' ', '_', $name).'.csv';
             $file_csv_path = '/order-segments-files/'.$file_name;
 
-            Storage::put($file_csv_path, 'phone;count');
+            Storage::put($file_csv_path, 'phone;count;');
 
             foreach ($save_data as $phone => $v) {
                 $size = sizeof($v);
-                Storage::append($file_csv_path, "$phone;$size");
+                $str = '';
+                if ($name == 'Больше 1 позиции в чеке') {
+                    $str = implode(', ', $v);
+                }
+                Storage::append($file_csv_path, "$phone;$size;$str");
             }
 
             return Storage::disk('local')->download($file_csv_path);
