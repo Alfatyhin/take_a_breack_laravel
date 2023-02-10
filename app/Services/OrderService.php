@@ -136,6 +136,7 @@ class OrderService
                 }
             }
 
+
             $ordersNotes .= "\n" . $item['count'] . "x - {$item['price']} шек " . $product_name . ' ';
         }
 
@@ -706,9 +707,7 @@ class OrderService
 
             $products = $order['order_data']['products'];
         }
-//        $products = $order['order_data']['products'];
 
-//        dd($products, $order);
 
         $product_options = ProductOptions::all()->keyBy('id')->toArray();
         foreach ($product_options as $k => $item) {
@@ -716,7 +715,51 @@ class OrderService
             $product_options[$k]['nameTranslate'] = json_decode($item['nameTranslate'], true);
         }
 
-//        dd($products);
+
+        // promo code
+        if (!empty($order['order_data']['promo_code'])) {
+            $code = $order['order_data']['promo_code'];
+
+            $coupon = Coupons::where('code', $code)->first();
+
+
+            if (!empty($coupon)) {
+
+                if ($coupon->group_id) {
+                    $coupon = Coupons::leftJoin('coupons_groups', 'coupons.group_id', '=', 'coupons_groups.id')
+                        ->select('coupons.*', 'coupons_groups.name', 'coupons_groups.discount', 'coupons_groups.data')
+                        ->where('coupons.code', $code)->first();
+                }
+            }
+
+            if (!empty($coupon) && $coupon->status == 'active') {
+                $data['discount']['code'] = $code;
+
+                $discount = json_decode($coupon->discount, true);
+
+                if (isset($discount['type_mod']) && $discount['type_mod'] == 'PRODUCT') {
+                    $product_isset = false;
+                    foreach ($products as &$item) {
+                        if ($item['id'] == $discount['prod_id']) {
+                            $product_isset = true;
+                        }
+                    }
+
+                    if (!$product_isset) {
+                        $product = Product::find($discount['prod_id']);
+                        $product_item = [
+                            'id' => $product->id,
+                            'name' => $product->name,
+                            'variant' => false,
+                            'count' => 1,
+                        ];
+                        $products[] = $product_item;
+                    }
+                }
+            }
+        }
+
+
         $products_total = 0;
         foreach ($products as &$item) {
             $id = $item['id'];
@@ -758,6 +801,8 @@ class OrderService
                     $option_key = $item_option['key'];
                     $option_choice_key = $item_option['value'];
                     $option = $options[$option_key];
+
+
                     if (!is_string($option_choice_key) || !is_numeric($option_choice_key)) {
                         $option_choice_key = $item_option['value_key'];
                     } else {
@@ -773,6 +818,7 @@ class OrderService
 //                        dd('test', $item_option);
                         $price = $product->price;
                     }
+
                     if ($choice['priceModifier'] != 0) {
                         if ($choice['priceModifierType'] == 'ABSOLUTE') {
                             if (!isset($item['price'])) {
@@ -783,11 +829,12 @@ class OrderService
                             $price_item =  $item['price'] + ($price / 100 * $choice['priceModifier']);
                         }
 
+                        $item['price'] = $price_item;
                         $item_total = $price_item * $item['count'];
-                        $item['total'] = $item_total;
                     } else {
                         $item_total = $item['price'] * $item['count'];
                     }
+                    $item['total'] = $item_total;
                     $options_id = $option['options_id'];
                     $option_value = $choice['var_option_id'];
                     $item_option['name'] = $product_options[$options_id]['nameTranslate'];
@@ -830,24 +877,58 @@ class OrderService
 
         // promo code
         if (!empty($order['order_data']['promo_code'])) {
-            $code = $order['order_data']['promo_code'];
-            $coupon = Coupons::where('code', $code)->first();
 
             if (!empty($coupon) && $coupon->status == 'active') {
                 $data['discount']['code'] = $code;
 
                 $discount = json_decode($coupon->discount, true);
-                $value = $discount['value'];
-                if ($discount['mod'] == 'PERSENT') {
-                    $disc = $order_total / 100 * $value;
-                    $disc = round($disc,1);
-                    $data['discount']['text'] = "$value% - $disc";
-                    $data['discount']['value'] = $disc;
-                    $order_total -= $disc;
+
+                if (isset($discount['type_mod'])) {
+                    $data['discount']['type'] = $discount['type_mod'];
                 } else {
-                    $data['discount']['text'] = "$value";
-                    $data['discount']['value'] = $value;
-                    $order_total -= $value;
+                    $data['discount']['type'] = 'CART';
+                }
+
+                $value = $discount['value'];
+
+
+                if (isset($discount['type_mod']) && $discount['type_mod'] == 'PRODUCT') {
+                    foreach ($data['products'] as &$item) {
+                        if ($item['id'] == $discount['prod_id']) {
+
+                            $name = $item['name']['en'];
+
+                            if ($discount['mod'] == 'ABS') {
+                                $item['price'] -= $value;
+                                $order_total -= $value;
+                                $data['discount']['text'] = $discount['type_mod'].": $name -$value";
+                                $data['discount']['value'] = $value;
+
+                            } else {
+                                $disc = $item['price'] / 100 * $value;
+                                $disc = round($disc,1);
+                                $item['price'] -= $disc;
+                                $disc = round($disc,1);
+                                $data['discount']['text'] = $discount['type_mod'].": $name $value% -$disc";
+                                $data['discount']['value'] = $disc;
+                                $order_total -= $disc;
+                            }
+                        }
+                    }
+
+                } else {
+
+                    if ($discount['mod'] == 'PERSENT') {
+                        $disc = $order_total / 100 * $value;
+                        $disc = round($disc, 1);
+                        $data['discount']['text'] = "$value% - $disc";
+                        $data['discount']['value'] = $disc;
+                        $order_total -= $disc;
+                    } else {
+                        $data['discount']['text'] = "$value";
+                        $data['discount']['value'] = $value;
+                        $order_total -= $value;
+                    }
                 }
             }
         }
@@ -895,7 +976,9 @@ class OrderService
             $discount += $data['delivery_discount'];
         }
         if (isset($data['discount'])) {
-            $discount += $data['discount']['value'];
+            if ($data['discount']['type'] != 'PRODUCT') {
+                $discount += $data['discount']['value'];
+            }
         }
 
         $items = $data['products'];
@@ -1406,6 +1489,9 @@ class OrderService
 
     public static function getOrCreateClientOrder($client, $post)
     {
+        if (!$client) {
+            return redirect(route('cart', ['lang' => $post['lang'], 'step' => 1]));
+        }
 
         if (!empty($post['order_id'])) {
 
@@ -1451,12 +1537,25 @@ class OrderService
 
 
         $client = session('client');
+        if (!$client && !empty($post['order_id'])) {
+            $order = Orders::where('order_id', $post['order_id'])->first();
+
+            if ($order) {
+                $client = Clients::find($order->clientId);
+                session(['client' => $client]);
+            }
+        }
+
         if (!$client && empty($post['order_id'])) {
             return redirect(route('cart', ['lang' => $post['lang'], 'step' => 1]));
         }
 
-        $order = self::getOrCreateClientOrder($client, $post);
 
+
+        $order = self::getOrCreateClientOrder($client, $post);
+        if (!($order instanceof Orders)) {
+            return $order;
+        }
 
         if ($order->order_id != $post['order_id']) {
             $post['order_id'] = $order->order_id;

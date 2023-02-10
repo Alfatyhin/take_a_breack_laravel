@@ -107,6 +107,12 @@
                                 Migrate rollback
                             </x-nav-link>
 
+                            @if (env('APP_NAME') == "Take a Break Server")
+                                <x-nav-link :href="route('db_prod_import')" >
+                                    db_prod_import
+                                </x-nav-link>
+                            @endif
+
                         </div>
                     </x-slot>
                 </x-dropdown>

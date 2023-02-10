@@ -332,7 +332,7 @@ class ShopController extends Controller
 //            unset($post['step']);
             $order = $OrderService::addOrUpdateOrder($post);
 
-            if (isset($order->error)) {
+            if (!($order instanceof Orders)) {
                 return $order;
             }
         }
@@ -440,10 +440,10 @@ class ShopController extends Controller
 
             $order = $OrderService::addOrUpdateOrder($post);
 
-            if (isset($order->error)) {
+
+            if (!($order instanceof Orders)) {
                 return $order;
             }
-
 
             if ($post['methodPay'] == 2 || $post['methodPay'] == 4) {
 
@@ -548,7 +548,6 @@ class ShopController extends Controller
         }
 
 
-
         $client_id = $order->clientId;
         $client = Clients::find($client_id);
 
@@ -574,10 +573,18 @@ class ShopController extends Controller
         ]);
     }
 
+    public function SessionForget(Request $request)
+    {
+        $request->session()->forget('order_id');
+        $request->session()->forget('client');
+
+        dd('session order_id client forget');
+
+    }
+
     public function OrderNotFound(Request $request, $lang, $order_id = '')
     {
         App::setLocale($lang);
-
 
         return view("shop.new.order_not_found", [
             'v' => $this->v,
@@ -1056,8 +1063,15 @@ class ShopController extends Controller
         if (!empty($code)) {
             $coupon = Coupons::where('code', $code)->first();
 
-
+//            dd($coupon, $code);
             if (!empty($coupon)) {
+
+                if ($coupon->group_id) {
+                    $coupon = Coupons::leftJoin('coupons_groups', 'coupons.group_id', '=', 'coupons_groups.id')
+                        ->select('coupons.*', 'coupons_groups.name', 'coupons_groups.discount', 'coupons_groups.data')
+                        ->where('coupons.code', $code)->first();
+                }
+
                 if ($coupon->status == 'active') {
                     $discount = json_decode($coupon->discount, true);
                     $mod = $discount['mod'];
@@ -1066,14 +1080,39 @@ class ShopController extends Controller
                     } else {
                         $unit = '%';
                     }
+                    $type_mod = 'CART';
+                    if (isset($discount['type_mod'])) {
+                        $type_mod = $discount['type_mod'];
+
+                        if ($type_mod == 'PRODUCT' && isset($discount['prod_id'])) {
+                            $product = Product::where('id', $discount['prod_id'])->first();
+
+                        }
+                    }
                     $result = array (
                         'result' => 'sugess',
                         'id' => $code,
                         'price' => $discount['value'],
                         'name' => $coupon->name,
                         'unit' => $unit,
+                        'type' => $type_mod,
                         'message' => 'coupon found'
                     );
+
+                    if ($type_mod == 'PRODUCT' && isset($product)) {
+                        $product->translate = json_decode($product->translate, true);
+                        $product->image = json_decode($product->image, true);
+                        $product->variables = json_decode($product->variables, true);
+                        $product->options = json_decode($product->options, true);
+                        $result['product'] = $product->toArray();
+                    }
+                    if ($type_mod == 'PRODUCT' && !isset($product)) {
+                        $result = array (
+                            'result' => 'error',
+                            'message' => 'coupon not active'
+                        );
+                    }
+
                 } else {
                     $result = array (
                         'result' => 'error',

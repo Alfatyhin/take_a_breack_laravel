@@ -26,7 +26,7 @@ class Amocrm extends Controller
     }
 
 
-    public function integrationAmoCrm()
+    public function integrationAmoCrm(Request $request)
     {
         $title = 'Amo-CRM integration';
         $amoCrmService = new AmoCrmServise();
@@ -36,13 +36,13 @@ class Amocrm extends Controller
             $messages[] = $ownerDetails->getName() . ' Integration is Work';
         } else {
             $messages[] = "error token ";
-            $amoCrmService = new AmoCrmServise();
             $messages[] = $amoCrmService->getButton();
         }
 //        dd($messages);
 //        $messages[] = $amoCrmService->getButton();
 
         return view('amocrm.index', [
+            'error_log'=> $request->error_log,
             'title'    => $title,
             'messages' => $messages
         ]);

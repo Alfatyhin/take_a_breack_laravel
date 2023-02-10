@@ -125,7 +125,7 @@ class Controller extends BaseController
 
     public function exportDB()
     {
-        $tables = array ('users', 'clients', 'icredit_payments', 'orders');
+        $tables = array ('users', 'clients', 'icredit_payments', 'orders', 'statistics');
 
         foreach ($tables as $tableName) {
             $data = DB::table($tableName)->get()->toArray();

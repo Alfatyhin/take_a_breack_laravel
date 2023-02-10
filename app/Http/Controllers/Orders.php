@@ -867,7 +867,7 @@ class Orders extends Controller
         $order_id = $request->get('id');
         $order = OrderService::sendMailNewOrder($order_id, $send); // test_view or test_send
 
-        $order->orderData = json_decode($order->orderData, true);
+//        $order->orderData = json_decode($order->orderData, true);
         $orderData = $order->orderData;
         $lang = $orderData['lang'];
 
@@ -963,8 +963,8 @@ class Orders extends Controller
             'total_amount' => $total_price,
         ];
 
-        $res = SendpulseService::sendLostCart($sendpulseData);
-        dd($res);
+//        $res = SendpulseService::sendLostCart($sendpulseData);
+//        dd($res);
 
         dd($order->toArray(), $order_data, $sendpulseData);
 

@@ -37,7 +37,7 @@
                         @if ($lost_order)
                             <input required type="text" name="clientName" value="{{ isset($order_data['clientName']) ? $order_data['clientName'] : '' }}">
                         @else
-                            <input required type="text" name="clientName" value="">
+                            <input required type="text" name="clientName" value="{{ old('clientName') }}">
                         @endif
 
                     </label>
@@ -48,7 +48,7 @@
                         @if ($lost_order)
                             <input required type="text" name="clientLastName" value="{{ isset($order_data['clientLastName']) ? $order_data['clientLastName'] : '' }}">
                         @else
-                            <input required type="text" name="clientLastName" value="">
+                            <input required type="text" name="clientLastName" value="{{ old('clientLastName') }}">
                         @endif
                     </label>
                 </div>
@@ -73,7 +73,7 @@
                     @if ($lost_order)
                         <input  required type="email" value="{{ isset($order_data['email']) ? $order_data['email'] : '' }}">
                     @else
-                        <input required type="email" name="email" value="">
+                        <input required type="email" name="email" value="{{ old('email') }}">
                     @endif
                 </label>
 

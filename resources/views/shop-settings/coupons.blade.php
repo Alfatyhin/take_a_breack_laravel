@@ -74,7 +74,19 @@
                         @endif
                     </td>
                     <td>
-                        всех товаров
+
+
+                        @if ( isset($discount['type_mod']) && $discount['type_mod'] == 'PRODUCT' && isset($discount['prod_id']))
+                            @php($product = $products[$discount['prod_id']])
+
+                            {{ $discount['type_mod'] }} -
+                            <b>
+                                {{ $product->name }}
+                            </b>
+
+                        @else
+                            всех товаров
+                        @endif
                     </td>
                     <td>
                         <a class="fa fa-trash" href="{{ route('coupons_discount', ['delete' => $item->id ]) }}"></a>
@@ -157,5 +169,13 @@
             </form>
         </tr>
     </table>
+
+    @if (!empty($coupons))
+        <div>
+            <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 paginate">
+                {{ $coupons->links() }}
+            </div>
+        </div>
+    @endif
 @stop
 

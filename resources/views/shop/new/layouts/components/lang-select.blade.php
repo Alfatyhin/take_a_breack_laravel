@@ -1,4 +1,5 @@
 
+<div class="lang-arrow">▼</div>
 <li value="en" class="@if($lang == 'en') active @else hide @endif" >
     <a href="{{ route('index') }}">en</a>
 </li>

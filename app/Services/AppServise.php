@@ -4,6 +4,7 @@
 namespace App\Services;
 
 
+use App\Models\Coupons;
 use App\Models\ProductOptions;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -80,6 +81,37 @@ class AppServise
         }
         $r = "$v-$r";
         return $r;
+    }
+
+    public static function generateCouponCode()
+    {
+        $nr = rand(100, 999);
+        $n = $nr.rand(100, 999);;
+        $r = '';
+
+        for ($i = 1; $n >=0 && $i < 10; $i++) {
+            $r = chr(0x41 + ($n % pow(26, $i) / pow(26, $i -1))) . $r;
+            $n -= pow(26, $i);
+        }
+
+
+        $nr = rand(100, 999);
+        $n = $nr.rand(100, 999);;
+        $r2 = '';
+
+        for ($i = 1; $n >=0 && $i < 10; $i++) {
+            $r2 = chr(0x41 + ($n % pow(26, $i) / pow(26, $i -1))) . $r;
+            $n -= pow(26, $i);
+        }
+        $res = "$r-$r2";
+
+        $test = Coupons::where('code', $res)->first();
+
+        if ($test) {
+            $res = self::generateCouponCode();
+        }
+
+        return $res;
     }
 
     public static function getCountryFromIP($ip)

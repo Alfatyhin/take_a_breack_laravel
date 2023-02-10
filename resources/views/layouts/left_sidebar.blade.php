@@ -25,11 +25,14 @@
     @endif
 
     @if(Auth::user()->user_role == 'admin' )
-        <li class="dey_offer dey_offer" data_name="dey_offer">
+        <li class="dey_offer " data_name="dey_offer">
             <a href="{{ route('dey_offer') }}" >Предложение дня</a>
         </li>
-        <li class="coupons_discount coupons_discount" data_name="coupons_discount">
+        <li class="coupons_discount " data_name="coupons_discount">
             <a href="{{ route('coupons_discount') }}" >Купоны на скидку</a>
+        </li>
+        <li class="coupons_groups " data_name="coupons_groups">
+            <a href="{{ route('coupons_groups') }}" >Купоны по балам</a>
         </li>
         <li class="delivery crm_delivery" data_name="delivery">
             <a href="{{ route('crm_delivery') }}" >Доставка</a>

@@ -111,6 +111,8 @@
 
 
         @include("shop.new.layouts.footer")
+
+        <div class='back-to-top' id='back-to-top' title='Back to top'><i class='fa fa-chevron-up'></i></div>
     </div>
 
     <div class="mark">
@@ -131,12 +133,9 @@
                     @include('shop.new.layouts.components.lang-select')
                 </ul>
             </div>
-            <div>
-                <a class="social-link" href="https://www.facebook.com/TABdesserts/">Facebook</a>
-            </div>
-            <div>
-                <a class="social-link" href="https://www.instagram.com/takeabreak_desserts/">Instagram</a>
-            </div>
+
+            @include('shop.new.layouts.components.social_links')
+
             @auth()
                 @if(Auth::user()->user_role == 'admin' )
                     <div>

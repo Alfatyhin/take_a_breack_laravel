@@ -84,8 +84,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         // $(".header__login a:last-child")[1].style.display = "none"
 
         
-        if($(".pay.step_3").length != 0) {      
-            debugger      
+        if($(".pay.step_3").length != 0) {   
             if(cart[0] && cart[0].delivery_params && cart[0].delivery_params.cityId) summDeliveryStep3(cart[0].delivery_params.cityId)            
             else(summDeliveryStep3(-1))
         } 
@@ -117,24 +116,30 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     //#region Переключалка языка
 
-    $(".lang_select.mark_lang li.active").on('click change', function(e) {
+    // $(".lang_select.mark_lang li.active").on('click change', function(e) {
+    $(".lang_select.mark_lang").on('click change', function(e) {
         
         $(".lang_select.mark_lang li").each(function() { 
-           if( this.classList.contains("hide")) this.classList.remove("hide")
-           if( this.classList.contains("active")) this.classList.remove("active")
-           this.classList.add("open")
+           //if( this.classList.contains("hide")) this.classList.remove("hide")
+           //if( this.classList.contains("active")) this.classList.remove("active")
+           if( this.classList.contains("open")){
+            setTimeout(() => {
+                this.classList.remove("open")
+            }, 150);
+           } 
+           else this.classList.add("open")
         });
-        return false
+        // return false
     });
-    $(".lang_select.mark_lang li.open").on('click change', function(e) {
-        
-        this.classList.add("active")
-        $(".lang_select.mark_lang li").each(function() {            
-            if( !this.classList.contains("active")) this.classList.remove("hide")
-            if( this.classList.contains("open")) this.classList.remove("open")
-         });
-         return false
-    });
+    // $(".lang_select.mark_lang li.open").on('click change', function(e) {
+    //     debugger
+    //     this.classList.add("active")
+    //     $(".lang_select.mark_lang li").each(function() {            
+    //         if( !this.classList.contains("active")) this.classList.remove("hide")
+    //         if( this.classList.contains("open")) this.classList.remove("open")
+    //      });
+    //      return false
+    // });
     //#endregion
     //#region   Открытие меню
                     
@@ -264,7 +269,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         if(!isReguired) return
         let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]")); 
         var options = {};
-        var cart_key = product.id.toString();
+        var cart_key = product.id.toString();        
         var variant = false;
         
         $('.product_options .product_option').each(function () {
@@ -562,23 +567,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
     //#endregion
 
-    //#region изменение вручную количество продукта в карточке товара
-
-    $("#count-product").keyup(function(){
-        if($("#count-product")[0].value > 999){
-            $("#count-product")[0].value = $("#count-product")[0].value.toString().substring(0,3)
-        }
-        $(".current-price")[0].innerHTML =   roundNumber(currentSumm( $("#count-product")[0].value) || $(".current-price")[0].innerHTML)
-    });
-    $("#count-product").change(function(){  
-        if($("#count-product")[0].value < 1) $("#count-product")[0].value = 1 
-        
-        $(".current-price")[0].innerHTML =   roundNumber(currentSumm( $("#count-product")[0].value) || $(".current-price")[0].innerHTML)
-    });
-    $("#count-product").keypress(function(e){
-        if (e.keyCode === 13) $("#count-product").blur()  
-    });
-    //#endregion
+    
 
     //#region изменение вручную количество продукта в корзине
     // let itemCountOld;
@@ -695,7 +684,73 @@ document.addEventListener('DOMContentLoaded',()=>{
     //     // Chrome требует установки возвратного значения.
     //     event.returnValue = '';
     //   });
+
+
+
+
+
+    $(function() {
+        if ($('.menu-sticky').length) {        
+                
+          let el = $('.menu-sticky');
+          let stickyTop = $('.menu-sticky').offset().top;
+          let stickyHeight = $('.menu-sticky').height();
+          $(window).scroll(function() {
+            
+            let elem =  $('.category-about')
+            let limit = elem.length == 0 ?$('.footer').offset().top - stickyHeight - 20   :  $('.category-about').offset().top - stickyHeight - 20  ;
+            let windowTop = $(window).scrollTop();
+            if (stickyTop < windowTop) {
+              el.css({
+                position: 'fixed',
+                top: 20
+              });
+            } else {
+              el.css('position', 'static');
+            }
+            if (limit < windowTop) {
+              let diff = limit - windowTop;
+              el.css({
+                top: diff
+              });
+            }
+          });
+        }        
+        if ($('.pay-cart').length) {        
+                
+            let el = $('.pay-cart');
+            let stickyTop = $('.pay-cart').offset().top;
+            let stickyHeight = $('.pay-cart').height();
+            $(window).scroll(function() {
+              
+              let elem =  $('.category-about')
+              let limit = elem.length == 0 ?$('.footer').offset().top - stickyHeight - 20   :  $('.category-about').offset().top - stickyHeight - 20  ;
+              let windowTop = $(window).scrollTop();
+              if (stickyTop < windowTop) {
+                el.css({
+                  position: 'fixed',
+                  top: 20,
+                  right: 185
+                });
+              } else {
+                el.css('position', 'static');
+              }
+              if (limit < windowTop) {
+                let diff = limit - windowTop;
+                el.css({
+                  top: diff
+                });
+              }
+            });
+          }
+
+
+      });
 })
+
+
+
+
 
 let selectedItemPrice;
 let imageSrc;
@@ -754,28 +809,75 @@ function currentCountCart( cart ){
     return count
 
 }
-async function increment(e){
+//#region изменение вручную количество продукта в карточке товара
+
+   
+$("#count-product").keypress(function(e){
+        
+    if (e.keyCode === 13) $("#count-product").blur()  
+ });
+ $('body').on('input', '#count-product', function(){
+     this.value = this.value.replace(/[^0-9]/g, '');
+     if(this.value.length >= 4) this.value = this.value.slice(0, -1)   //  3 значение для 99, 4 - значение для 999
+     $(".current-price")[0].innerHTML =   roundNumber(currentSumm( $("#count-product")[0].value) || $(".current-price")[0].innerHTML)
+ });
+ //#endregion
+ //#region изменение вручную количество продукта в корзине
+
+   
+ $(".cart-product-info-count-input").keypress(function(e){  
+    if (e.keyCode === 13) $(".cart-product-info-count-input").blur()  
+ });
+ $('body').on('input', '.cart-product-info-count-input', function(e){
+    
+    this.value = this.value.replace(/[^0-9]/g, '');
+    if(this.value.length >= 4) this.value = this.value.slice(0, -1)   //  3 значение для 99, 4 - значение для 999
+    if(this.value < 1){
+        // debugger
+        this.value = 1
+    } 
+    
+    let count = this.value
+    let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]")); 
+    let cartKey = e.currentTarget.dataset.key
+    for (let i = 0; i < cart.length; i++) {
+        if(cart[i].key == cartKey ) {
+            let itemSumm =  (+cart[i].itemSumm/cart[i].count*count)
+            cart[i].itemSumm = roundNumber(itemSumm)
+            cart[i].count = count
+        }
+    }               
+    localStorage.setItem("cart", JSON.stringify(cart)); 
+    cartInitProducts(cart)
+    summCalculation(cart)
+    
+    let el = e.currentTarget
+    // $("cart-product-info-count-input")[0].focus()
+    
+    let CaretPos = e.currentTarget.selectionStart;
+    el.selectionStart = CaretPos;
+    e.currentTarget.focus()
+
     
 
-    if($(".main__wrap .product").length) {    //для товара без опций
+ });
+ //#endregion
+async function increment(e){    
+    
+    if($(".main__wrap .product").length) {    //для карточки товара
         let count = +e.previousElementSibling.value + 1
         $(".current-price")[0].innerHTML = roundNumber($(".current-price")[0].innerHTML/+e.previousElementSibling.value*count)
         e.previousElementSibling.value = count
         
         if($(".pay.step_2").length != 0)  summDelivery((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
-        debugger
         if($(".pay.step_3").length != 0)  summDeliveryStep3((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
     } 
-    
-    
-    
     else {
         
         if(e.closest('.product-info__count')){    // для товара в корзине
             let count = +e.previousElementSibling.value + 1
             e.previousElementSibling.value = count
-            let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
-            
+            let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));            
             let cartKey = e.dataset.key
             for (let i = 0; i < cart.length; i++) {
                 if(cart[i].key == cartKey ) {
@@ -810,7 +912,6 @@ async function decrement(e){
         e.nextElementSibling.value = count
         
         if($(".pay.step_2").length != 0)  summDelivery((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
-        debugger
         if($(".pay.step_3").length != 0)  summDeliveryStep3((cart[0].delivery_params && cart[0].delivery_params.cityId) || -1);
     } 
 
@@ -868,9 +969,13 @@ function cartInitProducts(cart){
 
     if(isPromoCodeActive.result != "sugess") $(".discount")[0].closest("p").style.display = "none"
     else if(isPromoCodeActive.result == "sugess")  $(".discount")[0].closest("p").style.display = "flex"
+
     for (let i = cart.length-1; i > -1 ; i--) {
 
         let itemSumm = roundNumber(cart[i].itemSumm) 
+
+        let itemSaleSumm = cart[i].sale? roundNumber(cart[i].itemSaleSumm) : ""
+        
         let payCartItems = `
                                 <div class="pay-cart__item">
                                     <img src="${cart[i].imagePath}" data-key="${cart[i].key}" data-urlProduct="${cart[i].urlProduct}" alt="">
@@ -883,15 +988,18 @@ function cartInitProducts(cart){
                                             ${cart[i].weightParams ? cart[i].weightParams : ""}                                           
                                         </span>
                                         <div class="product-info__count" data-id="${cart[i].id}">
-                                            <button class="product-info-decrement" onclick="decrement(this)" data-key="${cart[i].key}">-</button>
-                                            <input class="cart-product-info-count-input" value="${cart[i].count}" data-id="${cart[i].id}" type="number" name="product-count">
-                                            <button class="product-info-increment" onclick="increment(this)" data-key="${cart[i].key}">+</button>
+                                            <button class="product-info-decrement ${cart[i].sale? "sale" : ""}" onclick="decrement(this)" data-key="${cart[i].key}">-</button>
+                                            <input class="cart-product-info-count-input${cart[i].sale? " sale" : ""}" value="${cart[i].count}" data-id="${cart[i].id}" data-key="${cart[i].key}" type="text" name="product-count" ${cart[i].sale? "disabled" : ""}>
+                                            <button class="product-info-increment ${cart[i].sale? "sale" : ""}" onclick="increment(this)" data-key="${cart[i].key}">+</button>
                                         </div>
                                         
                                     </div>
                                     <div class="pay-cart__item-price">
-                                        <span>
+                                        <span ${cart[i].sale? 'class ="sale-old"' : ''}>
                                             <span class="itemSumm">${itemSumm}</span> ₪
+                                        </span>
+                                        <span ${cart[i].sale? 'class ="sale"' : ''}>
+                                            <span class="itemSumm">${itemSaleSumm}</span> ${cart[i].sale? '₪' : ''}
                                         </span>
                                     </div>                                    
                                 </div>
@@ -966,12 +1074,18 @@ function cartInitProducts(cart){
         if($("#cart").length) {
             let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
             let cartKey = e.currentTarget.dataset.key 
+            let saleElement = cart.filter( n =>n.sale )            
+            if( cartKey == (saleElement.length && saleElement[0].key)) {
+                $(".pay-cart__promo input")[0].value = ""                
+                localStorage.removeItem("promo");
+                $(".sugess_promo")[0].classList.add("hide")
+            } 
             const newCart = cart.filter( n => n.key.toString() != cartKey )
             localStorage.setItem("cart", JSON.stringify(newCart)); 
             cartInitProducts(newCart)
             summCalculation(newCart)
             $(".cart-count").each(function() { this.innerText = cart.length })
-            if(newCart.length == 0)  $(".badge").each(function() { this.style.opacity = "0" });
+            if(newCart.length == 0)  $(".badge").each(function() { this.style.opacity = "0" });            
         }       
     });
     //#endregion
@@ -1007,11 +1121,28 @@ function summCalculation(cart){
     for (let i = 0; i < cart.length; i++) {
         totalAmount += +cart[i].itemSumm                    
     }
-    if(promoCart.unit && promoCart.unit == "%") summDiscount = totalAmount- totalAmount* (100 - promoCart.price)/100    
-    if(promoCart.unit && promoCart.unit == "₪") summDiscount = promoCart.price    
+    
+    if(promoCart.unit && promoCart.unit == "%" && promoCart.type == "CART" ) summDiscount = totalAmount- totalAmount* (100 - promoCart.price)/100 
+    if(promoCart.unit && promoCart.unit == "₪" && promoCart.type == "CART") summDiscount = promoCart.price 
+    if(promoCart.unit && promoCart.unit == "%" && promoCart.type == "PRODUCT" ) summDiscount = promoCart.product.price * promoCart.price / 100
+    if(promoCart.unit && promoCart.unit == "₪" && promoCart.type == "PRODUCT") summDiscount = promoCart.price 
+    
+    
+    
+
     $("#total-ammount")[0].innerHTML = roundNumber(totalAmount)
     $(".discount")[0].innerHTML = roundNumber(summDiscount)
-    summForPayment = totalAmount - summDiscount                      
+    
+    if(cart && cart[0] && cart[0].delivery_params) summForPayment = totalAmount - summDiscount  + cart[0].delivery_params.deliverySumm    
+    else summForPayment = totalAmount - summDiscount
+    //let summ_for_payment = roundNumber(+$("#total-ammount")[0].innerHTML - +$(".discount")[0].innerHTML +deliverySumm)
+    let pay_tips_value = +$('input[name="premium"]:checked').val() 
+    summForPayment = roundNumber(summForPayment * (1 + (pay_tips_value || 0)/100))
+    $("#summ-for-payment")[0].innerHTML = summForPayment
+
+    
+   
+
     $("#summ-for-payment")[0].innerHTML = roundNumber(summForPayment)
 }
 function updateProductPage(){
@@ -1572,6 +1703,7 @@ function telValidator(tel){
 }
 //#endregion
 
+
 //#region  ПРОМОКОД
 
 $(".submit-promo").on('click',async function(e){    
@@ -1590,32 +1722,154 @@ async function promoAction(){
     let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
     let url = $(".pay-cart__promo button")[0].dataset.url
     let response = await fetch(`${url}${promoText}`);
+    
     if (response.ok) {  
         try {
-            let promo = await response.json();           
+            
+            let promo = await response.json();   
+                     
             if(promo.result == "sugess" ){
                 if( $(".sugess_promo")[0].classList.contains("hide")) $(".sugess_promo")[0].classList.remove("hide")
                 $(".error_promo")[0].classList.add("hide")
+                $(".promo_clear")[0].classList.add("hide")
+                if( $(".promo_clear")[0].classList.contains("active")) $(".promo_clear")[0].classList.remove("active")
+
+                let oldPromo = JSON.parse(localStorage.getItem("promo") || "[]"); 
+                               
+                if(oldPromo && oldPromo.product && oldPromo.product.id ) cart = cart.filter( n => n.id != oldPromo.product.id)  // удаление акционной позиции из корзины при смене промокода
+                
                 localStorage.setItem("promo", JSON.stringify(promo));
+                
+                if(promo && promo.product){
+
+                    var options = {};                
+                    var cart_key = promo.product.id.toString();                
+                    var variant = false;
+                    // $('.product_options .product_option').each(function () {
+                        
+                    //     
+                    //     var option_el = $(this).find('.option_value.active');
+                    //     // let textButton = $(option_el).find('.trans-btn')[0] && $(option_el).find('.trans-btn')[0].innerHTML
+                    // // if(option_el[0].dataset.option_key == 0 ) return
+                    //     if (option_el.length != 0 ) {
+                            
+                    //         for (let i = 0; i < option_el.length; i++) {
+                    //         var option_key = $(option_el).attr('data-option_key')[i];
+
+                                
+                    //             console.log(this)
+                    //             option.name = option_el[0].dataset.option_text    
+                    //             console.log(product)
+                    //             option.price = option_el[0].dataset.pricemodifiertype == "PERCENT" ?  product.price * option_el[0].dataset.pricemodifier / 100 : option_el[0].dataset.pricemodifier 
+                    //             option.type = $(this).attr('data_optiontype');
+                    //             option.key = option_key;
+                    //             option.value = $(option_el).attr('data-option_value');
+                    //             option.text = $(option_el).find('.option_text').text();                
+                    //             option.input_text = $(option_el).find('.option_input_text').val() 
+                    //             var variant_number =   $(option_el).attr('data-variant_number');
+                                
+                    //             cart_key = `${cart_key}-${option_key}-${option.value}`;
+                    //             if (!!variant_number) {
+                    //                 variant = variant_number;
+                    //             }
+                    //             options[option_key] = option;   //  если три позиции под одинаковым ключем, добавляется в корзину только одна опция
+                                
+                    //         }                
+                        
+                    //     }
+                    // });
+                    
+                    // let isContains = false
+                    // for (let i = 0; i < cart.length; i++) {
+                    //     if(cart_key == cart[i].key ) {
+                    //         isContains = true
+                    //         $(".count_in_cart")[0].innerHTML =  cart[i].count
+                    //         cart[i].count = (+cart[i].count + +$('#count-product').val())
+                    //         cart[i].itemSumm = +cart[i].itemSumm + +$('.current-price')[0].innerHTML
+                    //         break
+                    //     }            
+                    // }
+                    let addedPosition
+                    let itemSumm = promo.product.price
+                    let itemSaleSumm = promo.unit == "%" ? itemSumm - itemSumm*promo.price/100 : itemSumm - promo.price
+                    let name = promo.product.translate.nameTranslated[lang]
+                    let imageSrc = promo.product.image.image800pxUrl
+
+                    console.log(document.location.href)
+                    addedPosition = { 
+                        urlProduct: document.location.href,
+                        id:  promo.product.id,     /* id +  data-option_key[0] +  data-option_value ???*/
+                        key: cart_key,
+                        count: 1, 
+                        options: options,
+                        delivery_params: cart[0].delivery_params,
+                        variant: variant,
+                        sale: true,
+                        //  поля для визуального отображени
+                        name: name,
+                        weightParams: selectedItemWeightParams,
+                        itemSumm: itemSumm, 
+                        itemSaleSumm: itemSaleSumm,                                                              
+                        imagePath: imageSrc, 
+                    } 
+                    cart.push(addedPosition)  
+                    localStorage.setItem("cart", JSON.stringify(cart)); 
+
+                } else {
+                    localStorage.setItem("cart", JSON.stringify(cart));
+                }
+                
+                if($("#cart").length){
+                    cartInitProducts(cart);
+                } 
                 summCalculation(cart)
             }
             if(promo.result == "error"){
-                if( $(".error_promo")[0].classList.contains("hide")) $(".error_promo")[0].classList.remove("hide")
+                debugger
+                if ($(".promo_clear")[0].classList.contains("active")){
+                    if( $(".error_promo")[0].classList.contains("hide")) $(".error_promo")[0].classList.remove("hide")
+                    if( $(".promo_clear")[0].classList.contains("active")) $(".promo_clear")[0].classList.remove("active")
+                    $(".promo_clear")[0].classList.add("hide")
+                } 
                 $(".sugess_promo")[0].classList.add("hide")
+                let oldPromo = JSON.parse(localStorage.getItem("promo") || "[]");
+                if(oldPromo && oldPromo.product && oldPromo.product.id ) cart = cart.filter( n => n.id != oldPromo.product.id)  // удаление акционной позиции из корзины при смене промокода
                 localStorage.removeItem('promo');
+                // $(".pay-cart__promo input")[0].value = ""     // под вопросом, чистить или нет
+                localStorage.setItem("cart", JSON.stringify(cart));
+                if($("#cart").length){
+                    cartInitProducts(cart);
+                } 
                 summCalculation(cart)
-            }
-            
+            }           
 
         } catch (error) {
-            if( $(".error_promo")[0].classList.contains("hide")) $(".error_promo")[0].classList.remove("hide")
+            
+            if ($(".promo_clear")[0].classList.contains("active")){
+                if( $(".error_promo")[0].classList.contains("hide")) $(".error_promo")[0].classList.remove("hide")
+                if( $(".promo_clear")[0].classList.contains("active")) $(".promo_clear")[0].classList.remove("active")
+                $(".promo_clear")[0].classList.add("hide")
+            } 
             $(".sugess_promo")[0].classList.add("hide")
             localStorage.removeItem('promo');
         }
-      } else {
+    } else {        
         // alert("Ошибка HTTP: " + response.status);
-      }
+    }
 }
+$(".sugess_promo svg").on('click',async function(e){ 
+    
+    let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
+    $(".pay-cart__promo input")[0].value = ""                
+    localStorage.removeItem("promo");
+    const newCart =  cart.filter( n =>!n.sale) 
+    localStorage.setItem("cart", JSON.stringify(newCart)); 
+    cartInitProducts(newCart)
+    summCalculation(newCart)
+    await promoAction()
+    if( $(".promo_clear")[0].classList.contains("hide")) $(".promo_clear")[0].classList.remove("hide")
+    $(".promo_clear")[0].classList.add("active")
+});
 
 //#endregion
 
@@ -1660,7 +1914,7 @@ $(".city_name").keyup(function(){
         listCity += `</ul>`
         $(".city_name")[0].closest("label").classList.add("city-select")
         $(".city-select").append(listCity)
-
+        
         if(searchString == "") {
             cityId = -1
             summDelivery(cityId)
@@ -1723,7 +1977,13 @@ $("input[name='delivery']").change(function(){   // переключалка с�
         $(".delivery_price")[0].innerHTML = 0 + " ₪"
         $(".delivery input.show_calendar.date")[0].placeholder = $(".delivery input.show_calendar.date")[0].dataset.text_delivery
         let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
-        if(cart[0] && cart[0].delivery_params && cart[0].delivery_params.cityId) cart[0].delivery_params.cityId = -1
+        if(cart.length){
+            for (let i = 0; i < cart.length; i++) {
+               if(cart[i] && cart[i].delivery_params && cart[i].delivery_params.cityId) cart[i].delivery_params.cityId = -1                
+            }
+
+        }
+        
         localStorage.setItem("cart", JSON.stringify(cart));
         summDelivery(cityId)
     }    
@@ -1741,8 +2001,16 @@ $("input[name='delivery']").change(function(){   // переключалка с�
 
 $("input.delivery_time").on('click',async function(e){
     summDelivery(cityId)     
-    if($(".show_calendar.date").val() != "" && $(".delivery_time.city-lis")[0].style.display != "block") $(".delivery_time.city-lis")[0].style.display = "block"  
-    else    $(".delivery_time.city-lis")[0].style.display = "none" 
+    if($(".show_calendar.date").val() != "" && $(".delivery_time.city-lis")[0].style.display != "block"){
+        $(".delivery_time.city-lis")[0].style.display = "block"
+        let elem = $(".delivery_time.city-lis")[0].closest("label")
+        $(elem).find("p")[0].classList.add("actives")
+    }   
+    else {
+        $(".delivery_time.city-lis")[0].style.display = "none"
+        let elem = $(".delivery_time.city-lis")[0].closest("label")
+        if($(elem).find("p")[0].classList.contains("actives")) $(elem).find("p")[0].classList.remove("actives")
+    }    
     $(".delivery_time li").mouseenter(function() {
         this.style.background = "#f6f4ec";
     });
@@ -1815,13 +2083,15 @@ function summDelivery(cityId){
     delivery_params.deliverySumm = deliverySumm
     delivery_params.deliveryPrice = deliveryPrice
     delivery_params.cityId = cityId
-    cart[0].delivery_params =  delivery_params  
+    for (let i = 0; i < cart.length; i++) {
+        cart[i].delivery_params =  delivery_params 
+    }
     localStorage.setItem("cart", JSON.stringify(cart));
    
 }
 
 function summDeliveryStep3(cityId){
-    debugger
+    
     if(cityId == -1){
         $(".delivery_price")[0].innerHTML = 0  + " ₪"
         let totalAmmount = +$("#total-ammount")[0].innerHTML
@@ -1869,7 +2139,6 @@ function summDeliveryStep3(cityId){
 //#region   Просчет Чаевых
     $('input[name="premium"]').change(function(e){         
         let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"))
-        debugger
         if(cart[0] && cart[0].delivery_params && cart[0].delivery_params.cityId){
             summDeliveryStep3(cart[0].delivery_params.cityId)
         } 
@@ -1904,3 +2173,36 @@ $("input[name='methodPay']").change(function(e){
 $(".main .main__wrap ul").click(function(e) {
    return
 });
+
+
+
+
+//#region Back to top button
+
+
+{/* <div class='back-to-top' id='back-to-top' title='Back to top'><i class='fa fa-chevron-up'></i></div> */}
+
+(function() {
+    $(document).ready(function() {
+      return $(window).scroll(function() {
+        return $(window).scrollTop() > 600 ? $("#back-to-top").addClass("show") : $("#back-to-top").removeClass("show")
+      }), $("#back-to-top").click(function() {
+        
+        return $("html,body").animate({
+          scrollTop: "0"
+        })
+      })
+    })
+  }).call(this);
+
+  $("#back-to-top").click(function() {
+    
+    return $("html,body").animate({
+      scrollTop: "0"
+    })
+  })
+//#endregion
+
+
+
+
