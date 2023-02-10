@@ -1674,26 +1674,29 @@ class OrderService
 
         }
 
-        if ($order_data['step'] > 1) {
-            $pattern_phone = "/^[+0-9]{2,4} \([0-9]{3}\) [0-9]{3} [0-9]{2} [0-9]{2,4}$/";
-            $validate_array = [
-                'clientName' => 'required',
-                'clientLastName' => 'required',
-                'phone' => 'required|regex:'.$pattern_phone,
-                'email' => 'required|email:rfc,dns'
-            ];
+        if (isset($order_data['step'])) {
+            if ($order_data['step'] > 1) {
+                $pattern_phone = "/^[+0-9]{2,4} \([0-9]{3}\) [0-9]{3} [0-9]{2} [0-9]{2,4}$/";
+                $validate_array = [
+                    'clientName' => 'required',
+                    'clientLastName' => 'required',
+                    'phone' => 'required|regex:'.$pattern_phone,
+                    'email' => 'required|email:rfc,dns'
+                ];
 
-        }
-        if ($order_data['step'] > 2) {
-            $validate_array = [
-                'date' => 'required|date_format:Y-n-j',
-                'delivery' => 'required'
-            ];
+            }
+            if ($order_data['step'] > 2) {
+                $validate_array = [
+                    'date' => 'required|date_format:Y-n-j',
+                    'delivery' => 'required'
+                ];
 
+            }
+            if ($order_data['step'] > 3) {
+                $step_back = 3;
+            }
         }
-        if ($order_data['step'] > 3) {
-            $step_back = 3;
-        }
+
 
         if (isset($order_data['delivery']) && $order_data['delivery'] == 'delivery') {
 
