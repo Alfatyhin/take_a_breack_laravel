@@ -1658,7 +1658,7 @@ class OrderService
             $order = Orders::where('order_id', $order_data['order_id'])->first();
 
             if ($order) {
-                if ($order->orderData){
+                if ($order->orderData && isset($order_data['step'])){
                     $old_data = json_decode($order->orderData, true);
                     foreach ($old_data as $k => $v) {
                         if (!isset($order_data[$k]) && $old_data['step'] < $order_data['step'])
