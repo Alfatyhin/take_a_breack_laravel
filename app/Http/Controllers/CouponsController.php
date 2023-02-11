@@ -164,6 +164,7 @@ class CouponsController extends Controller
 
         $coupons_grop_id = Coupons::where('group_id', '!=', null)->distinct()->pluck('group_id')->toArray();
 
+        $groups_data = false;
         foreach ($coupons_grop_id as $id) {
             $groups_data[$id]['count'] = Coupons::where('group_id', $id)
                 ->where('status', 'active')->count();
