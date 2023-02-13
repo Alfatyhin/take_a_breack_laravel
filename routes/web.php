@@ -77,6 +77,9 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
     Route::get('/amocrm', [Amocrm::class, 'integrationAmoCrm'])
         ->name('amocrm');
 
+    Route::get('/', [Amocrm::class, 'UsersDuplicateCollaps'])
+        ->name('amocrm_users_duplicate');
+
 
     Route::any('data/db/prod-import', [ShopSettingController::class, 'DbProdImport'])
         ->name('db_prod_import');

@@ -26,16 +26,16 @@ class OAuthService implements OAuthServiceInterface
 
             Storage::disk('local')->put('data/amo-assets.json', json_encode($data));
         } else {
-            $data = [
-                'access_token'  => $accessToken->getToken(),
-                'refresh_token' => $accessToken->getRefreshToken(),
-                'expires'       => $accessToken->getExpires(),
-                'baseDomain'    => $baseDomain,
-            ];
+//            $data = [
+//                'access_token'  => $accessToken->getToken(),
+//                'refresh_token' => $accessToken->getRefreshToken(),
+//                'expires'       => $accessToken->getExpires(),
+//                'baseDomain'    => $baseDomain,
+//            ];
+//
+//            Storage::disk('local')->put('data/amo-assets.json', json_encode($data));
 
-            Storage::disk('local')->put('data/amo-assets.json', json_encode($data));
-
-            var_dump('not save token');
+//            var_dump('not save token');
         }
 
     }
