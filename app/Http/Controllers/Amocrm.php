@@ -287,7 +287,8 @@ class Amocrm extends Controller
             $amo_client = $amoCrmService->getContactBuId($client->amoId);
 
             if ($amo_client) {
-                dd($client, $amo_client);
+                $test_email = $amoCrmService->getContactDoubles($client->email);
+                dd($client, $amo_client, $test_email);
             }
         }
 
