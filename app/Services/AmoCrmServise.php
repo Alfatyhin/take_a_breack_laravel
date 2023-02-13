@@ -1254,16 +1254,16 @@ class AmoCrmServise
         $x = 0;
         foreach ($contacts as $contact) {
 
-            $data[$x]['id'] = $contact->id;
-            $data[$x]['name'] = $contact->name;
-            $data[$x]['firstName'] = $contact->firstName;
-            $data[$x]['lastName'] = $contact->name;
+            $data[$contact->id]['id'] = $contact->id;
+            $data[$contact->id]['name'] = $contact->name;
+            $data[$contact->id]['firstName'] = $contact->firstName;
+            $data[$contact->id]['lastName'] = $contact->name;
             $customFields = $contact->getCustomFieldsValues();
             foreach ($customFields as $field)
             {
                 $field_data = $field->values;
                 foreach ($field_data as $k => $v) {
-                    $data[$x]['fields'][$field->fieldName][$k] = $v->value;
+                    $data[$contact->id]['fields'][$field->fieldName][$k] = $v->value;
                 }
             }
 

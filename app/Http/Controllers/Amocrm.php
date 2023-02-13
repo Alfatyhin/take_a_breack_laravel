@@ -288,7 +288,12 @@ class Amocrm extends Controller
 
             if ($amo_client) {
                 $test_email = $amoCrmService->getContactDoubles($client->email);
-                dd($client, $amo_client, $test_email);
+                $test_phones = $amoCrmService->getContactDoubles($client->phone);
+
+                if ($client->data) {
+                    dd($client->data);
+                }
+                dd($client, $amo_client, $test_email, $test_phones);
             }
         }
 
