@@ -293,7 +293,8 @@ class Amocrm extends Controller
                 if ($client->data) {
                     dd($client->data);
                 }
-                dd($client, $amo_client, $test_email, $test_phones);
+                $result = $test_email + $test_phones;
+                dd($client, $amo_client, $result);
             }
         }
 
