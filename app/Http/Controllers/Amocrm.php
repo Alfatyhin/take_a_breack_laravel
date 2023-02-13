@@ -294,7 +294,10 @@ class Amocrm extends Controller
                     dd($client->data);
                 }
                 $result = $test_email + $test_phones;
-                dd($client, $amo_client, $result);
+
+                if (sizeof($result) != 1) {
+                    dd($client, $amo_client, $result);
+                }
             }
         }
 
