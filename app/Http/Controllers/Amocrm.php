@@ -296,7 +296,7 @@ class Amocrm extends Controller
                 $result = $test_email + $test_phones;
 
                 if (sizeof($result) != 1) {
-                    dd($client, $amo_client, $result);
+                    dd($client, $amo_client, $test_email, $test_phones, $result);
                 }
             }
         }
