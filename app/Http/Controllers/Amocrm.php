@@ -285,7 +285,10 @@ class Amocrm extends Controller
 
         foreach ($clients as $client) {
             $amo_client = $amoCrmService->getContactBuId($client->amoId);
-            dd($client, $amo_client);
+
+            if ($amo_client) {
+                dd($client, $amo_client);
+            }
         }
 
     }
