@@ -290,10 +290,20 @@ class Amocrm extends Controller
                 $test_email = $amoCrmService->getContactDoubles($client->email);
                 $test_phones = $amoCrmService->getContactDoubles($client->phone);
 
+
+
+                $diff = array_diff_key($test_email, $test_phones);
+                if ($diff) {
+                    $result = $test_email + $diff;
+
+                    dd($client, $amo_client, $test_email, $test_phones, $result, $diff);
+                }
+
+
+
                 if ($client->data) {
                     dd($client->data);
                 }
-                $result = $test_email + $test_phones;
 
                 if (sizeof($result) != 1) {
                     dd($client, $amo_client, $test_email, $test_phones, $result);
