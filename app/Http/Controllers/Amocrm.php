@@ -281,7 +281,7 @@ class Amocrm extends Controller
     {
         $AmoCrmService = $this->amoService;
 
-        $clients = Clients::where('adoId', '!=', null)->get();
+        $clients = Clients::where('amoId', '!=', null)->get();
 
         foreach ($clients as $client) {
             dd($client);
