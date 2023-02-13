@@ -279,12 +279,13 @@ class Amocrm extends Controller
 
     public function UsersDuplicateCollaps(Request $request)
     {
-        $AmoCrmService = $this->amoService;
+        $amoCrmService = $this->amoService;
 
         $clients = Clients::where('amoId', '!=', null)->get();
 
         foreach ($clients as $client) {
-            dd($client);
+            $amo_client = $amoCrmService->getContactBuId($client->amoId);
+            dd($client, $amo_client);
         }
 
     }
