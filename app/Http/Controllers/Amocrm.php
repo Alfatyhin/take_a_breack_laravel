@@ -287,29 +287,35 @@ class Amocrm extends Controller
             $amo_client = $amoCrmService->getContactBuId($client->amoId);
 
             if ($amo_client) {
-                $test_email = $amoCrmService->getContactDoubles($client->email);
-                $test_phones = $amoCrmService->getContactDoubles($client->phone);
+                $orders = Orders::where('clientId', $client->id)->get();
+
+                dd($orders);
 
 
+//                $test_email = $amoCrmService->getContactDoubles($client->email);
+//                $test_phones = $amoCrmService->getContactDoubles($client->phone);
+//
+//
+//
+//                $diff = array_diff_key($test_email, $test_phones);
+//                if ($diff) {
+//                    $result = $test_email + $diff;
+//
+//                    dd($client, $amo_client, $test_email, $test_phones, $result, $diff);
+//                } else {
+//                    $result = $test_email;
+//                }
+//
+//
+//
+//                if ($client->data) {
+//                    dd($client->data);
+//                }
+//
+//                if (sizeof($result) != 1) {
+//                    dd($client, $amo_client, $test_email, $test_phones, $result);
+//                }
 
-                $diff = array_diff_key($test_email, $test_phones);
-                if ($diff) {
-                    $result = $test_email + $diff;
-
-                    dd($client, $amo_client, $test_email, $test_phones, $result, $diff);
-                } else {
-                    $result = $test_email;
-                }
-
-
-
-                if ($client->data) {
-                    dd($client->data);
-                }
-
-                if (sizeof($result) != 1) {
-                    dd($client, $amo_client, $test_email, $test_phones, $result);
-                }
             }
         }
 
