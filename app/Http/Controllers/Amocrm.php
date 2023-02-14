@@ -287,8 +287,6 @@ class Amocrm extends Controller
         foreach ($clients as $client) {
             $amo_client = $amoCrmService->getContactBuId($client->amoId);
 
-            dd($client);
-
             if ($amo_client) {
                 $orders = Orders::where('clientId', $client->id)->get();
 
