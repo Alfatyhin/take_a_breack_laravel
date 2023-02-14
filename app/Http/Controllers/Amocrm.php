@@ -283,8 +283,11 @@ class Amocrm extends Controller
 
         $clients = Clients::where('amoId', '!=', null)->get();
 
+
         foreach ($clients as $client) {
             $amo_client = $amoCrmService->getContactBuId($client->amoId);
+
+            dd($client);
 
             if ($amo_client) {
                 $orders = Orders::where('clientId', $client->id)->get();
