@@ -120,8 +120,12 @@ class AppServise
         $header = [];
 
         $info = self::getQuest($url, $header);
-        $data['countryCode'] = $info['geoplugin_countryCode'];
-        $data['countryName'] = $info['geoplugin_countryName'];
+        if ($info && isset($info['geoplugin_countryCode']) && isset($info['geoplugin_countryCode'])) {
+            $data['countryCode'] = $info['geoplugin_countryCode'];
+            $data['countryName'] = $info['geoplugin_countryName'];
+        } else {
+            $data = false;
+        }
 
         return $data;
     }
