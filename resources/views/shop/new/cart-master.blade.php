@@ -32,6 +32,8 @@
 
     @endif
 
+    @include("shop.new.layouts.left_sidebar")
+
     @include("shop.new.layouts.cart.cart-step_$step")
 
     @include("shop.new.layouts.cart.cart-products_box")
