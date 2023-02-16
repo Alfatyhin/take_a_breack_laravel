@@ -2264,7 +2264,7 @@
  .pay {
    -webkit-box-sizing: border-box;
            box-sizing: border-box;
-   max-width: 760px;
+     max-width: 42vw;
    width: 100%;
  }
  

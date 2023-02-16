@@ -1,5 +1,4 @@
 
-
 document.addEventListener('DOMContentLoaded',()=>{
 
     let intervalSelect
@@ -689,6 +688,17 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 
 
+    var isMobile = {
+        Android:        function() { return navigator.userAgent.match(/Android/i) ? true : false; },
+        BlackBerry:     function() { return navigator.userAgent.match(/BlackBerry/i) ? true : false; },
+        iOS:            function() { return navigator.userAgent.match(/iPhone|iPad|iPod/i) ? true : false; },
+        Windows:        function() { return navigator.userAgent.match(/IEMobile/i) ? true : false; },
+        any:            function() { return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());  }
+    };
+      
+    
+
+
     $(function() {
         if ($('.menu-sticky').length) {        
                 
@@ -696,55 +706,59 @@ document.addEventListener('DOMContentLoaded',()=>{
           let stickyTop = $('.menu-sticky').offset().top;
           let stickyHeight = $('.menu-sticky').height();
           $(window).scroll(function() {
-            
-            let elem =  $('.category-about')
-            let limit = elem.length == 0 ?$('.footer').offset().top - stickyHeight - 20   :  $('.category-about').offset().top - stickyHeight - 20  ;
-            let windowTop = $(window).scrollTop();
-            if (stickyTop < windowTop) {
-              el.css({
-                position: 'fixed',
-                top: 20
-              });
-            } else {
-              el.css('position', 'static');
-            }
-            if (limit < windowTop) {
-              let diff = limit - windowTop;
-              el.css({
-                top: diff
-              });
+
+            if ( !isMobile.any() ) {
+                // Код не для телефонов
+                let elem =  $('.category-about')
+                let limit = elem.length == 0 ?$('.footer').offset().top - stickyHeight - 20   :  $('.category-about').offset().top - stickyHeight - 20  ;
+                let windowTop = $(window).scrollTop();
+                if (stickyTop < windowTop) {
+                el.css({
+                    position: 'fixed',
+                    top: 20
+                });
+                } else {
+                el.css('position', 'static');
+                }
+                if (limit < windowTop) {
+                let diff = limit - windowTop;
+                el.css({
+                    top: diff
+                });
+                }
             }
           });
         }        
-        if ($('.pay-cart').length) {        
-                
+        if ($('.pay-cart').length){   
+            
+            
             let el = $('.pay-cart');
             let stickyTop = $('.pay-cart').offset().top;
             let stickyHeight = $('.pay-cart').height();
             $(window).scroll(function() {
-              
-              let elem =  $('.category-about')
-              let limit = elem.length == 0 ?$('.footer').offset().top - stickyHeight - 20   :  $('.category-about').offset().top - stickyHeight - 20  ;
-              let windowTop = $(window).scrollTop();
-              if (stickyTop < windowTop) {
-                el.css({
-                  position: 'fixed',
-                  top: 20,
-                  right: 185
-                });
-              } else {
-                el.css('position', 'static');
-              }
-              if (limit < windowTop) {
-                let diff = limit - windowTop;
-                el.css({
-                  top: diff
-                });
-              }
+
+                if ( !isMobile.any() ) {
+                    let elem =  $('.category-about')
+                    let limit = elem.length == 0 ?$('.footer').offset().top - stickyHeight - 20   :  $('.category-about').offset().top - stickyHeight - 20  ;
+                    let windowTop = $(window).scrollTop();
+                    if (stickyTop < windowTop) {
+                    el.css({
+                        position: 'fixed',
+                        top: 20,
+                        right: 130
+                    });
+                    } else {
+                    el.css('position', 'static');
+                    }
+                    if (limit < windowTop) {
+                    let diff = limit - windowTop;
+                    el.css({
+                        top: diff
+                    });
+                    }
+                }
             });
           }
-
-
       });
 })
 
