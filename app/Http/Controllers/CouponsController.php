@@ -142,7 +142,9 @@ class CouponsController extends Controller
         $post = $request->post();
 
         if ($post) {
+
             if (isset($post['add']) && !empty($post['discount']['value'])) {
+
 
                 if (empty($post['name'])) {
                     $post['name'] = 'new group';

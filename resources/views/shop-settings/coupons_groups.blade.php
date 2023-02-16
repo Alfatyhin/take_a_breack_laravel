@@ -56,6 +56,7 @@
                         @else
                             %
                         @endif
+                        <br> limit {{ $data['count_limit'] }}
                     </td>
                     <td>
 
@@ -130,6 +131,12 @@
                                             <input type="radio" name="discount[mod]" value="ABS" >$
                                             <input type="radio" name="discount[mod]" value="PERSENT" checked>%
                                         @endif
+
+                                        @isset($data['count_limit'])
+                                            <input type="number" name="data[count_limit]" value="{{ $data['count_limit'] }}">
+                                        @else
+                                            <input type="number" name="data[count_limit]" value="1">
+                                        @endisset
                                     </p>
 
                                     <input type="submit" name="save" value="изменить">
@@ -159,10 +166,13 @@
                 </td>
                 <td>
                     скидка
-                    <input type="number" name="discount[value]"> <br>
+                    <input type="number" name="discount[value]" value="10"> <br>
                     тип скидки: <br>
                     <input type="radio" name="discount[mod]" value="ABS" checked>$
                     <input type="radio" name="discount[mod]" value="PERSENT" >%
+                    <br>
+                    лимит
+                    <input type="number" name="data[count_limit]" value="1" min="0">
                 </td>
                 <td>
                     скидка на: <br>
