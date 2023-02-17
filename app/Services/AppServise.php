@@ -21,6 +21,7 @@ class AppServise
         $files = [
             'css/style.css',
             'css/style-2.css',
+            'css/cart-new.css',
             'scripts/app.js',
             'scripts/app-2.js',
             'js/calendar.js',
