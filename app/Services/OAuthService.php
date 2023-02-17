@@ -15,7 +15,7 @@ class OAuthService implements OAuthServiceInterface
     public function saveOAuthToken(AccessTokenInterface $accessToken, string $baseDomain): void
     {
 
-        if ($accessToken->hasExpired()) {
+        if (!$accessToken->hasExpired()) {
             $data = [
                 'access_token'  => $accessToken->getToken(),
                 'refresh_token' => $accessToken->getRefreshToken(),
@@ -23,11 +23,12 @@ class OAuthService implements OAuthServiceInterface
                 'baseDomain'    => $baseDomain,
             ];
 
-            WebhookLog::addLog('AMO CRM token - ', 'save');
+            WebhookLog::addLog('AMO CRM token ', 'save');
             Storage::disk('local')->put('data/amo-assets.json', json_encode($data));
+
         } else {
 
-            WebhookLog::addLog('AMO CRM token - ', 'not save');
+            WebhookLog::addLog('AMO CRM token not save', $accessToken);
 
         }
 

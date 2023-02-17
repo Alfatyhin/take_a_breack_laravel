@@ -89,6 +89,10 @@ class AmoCrmServise
         $oAuthService = new OAuthService();
         $apiClientFactory = new AmoCRMApiClientFactory($oAuthConfig, $oAuthService);
         $this->apiClient = $apiClientFactory->make();
+        $accessToken = $this->getTokens();
+
+        $this->apiClient->setAccessToken($accessToken)
+            ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
     }
 
     public function getButton()
@@ -231,15 +235,7 @@ class AmoCrmServise
 
     private function getApiClient()
     {
-        $oAuthConfig = new OAuthConfig();
-        $oAuthService = new OAuthService();
-        $apiClientFactory = new AmoCRMApiClientFactory($oAuthConfig, $oAuthService);
-        $apiClient = $apiClientFactory->make();
-        $accessToken = $this->getTokens();
-        $apiClient->setAccessToken($accessToken)
-            ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
-
-        return $apiClient;
+        return $this->apiClient;
     }
 
 
