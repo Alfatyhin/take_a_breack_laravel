@@ -582,7 +582,7 @@
    display: -webkit-box;
    display: -ms-flexbox;
    display: flex;
-   justify-content: space-between;
+   /* justify-content: space-between; */
    -webkit-box-align: stretch;
        -ms-flex-align: stretch;
            align-items: stretch;
@@ -1807,26 +1807,8 @@
            justify-content: center;
    border-radius: 50%;
  }
- @media not all and (min-resolution:.001dpcm) { 
-      @supports (-webkit-appearance:none) and (display:flow-root) { 
-          .product-info__action > .product-info__count > button, .product-info__action > .product-info__count_additive > button { 
-            height: 40px; 
-          } 
-          .buttons_popup > a {
-            width: 120%;
-          }
-      } 
- }
- @media screen and (min-color-index:0) and(-webkit-min-device-pixel-ratio:0) {
-    @supports  (overflow:-webkit-marquee) and (justify-content:inherit) { 
-      .product-info__action > .product-info__count > button, .product-info__action > .product-info__count_additive > button { 
-        height: 40px; 
-      } 
-      .buttons_popup > a {
-        width: 120%;
-      }
-    } 
- }
+
+
  
  .product-info__action > .product-info__count > input, .product-info__action > .product-info__count_additive > input {
    width: 50px;
@@ -2264,8 +2246,9 @@
  .pay {
    -webkit-box-sizing: border-box;
            box-sizing: border-box;
-     max-width: 42vw;
+   max-width: 760px;
    width: 100%;
+   /* margin-left: 30px; */
  }
  
  .pay__header {
@@ -2868,7 +2851,9 @@ element.style {
 
   .pay-cart__item-info .product-info-decrement.sale,
   .pay-cart__item-info .product-info-increment.sale{
-    display: none;
+    background-color: transparent !important;
+    color: transparent;
+    cursor: auto;
   }
  
  .pay-cart__item-info .product-info-count-input, 
@@ -2886,7 +2871,7 @@ element.style {
    -webkit-appearance: none;
  }
  .pay-cart__item-info .cart-product-info-count-input.sale{
-  margin-left: 29px;
+  margin-left: 0px;
  }
  
  .pay-cart__item-info .product-info-count-input::-webkit-inner-spin-button, 
@@ -2904,6 +2889,7 @@ element.style {
   .pay-cart__item-price > span.sale-old{
     color: #979797;
     text-decoration: line-through;
+    text-align: end;
   }
   .pay-cart__item-price > span.sale{
     color: #ff0000;
@@ -3166,9 +3152,10 @@ element.style {
      /* -ms-flex-wrap: wrap;
          flex-wrap: wrap; */
       flex-wrap: nowrap;
+      margin: 10px 0px
    }
    .pay-cart__item-price {
-     text-align: left;
+     text-align: right;
      width: 100%;
    }
  }
@@ -4716,3 +4703,39 @@ body .plashka{
   visibility: visible;
   opacity: 1;
 }
+
+
+
+
+
+
+/***************************************************************    СТИЛИ  ДЛЯ  САФАРИ  **************************************************************/
+@media not all and (min-resolution:.001dpcm) { 
+  @supports (-webkit-appearance:none) and (display:flow-root) { 
+    
+  } 
+}
+
+@media not all and (min-resolution:.001dpcm) { 
+  @supports (-webkit-appearance:none) and (display:flow-root) { 
+      .product-info__action > .product-info__count > button, .product-info__action > .product-info__count_additive > button { 
+        height: 40px; 
+      } 
+      .buttons_popup > a {
+        width: 120%;
+      }
+  } 
+}
+@media screen and (min-color-index:0) and(-webkit-min-device-pixel-ratio:0) {
+@supports  (overflow:-webkit-marquee) and (justify-content:inherit) { 
+  .product-info__action > .product-info__count > button, .product-info__action > .product-info__count_additive > button { 
+    height: 40px; 
+  } 
+  .buttons_popup > a {
+    width: 120%;
+  }
+} 
+}
+
+
+/***************************************************************    СТИЛИ  ДЛЯ  САФАРИ  **************************************************************/
