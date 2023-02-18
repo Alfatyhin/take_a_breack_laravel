@@ -345,7 +345,7 @@
    max-width: 90%;
    padding: 0 15px;
    margin: 0 auto;
-   margin: 0 75px;
+   /* margin: 0 75px; */
  }
  
  /* ===== Scrollbar CSS ===== */
