@@ -1,5 +1,14 @@
 
+
 document.addEventListener('DOMContentLoaded',()=>{
+
+    var isMobile = {
+        Android:        function() { return navigator.userAgent.match(/Android/i) ? true : false; },
+        BlackBerry:     function() { return navigator.userAgent.match(/BlackBerry/i) ? true : false; },
+        iOS:            function() { return navigator.userAgent.match(/iPhone|iPad|iPod/i) ? true : false; },
+        Windows:        function() { return navigator.userAgent.match(/IEMobile/i) ? true : false; },
+        any:            function() { return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());  }
+    };
 
     let intervalSelect
     if($(".main__wrap .product .product-info__size.product_option.required").length){
@@ -49,7 +58,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
 
 
-
     // client_data = JSON.parse(localStorage.getItem("client_data") || "[]");   
     // client_data.order_id = ""
     // localStorage.setItem("client_data", JSON.stringify(client_data));
@@ -79,6 +87,13 @@ document.addEventListener('DOMContentLoaded',()=>{
         if(!cart.length)  return 
         if($("#cart").length){
             cartInitProducts(cart);
+            if ( isMobile.any() ){
+                $(".category")[0].style.display = "block"
+            } 
+            if( $(".main .container")[0].clientHeight < $(".pay-cart")[0].clientHeight){                
+                $(".main")[0].style.height = ($(".pay-cart")[0].clientHeight + 20).toString()+'px'
+            }
+            
         } 
         if($("#cart").length) summCalculation(cart);
         // $(".header__login a:last-child")[1].style.display = "none"
@@ -689,13 +704,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 
 
-    var isMobile = {
-        Android:        function() { return navigator.userAgent.match(/Android/i) ? true : false; },
-        BlackBerry:     function() { return navigator.userAgent.match(/BlackBerry/i) ? true : false; },
-        iOS:            function() { return navigator.userAgent.match(/iPhone|iPad|iPod/i) ? true : false; },
-        Windows:        function() { return navigator.userAgent.match(/IEMobile/i) ? true : false; },
-        any:            function() { return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());  }
-    };
+ 
+
       
     
 
@@ -705,6 +715,7 @@ document.addEventListener('DOMContentLoaded',()=>{
                 
           let el = $('.menu-sticky');
           let stickyTop = $('.menu-sticky').offset().top;
+
           let stickyHeight = $('.menu-sticky').height();
           $(window).scroll(function() {
 
@@ -713,13 +724,15 @@ document.addEventListener('DOMContentLoaded',()=>{
                 let elem =  $('.category-about')
                 let limit = elem.length == 0 ?$('.footer').offset().top - stickyHeight - 20   :  $('.category-about').offset().top - stickyHeight - 20  ;
                 let windowTop = $(window).scrollTop();
+                
                 if (stickyTop < windowTop) {
-                el.css({
-                    position: 'fixed',
-                    top: 20
-                });
+                    
+                    el.css({
+                        position: 'fixed',
+                        top: 20
+                    });
                 } else {
-                el.css('position', 'static');
+                    el.css('position', 'static');
                 }
                 if (limit < windowTop) {
                 let diff = limit - windowTop;
@@ -730,36 +743,39 @@ document.addEventListener('DOMContentLoaded',()=>{
             }
           });
         }        
-        if ($('.pay-cart').length){   
+        // if ($('.pay-cart').length){   
             
             
-            let el = $('.pay-cart');
-            let stickyTop = $('.pay-cart').offset().top;
-            let stickyHeight = $('.pay-cart').height();
-            $(window).scroll(function() {
+        //     let el = $('.pay-cart');
+        //     let stickyTop = $('.pay-cart').offset().top;
+        //     let stickyHeight = $('.pay-cart').height();
 
-                if ( !isMobile.any() ) {
-                    let elem =  $('.category-about')
-                    let limit = elem.length == 0 ?$('.footer').offset().top - stickyHeight - 20   :  $('.category-about').offset().top - stickyHeight - 20  ;
-                    let windowTop = $(window).scrollTop();
-                    if (stickyTop < windowTop) {
-                    el.css({
-                        position: 'fixed',
-                        top: 20,
-                        right: 130
-                    });
-                    } else {
-                    el.css('position', 'static');
-                    }
-                    if (limit < windowTop) {
-                    let diff = limit - windowTop;
-                    el.css({
-                        top: diff
-                    });
-                    }
-                }
-            });
-          }
+        //     $(window).scroll(function() {
+
+        //         if ( !isMobile.any() ) {
+        //             let elem =  $('.category-about')
+        //             let limit = elem.length == 0 ?$('.footer').offset().top - stickyHeight - 20   :  $('.category-about').offset().top - stickyHeight - 20  ;
+        //             let windowTop = $(window).scrollTop();
+        //             if (stickyTop < windowTop) {
+        //                 el.css({
+        //                     position: 'fixed',
+        //                     top: 20
+        //                 });
+        //             } else {
+        //                 el.css({
+        //                     position: 'absolute',
+        //                     top: 185
+        //                 });
+        //             }
+        //             if (limit < windowTop) {
+        //                 let diff = 0 - windowTop;
+        //                 el.css({
+        //                     top: diff
+        //                 });
+        //             }
+        //         }
+        //     });
+        // }
       });
 })
 
@@ -990,7 +1006,13 @@ function cartInitProducts(cart){
         let itemSumm = roundNumber(cart[i].itemSumm) 
 
         let itemSaleSumm = cart[i].sale? roundNumber(cart[i].itemSaleSumm) : ""
+
         
+        let isIOS = {
+            iOS:            function() { return navigator.userAgent.match(/iPhone|iPad|iPod/i) ? true : false; },
+            any:            function() { return (isIOS.iOS());  }
+        };
+        //    ${isIOS? "style='padding: 2px 10px 2px 9px;'" : ""}
         let payCartItems = `
                                 <div class="pay-cart__item">
                                     <img src="${cart[i].imagePath}" data-key="${cart[i].key}" data-urlProduct="${cart[i].urlProduct}" alt="">
@@ -1003,9 +1025,9 @@ function cartInitProducts(cart){
                                             ${cart[i].weightParams ? cart[i].weightParams : ""}                                           
                                         </span>
                                         <div class="product-info__count" data-id="${cart[i].id}">
-                                            <button class="product-info-decrement ${cart[i].sale? "sale" : ""}" onclick="decrement(this)" data-key="${cart[i].key}">-</button>
+                                            <button class="product-info-decrement ${cart[i].sale? "sale" : ""}" ${isIOS.any()? "style='padding: 2px 10px 2px 9px;'" : ""} onclick="decrement(this)" data-key="${cart[i].key}" ${cart[i].sale? "disabled" : ""}}>-</button>
                                             <input class="cart-product-info-count-input${cart[i].sale? " sale" : ""}" value="${cart[i].count}" data-id="${cart[i].id}" data-key="${cart[i].key}" type="text" name="product-count" ${cart[i].sale? "disabled" : ""}>
-                                            <button class="product-info-increment ${cart[i].sale? "sale" : ""}" onclick="increment(this)" data-key="${cart[i].key}">+</button>
+                                            <button class="product-info-increment ${cart[i].sale? "sale" : ""}" ${isIOS.any()? "style='padding: 2px 10px 2px 7px;'" : ""} onclick="increment(this)" data-key="${cart[i].key}" ${cart[i].sale? "disabled" : ""}>+</button>
                                         </div>
                                         
                                     </div>
@@ -1075,16 +1097,21 @@ function cartInitProducts(cart){
                 }
             }
             localStorage.setItem("cart", JSON.stringify(cart));
-            cartInitProducts(cart)
+            await cartInitProducts(cart)
             summCalculation(cart)
+            debugger
+            if( $(".main .container")[0].clientHeight < $(".pay-cart")[0].clientHeight){                
+                $(".main")[0].style.height = ($(".pay-cart")[0].clientHeight + 20).toString()+'px'
+            }
         })
 
         //#endregion
+       
 
     }
     rootElement.prepend(title);
     //#region  Удаление из корзины
-    $(".delete-item").on('click', function(e){    
+    $(".delete-item").on('click',async function(e){    
             
         if($("#cart").length) {
             let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"));
@@ -1097,11 +1124,16 @@ function cartInitProducts(cart){
             } 
             const newCart = cart.filter( n => n.key.toString() != cartKey )
             localStorage.setItem("cart", JSON.stringify(newCart)); 
-            cartInitProducts(newCart)
+            await cartInitProducts(newCart)
             summCalculation(newCart)
             $(".cart-count").each(function() { this.innerText = cart.length })
-            if(newCart.length == 0)  $(".badge").each(function() { this.style.opacity = "0" });            
-        }       
+            if(newCart.length == 0)  $(".badge").each(function() { this.style.opacity = "0" });
+            if( $(".main .container")[0].clientHeight < $(".pay-cart")[0].clientHeight){                
+                $(".main")[0].style.height = ($(".pay-cart")[0].clientHeight + 20).toString()+'px'
+            }            
+        }  
+
+          
     });
     //#endregion
     let promoCart = JSON.parse(localStorage.getItem("promo") || "[]");
@@ -1742,7 +1774,7 @@ async function promoAction(){
         try {
             
             let promo = await response.json();   
-                     
+            debugger         
             if(promo.result == "sugess" ){
                 if( $(".sugess_promo")[0].classList.contains("hide")) $(".sugess_promo")[0].classList.remove("hide")
                 $(".error_promo")[0].classList.add("hide")

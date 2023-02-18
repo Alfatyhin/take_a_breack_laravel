@@ -12,8 +12,7 @@
    -webkit-text-size-adjust: 100%;
    /* 2 */
  }
-
-
+ 
  /* Sections
       ========================================================================== */
  /**
@@ -346,6 +345,7 @@
    max-width: 90%;
    padding: 0 15px;
    margin: 0 auto;
+   margin: 0 75px;
  }
  
  /* ===== Scrollbar CSS ===== */
@@ -457,7 +457,7 @@
        -ms-flex-align: center;
            align-items: center;
    padding: 45px 30px;
-   max-width: 95px;
+   width: 95px;
    box-sizing: border-box;
    background: #ccabd1;
    background: rgba(204,171,209,0.1);
@@ -1298,6 +1298,7 @@
    -o-object-fit: cover;
       object-fit: cover;
    width: 100%; 
+   max-height: 420px;
  }
  .card__item .card-img > img.sale{
     position: absolute;
@@ -2247,8 +2248,7 @@
  .pay {
    -webkit-box-sizing: border-box;
            box-sizing: border-box;
-   max-width: 760px;
-   width: 100%;
+   width: calc(100vw - 760px);
    /* margin-left: 30px; */
  }
  
@@ -2764,6 +2764,7 @@ element.style {
  }
  
  .pay-cart {
+  position: absolute;
    margin-left: 40px;
    max-width: 500px;
    -webkit-box-sizing: border-box;
@@ -2772,7 +2773,8 @@ element.style {
    background-color: #F6F4EC;
    font-family: "Roboto", sans-serif;
    width: 100%;
-   min-width: 440px;
+   width: 470px;
+   right: 130px;
  }
  .pay-cart__items, .pay-cart__items_additive{
    position: relative;
@@ -3023,6 +3025,14 @@ element.style {
  }
  
  @media (max-width: 1200px) {
+
+  .container {
+    margin: 0 auto;
+  }
+  .pay {
+    
+    width: auto;
+}
    .paypage-part {
      -webkit-box-orient: vertical;
      -webkit-box-direction: reverse;
@@ -3037,7 +3047,7 @@ element.style {
    .pay-cart {
      min-width: auto;
      width: 100%;
-     max-width: 760px;
+     max-width: 1200px;
      padding: 26px 20px;
      -webkit-box-sizing: border-box;
              box-sizing: border-box;
@@ -3051,6 +3061,7 @@ element.style {
      -webkit-box-direction: reverse;
          -ms-flex-direction: column-reverse;
              flex-direction: column-reverse;
+      right: auto;
    }
    .pay-cart__title {
      margin-top: 20px;
@@ -3105,6 +3116,13 @@ element.style {
  }
  
  @media (max-width: 768px) {
+  .container {
+    margin: 0 auto;
+  }
+  .pay {
+    
+    width: auto;
+}
    .pay__acttion {
      -webkit-box-orient: vertical;
      -webkit-box-direction: normal;
