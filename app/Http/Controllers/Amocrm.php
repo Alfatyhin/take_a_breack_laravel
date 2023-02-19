@@ -281,16 +281,60 @@ class Amocrm extends Controller
     {
         $amoCrmService = $this->amoService;
 
-        $clients = Clients::where('amoId', '!=', null)->get();
+        $clients = Clients::where('amoId', '!=', null)->orderBy('id', 'desc')->get();
 
+        $citi_count = 0;
 
         foreach ($clients as $client) {
             $amo_client = $amoCrmService->getContactBuId($client->amoId);
 
             if ($amo_client) {
-                $orders = Orders::where('clientId', $client->id)->get();
+                $city_name = false;
+                $orders = Orders::where('clientId', $client->id)->get()->toArray();
 
-                dd($orders);
+                foreach ($orders as $order) {
+                    $orderData = json_decode($order['orderData'], true);
+
+                    if (isset($orderData['city'])) {
+
+                        if (!$city_name) {
+                            $city_name = AppServise::getCityNameByLang($orderData['city'], 'ru');
+                        }
+                    } else {
+                        if (isset($orderData['delivery'])) {
+
+                            if ($orderData['delivery'] == 'delivery') {
+                                dd($orderData);
+                            }
+
+                        } else {
+
+                            if (!$city_name) {
+                                if (!isset($orderData['short_order'])) {
+                                    if (!isset($orderData['step'])
+                                        && !isset($orderData['clientName'])) {
+
+                                        if (isset($orderData['shippingPerson'])) {
+                                            if (isset($orderData['shippingPerson']['city'])) {
+                                                $city_name = AppServise::getCityNameByLang($orderData['shippingPerson']['city'], 'ru');
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+                if ($city_name) {
+                    $contactData = [
+                        'city' => $city_name
+                    ];
+                    $citi_count++;
+                    $amo_client = $amoCrmService->syncContactData($amo_client, $contactData);
+                }
+
 
 
 //                $test_email = $amoCrmService->getContactDoubles($client->email);
@@ -320,6 +364,7 @@ class Amocrm extends Controller
             }
         }
 
+        dd($citi_count);
     }
 
 

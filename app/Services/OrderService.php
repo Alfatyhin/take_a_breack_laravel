@@ -1063,7 +1063,7 @@ class OrderService
             // проверка клиента
             $client_id = $order->clientId;
             $client = Clients::where('id', $client_id)->first();
-            $amo_contact = $this->searchOrCreateAmoContact($client, $amo_lang);
+            $amo_contact = $this->searchOrCreateAmoContact($client, $amo_lang, $orderData);
 
             if ($amo_contact->id != $client->amoId) {
                 $client->amoId = $amo_contact->id;
@@ -1195,7 +1195,7 @@ class OrderService
         }
     }
 
-    public function searchOrCreateAmoContact(Clients $client, $lang)
+    public function searchOrCreateAmoContact(Clients $client, $lang, $orderData)
     {
         $amoCrmService = $this->amoCrmService;
         $phone = self::phoneAmoFormater($client->phone);
@@ -1214,6 +1214,10 @@ class OrderService
                 $date_time = strtotime($date->format('Y-m-d H:i:s'));
                 $contactData['birthday'] = $date_time;
             }
+        }
+
+        if (isset($orderData['city'])) {
+            $contactData['city'] = AppServise::getCityNameByLang($orderData['city'], 'ru');
         }
 
         if (!empty($client->amoId)) {

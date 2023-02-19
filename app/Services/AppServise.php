@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Coupons;
 use App\Models\ProductOptions;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\Types\String_;
 
@@ -362,5 +363,40 @@ class AppServise
         $allCountries = Storage::disk('local')->get('js/all_countries.json');
 
         return json_decode($allCountries, true);
+    }
+
+    public static function getAllCityes()
+    {
+        $data = Storage::disk('local')->get('js/israel-city.json');
+        $data = json_decode($data, true);
+
+        return $data['citys_all'];
+    }
+
+
+    public static function getCityNameByLang($name, $lang)
+    {
+
+        $cityes = self::getAllCityes();
+        $city_names['en'] = array_column($cityes, 'en');
+        $city_names['ru'] = array_column($cityes, 'ru');
+        $city_names['he'] = array_column($cityes, 'he');
+
+        foreach ($city_names as $kl => $data) {
+
+            $data = array_flip($data);
+
+            if (isset($data[$name])) {
+
+                if ($kl == $lang) {
+                    return $name;
+                } else {
+                    return $cityes[$data[$name]][$lang];
+                }
+            }
+        }
+
+        return false;
+
     }
 }

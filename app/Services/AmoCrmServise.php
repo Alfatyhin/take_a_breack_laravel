@@ -1646,7 +1646,7 @@ class AmoCrmServise
 
         if (isset($clientData['lang'])) {
             //язык
-            $langField = $customFields->getBy('fieldId', '490441');
+            $langField = $customFields->getBy('fieldId', 490441);
             //Если значения нет, то создадим новый объект поля и добавим его в коллекцию значений
             if (empty($langField)) {
                 $langField = (new SelectCustomFieldValuesModel())->setFieldId('490441');
@@ -1666,10 +1666,10 @@ class AmoCrmServise
 
         if (isset($clientData['birthday'])) {
             //birthday
-            $birthdayField = $customFields->getBy('fieldId', '230445');
+            $birthdayField = $customFields->getBy('fieldId', 230445);
             //Если значения нет, то создадим новый объект поля и добавим его в коллекцию значений
             if (empty($birthdayField)) {
-                $birthdayField = (new BirthdayCustomFieldValuesModel())->setFieldId('230445');
+                $birthdayField = (new BirthdayCustomFieldValuesModel())->setFieldId(230445);
                 $customFields->add($birthdayField);
 
                 //Установим значение поля
@@ -1682,6 +1682,42 @@ class AmoCrmServise
                 );
                 $contact_update = true;
             }
+        }
+
+        if (isset($clientData['city'])) {
+
+                $addresField = $customFields->getBy('fieldId', 520279);
+                //Если значения нет, то создадим новый объект поля и добавим его в коллекцию значений
+                if (empty($addresField)) {
+                    $addresField = (new TextCustomFieldValuesModel())->setFieldId(520279);
+                    $customFields->add($addresField);
+
+                    //Установим значение поля
+                    $addresField->setValues(
+                        (new TextCustomFieldValueCollection())
+                            ->add(
+                                (new TextCustomFieldValueModel())
+                                    ->setValue($clientData['city'])
+                            )
+                    );
+                    $contact_update = true;
+                } else {
+
+                    $values = $addresField->getValues()->toArray();
+
+                    if ($values[0]['value'] != $clientData['city']) {
+                        $addresField->setValues(
+                            (new TextCustomFieldValueCollection())
+                                ->add(
+                                    (new TextCustomFieldValueModel())
+                                        ->setValue($clientData['city'])
+                                )
+                        );
+                        $contact_update = true;
+                    }
+
+                }
+
         }
 
         if ($contact_update) {
