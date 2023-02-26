@@ -34,6 +34,7 @@ class IcreditController extends Controller
 
 
         return view('icredit.index', [
+            'error_log'      => $request->error_log,
             'icredit' => $Icredit,
         ]);
 
