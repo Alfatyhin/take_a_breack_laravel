@@ -49,6 +49,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'prod_root' => [
+            'driver' => 'local',
+            'root' => storage_path('../../takeabreak.co.il/storage/app/public/'),
+            'url' => env('APP_URL').'/',
+            'visibility' => 'public',
+        ],
+
         'views_shop' => [
             'driver' => 'local',
             'root' => storage_path('../resources/views/shop'),
