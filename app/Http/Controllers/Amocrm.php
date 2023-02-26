@@ -15,6 +15,7 @@ use App\Services\OrderService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
@@ -277,94 +278,228 @@ class Amocrm extends Controller
     }
 
 
-    public function UsersDuplicateCollaps(Request $request)
+    public function UsersDuplicateCollaps(Request $request, $client_id = false)
     {
+
+        set_time_limit(60*60);
+
         $amoCrmService = $this->amoService;
 
-        $clients = Clients::where('amoId', '!=', null)->orderBy('id', 'desc')->get();
+        if ($client_id) {
+            $clients[] = Clients::find($client_id);
+        } else {
+            $clients = Clients::where('amoId', '!=', null)->orderBy('id', 'desc')->get();
+        }
 
-        $citi_count = 0;
 
         foreach ($clients as $client) {
-            $amo_client = $amoCrmService->getContactBuId($client->amoId);
 
-            if ($amo_client) {
-                $city_name = false;
-                $orders = Orders::where('clientId', $client->id)->get()->toArray();
+            $amo_deleted = [];
+            $result = [];
+            $client_data = [];
 
-                foreach ($orders as $order) {
-                    $orderData = json_decode($order['orderData'], true);
+            $new_amo_id = $request->get(('new_amo_id'));
 
-                    if (isset($orderData['city'])) {
+//            $renew['email'][] = $client->email;
+//            $renew['phone'][] = $client->phone;
+//
+//            $amo_client = $amoCrmService->getContactBuId($client->amoId);
+//            $test = $amoCrmService->renewContactData($amo_client, $renew);
+//
+//            dd($test);
 
-                        if (!$city_name) {
-                            $city_name = AppServise::getCityNameByLang($orderData['city'], 'ru');
+            if ($client && $client->data) {
+                $client_data = json_decode($client->data, true);
+            }
+
+
+            if (!$client_data
+                || ($client_data && !isset($client_data['amo_double_checked']))
+                || ($client_data && empty($client_data['amo_double_checked']))) {
+
+                $amo_client = $amoCrmService->getContactBuId($client->amoId);
+
+                $test_email = $amoCrmService->getContactDoubles($client->email);
+                $test_phones = $amoCrmService->searchContactByPhone($client->phone);
+
+                if ($test_email && $test_phones) {
+                    $diff = array_diff_key($test_email, $test_phones);
+                    $result = $test_phones;
+                    if ($diff) {
+
+                        foreach ($diff as $key => $val) {
+                            $result = Arr::add($result, $key, $val);
                         }
+
                     } else {
-                        if (isset($orderData['delivery'])) {
+                        $result = $test_email;
+                    }
+                } else {
+                    if ($test_email) {
+                        $result = $test_email;
+                    }
+                    if ($test_phones) {
+                        $result = $test_phones;
+                    }
+                }
 
-                            if ($orderData['delivery'] == 'delivery') {
-                                dd($orderData);
-                            }
+                if (isset($client_data['phones']) && sizeof($client_data['phones']) > 1) {
 
-                        } else {
+                    foreach ($client_data['phones'] as &$item) {
+                        $item = OrderService::phoneAmoFormater($item);
+                    }
 
-                            if (!$city_name) {
-                                if (!isset($orderData['short_order'])) {
-                                    if (!isset($orderData['step'])
-                                        && !isset($orderData['clientName'])) {
+                    $phones = array_unique($client_data['phones']);
 
-                                        if (isset($orderData['shippingPerson'])) {
-                                            if (isset($orderData['shippingPerson']['city'])) {
-                                                $city_name = AppServise::getCityNameByLang($orderData['shippingPerson']['city'], 'ru');
-                                            }
-                                        }
-                                    }
-                                }
+                    if (sizeof($client_data['phones']) != sizeof($phones)) {
+                        $client_data['phones'] = $phones;
+                        $client->data = json_encode($client_data);
+                        $client->save();
+                    }
+
+                    if (sizeof($client_data['phones']) > 1) {
+
+                        foreach ($client_data['phones'] as $item) {
+                            $test_phones = $amoCrmService->searchContactByPhone($client->phone);
+                            foreach ($test_phones as $key => $val) {
+                                $result = Arr::add($result, $key, $val);
                             }
 
                         }
                     }
-                }
 
-                if ($city_name) {
-                    $contactData = [
-                        'city' => $city_name
-                    ];
-                    $citi_count++;
-                    $amo_client = $amoCrmService->syncContactData($amo_client, $contactData);
                 }
 
 
+                if (sizeof($result) > 1) {
 
-//                $test_email = $amoCrmService->getContactDoubles($client->email);
-//                $test_phones = $amoCrmService->getContactDoubles($client->phone);
-//
-//
-//
-//                $diff = array_diff_key($test_email, $test_phones);
-//                if ($diff) {
-//                    $result = $test_email + $diff;
-//
-//                    dd($client, $amo_client, $test_email, $test_phones, $result, $diff);
-//                } else {
-//                    $result = $test_email;
-//                }
-//
-//
-//
-//                if ($client->data) {
-//                    dd($client->data);
-//                }
-//
-//                if (sizeof($result) != 1) {
-//                    dd($client, $amo_client, $test_email, $test_phones, $result);
-//                }
 
+//                    $data = $result[$new_amo_id];
+//                    $phones = array_unique($data['fields']['Телефон']);
+//                    $mails = array_unique($data['fields']['Email']);
+//
+//                    foreach ($phones as &$item_phone) {
+//                        $item_phone = OrderService::phoneAmoFormater($item_phone);
+//                    }
+//
+//                    $phones = array_unique($phones);
+//
+//                    $renew['email'] = $mails;
+//                    $renew['phone'] = $phones;
+//
+//                    $renew_client = $amoCrmService->getContactBuId($new_amo_id);
+//                    $test = $amoCrmService->renewContactData($renew_client, $renew);
+
+                    if ($client_id && !$new_amo_id) {
+                        print_r("<p>Выберите коосновной контакт</p> ");
+                        foreach ($result as $res_item) {
+
+                            $url = route("amocrm_users_duplicate", ["client" => $client->id, 'new_amo_id' => $res_item['id']]);
+                            print_r("<p> <a href='$url'>{$res_item['id']}</a></p>");
+                        }
+                        dd($test_email, $test_phones, $result);
+                    }
+
+
+                    $phones = [];
+                    $mailes = [];
+                    foreach ($result as $item) {
+                        if (isset($item['fields']['Телефон'])) {
+                            foreach ($item['fields']['Телефон'] as $phone) {
+                                $phones[] = OrderService::phoneAmoFormater($phone);
+                            }
+                        }
+                        if (isset($item['fields']['Email'])) {
+                            foreach ($item['fields']['Email'] as $email) {
+                                $mailes[] = $email;
+                            }
+                        }
+                        if (isset($item['fields']['Город']) && !isset($result[$new_amo_id]['fields']['Город'])) {
+                            $update_amo['city'] = $item['fields']['Город'][0];
+                        }
+
+                        $phones = array_unique($phones);
+                        $mailes = array_unique($mailes);
+
+                    }
+
+
+                    $update_amo['email'] = $mailes;
+                    $update_amo['phone'] = $phones;
+
+                    if ($client_id && $new_amo_id) {
+                        $contact = $amoCrmService->getContactBuId($new_amo_id);
+                        $new_contact = $amoCrmService->syncContactData($contact, $update_amo);
+                    }
+
+                    $deletes = $result;
+                    unset($deletes[$new_amo_id]);
+
+                    foreach ($deletes as $item) {
+                        $amo_old_id = $item['id'];
+                        $test_client = Clients::where('amoId', $amo_old_id)->first();
+
+                        if ($test_client && $new_amo_id) {
+                            $test_client->amoId = $new_amo_id;
+                            $test_client->save();
+                        }
+                        $amo_deleted[] = $amo_old_id;
+                    }
+
+                    if (isset($amo_deleted)) {
+
+                        if ($client_id && $new_amo_id) {
+
+                            if (!$amo_client) {
+                                $client->amoId = $new_amo_id;
+                                $client->save();
+                            }
+
+                            print_r("<p>Удалите дубли из первого блока и перезагрузите страницу</p>");
+
+                            dd($amo_deleted, $result, $new_contact->toArray());
+                        } else {
+
+                            if ($client_id && !$amo_client) {
+                                dd('test 1', $result);
+                            }
+
+                            $client_data['amo_double_checked'] = 0;
+                            $client->data = json_encode($client_data);
+                            $client->save();
+                        }
+
+                    } else {
+                        if ($client_id && !$amo_client) {
+                            dd('test 2', $result);
+                        }
+
+                        $client_data['amo_double_checked'] = 1;
+                        $client->data = json_encode($client_data);
+                        $client->save();
+
+                    }
+
+
+                } else {
+
+                    $client_data['amo_double_checked'] = 1;
+                    if (sizeof($result) == 1) {
+                        $client->amoId = key($result);
+                    } elseif (sizeof($result) == 0) {
+                        $client_data['amo_double_checked'] = -1;
+                    }
+
+                    $client->data = json_encode($client_data);
+                    $client->save();
+                    if ($client_id) {
+                        dd('done clear 1');
+                    }
+                }
             }
         }
+        dd('done clear final');
 
-        dd($citi_count);
     }
 
 
