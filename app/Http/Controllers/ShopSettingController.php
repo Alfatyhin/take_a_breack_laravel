@@ -1277,18 +1277,26 @@ class ShopSettingController extends Controller
     public function DbProdImport(Request $request)
     {
 
+        $prod_files = Storage::disk('prod_root')->allFiles('images');
+        $this_files = Storage::disk('public')->allFiles('images');
+        $diff = array_diff($prod_files, $this_files);
 
-        $table_name = 'users';
-        DB::table($table_name)->truncate();
-        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
-
-        foreach ($prod_data as $item) {
-            $new_item = new User();
-            foreach ($item as $k => $v) {
-                $new_item->$k = $v;
-            }
-            $new_item->save();
+        foreach ($diff as $item_file) {
+            $file = Storage::disk('prod_root')->get($item_file);
+            Storage::disk('public')->put($item_file, $file);
         }
+
+//        $table_name = 'users';
+//        DB::table($table_name)->truncate();
+//        $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
+//
+//        foreach ($prod_data as $item) {
+//            $new_item = new User();
+//            foreach ($item as $k => $v) {
+//                $new_item->$k = $v;
+//            }
+//            $new_item->save();
+//        }
 
 
         $table_name = 'orders';
@@ -1331,25 +1339,21 @@ class ShopSettingController extends Controller
 
 
         $table_name = 'products';
+        DB::table($table_name)->truncate();
         $prod_data = DB::connection('mysql_prod')->table($table_name)->get();
 
         foreach ($prod_data as $item) {
-            $test = Product::find($item->id);
 
-            if (!$test) {
-
-                $new_item = new Product();
-                foreach ($item as $k => $v) {
-                    $new_item->$k = $v;
-                }
-
-                $test = Product::where('slag', $item->slag)->get()->first();
-                if ($test) {
-                    $new_item->slag = $item->slag."_".$item->id;
-                }
-                $new_item->save();
+            $new_item = new Product();
+            foreach ($item as $k => $v) {
+                $new_item->$k = $v;
             }
 
+            $test = Product::where('slag', $item->slag)->get()->first();
+            if ($test) {
+                $new_item->slag = $item->slag."_".$item->id;
+            }
+            $new_item->save();
         }
 
 

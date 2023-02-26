@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 //});
 
 Route::get('/dashboard', array(ShopSettingController::class, 'index'))
-    ->middleware(['isAdmin', "ShopSetting", "ip_bloked"])
+    ->middleware(["ShopSetting", "ip_bloked"])
     ->name('dashboard');
 
 require __DIR__.'/auth.php';
@@ -66,9 +66,6 @@ Route::get('/api/json/import', [ShopSettingController::class, 'jsonImport'])
 
 
 
-Route::any('data/db/prod-import', [ShopSettingController::class, 'DbProdImport'])
-    ->name('db_prod_import');
-
 
 Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group(function () {
 
@@ -78,7 +75,10 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
         ->name('amocrm');
 
 
-    Route::get('/amocrm/users/duplicate', [Amocrm::class, 'UsersDuplicateCollaps'])
+    Route::get('/clients', [Controller::class, 'allClients'])
+        ->name('clients');
+
+    Route::get('/amocrm/users/duplicate/{client?}', [Amocrm::class, 'UsersDuplicateCollaps'])
         ->name('amocrm_users_duplicate');
 
 
@@ -332,9 +332,6 @@ Route::get('/orders/restore', [Orders::class, 'orderRestore'])
 Route::get('/orders/webhooks', [Orders::class, 'getWebHookLog'])
     ->middleware(['isAdmin'])->name('webhook.log');
 
-
-Route::get('/clients', [Controller::class, 'allClients'])
-    ->middleware(['isAdmin'])->name('clients');
 
 Route::get('/invoice-create', [Orders::class, 'createInvoice'])
     ->middleware(['isAdmin'])->name('invoice_create');

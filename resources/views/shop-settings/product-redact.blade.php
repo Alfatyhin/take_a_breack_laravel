@@ -447,26 +447,37 @@
                                                             </td>
                                                         @endif
                                                         <td>
-                                                            <div class="box_inline">
+
+                                                            @if($product->variables)
+                                                                <p>
+                                                                    модификатор при наличии вариаций не работает
+                                                                </p>
+                                                            @else
+                                                                <div class="box_inline">
 
 
-                                                                @isset($choice['priceModifier'])
-                                                                    <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" value="{{ $choice['priceModifier'] }}">
-                                                                @else
-                                                                    <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" value="0">
-                                                                @endisset
-                                                            </div>
-                                                            <div class="box_inline">
-                                                                @if (isset($choice['priceModifierType']) && $choice['priceModifierType'] == 'PERCENT')
-                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" > $
-                                                                    <br>
-                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" checked > %
-                                                                @else
-                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" checked > $
-                                                                    <br>
-                                                                    <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" > %
-                                                                @endif
-                                                            </div>
+
+                                                                    @isset($choice['priceModifier'])
+                                                                        <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" value="{{ $choice['priceModifier'] }}">
+                                                                    @else
+                                                                        <input type="number" name="options[{{ $k }}][choices][{{ $kc }}][priceModifier]" value="0">
+                                                                    @endisset
+
+
+                                                                </div>
+                                                                <div class="box_inline">
+                                                                    @if (isset($choice['priceModifierType']) && $choice['priceModifierType'] == 'PERCENT')
+                                                                        <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" > $
+                                                                        <br>
+                                                                        <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" checked > %
+                                                                    @else
+                                                                        <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="ABSOLUTE" checked > $
+                                                                        <br>
+                                                                        <input type="radio" name="options[{{ $k }}][choices][{{ $kc }}][priceModifierType]" value="PERCENT" > %
+                                                                    @endif
+                                                                </div>
+
+                                                            @endif
                                                         </td>
 
                                                         <td>

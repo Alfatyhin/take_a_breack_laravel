@@ -68,8 +68,8 @@ class Controller extends BaseController
 
 
         return view('users.index', [
-            'error_log'      => $request->error_log,
-            'users' => $users,
+            'error_log'  => $request->error_log,
+            'users'      => $users,
             'user_roles' => $user_roles
         ]);
     }
@@ -77,11 +77,12 @@ class Controller extends BaseController
 
     public function allClients(Request $request)
     {
-        $clients = Clients::latest('id')->paginate(10);
+        $clients = Clients::latest('id')->paginate(50);
 
 
         return view('clients.index', [
-            'clients' => $clients,
+            'error_log' => $request->error_log,
+            'clients'   => $clients,
         ]);
     }
 

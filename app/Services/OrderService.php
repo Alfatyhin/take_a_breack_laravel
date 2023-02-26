@@ -782,6 +782,7 @@ class OrderService
                     $item['variant_price'] = $variant['defaultDisplayedPrice'];
                     $item['price'] = $variant['defaultDisplayedPrice'];
                     $item['sku'] = $variant['sku'];
+                    $item_total = $item['price'];
                 } else {
                     dd($product->variables, $item);
                 }
@@ -794,7 +795,7 @@ class OrderService
             $item['name'] = $translate['nameTranslated'];
 
 
-            if (isset($item['options'])) {
+            if (isset($item['options']) && empty($product->variables)) {
                 $options = json_decode($product->options, true);
 
                 foreach ($item['options'] as &$item_option) {
@@ -864,7 +865,7 @@ class OrderService
             }
 
             if (!$item_total) {
-                dd('not isset item total', $item, $product, $options);
+                dd('not isset item total', $item, $product);
             }
 //            print_r("<p>$products_total + $item_total ");
             $products_total += $item_total;
@@ -1622,6 +1623,7 @@ class OrderService
 
         $order_data_jsonform = $post['order_data'];
         $orderData = self::getShopOrderData($post);
+        dd($orderData);
         $orderData['order_data_jsonform'] = $order_data_jsonform;
 
         $res = self::validateOrderData($orderData);
@@ -1655,6 +1657,7 @@ class OrderService
 
     public static function validateOrderData($order_data)
     {
+
 
         $messages = [];
         if (!empty($order_data['order_id'])) {
@@ -1905,7 +1908,7 @@ class OrderService
             $client->name = $post['clientName'];
         }
         if (empty($client->phone)) {
-            $client->phone = $post['phone'];
+            $client->phone = $phone;
         }
         if (isset($data['phones'])) {
             $phones = $data['phones'];
