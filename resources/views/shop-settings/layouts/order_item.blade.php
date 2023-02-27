@@ -102,8 +102,10 @@
                     @foreach($product['options'] as $option)
                         @if (!empty($option['name']['ru']))
                             {{ $option['name']['ru'] }}
-                        @else
+                        @elseif(!empty($option['name']['en']))
                             {{ $option['name']['en'] }}
+                        @else
+                            undefined option
                         @endif
                             -
                         {{ $option['value']['text'] }}
