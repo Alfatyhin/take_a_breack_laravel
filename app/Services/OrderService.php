@@ -812,8 +812,7 @@ class OrderService
                 $options = json_decode($product->options, true);
 
                 foreach ($item['options'] as &$item_option) {
-                    if ($item_option['type'] == 'SIZE' && empty($item['variant'])
-                        || $item_option['type'] != 'SIZE') {
+
 
                         $option_key = $item_option['key'];
                         $option_choice_key = $item_option['value'];
@@ -836,20 +835,24 @@ class OrderService
                         }
 
                         if ($choice['priceModifier'] != 0) {
-                            if ($choice['priceModifierType'] == 'ABSOLUTE') {
-                                if (!isset($item['price'])) {
-                                    dd('not price', $item);
+                            if ($item_option['type'] == 'SIZE' && empty($item['variant'])
+                                || $item_option['type'] != 'SIZE') {
+                                if ($choice['priceModifierType'] == 'ABSOLUTE') {
+                                    if (!isset($item['price'])) {
+                                        dd('not price', $item);
+                                    }
+                                    $price_item = $item['price'] + $choice['priceModifier'] / 1;
+                                } else {
+                                    $price_item = $item['price'] + ($price / 100 * $choice['priceModifier']);
                                 }
-                                $price_item =  $item['price'] + $choice['priceModifier'] / 1;
-                            } else {
-                                $price_item =  $item['price'] + ($price / 100 * $choice['priceModifier']);
-                            }
 
-                            $item['price'] = $price_item;
-                            $item_total = $price_item * $item['count'];
+                                $item['price'] = $price_item;
+                                $item_total = $price_item * $item['count'];
+                            }
                         } else {
                             $item_total = $item['price'] * $item['count'];
                         }
+
                         $item['total'] = $item_total;
                         $options_id = $option['options_id'];
                         $option_value = $choice['var_option_id'];
@@ -869,7 +872,7 @@ class OrderService
                         if (isset($item_option['text'])) {
                             $item_option['text'] = Str::remove(["\n", "   "], $item_option['text']);
                         }
-                    }
+
                 }
             }
 
