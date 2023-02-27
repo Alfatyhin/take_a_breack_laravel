@@ -127,11 +127,19 @@ class OrderService
 
             if (!empty($item['options'])) {
                 foreach ($item['options'] as $option) {
-                    $name = $option['name']['en'];
-                    $value = $option['value']['textTranslated']['en'];
-                    if ($option['type'] == 'TEXT') {
-                        $value = "-||{$option['input_text']}||";
+
+                    if(is_array($option['name'])) {
+                        $name = $option['name']['en'];
+                        $value = $option['value']['textTranslated']['en'];
+                        if ($option['type'] == 'TEXT') {
+                            $value = "-||{$option['input_text']}||";
+                        }
+                    } else {
+                        $name = preg_replace('/  /', '', trim($option['text']) );
+                        $name = preg_replace('/\\n/', ' ', $name );
+                        $value = '';
                     }
+
                     $product_name .= " $name $value";
                 }
             }
@@ -253,8 +261,14 @@ class OrderService
 
             if (!empty($item['options'])) {
                 foreach ($item['options'] as $option) {
-                    $name = $option['name']['en'];
-                    $value = $option['value']['textTranslated']['en'];
+                    if(is_array($option['name'])) {
+                        $name = $option['name']['en'];
+                        $value = $option['value']['textTranslated']['en'];
+                    } else {
+                        $name = preg_replace('/  /', '', trim($option['text']) );
+                        $name = preg_replace('/\\n/', ' ', $name );
+                        $value = '';
+                    }
                     $product_name .= " $name $value";
                 }
             }
