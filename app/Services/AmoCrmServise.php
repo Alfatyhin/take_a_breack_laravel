@@ -1248,28 +1248,8 @@ class AmoCrmServise
             return false;
         }
 
-        $x = 0;
-        foreach ($contacts as $contact) {
 
-            $data[$contact->id]['id'] = $contact->id;
-            $data[$contact->id]['name'] = $contact->name;
-            $data[$contact->id]['firstName'] = $contact->firstName;
-            $data[$contact->id]['lastName'] = $contact->name;
-            $customFields = $contact->getCustomFieldsValues();
-            if ($customFields) {
-                foreach ($customFields as $field)
-                {
-                    $field_data = $field->values;
-                    foreach ($field_data as $k => $v) {
-                        $data[$contact->id]['fields'][$field->fieldName][$k] = $v->value;
-                    }
-                }
-
-                $x++;
-            }
-        }
-
-        return $data;
+        return $contacts->toArray();
     }
 
     public function searchContactByPhone($phone)
@@ -1771,6 +1751,21 @@ class AmoCrmServise
 
         return $contactModel;
 
+    }
+
+    public function mergeContacts($contact_1, $contact_2)
+    {
+        $apiClient = $this->getApiClient();
+        $contact_1 = $apiClient->contacts()->getOne($contact_1);
+        $contact_2 = $apiClient->contacts()->getOne($contact_2);
+
+        $values = $contact_2->getCustomFieldsValues();
+
+//        dd($values);
+
+        $contact = $apiClient->contacts()->syncOne($contact_1, $values);
+
+        return $contact;
     }
 
     public function searchOpenLeadByContactId($contact_id)

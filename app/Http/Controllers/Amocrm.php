@@ -13,6 +13,7 @@ use App\Services\EcwidService;
 use App\Services\GreenInvoiceService;
 use App\Services\OrderService;
 use Carbon\Carbon;
+use Egulias\EmailValidator\Exception\InvalidEmail;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
@@ -500,6 +501,157 @@ class Amocrm extends Controller
         }
         dd('done clear final');
 
+    }
+
+    public function contacts(Request $request, $page = false)
+    {
+        set_time_limit(60*60);
+        $amoCrmService = $this->amoService;
+        $next_page = false;
+        $prev_page = false;
+        $doubles = [];
+        $doubles_search = [];
+        $stop = 10;
+
+        $post = $request->post();
+
+        if ($post) {
+            dd($post);
+            if (!empty($post['contact']) && !empty($post['merge'])) {
+                $contact_id = $post['contact'];
+                $contact = $amoCrmService->getContactBuId($contact_id);
+                if (!isset($post['merge'][$contact_id])) {
+                    foreach ($post['merge'] as $item) {
+                        $double = $amoCrmService->getContactBuId($item);
+                        $new_contact = $amoCrmService->mergeContacts($contact_id, $item);
+                        $test = $amoCrmService->getContactBuId($contact_id);
+                        dd($contact, $double, $new_contact, $test);
+                    }
+                } else {
+                    dd('нельзя соединить контакт сам с собой' );
+                }
+            }
+        }
+
+        if ($page) {
+            $contacts = session('contacts');
+        } else {
+            $contacts = $amoCrmService->getContacts();
+        }
+
+        if ($contacts->getNextPageLink()) {
+           $next_page =  $contacts->getNextPageLink();
+        }
+        if ($contacts->getPrevPageLink()) {
+            $prev_page =  $contacts->getPrevPageLink();
+        }
+
+        $contacts_data = $contacts->toArray();
+
+
+
+        if ($next_page) {
+
+            if ($page) {
+                $x = $page;
+            } else {
+                $x = 0;
+            }
+            $size = 0;
+
+            while ($size < $stop) {
+
+                if ($next_page && $x > 0) {
+                    $contacts = $amoCrmService->getContacts($contacts);
+
+                    if ($contacts->getNextPageLink()) {
+                        $next_page =  $contacts->getNextPageLink();
+                    }
+                    if ($contacts->getPrevPageLink()) {
+                        $prev_page =  $contacts->getPrevPageLink();
+                    }
+
+                    $contacts_data = $contacts->toArray();
+                }
+
+                foreach ($contacts_data as $item) {
+                    $id = $item['id'];
+                    $item_data = [];
+                    if ($item['custom_fields_values']) {
+                        foreach ($item['custom_fields_values'] as $field) {
+                            if ($field['field_code'] == 'PHONE') {
+                                foreach ($field['values'] as $value) {
+                                    $item_data['phones'][] = $value['value'];
+                                }
+                            }
+                            if ($field['field_code'] == 'EMAIL') {
+                                foreach ($field['values'] as $value) {
+                                    $item_data['emails'][] = $value['value'];
+                                }
+                            }
+                        }
+                        if (!empty($item_data['emails'])) {
+                            foreach ($item_data['emails'] as $email) {
+                                $doubles_search = $amoCrmService->getContactDoubles($email);
+                                foreach ($doubles_search as $item_search) {
+                                    if ($item_search['id'] != $id && !isset($doubles_search[$item_search['id']])) {
+                                        $doubles_search[$item_search['id']]= $item_search['id'];
+                                        $doubles[$id]['emails'][] = $item_search;
+                                    }
+                                }
+                            }
+                        }
+                        if (!empty($item_data['phones'])) {
+                            foreach ($item_data['phones'] as $phone) {
+                                $doubles_search = $amoCrmService->getContactDoubles($phone);
+                                foreach ($doubles_search as $item_search) {
+                                    if ($item_search['id'] != $id && !isset($doubles_search[$item_search['id']])) {
+                                        $doubles_search[$item_search['id']]= $item_search['id'];
+                                        $doubles[$id]['phones'][] = $item_search;
+                                    }
+                                }
+                            }
+                        }
+                        if (isset($doubles[$id])) {
+                            $doubles_search[$item_search['id']]= $item_search['id'];
+                            $doubles_contacts[$id] = $item;
+                        }
+                    }
+                }
+
+                $x++;
+                if (!$next_page) {
+                    $size = $stop;
+                }
+                if (sizeof($doubles) >= $stop) {
+                    $size = $stop;
+                }
+                if ($page) {
+                    if ($x >= $page + 10) {
+                        $size = $stop;
+                    }
+                } else {
+                    if ($x >= 10) {
+                        $size = $stop;
+                    }
+                }
+
+            }
+
+        }
+
+        session(['contacts' => $contacts]);
+
+//        dd($doubles, $next_page, $prev_page, $x);
+
+        return view('amocrm.contacts', [
+            'error_log'     => $request->error_log,
+            'contacts_data' => $doubles_contacts,
+            'doubles'       => $doubles,
+            'next_page'     => $next_page,
+            'prev_page'     => $prev_page,
+            'page'          => $x,
+        ]);
     }
 
 
