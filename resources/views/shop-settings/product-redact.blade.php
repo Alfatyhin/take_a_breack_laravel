@@ -448,7 +448,7 @@
                                                         @endif
                                                         <td>
 
-                                                            @if($product->variables)
+                                                            @if($product->variables && isset($choice['variant_number']))
                                                                 <p>
                                                                     модификатор при наличии вариаций не работает
                                                                 </p>

@@ -325,6 +325,9 @@ class ShopController extends Controller
         }
 
 
+        if (!empty($post)) {
+//            dd($post);
+        }
         if (!empty($post)  && $step > 1) {
             $post['step'] = $step;
             $OrderService = new OrderService();

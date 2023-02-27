@@ -787,16 +787,15 @@ class OrderService
                 if (!empty($product->variables)) {
                     $variables = json_decode($product->variables, true);
 
-                    if (!isset($variables[$var_key])) {
-                        dd($item, $variables, $product->toArray());
-                    }
-                    $variant = $variables[$var_key];
-//                    print_r('variant - '.$var_key);
+                    if (isset($variables[$var_key])) {
+                        $variant = $variables[$var_key];
 
-                    $item['variant_price'] = $variant['defaultDisplayedPrice'];
-                    $item['price'] = $variant['defaultDisplayedPrice'];
-                    $item['sku'] = $variant['sku'];
-                    $item_total = $item['price'];
+                        $item['variant_price'] = $variant['defaultDisplayedPrice'];
+                        $item['price'] = $variant['defaultDisplayedPrice'];
+                        $item['sku'] = $variant['sku'];
+                        $item_total = $item['price'];
+                    }
+
                 } else {
                     dd($product->variables, $item);
                 }
@@ -809,67 +808,71 @@ class OrderService
             $item['name'] = $translate['nameTranslated'];
 
 
-            if (isset($item['options']) && empty($product->variables)) {
+            if (isset($item['options'])) {
                 $options = json_decode($product->options, true);
 
                 foreach ($item['options'] as &$item_option) {
-                    $option_key = $item_option['key'];
-                    $option_choice_key = $item_option['value'];
-                    $option = $options[$option_key];
+                    if ($item_option['type'] == 'SIZE' && empty($item['variant'])
+                        || $item_option['type'] != 'SIZE') {
+
+                        $option_key = $item_option['key'];
+                        $option_choice_key = $item_option['value'];
+                        $option = $options[$option_key];
 
 
-                    if (!is_string($option_choice_key) || !is_numeric($option_choice_key)) {
-                        $option_choice_key = $item_option['value_key'];
-                    } else {
-                        $item_option['value_key'] = $option_choice_key;
-                    }
-                    $choice = $option['choices'][$option_choice_key];
-
-                    if (isset($choice['variant_number'])) {
-                        $choice_variant_key = $choice['variant_number'];
-                        $variant = $variables[$choice_variant_key];
-                        $price = $variant['defaultDisplayedPrice'];
-                    } else {
-//                        dd('test', $item_option);
-                        $price = $product->price;
-                    }
-
-                    if ($choice['priceModifier'] != 0) {
-                        if ($choice['priceModifierType'] == 'ABSOLUTE') {
-                            if (!isset($item['price'])) {
-                                dd('not price', $item);
-                            }
-                            $price_item =  $item['price'] + $choice['priceModifier'] / 1;
+                        if (!is_string($option_choice_key) || !is_numeric($option_choice_key)) {
+                            $option_choice_key = $item_option['value_key'];
                         } else {
-                            $price_item =  $item['price'] + ($price / 100 * $choice['priceModifier']);
+                            $item_option['value_key'] = $option_choice_key;
+                        }
+                        $choice = $option['choices'][$option_choice_key];
+
+                        if (isset($choice['variant_number'])) {
+                            $choice_variant_key = $choice['variant_number'];
+                            $variant = $variables[$choice_variant_key];
+                            $price = $variant['defaultDisplayedPrice'];
+                        } else {
+                            $price = $product->price;
                         }
 
-                        $item['price'] = $price_item;
-                        $item_total = $price_item * $item['count'];
-                    } else {
-                        $item_total = $item['price'] * $item['count'];
-                    }
-                    $item['total'] = $item_total;
-                    $options_id = $option['options_id'];
-                    $option_value = $choice['var_option_id'];
-                    $item_option['name'] = $product_options[$options_id]['nameTranslate'];
-                    if ($product_options[$options_id]['type'] == 'TEXT') {
+                        if ($choice['priceModifier'] != 0) {
+                            if ($choice['priceModifierType'] == 'ABSOLUTE') {
+                                if (!isset($item['price'])) {
+                                    dd('not price', $item);
+                                }
+                                $price_item =  $item['price'] + $choice['priceModifier'] / 1;
+                            } else {
+                                $price_item =  $item['price'] + ($price / 100 * $choice['priceModifier']);
+                            }
 
-                        $item_option['value'] = [
-                            'text' => $product_options[$options_id]['name'],
-                            'textTranslated' => $product_options[$options_id]['nameTranslate']
-                        ];
+                            $item['price'] = $price_item;
+                            $item_total = $price_item * $item['count'];
+                        } else {
+                            $item_total = $item['price'] * $item['count'];
+                        }
+                        $item['total'] = $item_total;
+                        $options_id = $option['options_id'];
+                        $option_value = $choice['var_option_id'];
+                        $item_option['name'] = $product_options[$options_id]['nameTranslate'];
+                        if ($product_options[$options_id]['type'] == 'TEXT') {
 
-                    } else {
-                        $item_option['value'] = $product_options[$options_id]['options'][$option_value];
-                    }
-                    $item_option['value']['priceModifier'] = $choice['priceModifier'];
-                    $item_option['value']['priceModifierType'] = $choice['priceModifierType'];
-                    if (isset($item_option['text'])) {
-                        $item_option['text'] = Str::remove(["\n", "   "], $item_option['text']);
+                            $item_option['value'] = [
+                                'text' => $product_options[$options_id]['name'],
+                                'textTranslated' => $product_options[$options_id]['nameTranslate']
+                            ];
+
+                        } else {
+                            $item_option['value'] = $product_options[$options_id]['options'][$option_value];
+                        }
+                        $item_option['value']['priceModifier'] = $choice['priceModifier'];
+                        $item_option['value']['priceModifierType'] = $choice['priceModifierType'];
+                        if (isset($item_option['text'])) {
+                            $item_option['text'] = Str::remove(["\n", "   "], $item_option['text']);
+                        }
                     }
                 }
             }
+
             if (empty($item['options']) && empty($item['variant'])) {
                 $item_total = $product->price * $item['count'];
             }
