@@ -115,7 +115,13 @@
                             undefined
                         @endif
 
-                        ( {{ $option['value']['textTranslated']['ru'] }} )
+                        @if (!empty($option['value']['textTranslated']['ru']))
+                            {{ $option['value']['textTranslated']['ru'] }}
+                        @elseif(!empty($option['value']['textTranslated']['en']))
+                            {{ $option['value']['textTranslated']['en'] }}
+                        @else
+                            undefined option value text
+                        @endif
                     @endforeach
                 @endif
                 - {{ $product['count'] }} шт
