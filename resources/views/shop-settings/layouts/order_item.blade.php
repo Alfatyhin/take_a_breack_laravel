@@ -100,7 +100,12 @@
 
                 @if (isset($product['options']))
                     @foreach($product['options'] as $option)
-                        {{ $option['name']['ru'] }} -
+                        @if (!empty($option['name']['ru']))
+                            {{ $option['name']['ru'] }}
+                        @else
+                            {{ $option['name']['en'] }}
+                        @endif
+                            -
                         {{ $option['value']['text'] }}
                         ( {{ $option['value']['textTranslated']['ru'] }} )
                     @endforeach
