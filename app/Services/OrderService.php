@@ -1623,7 +1623,6 @@ class OrderService
 
         $order_data_jsonform = $post['order_data'];
         $orderData = self::getShopOrderData($post);
-        dd($orderData);
         $orderData['order_data_jsonform'] = $order_data_jsonform;
 
         $res = self::validateOrderData($orderData);
