@@ -90,12 +90,14 @@
         @isset($orderData['order_data']['products'])
             @foreach($orderData['order_data']['products'] as $product)
                 <b>
-                    @if (!empty($product['name']['ru']))
-                        {{ $product['name']['ru'] }}
+                    <a href="{{ route('product_redact', ['product' => $product['id']]) }}">
+                        @if (!empty($product['name']['ru']))
+                            {{ $product['name']['ru'] }}
 
-                    @else
-                        {{ $product['name']['en'] }}
-                    @endif
+                        @else
+                            {{ $product['name']['en'] }}
+                        @endif
+                    </a>
                 </b>
 
                 @if (isset($product['options']))
