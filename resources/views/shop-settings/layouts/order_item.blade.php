@@ -107,8 +107,14 @@
                         @else
                             undefined option
                         @endif
-                            -
-                        {{ $option['value']['text'] }}
+                        -
+
+                        @if (!empty($option['value']['text']))
+                            {{ $option['value']['text'] }}
+                        @else
+                            undefined
+                        @endif
+
                         ( {{ $option['value']['textTranslated']['ru'] }} )
                     @endforeach
                 @endif
