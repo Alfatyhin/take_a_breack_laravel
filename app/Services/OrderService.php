@@ -1498,6 +1498,7 @@ class OrderService
 
         $orders = Orders::where('deleted_at', null)
             ->whereBetween('updated_at', [$date_from, $date])
+            ->where('orderData', '!=', null)
             ->where('amoId', null)->get()->toArray();
 
 
