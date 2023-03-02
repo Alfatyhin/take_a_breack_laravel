@@ -403,6 +403,11 @@ Route::middleware(["Shop"])->group(function () {
         ->name('shop_error');
 
 
+
+
+    Route::get('/amo_widget/download', [Amocrm::class, 'widgetDownload'])
+        ->name('amo_widget_download');
+
     Route::get('/check-promo-code', [ShopController::class, 'getPromoCode'])->name('check_promo_code');
 
     Route::get('/ru/market', [ShopController::class, 'marketRU'])->name('market_ru');

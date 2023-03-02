@@ -60,6 +60,9 @@
                             <x-nav-link :href="route('amocrm_contacts')" >
                                 contacts doubles
                             </x-nav-link>
+                            <x-nav-link :href="route('amo_widget_download')" >
+                                amo_widget_download
+                            </x-nav-link>
                         </div>
                     </x-slot>
                 </x-dropdown>

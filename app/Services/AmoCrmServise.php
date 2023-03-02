@@ -81,6 +81,7 @@ class AmoCrmServise
     private $tokenFile = 'data/amo-assets.json';
     private static $tokensFile = 'data/amo-assets.json';
     private $apiClient;
+    private $wiget_id;
     private $url = 'https://www.amocrm.com';
     private $open_stages = ['42684658' => 1, '42684652' => 1, '53836814' => 1];
 
@@ -91,6 +92,8 @@ class AmoCrmServise
         $apiClientFactory = new AmoCRMApiClientFactory($oAuthConfig, $oAuthService);
         $this->apiClient = $apiClientFactory->make();
         $accessToken = $this->getTokens();
+
+        $this->wiget_id = $_ENV['AMO_CLIENT_WIJETCODE'];
 
         $this->apiClient->setAccessToken($accessToken)
             ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
@@ -239,6 +242,65 @@ class AmoCrmServise
         return $this->apiClient;
     }
 
+    public function getWidget()
+    {
+        $apiClient = $this->getApiClient();
+        $widgetsService = $apiClient->widgets();
+
+        try {
+            $widget = $widgetsService->getOne($this->wiget_id);
+        } catch (AmoCRMApiException $e) {
+            dd($e);
+        }
+
+        return $widget;
+    }
+
+    public function setWidget($widget)
+    {
+        $apiClient = $this->getApiClient();
+        $widgetsService = $apiClient->widgets();
+
+        try {
+            $widget = $widgetsService->install($widget);
+        } catch (AmoCRMApiException $e) {
+            dd($e);
+        }
+
+        return $widget;
+    }
+
+    public function pacWidgetZipFile()
+    {
+        if (Storage::disk('public')->exists('amo_widget/widget.zip')) {
+            Storage::disk('public')->delete('amo_widget/widget.zip');
+        }
+        $files = Storage::disk('public')->allFiles('amo_widget');
+
+        foreach ($files as $item_path) {
+            $root_path = Storage::disk('public')->path($item_path);
+            $zip_path = str_replace('amo_widget/', '', $item_path);
+            $files_data[] = [
+                'root_path' => $root_path,
+                'zip_path' => $zip_path
+            ];
+        }
+        $file_zip = Storage::disk('public')->path('amo_widget/widget.zip');
+
+        return AppServise::createZip($files_data, $file_zip);
+    }
+
+    public function reinstalWidget()
+    {
+        $widget = $this->getWidget();
+        $widget->setSettings([
+//            'login' => 'example',
+//            'password' => 'SuchAnEasyPassword',
+            'script_path' => 'https://test.takeabreak.co.il/amo_widget/widget.zip'
+        ]);
+
+        $this->setWidget($widget);
+    }
 
 
     // создание сделки на амо для прода

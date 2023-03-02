@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\Types\String_;
+use ZipArchive;
+use function PHPUnit\Framework\fileExists;
 
 class AppServise
 {
@@ -397,6 +399,27 @@ class AppServise
         }
 
         return false;
+
+    }
+
+    public static function createZip(array $files, $path)
+    {
+        $zip = new ZipArchive();
+
+        if ($zip->open($path, ZipArchive::CREATE)!==TRUE) {
+            dd("Невозможно открыть - $path");
+        }
+        foreach ($files as $item) {
+            $zip->addFile($item['root_path'], $item['zip_path']);
+        }
+
+        $zip->close();
+
+        if (fileExists($path)) {
+            return $path;
+        } else {
+            return false;
+        }
 
     }
 }

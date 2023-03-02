@@ -40,6 +40,9 @@ class Amocrm extends Controller
             $messages[] = "error token ";
             $messages[] = $amoCrmService->getButton();
         }
+
+
+
 //        dd($messages);
 //        $messages[] = $amoCrmService->getButton();
 
@@ -84,6 +87,18 @@ class Amocrm extends Controller
         }
     }
 
+
+    public function widgetDownload()
+    {
+        $res =  $this->amoService->pacWidgetZipFile();
+
+
+        if ($res) {
+
+            return Storage::disk('public')->download('amo_widget/widget.zip');
+        }
+
+    }
 
     public function amoWebhook(Request $request)
     {
