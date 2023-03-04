@@ -93,7 +93,9 @@ class AmoCrmServise
         $this->apiClient = $apiClientFactory->make();
         $accessToken = $this->getTokens();
 
-        $this->wiget_id = $_ENV['AMO_CLIENT_WIJETCODE'];
+        if (isset($_ENV['AMO_CLIENT_WIJETCODE'])) {
+            $this->wiget_id = $_ENV['AMO_CLIENT_WIJETCODE'];
+        }
 
         $this->apiClient->setAccessToken($accessToken)
             ->setAccountBaseDomain($accessToken->getValues()['baseDomain']);
