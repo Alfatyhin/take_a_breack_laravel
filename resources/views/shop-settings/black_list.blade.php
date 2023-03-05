@@ -33,7 +33,8 @@
                     @foreach($black_list as $ip => $item)
                         <tr>
                             <td>
-                                <input type="text" name="ips[]" value="{{ $ip }}">
+                                <input type="hidden" name="ips[]" value="{{ $ip }}">
+                                {{ $ip }}
                             </td>
                             <td>
                                 <span class="fa fa-trash"></span>
