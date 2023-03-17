@@ -72,7 +72,7 @@ class ShopThanks
 
                 if (env('APP_NAME') != "Take a Break Server") {
                     try {
-                        $OrderService->createOrderToAmocrm($order_id);
+                        $OrderService->createOrderToAmocrm($order_id, '43924885');
                         WebhookLog::addLog('OrderThanks After create AMO Lead', "$order_id");
                     } catch (Exception $e) {
                         WebhookLog::addLog('OrderThanks After error create AMO Lead', "$order_id");
