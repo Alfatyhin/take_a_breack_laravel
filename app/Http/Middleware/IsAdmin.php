@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\User;
+use App\Services\StatisticService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +26,10 @@ class IsAdmin
         if (!$user || !$user->isAdmin()) {
             return redirect()->route('index');
         }
+
+
+        StatisticService::addItem($request, 'crm', 'admin_midleware');
+
         return $next($request);
     }
 }

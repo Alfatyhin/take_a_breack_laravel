@@ -54,7 +54,7 @@ class StatisticService
             $order_id = $post['order_id'];
         }
 
-        if ($url != '/404') {
+        if ($url != '/404' && $url != '/crm/db/statistics') {
             $statistic = new Statistics();
             $statistic->ip = $request->getClientIp();
             $statistic->sid = session()->getId();
