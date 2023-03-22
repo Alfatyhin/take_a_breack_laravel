@@ -62,7 +62,7 @@
             </div>
             <div class="product-info__price">
                 <span>
-                    <span class="current-price">
+                    <span class="current-price" data-current-price="{{ $product->price }}">
                         @if(!empty($product->variables) && sizeof($product->variables) > 1)
                             {{ __('shop.от') }}
                         @endif

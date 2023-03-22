@@ -60,12 +60,12 @@ document.addEventListener('DOMContentLoaded',()=>{
     // client_data = JSON.parse(localStorage.getItem("client_data") || "[]");   
     // client_data.order_id = ""
     // localStorage.setItem("client_data", JSON.stringify(client_data));
-
+    
     (function cartInit(){  
         let ordData = $("input.order_data");
         if( ordData.length != 0 && ordData[0].value != "" ){
             
-            let cart =  JSON.parse(ordData[0].value).products
+            let cart =  JSON.parse(ordData[0].value).products            
             let isPromoCodeActive =  JSON.parse(ordData[0].value).promo
             localStorage.setItem("cart", JSON.stringify(cart));
             localStorage.setItem("promo", JSON.stringify(isPromoCodeActive));
@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         //localStorage.setItem("cart", "undefined");
 
         let cart = JSON.parse( localStorage.getItem("cart") == "undefined" ? "[]" : (localStorage.getItem("cart") || "[]"))
+        
         if($("#cart").length){
             if(!cart.length) $(".main-btn.go-pay")[0].style.opacity = "0.4"
             else if(cart.length ) $(".main-btn.go-pay")[0].style.opacity = "1.0"
@@ -323,18 +324,19 @@ document.addEventListener('DOMContentLoaded',()=>{
         });
         
         let isContains = false
+
         for (let i = 0; i < cart.length; i++) {
             if(cart_key == cart[i].key ) {
                 isContains = true
                 $(".count_in_cart")[0].innerHTML =  cart[i].count
                 cart[i].count = (+cart[i].count + +$('#count-product').val())
-                cart[i].itemSumm = +cart[i].itemSumm + +$('.current-price')[0].innerHTML
+                cart[i].itemSumm = +cart[i].itemSumm + +$('.current-price')[0].dataset.currentPrice
                 break
             }            
         }
         let addedPosition
         console.log(document.location.href)
-        imageSrc = $(".product__imgs img")[0].src
+        imageSrc = $(".product__imgs img")[0].src        
         if(!isContains){
             addedPosition = { 
                 urlProduct: document.location.href,
@@ -347,9 +349,9 @@ document.addEventListener('DOMContentLoaded',()=>{
                 //  поля для визуального отображени
                 name: $(".product-info__title h1")[0].innerText,
                 weightParams: selectedItemWeightParams,
-                itemSumm: $('.current-price')[0].innerHTML,                                                              
+                itemSumm: $('.current-price')[0].dataset.currentPrice,                                                               
                 imagePath: imageSrc, 
-            }     
+            } 
             $(".count_in_cart")[0].innerHTML =  addedPosition.count
             cart.push(addedPosition)            
         }
@@ -832,7 +834,9 @@ function currentSumm(count){
             }
         }        
         let currentSumm = (+product.price + additionValue)*count
-        $(".current-price")[0].innerHTML = roundNumber(currentSumm) || $(".current-price")[0].innerHTML
+        $(".current-price")[0].innerHTML = roundNumber(currentSumm) || $(".current-price")[0].dataset.currentPrice
+        $(".current-price")[0].dataset.currentPrice =  roundNumber(currentSumm) || $(".current-price")[0].dataset.currentPrice
+
         return roundNumber(currentSumm)
     }, 50);
 }
@@ -869,7 +873,6 @@ $("#count-product").keypress(function(e){
     this.value = this.value.replace(/[^0-9]/g, '');
     if(this.value.length >= 4) this.value = this.value.slice(0, -1)   //  3 значение для 99, 4 - значение для 999
     if(this.value < 1){
-        // debugger
         this.value = 1
     } 
     
@@ -1817,7 +1820,7 @@ async function promoAction(){
         try {
             
             let promo = await response.json();   
-                     
+            
             if(promo.result == "sugess" ){
                 if( $(".sugess_promo")[0].classList.contains("hide")) $(".sugess_promo")[0].classList.remove("hide")
                 $(".error_promo")[0].classList.add("hide")

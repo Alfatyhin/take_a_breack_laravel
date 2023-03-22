@@ -102,15 +102,15 @@
 
                             <div>
                                 <p>
-                                    <span class="old_price">{{ $variant['compareToPrice'] }}</span> ₪
+                                    <span class="old_price current-price">{{ $variant['compareToPrice'] }}</span> ₪
                                 </p>
                                 <p>
-                                    <span class="price">{{ $price }}</span> ₪
+                                    <span class="price current-price" data-current-price="{{ $price }}">{{ $price }}</span> ₪
                                 </p>
                             </div>
                         @else
                             <p>
-                                <span class="price">{{ $price }}</span> ₪
+                                <span class="price current-price" data-current-price="{{ $price }}">{{ $price }}</span> ₪
                             </p>
                         @endisset
                 </label>
@@ -171,7 +171,7 @@
 
             </label>
             <span>
-                        <span class="price-text">{{ $price }}</span>
+                        <span class="price-text current-price" data-current-price="{{ $price }}">{{ $price }}</span>
                         ₪
                     </span>
             <button class="trans-btn" data_add="{{ __('shop.Добавить') }}" data_delete="{{ __('shop.Убрать текст') }}">{{ __('shop.Добавить') }}</button>
@@ -268,7 +268,7 @@
                         <pre class="weight-params"> </pre>
                     @endisset
 
-                    +<span class="price">{{ $price }}</span> ₪
+                    +<span class="price current-price" data-current-price="{{ $price }}">{{ $price }}</span> ₪
                     </p>
                 </div>
 
@@ -367,7 +367,7 @@
                         <pre class="weight-params"> </pre>
                     @endisset
 
-                    +<span class="price">{{ $price }}</span> ₪
+                    +<span class="price current-price" data-current-price="{{ $price }}">{{ $price }}</span> ₪
                     </p>
                 </div>
 
@@ -476,7 +476,7 @@
                             @isset($variant['compareToPrice'])
                                 {{--                                    ({{ $translate['benefit'][$lang] }} {{ $variant['compareToPrice'] - $variant['defaultDisplayedPrice']  }}₪)--}}
                             @endisset
-                            <span class="price">{{ $price }}</span> ₪
+                            <span class="price current-price" data-current-price="{{ $price }}">{{ $price }}</span> ₪
                         </p>
                     </label>
                 @endforeach
