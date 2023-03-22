@@ -127,6 +127,62 @@ class ShopSettingController extends Controller
             $orders->where('orders.paymentMethod', $filter['method'])
                 ->where('orders.paymentStatus', $filter['status']);
         }
+
+//        $orders = $orders->get();
+//
+//        foreach ($orders as $order) {
+//            $order_data = json_decode($order->orderData, true);
+//            if (isset($order_data['step']) && $order_data['step'] == 4) {
+//                if ($order_data['delivery_method'] == 'pickup') {
+//                    $delivery_price = 0;
+//                    $adress = 'самовывоз';
+//                } else {
+//                    $delivery_price = $order_data['order_data']['delivery_price'];
+//
+//                    $city = AppServise::getCityNameByLang($order_data['city'], 'ru');
+//
+//                    $adress = $city;
+//
+//                }
+//
+//                $products = $order_data['order_data']['products'];
+//
+//                foreach ($products as $item) {
+//
+//                    $dates = explode(' ', $order->created_at);
+//
+//                    $data[] = [
+//                        'дата заказа' => $dates[0],
+//                        'наименование' => $item['name']['ru'],
+//                        'количество' => $item['count'],
+//                        'цена' => $item['price'],
+//                        'сумма' => $item['price'] * $item['count'],
+//                        'адрес доставки' => $adress,
+//                        'цена доставки' => $delivery_price,
+//                    ];
+//                }
+//
+//            } else {
+////                if (!isset($order_data['step'])) {
+////                    dd($order_data);
+////                }
+//            }
+//        }
+//
+//        $str = 'дата заказа;наименование;количество;цена;сумма;адрес доставки;цена доставки';
+//
+//        Storage::put('csv-import/delivery-products.csv', $str);
+//
+//        foreach ($data as $item) {
+//            $str = implode(';', $item);
+//            Storage::append('csv-import/delivery-products.csv', $str);
+//        }
+//
+//        $content = Storage::get('csv-import/delivery-products.csv');
+//
+//
+//        dd($content);
+
         $orders = $orders->paginate(10);
 
         $utm_orders = UtmModel::whereBetween('created_at', [$date_from, $date_to])->get()->keyBy('order_id')->toArray();
