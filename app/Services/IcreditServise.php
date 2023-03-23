@@ -60,7 +60,6 @@ class IcreditServise
             "CustomerFirstName" => $data["name"],
             "CustomerLastName" => $data["name"]
         );
-        WebhookLog::addLog('iCredit backUrl', $newData['RedirectURL']);
 
         if (!empty($data["phone"])) {
             $newData['PhoneNumber'] = $data["phone"];

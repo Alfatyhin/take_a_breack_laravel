@@ -461,6 +461,7 @@ class ShopController extends Controller
 
                 if (!empty($result['URL'])) {
                     session('orderPay', $result);
+                    WebhookLog::addLog('new order step 4 icreditOrderData URL', $result);
                     return redirect($result['URL']);
                 } else {
                     dd($result);
