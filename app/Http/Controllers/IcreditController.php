@@ -116,6 +116,7 @@ class IcreditController extends Controller
         header("Access-Control-Allow-Origin: *");
         header("HTTP/1.1 200 OK");
 
+        WebhookLog::addLog('iCredit data', $Data);
         if (empty($request->post('data-test'))) {
             $header = request()->header();
             $logData['data'] = $Data;
