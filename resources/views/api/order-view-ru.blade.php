@@ -27,10 +27,10 @@
                         <table align="center" cellpadding="0" cellspacing="0" width="95%" style="max-width: 600px; min-width: 300px; background-color: #FEEDD6">
                             <tr>
                                 <td align="center"><p style="margin: 0; padding: 0; font-family: 'Roboto',sans-serif;font-style: normal;font-weight: 400;font-size: 16px;line-height: 16px;text-align: center;text-transform: uppercase;color: #000000; text-align: left">Информация о заказе и доставке</p></td>
-                            <td>
-                                <input type="submit" value="Печатать" class="print-button"
-                                       onClick="window.print()">
-                            </td>
+                                <td>
+                                    <input type="submit" value="Печатать" class="print-button"
+                                           onClick="window.print()">
+                                </td>
                             </tr>
                         </table>
 
@@ -95,9 +95,26 @@
                     </td>
                 </tr>
             </table>
-
         </td>
     </tr>
+    <tr>
+        <td height="20"></td>
+    </tr>
+    <tr>
+        <td>
+            <table align="center" cellpadding="0" cellspacing="0" width="95%" style="max-width: 600px; min-width: 300px;">
+                <tr>
+                    <td>
+                        <strong>Комментарий:</strong>
+                        @isset($order->orderData['client_comment'])
+                            {{ $order->orderData['client_comment'] }}
+                        @endisset
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
     <tr>
         <td height="40"></td>
     </tr>
