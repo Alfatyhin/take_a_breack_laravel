@@ -1548,6 +1548,7 @@ class OrderService
         WebhookLog::addLog("new order step {$post['step']} request", $post);
 
         $res = self::validatePostData($post);
+        dd($res, $post);
         if (!isset($res->sugess)) {
             $res->error = true;
             return $res;
@@ -1895,6 +1896,9 @@ class OrderService
             $step_back = 3;
         }
 
+        if (!isset($order_data['order_data']['products']) || empty($order_data['order_data']['products'])) {
+            unset($order_data['order_data']);
+        }
 
         $messages['order_data.required'] = __('shop-cart.пустая корзина');
         $validate_array['order_data'] = 'required';
