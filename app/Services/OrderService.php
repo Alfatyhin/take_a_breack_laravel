@@ -1548,7 +1548,6 @@ class OrderService
         WebhookLog::addLog("new order step {$post['step']} request", $post);
 
         $res = self::validatePostData($post);
-        dd($res, $post);
         if (!isset($res->sugess)) {
             $res->error = true;
             return $res;
