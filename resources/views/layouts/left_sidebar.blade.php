@@ -83,7 +83,7 @@
     @if(Auth::user()->user_role == 'admin' )
 
             <li class="app_log" data_name="app_log"
-                @if($error_log) style="color: brown; font-weight: 900;"  @endif>
+                @if(isset($error_log) && !empty($error_log)) style="color: brown; font-weight: 900;"  @endif>
                 <a href="{{ route('app_log') }}" >APP Errors</a>
             </li>
 

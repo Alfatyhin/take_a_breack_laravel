@@ -332,7 +332,6 @@ class ShopController extends Controller
             $post['step'] = $step;
             $OrderService = new OrderService();
 
-//            unset($post['step']);
             $order = $OrderService::addOrUpdateOrder($post);
 
             if (!($order instanceof Orders)) {

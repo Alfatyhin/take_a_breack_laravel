@@ -19,7 +19,7 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
-                @if($error_log)
+                @if(isset($error_log) && !empty($error_log))
                     <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                         <x-nav-link :href="route('app_log')" style="color: brown; font-weight: 900;">
                             ERROR - {{ $error_log }}

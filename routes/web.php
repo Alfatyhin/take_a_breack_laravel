@@ -12,7 +12,9 @@ use App\Http\Controllers\Orders;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductOptionsController;
+use App\Http\Controllers\SenpulseController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ShopifyController;
 use App\Http\Controllers\ShopSettingController;
 use App\Http\Controllers\TildaController;
 use App\Services\AmoCrmServise;
@@ -64,6 +66,12 @@ Route::any('/orders/response', [IcreditController::class, 'orderRequestIcredit']
 Route::get('/api/json/import', [ShopSettingController::class, 'jsonImport'])
     ->name('scv_import');
 
+Route::any('/api/amo/chat/{score_id}', [Amocrm::class, 'incommingChatMessage']);
+
+Route::any('/api/senpulse/chat', [SenpulseController::class, 'incommingChatMessage']);
+
+Route::any('/api/shopify/webhook', [ShopifyController::class, 'testWebhook']);
+
 
 
 
@@ -73,6 +81,9 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
 
     Route::get('/amocrm', [Amocrm::class, 'integrationAmoCrm'])
         ->name('amocrm');
+
+    Route::get('/sendpulse/whatsap', [SenpulseController::class, 'whatsapp'])
+        ->name('whatsap');
 
 
     Route::get('/clients', [Controller::class, 'allClients'])
