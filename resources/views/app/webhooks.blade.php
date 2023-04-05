@@ -124,6 +124,7 @@
                             @endif
                             <br>
                             <form action="{{ route('json_decode') }}" method="POST">
+                                @csrf
                                 <input type="hidden" name="json" value="{{$item->data}}">
                                 <input type="submit" name="command" value="json decode">
                             </form>
