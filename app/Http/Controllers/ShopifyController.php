@@ -156,8 +156,8 @@ class ShopifyController extends Controller
 
         $dataOrderAmo = [
             'order name'  => $data['name'],
-            'order_id'    => $data['order_id'],
-            'api_mode'    => 'ShopTB',
+            'order_id'    => $data['name'],
+            'api_mode'    => 'Shopyfi',
             'order price' => $data['total_price'],
             'pipelineId'  => $pipelineId,
             'statusId'    => $statusId,
