@@ -132,7 +132,7 @@
                                 @csrf
                                 <input type="hidden" name="json" value="{{$item->data}}">
                                 <input type="submit" name="command" value="json decode">
-                                @if(preg_match('/ShopifyWebhook/'))
+                                @if(preg_match('/ShopifyWebhook/', $item->name))
                                     <input type="submit" formaction="{{ route('shopify_test_webhook') }}" value="test_webhook">
                                 @endif
                             </form>
