@@ -143,8 +143,7 @@ class ShopifyController extends Controller
             $data['date'] = $date->format('Y-m-d');
         }
 
-        $delivery_time = $data['time'];
-        $time = str_replace(':00', '', $delivery_time);
+        $time = str_replace(':00', '', $time);
         $time = str_replace('-', ':', $time);
         $delivery_date_time = $data['date'] . ' ' . $time . ':00 +0000';
         $date = Carbon::parse($delivery_date_time);
