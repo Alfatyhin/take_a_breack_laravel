@@ -1921,8 +1921,12 @@ class OrderService
     public static function clientCreateOrUpdate($post)
     {
 
-        $phone = $post['phone'];
-        $phone = OrderService::phoneAmoFormater($phone);
+        if (isset($post['phone'])) {
+            $phone = $post['phone'];
+            $phone = OrderService::phoneAmoFormater($phone);
+        } else {
+            $phone = false;
+        }
         $client = Clients::firstOrNew([
             'email' => $post['email']
         ]);
@@ -1930,10 +1934,10 @@ class OrderService
         if (empty($client->name)) {
             $client->name = $post['clientName'];
         }
-        if (empty($client->phone)) {
+        if (empty($client->phone) && $phone) {
             $client->phone = $phone;
         }
-        if (isset($data['phones'])) {
+        if (isset($data['phones']) && $phone) {
             $phones = $data['phones'];
             $test_phones = array_reverse($phones);
             if (!isset($test_phones[$phone])) {
