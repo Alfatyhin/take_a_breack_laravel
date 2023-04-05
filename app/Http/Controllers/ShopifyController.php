@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clients;
 use App\Models\Orders;
 use App\Models\UtmModel;
 use App\Models\WebhookLog;
+use App\Services\AmoCrmServise;
+use App\Services\AppServise;
 use App\Services\OrderService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -45,6 +48,14 @@ class ShopifyController extends Controller
 //            $order->save();
 
             $amoData = $this->AmoOrderPrepeare($data);
+            $amoNotes = $this->AmoNotesPrepeare($data);
+            $amoData['text_note'] = $amoNotes;
+            $amo_contact = $this->searchOrCreateAmoContact($client, $data);
+
+            if ($amo_contact->id != $client->amoId) {
+                $client->amoId = $amo_contact->id;
+                $client->save();
+            }
 
             dd($amoData);
 
@@ -94,13 +105,13 @@ class ShopifyController extends Controller
 
     private function AmoOrderPrepeare($data)
     {
-        $products = $data['line_items'];
 
         // формируем массив данных для амо
         $pipelineId = '4651807'; // воронка
         $statusId = '43924885'; // статус
 
 
+        $products = $data['line_items'];
         foreach ($products as $key => $item) {
             $product_name = $item['name'];
             $tags[] = $product_name;
@@ -173,5 +184,177 @@ class ShopifyController extends Controller
         ];
 
         return $dataOrderAmo;
+    }
+
+    private function AmoNotesPrepeare($data)
+    {
+        $ordersNotes = 'Детали заказа: ' . $data['name'];
+
+        $products = $data['line_items'];
+        foreach ($products as $key => $item) {
+            $product_name = $item['name'];
+
+            $ordersNotes .= "\n" . $item['quantity'] . "x - {$item['price']} шек " . $product_name . ' ';
+        }
+
+
+        if (isset($data['order_data']['products_total'])) {
+            $ordersNotes .= "\n ---------------------- \n Итого: {$data['subtotal_price']} шек (без скидки)";
+        }
+        $ordersNotes .= "\n ---------------------- \n";
+
+        if (isset($data['otherPerson'])) {
+            if (empty($data['otherPerson'])) {
+                $data['otherPerson'] = 'неизвестно';
+            }
+            $ordersNotes .= "\n ---------------------- \n
+            Доставка в подарок: для {$data['nameOtherPerson']} tel {$data['phoneOtherPerson']}
+            \n ---------------------- \n";
+        }
+
+
+        foreach ($data['note_attributes'] as $item) {
+            if($item['name'] == 'delivery_date_origin') {
+                $date = $item['value'];
+            }
+            if($item['name'] == 'Delivery Time') {
+                $time = $item['value'];
+            }
+        }
+
+        if (!isset($time)) {
+            $time = '9:00-21:00';
+        }
+
+        if (!isset($date)) {
+            $date = new Carbon();
+            $date = $date->format('Y-m-d');
+        }
+
+        $timeDelivery = $date . ' время ' . $time;
+
+
+        $shipping = 'Доставка: ';
+        if (isset($data['shipping_address']) && !empty($data['shipping_address'])) {
+
+            foreach ($data['shipping_address'] as $key => $val) {
+
+                if (!empty($val)) {
+                    $shipping .= "\n $key - " . $val;
+                }
+            }
+
+            $shipping = "\n стоимость - " . $data['total_shipping_price_set']['shop_money']['amount'] . 'шек'
+                . "\n ---------------------- \n";
+
+
+        } else {
+            $shipping = 'Самовывоз ' . $timeDelivery . "\n ---------------------- \n";
+        }
+
+
+
+        if (isset($data['order_data']['discount']) && !empty($data['order_data']['discount'])) {
+            $code = $data['order_data']['discount']['code'];
+            $discount = "скидка {$data['order_data']['discount']['text']} coupon - $code  \n";
+        } else {
+            $discount = '';
+        }
+        if (isset($data['order_data']['tips']) && !empty($data['order_data']['tips'])) {
+            $tips = "Чаевые {$data['order_data']['tips']} \n";
+        } else {
+            $tips = '';
+        }
+
+        if(isset($data['client_comment'])) {
+            $orderComments = $data['client_comment'];
+        } else {
+            $orderComments = '';
+        }
+
+
+        if (!empty($orderComments)) {
+            $orderComments = 'Комментарий покупателя: ' . "\n"
+                . $orderComments . "\n ---------------------- \n";
+        } else {
+            $orderComments = 'Комментарий покупателя: ' . "\n"
+                . "Нет комментария " . "\n ---------------------- \n";
+        }
+
+        $notes = $ordersNotes . $orderComments . $discount . $tips . $shipping;
+
+        $notes = $notes . "\n                    Итого: {$data['current_total_price']} шек";
+
+        return $notes;
+    }
+
+
+    private function searchOrCreateAmoContact(Clients $client, $orderData)
+    {
+        $amoCrmService = new AmoCrmServise();
+        $phone = OrderService::phoneAmoFormater($client->phone);
+        $contactData = [
+            'name' => $client->name,
+            'phone' => $phone,
+            'email' => $client->email,
+        ];
+
+        $client_data = json_decode($client->data, true);
+        if (isset($client_data['clientBirthDay'])) {
+            $date = AppServise::dateFormater($client_data['clientBirthDay']);
+            if ($date) {
+                $date = new Carbon($date);
+                $date_time = strtotime($date->format('Y-m-d H:i:s'));
+                $contactData['birthday'] = $date_time;
+            }
+        }
+
+        if (isset($orderData['customer']['default_address']['city'])) {
+            $contactData['city'] = AppServise::getCityNameByLang($orderData['customer']['default_address']['city'], 'ru');
+        }
+
+        if (!empty($client->amoId)) {
+            $contact = $amoCrmService->getContactBuId($client->amoId);
+        } else {
+            $contact = $this->searchAmoContact($client);
+        }
+
+        if (!$contact) {
+            $contact = $this->searchAmoContact($client);
+        }
+        if (!$contact) {
+            $contact = $amoCrmService->createContact($contactData);
+        } else {
+            $contact = $amoCrmService->syncContactData($contact, $contactData);
+        }
+
+        return $contact;
+    }
+
+    private function searchAmoContact(Clients $client)
+    {
+        $amoCrmService = $this->amoCrmService;
+
+        $contact = $amoCrmService->searchContactFilter($client->email);
+
+        if (!$contact) {
+            $contact = $amoCrmService->searchContactFilter($client->phone);
+        }
+        if (!$contact) {
+            $clientData = json_decode($client->data, true);
+            if (isset($clientData['phones'])) {
+                foreach ($clientData['phones'] as $phone) {
+                    if (!$contact) {
+                        $contact = $amoCrmService->searchContactFilter($phone);
+                    }
+                    if (!$contact) {
+                        $contact = $amoCrmService->searchContactFilter(OrderService::phoneAmoFormater($phone));
+                    }
+                }
+            }
+
+        }
+
+        return $contact;
     }
 }
