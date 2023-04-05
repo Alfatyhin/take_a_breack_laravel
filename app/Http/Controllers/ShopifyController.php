@@ -18,18 +18,12 @@ class ShopifyController extends Controller
         $data = $request->post('json');
         $data = json_decode($data, true);
 
-        dd($data);
 
         $action = $data['action'];
 
         if ($action == 'orders/create') {
 //            WebhookLog::addLog("Shopify new order webhook", $data);
 
-
-            $shipping_address = $data['shipping_address'];
-            $shipping_lines = $data['shipping_lines'];
-            $price = $data['total_price'];
-            $products = $data['line_items'];
             $client_data = $data['customer'];
 
             $client['clientName'] = $client_data['first_name'] . ' ' . $client_data['last_name'];
@@ -55,7 +49,6 @@ class ShopifyController extends Controller
             dd($amoData);
 
         }
-
 
     }
 
