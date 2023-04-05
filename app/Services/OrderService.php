@@ -1948,7 +1948,7 @@ class OrderService
             $data['phones'][] = $phone;
         }
 
-        if($post['clientBirthDay']) {
+        if(isset($post['clientBirthDay'])) {
 
             $birth_day = AppServise::dateFormater($post['clientBirthDay']);
             if ($birth_day) {
