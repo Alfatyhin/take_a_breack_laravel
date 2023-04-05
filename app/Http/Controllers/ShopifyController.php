@@ -7,7 +7,24 @@ use Illuminate\Http\Request;
 
 class ShopifyController extends Controller
 {
+
+
     public function testWebhook(Request $request)
+    {
+        $data = $request->json()->all();
+
+        dd($data);
+
+        $action = $data['action'];
+
+        if ($action == 'orders/create') {
+            $shipping_address = $data['shipping_address'];
+        }
+
+
+    }
+
+    public function webhook(Request $request)
     {
 
         if ($request->hasHeader('X-Shopify-Hmac-Sha256')) {
@@ -31,13 +48,11 @@ class ShopifyController extends Controller
                 }
 
                 if ($action == 'orders/create') {
-
+                    $shipping_address = $data['shipping_address'];
                 }
 
             }
         }
-
-
 
     }
 

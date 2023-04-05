@@ -70,7 +70,7 @@ Route::any('/api/amo/chat/{score_id}', [Amocrm::class, 'incommingChatMessage']);
 
 Route::any('/api/senpulse/chat', [SenpulseController::class, 'incommingChatMessage']);
 
-Route::any('/api/shopify/webhook', [ShopifyController::class, 'testWebhook']);
+Route::any('/api/shopify/webhook', [ShopifyController::class, 'webhook']);
 
 
 
@@ -85,6 +85,10 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
     Route::get('/sendpulse/whatsap', [SenpulseController::class, 'whatsapp'])
         ->name('whatsap');
 
+
+
+    Route::any('/shopify/webhook', [ShopifyController::class, 'testWebhook'])
+        ->name('shopify_test_webhook');
 
     Route::get('/clients', [Controller::class, 'allClients'])
         ->name('clients');

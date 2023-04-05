@@ -12,6 +12,9 @@
             display: inline-block;
             margin: 5px 10px;
         }
+        td div {
+
+        }
     </style>
     <div class="max-w-10xl mx-auto sm:px-10 lg:px-10">
 
@@ -26,9 +29,11 @@
                     <tr>
                         <td>{{ $item->id }}</td>
                         <td>
-                            {{ $item->name }}
-                            <br>
-                            {{ $item->created_at->format('Y-m-d H-i-s') }}
+                            <div>
+                                {{ $item->name }}
+                                <br>
+                                {{ $item->created_at->format('Y-m-d H-i-s') }}
+                            </div>
                         </td>
                         <td>
                             @if ($item->name == 'OrderThanksView ')
@@ -127,6 +132,9 @@
                                 @csrf
                                 <input type="hidden" name="json" value="{{$item->data}}">
                                 <input type="submit" name="command" value="json decode">
+                                @if(preg_match('/ShopifyWebhook/'))
+                                    <input type="submit" formaction="{{ route('shopify_test_webhook') }}" value="test_webhook">
+                                @endif
                             </form>
                         </td>
                     </tr>
