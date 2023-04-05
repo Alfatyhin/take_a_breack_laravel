@@ -15,7 +15,9 @@ class ShopifyController extends Controller
             if($this->verifyWebhook(file_get_contents('php://input'), $request->header('X-Shopify-Hmac-Sha256'))) {
 
                 $data = $request->json()->all();
+                $data['action'] = $request->header('X-Shopify-Topic');
                 $id = $request->header('X-Shopify-Webhook-Id');
+                $action = $request->header('X-Shopify-Topic');
 
                 $test = WebhookLog::where('name', 'ShopifyWebhook - '.$id)->first();
 
@@ -27,6 +29,11 @@ class ShopifyController extends Controller
                     $webhook->save();
 
                 }
+
+                if ($action == 'orders/create') {
+
+                }
+
             }
         }
 
