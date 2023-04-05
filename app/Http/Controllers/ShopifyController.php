@@ -162,7 +162,7 @@ class ShopifyController extends Controller
             'pipelineId'  => $pipelineId,
             'statusId'    => $statusId,
             'notes'       => $data['client_comment'],
-            'name'        => $data['first_name'] . ' ' . $data['first_name'],
+            'name'        => $data['customer']['first_name'] . ' ' . $data['customer']['first_name'],
             'email'       => $data['email'],
             'phone'       => $data['phone'],
             'address'     => $address,
