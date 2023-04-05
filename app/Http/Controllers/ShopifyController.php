@@ -15,8 +15,6 @@ class ShopifyController extends Controller
             if($this->verifyWebhook(file_get_contents('php://input'), $request->header('X-Shopify-Hmac-Sha256'))) {
 
                 $data = $request->json()->all();
-
-                $data['HEADERS'] = $request->header();
                 $id = $request->header('X-Shopify-Webhook-Id');
 
                 $test = WebhookLog::where('name', 'ShopifyWebhook - '.$id)->first();
