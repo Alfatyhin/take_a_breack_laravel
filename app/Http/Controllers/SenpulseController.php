@@ -51,29 +51,34 @@ class SenpulseController extends Controller
                     $message = [
                         'type' =>  'text',
                         'text' =>  $item['info']['message']['channel_data']['message']['image']['caption']
-                            . "\n" . 'image - ' .  $item['info']['message']['channel_data']['message']['image']['url'],
+                            . "\n" .  $item['info']['message']['channel_data']['message']['image']['url'],
                     ];
                 } elseif ($item['info']['message']['channel_data']['message']['type'] == "audio") {
                     $message = [
                         'type' =>  'text',
-                        'text' =>  'audio - ' .  $item['info']['message']['channel_data']['message']['audio']['url'],
+                        'text' =>  $item['info']['message']['channel_data']['message']['audio']['url'],
+                    ];
+                } elseif ($item['info']['message']['channel_data']['message']['type'] == "reaction") {
+                    $message = [
+                        'type' =>  'text',
+                        'text' =>  '/reaction - ' .  $item['info']['message']['channel_data']['message']['reaction']['emoji'],
                     ];
                 } elseif ($item['info']['message']['channel_data']['message']['type'] == "document") {
                     $message = [
                         'type' =>  'text',
                         'text' =>  $item['info']['message']['channel_data']['message']['document']['caption']
-                            . "\n" . 'document - ' .  $item['info']['message']['channel_data']['message']['document']['filename']
+                            . "\n" . $item['info']['message']['channel_data']['message']['document']['filename']
                             . ' - ' .  $item['info']['message']['channel_data']['message']['document']['url'],
                     ];
                 } elseif ($item['info']['message']['channel_data']['message']['type'] == "contacts") {
                     $message = [
                         'type' =>  'text',
-                        'text' => 'contacts',
+                        'text' => '/contacts',
                     ];
                 } else {
                     $message = [
                         'type' =>  'text',
-                        'text' =>  "не определено \n" .  $item['contact']['last_message'],
+                        'text' =>  "/не определено \n" .  $item['contact']['last_message'],
                     ];
                 }
 
