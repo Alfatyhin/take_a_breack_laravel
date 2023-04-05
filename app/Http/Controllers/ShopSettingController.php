@@ -1469,4 +1469,11 @@ class ShopSettingController extends Controller
         dd('done');
 
     }
+
+    public function jsonDecode(Request $request)
+    {
+        $json = $request->post('json');
+
+        dd(json_decode($json, true));
+    }
 }

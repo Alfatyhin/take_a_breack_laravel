@@ -89,6 +89,10 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
     Route::get('/clients', [Controller::class, 'allClients'])
         ->name('clients');
 
+
+    Route::any('/tools/json-decode', [ShopSettingController::class, 'jsonDecode'])
+        ->name('json_decode');
+
     Route::get('/amocrm/users/duplicate/{client?}', [Amocrm::class, 'UsersDuplicateCollaps'])
         ->name('amocrm_users_duplicate');
 
