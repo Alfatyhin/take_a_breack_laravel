@@ -11,7 +11,8 @@ class ShopifyController extends Controller
 
     public function testWebhook(Request $request)
     {
-        $data = $request->json()->all();
+        $data = $request->post('json');
+        $data = json_decode($data);
 
         dd($data);
 
