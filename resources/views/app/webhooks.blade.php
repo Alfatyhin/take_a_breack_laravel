@@ -123,7 +123,10 @@
                                 @php(print_r($item->data))
                             @endif
                             <br>
-
+                            <form action="{{ route('json_decode') }}" method="POST">
+                                <input type="hidden" name="json" value="{{$item->data}}">
+                                <input type="submit" name="command" value="json decode">
+                            </form>
                         </td>
                     </tr>
                 @endforeach
