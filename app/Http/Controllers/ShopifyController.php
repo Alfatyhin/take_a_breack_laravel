@@ -12,14 +12,20 @@ class ShopifyController extends Controller
     public function testWebhook(Request $request)
     {
         $data = $request->post('json');
-        $data = json_decode($data);
+        $data = json_decode($data, true);
 
         dd($data);
 
         $action = $data['action'];
 
         if ($action == 'orders/create') {
+//            WebhookLog::addLog("Shopify new order webhook", $data);
             $shipping_address = $data['shipping_address'];
+            $shipping_lines = $data['shipping_lines'];
+            $price = $data['total_price'];
+            $products = $data['line_items'];
+            $client_data = $data['customer'];
+
         }
 
 
