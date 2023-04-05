@@ -140,12 +140,12 @@ class ShopifyController extends Controller
 
         if (!isset($date)) {
             $date = new Carbon();
-            $data['date'] = $date->format('Y-m-d');
+            $date = $date->format('Y-m-d');
         }
 
         $time = str_replace(':00', '', $time);
         $time = str_replace('-', ':', $time);
-        $delivery_date_time = $data['date'] . ' ' . $time . ':00 +0000';
+        $delivery_date_time = $date . ' ' . $time . ':00 +0000';
         $date = Carbon::parse($delivery_date_time);
         $dateOrder = strtotime($date->format('Y-m-d H:i:s'));
 
