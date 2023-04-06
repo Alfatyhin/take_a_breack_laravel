@@ -104,6 +104,8 @@ class ShopifyController extends Controller
 
             if($this->verifyWebhook(file_get_contents('php://input'), $request->header('X-Shopify-Hmac-Sha256'))) {
 
+                http_response_code(200);
+
                 $data = $request->json()->all();
                 $data['action'] = $request->header('X-Shopify-Topic');
                 $id = $request->header('X-Shopify-Webhook-Id');
@@ -112,7 +114,6 @@ class ShopifyController extends Controller
                 $test = WebhookLog::where('name', "ShopifyWebhook - |$action|".$id)->first();
 
                 if (!$test) {
-                    http_response_code(200);
                     $webhook = new WebhookLog();
                     $webhook->name = "ShopifyWebhook - |$action|".$id;
                     $webhook->data = json_encode($data);
@@ -121,12 +122,76 @@ class ShopifyController extends Controller
                 }
 
                 if ($action == 'orders/create') {
-                    $shipping_address = $data['shipping_address'];
+                    $client_data = $data['customer'];
+
+                    $client['clientName'] = $client_data['first_name'] . ' ' . $client_data['last_name'];
+                    if (isset($client_data['email']))
+                        $client['email'] = $client_data['email'];
+                    else
+                        $client['email'] = 'generate_'.time().'@site.com';
+                    if (isset($client_data['phone']))
+                        $client['phone'] = $client_data['phone'];
+
+                    $client = OrderService::clientCreateOrUpdate($client);
+
+                    $order = new Orders();
+                    $order->order_id = $data['name'];
+                    $order->clientId = $client->id;
+                    $order->orderPrice = $data['total_price'];
+                    $order->orderData = json_encode($data);
+                    if ($data['financial_status'] == 'paid')
+                        $order->paymentStatus = 4;
+                    $order->save();
+
+
+
+                    $amoCrmService = new AmoCrmServise();
+                    $amoData = $this->AmoOrderPrepeare($data);
+                    $amoNotes = $this->AmoNotesPrepeare($data);
+                    $amoData['text_note'] = $amoNotes;
+                    $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
+
+                    if ($amo_contact->id != $client->amoId) {
+                        $client->amoId = $amo_contact->id;
+                        $client->save();
+                    }
+
+
+                    $open_lead = $amoCrmService->searchOpenLeadByContactId($client->amoId);
+
+                    if ($open_lead) {
+                        $lead = $amoCrmService->updateLead($open_lead, $amoData);
+                    } else {
+
+                        $lead = $amoCrmService->createNewLead($amoData);
+                        $amoCrmService->addContactToLead($amo_contact, $lead);
+                    }
+
+                    if ($lead) {
+                        $amoCrmService->addTextNotesToLead($lead->id, $amoNotes);
+
+                        $amoProducts = $this->getShopAmoProducts($amoCrmService, $data);
+                        $amoCrmService->addSopProductsToLead($lead->id, $amoProducts);
+
+                        $amo_invoice_id = $amoCrmService->addInvoiceToLead($amo_contact->id, $order->order_id, $lead->id, (float) $order->orderPrice, $order->paymentStatus);
+                        $amoData['invoice_id'] = $amo_invoice_id;
+
+                        $order->amoData = json_encode($amoData);
+                        $order->amoId =$lead->id;
+                        $order->save();
+
+                    } else {
+                        AppErrors::addError('error create amo lead', $amoData);
+                    }
+
                 }
 
+            } else {
+                dd('not verification');
             }
+        } else {
+            dd('not verification');
         }
-
     }
 
     private function verifyWebhook($data, $header)
