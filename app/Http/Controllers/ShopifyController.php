@@ -278,7 +278,7 @@ class ShopifyController extends Controller
                 }
             }
 
-            $shipping = "\n стоимость - " . $data['total_shipping_price_set']['shop_money']['amount'] . 'шек'
+            $shipping .= "\n стоимость - " . $data['total_shipping_price_set']['shop_money']['amount'] . 'шек'
                 . "\n ---------------------- \n";
 
 
