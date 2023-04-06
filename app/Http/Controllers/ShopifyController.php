@@ -404,12 +404,12 @@ class ShopifyController extends Controller
 
                 $data = [
                     'name' => $name,
-                    'sku' => $item['id'],
-                    'price' => $item['price']
+                    'sku' => 'SF-ID-'.$item['id'],
+                    'price' => $item['price'],
+                    '523159' => 'Shopify'
                 ];
 
                 $product_amo = $amoCrmService->getCatalogElementBuSku($item['id'], $select_name);
-                dd($product_amo);
                 if (!$product_amo) {
                     $product_amo = $amoCrmService->setCatalogElement($data, $select_name);
                 }

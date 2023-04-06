@@ -1558,43 +1558,44 @@ class AmoCrmServise
         //Добавим элемент в каталог (Список)
         $catalogElementsCollection = new CatalogElementsCollection();
         $catalogElement = new CatalogElementModel();
-        $catalogElement->setName($data['name'])
-            ->setCustomFieldsValues(
-                (new CustomFieldsValuesCollection())
-                    ->add(
-                        (new TextCustomFieldValuesModel())
-                            ->setFieldCode('SKU')
-                            ->setValues(
-                                (new TextCustomFieldValueCollection())
-                                    ->add(
-                                        (new TextCustomFieldValueModel())
-                                            ->setValue($data['sku'])
-                                    )
+        $catalogElement->setName($data['name']);
+        $values = new CustomFieldsValuesCollection();
+        $values->add(
+            (new TextCustomFieldValuesModel())
+                ->setFieldCode('SKU')
+                ->setValues(
+                    (new TextCustomFieldValueCollection())
+                        ->add(
+                            (new TextCustomFieldValueModel())
+                                ->setValue($data['sku'])
+                        )
+                )
+        )->add(
+                (new PriceCustomFieldValuesModel())
+                    ->setFieldCode('PRICE')
+                    ->setValues(
+                        (new PriceCustomFieldValueCollection())
+                            ->add(
+                                (new PriceCustomFieldValueModel())
+                                    ->setValue($data['price'])
                             )
                     )
-                    ->add(
-                        (new PriceCustomFieldValuesModel())
-                            ->setFieldCode('PRICE')
-                            ->setValues(
-                                (new PriceCustomFieldValueCollection())
-                                    ->add(
-                                        (new PriceCustomFieldValueModel())
-                                            ->setValue($data['price'])
-                                    )
-                            )
-                    )
-//                    ->add(
-//                        (new TextCustomFieldValuesModel())
-//                            ->setFieldId(488441)
-//                            ->setValues(
-//                                (new TextCustomFieldValueCollection())
-//                                    ->add(
-//                                        (new TextCustomFieldValueModel())
-//                                            ->setValue($data['description'])
-//                                    )
-//                            )
-//                    )
             );
+
+        if (isset($data['523159'])) {
+            $values->add(
+                (new TextCustomFieldValuesModel())
+                    ->setFieldId('523159')
+                    ->setValues(
+                        (new TextCustomFieldValueCollection())
+                            ->add(
+                                (new TextCustomFieldValueModel())
+                                    ->setValue($data['523159'])
+                            )
+                    )
+            );
+        }
+        $catalogElement->setCustomFieldsValues($values);
 
         $catalogElementsCollection->add($catalogElement);
         $catalogElementsService = $apiClient->catalogElements($catalog->getId());
