@@ -84,8 +84,10 @@ class ShopifyController extends Controller
                 $order->amoId =$lead->id;
                 $order->save();
 
+                dd('завершено');
             } else {
 
+                dd('нет лида');
                 AppErrors::addError('error create amo lead', $amoData);
                 return false;
             }
