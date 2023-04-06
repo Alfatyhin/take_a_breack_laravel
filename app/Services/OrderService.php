@@ -46,7 +46,8 @@ class OrderService
                 $data = [
                     'name' => $name,
                     'sku' => $item['sku'],
-                    'price' => $item['price']
+                    'price' => $item['price'],
+                    '523159' => env('APP_NAME')
                 ];
 
                 $product_amo = $this->amoCrmService->getCatalogElementBuSku($item['sku'], $select_name);
