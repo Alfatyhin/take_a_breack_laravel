@@ -80,10 +80,10 @@ class ShopifyController extends Controller
                 $amo_invoice_id = $amoCrmService->addInvoiceToLead($amo_contact->id, $order->order_id, $lead->id, (float) $order->orderPrice, $order->paymentStatus);
                 $amoData['invoice_id'] = $amo_invoice_id;
 
-
                 $order->amoData = json_encode($amoData);
                 $order->amoId =$lead->id;
                 $order->save();
+
             } else {
 
                 AppErrors::addError('error create amo lead', $amoData);
