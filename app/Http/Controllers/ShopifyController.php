@@ -394,7 +394,7 @@ class ShopifyController extends Controller
 
     private function getShopAmoProducts(AmoCrmServise $amoCrmService, $orderData)
     {
-        $select_name = 'Shopify витрина';
+        $select_name = 'Сайт витрина';
 
         if (isset($orderData['line_items']) && !empty($orderData['line_items'])) {
             $products = $orderData['line_items'];
