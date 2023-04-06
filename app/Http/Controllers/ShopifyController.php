@@ -420,6 +420,8 @@ class ShopifyController extends Controller
                     $product_amo = $amoCrmService->updateCatalogElement($product_amo, $data, $select_name);
                 }
 
+
+                $item['count'] = $item['fulfillable_quantity'];
                 $item['amo_model'] = $product_amo;
             }
 
