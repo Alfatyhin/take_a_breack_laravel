@@ -75,7 +75,6 @@ class ShopifyController extends Controller
                 $amoCrmService->addTextNotesToLead($lead->id, $amoNotes);
 
                 $amoProducts = $this->getShopAmoProducts($amoCrmService, $data);
-                dd($amoProducts);
                 $amoCrmService->addSopProductsToLead($lead->id, $amoProducts);
 
                 $amo_invoice_id = $amoCrmService->addInvoiceToLead($amo_contact->id, $order->order_id, $lead->id, (float) $order->orderPrice, $order->paymentStatus);
@@ -393,22 +392,20 @@ class ShopifyController extends Controller
     {
         $select_name = 'Shopify витрина';
 
-        if (isset($orderData['order_data']['products']) && !empty($orderData['order_data']['products'])) {
-            $products = $orderData['order_data']['products'];
+        if (isset($orderData['line_items']) && !empty($orderData['line_items'])) {
+            $products = $orderData['line_items'];
             foreach ($products as &$item)
             {
-                if (isset($item['name']['ru'])) {
-                    $name = $item['name']['ru'];
-                } else {
-                    $name = $item['name']['en'];
-                }
+                $name = $item['name'];
+
                 $data = [
                     'name' => $name,
-                    'sku' => $item['sku'],
+                    'sku' => $item['id'],
                     'price' => $item['price']
                 ];
 
-                $product_amo = $amoCrmService->getCatalogElementBuSku($item['sku'], $select_name);
+                $product_amo = $amoCrmService->getCatalogElementBuSku($item['id'], $select_name);
+                dd($product_amo);
                 if (!$product_amo) {
                     $product_amo = $amoCrmService->setCatalogElement($data, $select_name);
                 }
@@ -423,6 +420,7 @@ class ShopifyController extends Controller
 
                 $item['amo_model'] = $product_amo;
             }
+
         } else {
             return false;
         }
