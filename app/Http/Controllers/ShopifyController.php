@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AppErrors;
 use App\Models\Clients;
 use App\Models\Orders;
 use App\Models\UtmModel;
@@ -14,7 +15,6 @@ use Illuminate\Http\Request;
 
 class ShopifyController extends Controller
 {
-
 
     public function testWebhook(Request $request)
     {
@@ -47,17 +47,51 @@ class ShopifyController extends Controller
                 $order->paymentStatus = 4;
 //            $order->save();
 
+
+
+            $amoCrmService = new AmoCrmServise();
             $amoData = $this->AmoOrderPrepeare($data);
             $amoNotes = $this->AmoNotesPrepeare($data);
             $amoData['text_note'] = $amoNotes;
-            $amo_contact = $this->searchOrCreateAmoContact($client, $data);
+            $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
 
             if ($amo_contact->id != $client->amoId) {
                 $client->amoId = $amo_contact->id;
                 $client->save();
             }
 
-            dd($amoData);
+
+            dd($amoData, $amoNotes);
+
+            $open_lead = $amoCrmService->searchOpenLeadByContactId($client->amoId);
+
+            if ($open_lead) {
+                $lead = $amoCrmService->updateLead($open_lead, $amoData);
+
+            } else {
+
+                $lead = $amoCrmService->createNewLead($amoData);
+                $amoCrmService->addContactToLead($amo_contact, $lead);
+            }
+
+            if ($lead) {
+                $amoCrmService->addTextNotesToLead($lead->id, $amoNotes);
+
+                $amoProducts = $this->getShopAmoProducts($amoCrmService, $orderData);
+                $amoCrmService->addSopProductsToLead($lead->id, $amoProducts);
+
+                $amo_invoice_id = $amoCrmService->addInvoiceToLead($amo_contact->id, $order->order_id, $lead->id, (float) $order->orderPrice, $order->paymentStatus);
+                $amoData['invoice_id'] = $amo_invoice_id;
+
+
+                $order->amoData = json_encode($amoData);
+                $order->amoId =$lead->id;
+                $order->save();
+            } else {
+
+                AppErrors::addError('error create amo lead', $amoData);
+                return false;
+            }
 
         }
 
@@ -289,9 +323,8 @@ class ShopifyController extends Controller
     }
 
 
-    private function searchOrCreateAmoContact(Clients $client, $orderData)
+    private function searchOrCreateAmoContact(AmoCrmServise $amoCrmService, Clients $client, $orderData)
     {
-        $amoCrmService = new AmoCrmServise();
         $phone = OrderService::phoneAmoFormater($client->phone);
         $contactData = [
             'name' => $client->name,
@@ -316,11 +349,11 @@ class ShopifyController extends Controller
         if (!empty($client->amoId)) {
             $contact = $amoCrmService->getContactBuId($client->amoId);
         } else {
-            $contact = $this->searchAmoContact($client);
+            $contact = $this->searchAmoContact($amoCrmService, $client);
         }
 
         if (!$contact) {
-            $contact = $this->searchAmoContact($client);
+            $contact = $this->searchAmoContact($amoCrmService, $client);
         }
         if (!$contact) {
             $contact = $amoCrmService->createContact($contactData);
@@ -331,9 +364,8 @@ class ShopifyController extends Controller
         return $contact;
     }
 
-    private function searchAmoContact(Clients $client)
+    private function searchAmoContact(AmoCrmServise $amoCrmService, Clients $client)
     {
-        $amoCrmService = $this->amoCrmService;
 
         $contact = $amoCrmService->searchContactFilter($client->email);
 
@@ -356,5 +388,47 @@ class ShopifyController extends Controller
         }
 
         return $contact;
+    }
+
+
+    private function getShopAmoProducts(AmoCrmServise $amoCrmService, $orderData)
+    {
+        $select_name = 'Shopify витрина';
+
+        if (isset($orderData['order_data']['products']) && !empty($orderData['order_data']['products'])) {
+            $products = $orderData['order_data']['products'];
+            foreach ($products as &$item)
+            {
+                if (isset($item['name']['ru'])) {
+                    $name = $item['name']['ru'];
+                } else {
+                    $name = $item['name']['en'];
+                }
+                $data = [
+                    'name' => $name,
+                    'sku' => $item['sku'],
+                    'price' => $item['price']
+                ];
+
+                $product_amo = $amoCrmService->getCatalogElementBuSku($item['sku'], $select_name);
+                if (!$product_amo) {
+                    $product_amo = $amoCrmService->setCatalogElement($data, $select_name);
+                }
+
+                $customFields = $product_amo->getCustomFieldsValues();
+                $fieldPrice = $customFields->getBy('fieldCode', 'PRICE');
+                $price_amo = $fieldPrice->getValues()->first()->value;
+
+                if ($name != $product_amo->name || $item['price'] != $price_amo) {
+                    $product_amo = $amoCrmService->updateCatalogElement($product_amo, $data, $select_name);
+                }
+
+                $item['amo_model'] = $product_amo;
+            }
+        } else {
+            return false;
+        }
+
+        return $products;
     }
 }
