@@ -42,6 +42,7 @@ class ShopifyController extends Controller
             $order = new Orders();
             $order->order_id = $data['name'];
             $order->clientId = $client->id;
+            $order->orderPrice = data['total_price'];
             $order->orderData = json_encode($data);
             if ($data['financial_status'] == 'paid')
                 $order->paymentStatus = 4;
