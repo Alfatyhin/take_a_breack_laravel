@@ -58,6 +58,11 @@ class SenpulseController extends Controller
                         'type' =>  'text',
                         'text' =>  $item['info']['message']['channel_data']['message']['audio']['url'],
                     ];
+                } elseif ($item['info']['message']['channel_data']['message']['type'] == "unsupported") {
+                    $message = [
+                        'type' =>  'text',
+                        'text' =>  '/unsupported - ' .  $item['info']['message']['channel_data']['message']['errors'][0]['title'],
+                    ];
                 } elseif ($item['info']['message']['channel_data']['message']['type'] == "reaction") {
                     $message = [
                         'type' =>  'text',
