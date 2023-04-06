@@ -1531,6 +1531,9 @@ class AmoCrmServise
         $catalogsCollection = $apiClient->catalogs()->get();
         //Получим каталог по названию
         $catalog = $catalogsCollection->getBy('name', $catalog_name);
+        if (!$catalog) {
+            return false;
+        }
         $catalogElementsService = $apiClient->catalogElements($catalog->getId());
         $catalogElementsFilter = new CatalogElementsFilter();
         $catalogElementsFilter->setQuery($sku);
