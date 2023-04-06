@@ -61,10 +61,6 @@ class ShopifyController extends Controller
             }
 
 
-            $amoProducts = $this->getShopAmoProducts($amoCrmService, $data);
-
-            dd($amoProducts);
-
             $open_lead = $amoCrmService->searchOpenLeadByContactId($client->amoId);
 
             if ($open_lead) {
