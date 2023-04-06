@@ -46,6 +46,7 @@ class ShopifyController extends Controller
             $order->orderData = json_encode($data);
             if ($data['financial_status'] == 'paid')
                 $order->paymentStatus = 4;
+            $order->invoiceStatus = 1;
             $order->save();
 
 
