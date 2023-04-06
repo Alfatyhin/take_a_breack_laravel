@@ -72,6 +72,9 @@ Route::any('/api/senpulse/chat', [SenpulseController::class, 'incommingChatMessa
 
 Route::any('/api/shopify/webhook', [ShopifyController::class, 'webhook']);
 
+Route::get('/api/orders/view-order/{order_id}', [ApiController::class, 'OrderView'])
+    ->name('api_order_view');
+
 
 
 
@@ -330,10 +333,6 @@ Route::get('/icredit', [IcreditController::class, 'index'])
     ->middleware(['isAdmin'])->name('icredit_index');
 
 
-
-
-Route::get('/api/orders/view-order/{order_id}', [ApiController::class, 'OrderView'])
-    ->name('api_order_view');
 
 Route::get('/api/orders/send_mail', [Orders::class, 'sendMail']);
 
