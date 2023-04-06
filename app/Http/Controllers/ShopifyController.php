@@ -61,13 +61,10 @@ class ShopifyController extends Controller
             }
 
 
-            dd($amoData, $amoNotes);
-
             $open_lead = $amoCrmService->searchOpenLeadByContactId($client->amoId);
 
             if ($open_lead) {
                 $lead = $amoCrmService->updateLead($open_lead, $amoData);
-
             } else {
 
                 $lead = $amoCrmService->createNewLead($amoData);
@@ -77,7 +74,7 @@ class ShopifyController extends Controller
             if ($lead) {
                 $amoCrmService->addTextNotesToLead($lead->id, $amoNotes);
 
-                $amoProducts = $this->getShopAmoProducts($amoCrmService, $orderData);
+                $amoProducts = $this->getShopAmoProducts($amoCrmService, $data);
                 $amoCrmService->addSopProductsToLead($lead->id, $amoProducts);
 
                 $amo_invoice_id = $amoCrmService->addInvoiceToLead($amo_contact->id, $order->order_id, $lead->id, (float) $order->orderPrice, $order->paymentStatus);
