@@ -75,6 +75,7 @@ class ShopifyController extends Controller
                 $amoCrmService->addTextNotesToLead($lead->id, $amoNotes);
 
                 $amoProducts = $this->getShopAmoProducts($amoCrmService, $data);
+                dd($amoProducts);
                 $amoCrmService->addSopProductsToLead($lead->id, $amoProducts);
 
                 $amo_invoice_id = $amoCrmService->addInvoiceToLead($amo_contact->id, $order->order_id, $lead->id, (float) $order->orderPrice, $order->paymentStatus);
