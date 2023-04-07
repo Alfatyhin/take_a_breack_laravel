@@ -12,7 +12,8 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "intervention/image": "^2.7",
         "laravel/framework": "^8.40",
-        "laravel/tinker": "^2.5"
+        "laravel/tinker": "^2.5",
+        "shopify/shopify-api": "^4.2"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
