@@ -1307,6 +1307,9 @@ class OrderService
         } elseif (preg_match('/^(\+[0-9]{3})([0-9]{2})([0-9]{3})([0-9]{4})$/', $phone, $mathes)) {
 
             $phone = $mathes[1].' '.$mathes[2].'-'.$mathes[3].'-'.$mathes[4];
+        } elseif (preg_match('/^([0-9]{3})([0-9]{2})([0-9]{3})([0-9]+)$/', $phone, $mathes)) {
+
+            $phone = $mathes[1].' '.$mathes[2].'-'.$mathes[3].'-'.$mathes[4];
         } else {
             $phone = $phone_or;
         }
