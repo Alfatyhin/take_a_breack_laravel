@@ -20,6 +20,7 @@ use App\Services\OrderService;
 use App\Services\StatisticService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -1473,7 +1474,9 @@ class ShopSettingController extends Controller
     public function jsonDecode(Request $request)
     {
         $json = $request->post('json');
+        $test = json_decode($json, true);
+//        $test = Arr::dot($test);
 
-        dd(json_decode($json, true));
+        dd($test);
     }
 }

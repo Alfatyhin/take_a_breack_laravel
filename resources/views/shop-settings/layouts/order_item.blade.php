@@ -9,7 +9,7 @@
                 <a class="hide button" href="{{ route('restore_order', ['id' => $item->order_id]) }}" >restore</a>
             </p>
         @endif
-        ( {{ $item->id }} ) <b>#{{ $item->order_id }}</b> | <b>gId:</b>{{ $item->gclientId }}  <br>
+        ( {{ $item->id }} ) <b>{{ $item->order_id }}</b> | <b>gId:</b>{{ $item->gclientId }}  <br>
         Дата: {{ $item->created_at }} <br>
         @if(empty($item->amoId) && ($item->paymentMethod != 0 || $item->paymentStatus != 0))
             <a class="button" href="{{ route('api_create_amo_order', ['id' => $item->order_id]) }}" >
@@ -195,6 +195,13 @@
                         <hr>
                     @endif
                 @endforeach
+            @else
+                <form action="{{ route('json_decode') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="json" value="{{ $item->orderData }}">
+                    <input type="submit" name="command" value="json decode">
+                    <input type="submit" formaction="{{ route('shopify_test_webhook') }}" value="test_webhook">
+                </form>
             @endisset
         </div>
 
