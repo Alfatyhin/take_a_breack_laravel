@@ -93,6 +93,9 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
     Route::any('/shopify/webhook', [ShopifyController::class, 'testWebhook'])
         ->name('shopify_test_webhook');
 
+    Route::any('/shopify/test', [ShopifyController::class, 'test'])
+        ->name('shopify_test');
+
     Route::get('/clients', [Controller::class, 'allClients'])
         ->name('clients');
 

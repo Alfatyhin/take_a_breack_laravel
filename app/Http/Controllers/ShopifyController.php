@@ -21,8 +21,9 @@ class ShopifyController extends Controller
     public function test(Request $request)
     {
 
-        $test = new Product();
-        $test::all();
+        $Client = new Rest('takeabreak-2174.myshopify.com', env('SHOPIFY_TOKEN'));
+        $test = $Client->get('products');
+        dd($test);
 
     }
 
@@ -49,8 +50,9 @@ class ShopifyController extends Controller
 
             $client = OrderService::clientCreateOrUpdate($client);
 
-            $order = new Orders();
-            $order->order_id = $data['name'];
+            $order = Orders::firstOrCreate([
+                'order_id' => $data['name']
+            ]);
             $order->clientId = $client->id;
             $order->orderPrice = $data['total_price'];
             $order->orderData = json_encode($data);
