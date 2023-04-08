@@ -12,9 +12,19 @@ use App\Services\AppServise;
 use App\Services\OrderService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Shopify\Clients\Rest;
+use Shopify\Rest\Admin2023_01\Product;
 
 class ShopifyController extends Controller
 {
+
+    public function test(Request $request)
+    {
+
+        $test = new Product();
+        $test::all();
+
+    }
 
     public function testWebhook(Request $request)
     {
@@ -262,10 +272,6 @@ class ShopifyController extends Controller
         $dateOrder = strtotime($date->format('Y-m-d H:i:s'));
 
 
-        if (!isset($data['client_comment'])) {
-            $data['client_comment'] = '';
-        }
-
         $dataOrderAmo = [
             'order name'  => $data['name'],
             'order_id'    => $data['name'],
@@ -273,7 +279,7 @@ class ShopifyController extends Controller
             'order price' => $data['total_price'],
             'pipelineId'  => $pipelineId,
             'statusId'    => $statusId,
-            'notes'       => $data['client_comment'],
+            'notes'       => $data['notes'],
             'name'        => $data['customer']['first_name'] . ' ' . $data['customer']['first_name'],
             'email'       => $data['email'],
             'phone'       => $data['phone'],
@@ -367,8 +373,8 @@ class ShopifyController extends Controller
             $tips = '';
         }
 
-        if(isset($data['client_comment'])) {
-            $orderComments = $data['client_comment'];
+        if(isset($data['notes'])) {
+            $orderComments = $data['notes'];
         } else {
             $orderComments = '';
         }
