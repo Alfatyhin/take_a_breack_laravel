@@ -252,10 +252,12 @@ class ShopifyController extends Controller
         foreach ($data['note_attributes'] as $item) {
             if($item['name'] == 'delivery_date_origin') {
                 $date = $item['value'];
-            }
-            if($item['name'] == 'Delivery Time') {
+            } elseif($item['name'] == 'Delivery Time') {
                 $time = $item['value'];
+            } else {
+
             }
+
         }
 
         if (!isset($time)) {
@@ -327,13 +329,19 @@ class ShopifyController extends Controller
         }
 
 
+        $attributes = '';
         foreach ($data['note_attributes'] as $item) {
             if($item['name'] == 'delivery_date_origin') {
                 $date = $item['value'];
-            }
-            if($item['name'] == 'Delivery Time') {
+            } elseif($item['name'] == 'Delivery Time') {
                 $time = $item['value'];
+            } else {
+                $attributes .= "\n ".$item['name'].' - '.$item['value'];
             }
+        }
+
+        if(!empty($attributes)) {
+            $attributes = "\n ---------------------- дополнительные данные: $attributes";
         }
 
         if (!isset($time)) {
@@ -389,7 +397,7 @@ class ShopifyController extends Controller
         }
 
 
-        $notes = $ordersNotes . $orderComments . $discount . $tips . $shipping;
+        $notes = $ordersNotes . $attributes . $orderComments . $discount . $tips . $shipping;
 
         $notes = $notes . "\n                    Итого: {$data['current_total_price']} шек";
 
