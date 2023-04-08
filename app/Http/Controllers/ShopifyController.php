@@ -232,7 +232,7 @@ class ShopifyController extends Controller
 
         if ($data['financial_status'] == 'paid') {
             $payment = 'Оплачен';
-        } elseif ($data['financial_status'] == 'financial_status') {
+        } elseif ($data['financial_status'] == 'pending') {
             $payment = 'Оплата наличными по факту';
         } else {
             $payment = false;
@@ -341,7 +341,7 @@ class ShopifyController extends Controller
         }
 
         if(!empty($attributes)) {
-            $attributes = "\n ---------------------- дополнительные данные: $attributes";
+            $attributes = "дополнительные данные: $attributes \n ----------------------\n ";
         }
 
         if (!isset($time)) {
