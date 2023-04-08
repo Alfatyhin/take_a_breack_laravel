@@ -232,6 +232,8 @@ class ShopifyController extends Controller
 
         if ($data['financial_status'] == 'paid') {
             $payment = 'Оплачен';
+        } elseif ($data['financial_status'] == 'financial_status') {
+            $payment = 'Оплата наличными по факту';
         } else {
             $payment = false;
         }
