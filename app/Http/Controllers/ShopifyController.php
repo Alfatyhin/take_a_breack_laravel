@@ -273,6 +273,9 @@ class ShopifyController extends Controller
         $date = Carbon::parse($delivery_date_time);
         $dateOrder = strtotime($date->format('Y-m-d H:i:s'));
 
+        if(!isset($data['notes'])) {
+            $data['notes'] = '';
+        }
 
         $dataOrderAmo = [
             'order name'  => $data['name'],
@@ -376,19 +379,13 @@ class ShopifyController extends Controller
         }
 
         if(isset($data['notes'])) {
-            $orderComments = $data['notes'];
-        } else {
-            $orderComments = '';
-        }
-
-
-        if (!empty($orderComments)) {
             $orderComments = 'Комментарий покупателя: ' . "\n"
-                . $orderComments . "\n ---------------------- \n";
+                . $data['notes'] . "\n ---------------------- \n";
         } else {
             $orderComments = 'Комментарий покупателя: ' . "\n"
                 . "Нет комментария " . "\n ---------------------- \n";
         }
+
 
         $notes = $ordersNotes . $orderComments . $discount . $tips . $shipping;
 
