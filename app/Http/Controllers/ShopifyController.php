@@ -10,10 +10,11 @@ use App\Models\WebhookLog;
 use App\Services\AmoCrmServise;
 use App\Services\AppServise;
 use App\Services\OrderService;
+use App\Services\ShopifyClient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Shopify\Clients\Rest;
-use Shopify\Rest\Admin2023_01\Product;
+use Shopify\Context;
 
 class ShopifyController extends Controller
 {
@@ -21,7 +22,7 @@ class ShopifyController extends Controller
     public function test(Request $request)
     {
 
-        $Client = new Rest('takeabreak-2174.myshopify.com', env('SHOPIFY_TOKEN'));
+        $Client = new ShopifyClient();
         $test = $Client->get('products');
         dd($test);
 
@@ -35,7 +36,7 @@ class ShopifyController extends Controller
 
         $action = $data['action'];
 
-        if ($action == 'orders/create') {
+        if ($action == 'orders/create' || $action == 'orders/updated') {
 //            WebhookLog::addLog("Shopify new order webhook", $data);
 
             $client_data = $data['customer'];
@@ -132,73 +133,75 @@ class ShopifyController extends Controller
                     $webhook->data = json_encode($data);
                     $webhook->save();
 
-                }
 
-                if ($action == 'orders/create') {
-                    $client_data = $data['customer'];
+                    if ($action == 'orders/create') {
+                        $client_data = $data['customer'];
 
-                    $client['clientName'] = $client_data['first_name'] . ' ' . $client_data['last_name'];
-                    if (isset($client_data['email']))
-                        $client['email'] = $client_data['email'];
-                    else
-                        $client['email'] = 'generate_'.time().'@site.com';
-                    if (isset($client_data['phone']))
-                        $client['phone'] = $client_data['phone'];
+                        $client['clientName'] = $client_data['first_name'] . ' ' . $client_data['last_name'];
+                        if (isset($client_data['email']))
+                            $client['email'] = $client_data['email'];
+                        else
+                            $client['email'] = 'generate_'.time().'@site.com';
+                        if (isset($client_data['phone']))
+                            $client['phone'] = $client_data['phone'];
 
-                    $client = OrderService::clientCreateOrUpdate($client);
+                        $client = OrderService::clientCreateOrUpdate($client);
 
-                    $order = new Orders();
-                    $order->order_id = $data['name'];
-                    $order->clientId = $client->id;
-                    $order->orderPrice = $data['total_price'];
-                    $order->orderData = json_encode($data);
-                    if ($data['financial_status'] == 'paid')
-                        $order->paymentStatus = 4;
-                    $order->invoiceStatus = 1;
-                    $order->save();
-
-
-
-                    $amoCrmService = new AmoCrmServise();
-                    $amoData = $this->AmoOrderPrepeare($data);
-                    $amoNotes = $this->AmoNotesPrepeare($data);
-                    $amoData['text_note'] = $amoNotes;
-                    $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
-
-                    if ($amo_contact->id != $client->amoId) {
-                        $client->amoId = $amo_contact->id;
-                        $client->save();
-                    }
-
-
-                    $open_lead = $amoCrmService->searchOpenLeadByContactId($client->amoId);
-
-                    if ($open_lead) {
-                        $lead = $amoCrmService->updateLead($open_lead, $amoData);
-                    } else {
-
-                        $lead = $amoCrmService->createNewLead($amoData);
-                        $amoCrmService->addContactToLead($amo_contact, $lead);
-                    }
-
-                    if ($lead) {
-                        $amoCrmService->addTextNotesToLead($lead->id, $amoNotes);
-
-                        $amoProducts = $this->getShopAmoProducts($amoCrmService, $data);
-                        $amoCrmService->addSopProductsToLead($lead->id, $amoProducts);
-
-                        $amo_invoice_id = $amoCrmService->addInvoiceToLead($amo_contact->id, $order->order_id, $lead->id, (float) $order->orderPrice, $order->paymentStatus);
-                        $amoData['invoice_id'] = $amo_invoice_id;
-
-                        $order->amoData = json_encode($amoData);
-                        $order->amoId =$lead->id;
+                        $order = new Orders();
+                        $order->order_id = $data['name'];
+                        $order->clientId = $client->id;
+                        $order->orderPrice = $data['total_price'];
+                        $order->orderData = json_encode($data);
+                        if ($data['financial_status'] == 'paid')
+                            $order->paymentStatus = 4;
+                        $order->invoiceStatus = 1;
                         $order->save();
 
-                    } else {
-                        AppErrors::addError('error create amo lead', $amoData);
+
+
+                        $amoCrmService = new AmoCrmServise();
+                        $amoData = $this->AmoOrderPrepeare($data);
+                        $amoNotes = $this->AmoNotesPrepeare($data);
+                        $amoData['text_note'] = $amoNotes;
+                        $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
+
+                        if ($amo_contact->id != $client->amoId) {
+                            $client->amoId = $amo_contact->id;
+                            $client->save();
+                        }
+
+
+                        $open_lead = $amoCrmService->searchOpenLeadByContactId($client->amoId);
+
+                        if ($open_lead) {
+                            $lead = $amoCrmService->updateLead($open_lead, $amoData);
+                        } else {
+
+                            $lead = $amoCrmService->createNewLead($amoData);
+                            $amoCrmService->addContactToLead($amo_contact, $lead);
+                        }
+
+                        if ($lead) {
+                            $amoCrmService->addTextNotesToLead($lead->id, $amoNotes);
+
+                            $amoProducts = $this->getShopAmoProducts($amoCrmService, $data);
+                            $amoCrmService->addSopProductsToLead($lead->id, $amoProducts);
+
+                            $amo_invoice_id = $amoCrmService->addInvoiceToLead($amo_contact->id, $order->order_id, $lead->id, (float) $order->orderPrice, $order->paymentStatus);
+                            $amoData['invoice_id'] = $amo_invoice_id;
+
+                            $order->amoData = json_encode($amoData);
+                            $order->amoId =$lead->id;
+                            $order->save();
+
+                        } else {
+                            AppErrors::addError('error create amo lead', $amoData);
+                        }
+
                     }
 
                 }
+
 
             } else {
                 dd('not verification');
