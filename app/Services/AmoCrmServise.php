@@ -1864,8 +1864,11 @@ class AmoCrmServise
         $apiClient = $this->getApiClient();
         $contact_update = false;
 
-
         $customFields = $contact->getCustomFieldsValues();
+
+        if (!$customFields) {
+            $customFields = new CustomFieldsValuesCollection();
+        }
 
         if (isset($clientData['email'])) {
             $emailField = $customFields->getBy('fieldCode', 'EMAIL');
