@@ -1941,7 +1941,9 @@ class OrderService
         if (empty($client->phone) && $phone) {
             $client->phone = $phone;
         }
+
         if (isset($data['phones']) && $phone) {
+            dd($phone);
             $phones = $data['phones'];
             $test_phones = array_reverse($phones);
             if (!isset($test_phones[$phone])) {
@@ -1949,7 +1951,13 @@ class OrderService
             }
             $data['phones'] = $phones;
         } else {
-            $data['phones'][] = $phone;
+            if(isset($data['phones'])) {
+                $data['phones'] = array_unique($data['phones']);
+                if (empty($data['phones'][0]))
+                    unset($data['phones']);
+            }
+            if ($phone)
+                $data['phones'][] = $phone;
         }
 
         if(isset($post['clientBirthDay'])) {

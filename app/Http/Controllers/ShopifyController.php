@@ -63,12 +63,16 @@ class ShopifyController extends Controller
             $order->save();
 
 
+            $client->amoId = null;
+            $client->save();
 
             $amoCrmService = new AmoCrmServise();
             $amoData = $this->AmoOrderPrepeare($data);
             $amoNotes = $this->AmoNotesPrepeare($data);
             $amoData['text_note'] = $amoNotes;
             $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
+
+            dd($amo_contact, $client);
 
             if ($amo_contact->id != $client->amoId) {
                 $client->amoId = $amo_contact->id;
@@ -410,12 +414,14 @@ class ShopifyController extends Controller
 
     private function searchOrCreateAmoContact(AmoCrmServise $amoCrmService, Clients $client, $orderData)
     {
-        $phone = OrderService::phoneAmoFormater($client->phone);
         $contactData = [
             'name' => $client->name,
-            'phone' => $phone,
             'email' => $client->email,
         ];
+
+        if ($client->phone) {
+            $contactData['phone'] = OrderService::phoneAmoFormater($client->phone);
+        }
 
         $client_data = json_decode($client->data, true);
         if (isset($client_data['clientBirthDay'])) {
@@ -438,9 +444,6 @@ class ShopifyController extends Controller
         }
 
         if (!$contact) {
-            $contact = $this->searchAmoContact($amoCrmService, $client);
-        }
-        if (!$contact) {
             $contact = $amoCrmService->createContact($contactData);
         } else {
             $contact = $amoCrmService->syncContactData($contact, $contactData);
@@ -454,7 +457,7 @@ class ShopifyController extends Controller
 
         $contact = $amoCrmService->searchContactFilter($client->email);
 
-        if (!$contact) {
+        if (!$contact && $client->phone) {
             $contact = $amoCrmService->searchContactFilter($client->phone);
         }
         if (!$contact) {
