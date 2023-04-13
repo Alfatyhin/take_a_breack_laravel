@@ -72,8 +72,6 @@ class ShopifyController extends Controller
             $amoData['text_note'] = $amoNotes;
             $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
 
-            dd($amo_contact, $client);
-
             if ($amo_contact->id != $client->amoId) {
                 $client->amoId = $amo_contact->id;
                 $client->save();
