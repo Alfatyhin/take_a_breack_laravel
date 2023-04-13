@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\AppErrors;
 use App\Models\Clients;
 use App\Models\Orders;
-use App\Models\UtmModel;
 use App\Models\WebhookLog;
 use App\Services\AmoCrmServise;
 use App\Services\AppServise;
@@ -13,8 +12,6 @@ use App\Services\OrderService;
 use App\Services\ShopifyClient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Shopify\Clients\Rest;
-use Shopify\Context;
 
 class ShopifyController extends Controller
 {
@@ -62,9 +59,6 @@ class ShopifyController extends Controller
             $order->invoiceStatus = 1;
             $order->save();
 
-
-            $client->amoId = null;
-            $client->save();
 
             $amoCrmService = new AmoCrmServise();
             $amoData = $this->AmoOrderPrepeare($data);
@@ -228,7 +222,6 @@ class ShopifyController extends Controller
         $pipelineId = '4651807'; // воронка
         $statusId = '43924885'; // статус
 
-
         $products = $data['line_items'];
         foreach ($products as $key => $item) {
             $product_name = $item['name'];
@@ -294,7 +287,7 @@ class ShopifyController extends Controller
             'pipelineId'  => $pipelineId,
             'statusId'    => $statusId,
             'notes'       => $data['notes'],
-            'name'        => $data['customer']['first_name'] . ' ' . $data['customer']['first_name'],
+            'name'        => $data['customer']['first_name'] . ' ' . $data['customer']['last_name'],
             'email'       => $data['email'],
             'phone'       => $data['phone'],
             'address'     => $address,
