@@ -6,6 +6,7 @@ use App\Models\UtmModel;
 use App\Services\StatisticService;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ShopMidleware
@@ -20,6 +21,8 @@ class ShopMidleware
     public function handle(Request $request, Closure $next)
     {
 
+        if (!Auth::user())
+        return redirect('https://takeabreakdesserts.co.il', '301');
 
         if (!empty($request->query())) {
             $request->noindex = true;
