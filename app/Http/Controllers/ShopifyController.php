@@ -428,6 +428,16 @@ class ShopifyController extends Controller
             $contactData['city'] = AppServise::getCityNameByLang($orderData['customer']['default_address']['city'], 'ru');
         }
 
+        if (isset($orderData['client_details']['accept_language'])) {
+            if ($orderData['client_details']['accept_language'] == 'en-IL') {
+                $contactData['lang'] = 'Английский';
+            } elseif ($orderData['client_details']['accept_language'] == 'ru-IL') {
+                $contactData['lang'] = 'Русский';
+            } elseif ($orderData['client_details']['accept_language'] == 'il-IL') {
+                $contactData['lang'] = 'Иврит';
+            }
+        }
+
         if (!empty($client->amoId)) {
             $contact = $amoCrmService->getContactBuId($client->amoId);
         } else {
