@@ -398,7 +398,7 @@ class AppServise
             }
         }
 
-        return false;
+        return $name;
 
     }
 

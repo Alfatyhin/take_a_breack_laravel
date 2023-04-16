@@ -275,8 +275,8 @@ class ShopifyController extends Controller
         $date = Carbon::parse($delivery_date_time);
         $dateOrder = strtotime($date->format('Y-m-d H:i:s'));
 
-        if(!isset($data['notes'])) {
-            $data['notes'] = '';
+        if(!isset($data['note'])) {
+            $data['note'] = '';
         }
 
         $dataOrderAmo = [
@@ -286,7 +286,7 @@ class ShopifyController extends Controller
             'order price' => $data['total_price'],
             'pipelineId'  => $pipelineId,
             'statusId'    => $statusId,
-            'notes'       => $data['notes'],
+            'notes'       => $data['note'],
             'name'        => $data['customer']['first_name'] . ' ' . $data['customer']['last_name'],
             'email'       => $data['email'],
             'phone'       => $data['phone'],
@@ -386,9 +386,9 @@ class ShopifyController extends Controller
             $tips = '';
         }
 
-        if(isset($data['notes'])) {
+        if(isset($data['note'])) {
             $orderComments = 'Комментарий покупателя: ' . "\n"
-                . $data['notes'] . "\n ---------------------- \n";
+                . $data['note'] . "\n ---------------------- \n";
         } else {
             $orderComments = 'Комментарий покупателя: ' . "\n"
                 . "Нет комментария " . "\n ---------------------- \n";
