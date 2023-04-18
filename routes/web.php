@@ -66,7 +66,12 @@ Route::any('/orders/response', [IcreditController::class, 'orderRequestIcredit']
 Route::get('/api/json/import', [ShopSettingController::class, 'jsonImport'])
     ->name('scv_import');
 
+
+Route::any('/api/amo/chat/test', [Amocrm::class, 'testIncommingChatMessage'])
+    ->name('amo_chat_test');
+
 Route::any('/api/amo/chat/{score_id}', [Amocrm::class, 'incommingChatMessage']);
+
 
 Route::any('/api/senpulse/chat', [SenpulseController::class, 'incommingChatMessage']);
 

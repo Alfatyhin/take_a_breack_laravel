@@ -6,12 +6,9 @@ namespace App\Services;
 
 use Exception;
 use Illuminate\Support\Facades\Http;
-use Sendpulse\RestApi\ApiInterface;
-use Sendpulse\RestApi\Storage\FileStorage;
-use Sendpulse\RestApi\Storage\TokenStorageInterface;
 use stdClass;
 
-class SendpulseService implements ApiInterface
+class SendpulseService
 {
 
     private $apiUrl = 'https://api.sendpulse.com';
@@ -22,32 +19,16 @@ class SendpulseService implements ApiInterface
 
     private $refreshToken = 0;
     private $retry = false;
-
-    /**
-     * @var null|TokenStorageInterface
-     */
     private $tokenStorage;
 
-
-    /**
-     * Sendpulse API constructor
-     *
-     * @param                       $userId
-     * @param                       $secret
-     * @param TokenStorageInterface $tokenStorage
-     *
-     * @throws Exception
-     */
     public function __construct()
     {
         $userId = env('SENDPULSE_ID');
         $secret = env('SENDPULSE_SECRET');
 
-        $tokenStorage = new FileStorage();
-
         $this->userId = $userId;
         $this->secret = $secret;
-        $this->tokenStorage = $tokenStorage;
+        $this->tokenStorage = new SendpulseTokenStorage('data/');
         $hashName = md5($userId . '::' . $secret);
 
         /** load token from storage */

@@ -135,6 +135,9 @@
                                 @if(preg_match('/ShopifyWebhook/', $item->name))
                                     <input type="submit" formaction="{{ route('shopify_test_webhook') }}" value="test_webhook">
                                 @endif
+                                @if(preg_match('/Amocrm - incommingChatMessage/', $item->name))
+                                    <input type="submit" formaction="{{ route('amo_chat_test') }}" value="amo_chat_test">
+                                @endif
                             </form>
                         </td>
                     </tr>

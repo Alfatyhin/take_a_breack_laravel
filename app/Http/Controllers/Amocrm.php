@@ -134,6 +134,106 @@ class Amocrm extends Controller
 
     }
 
+    public function testIncommingChatMessage(Request $request)
+    {
+        $data = $request->post('json');
+        $data = json_decode($data, true);
+
+        $bot_id = '64283d700269870cfd494252';
+
+        if ($data['message']['message']['type'] == 'text') {
+            $data_message= [
+                'bot_id' => $bot_id,
+                'phone' => $data['message']['receiver']['phone'],
+                'message' => [
+                    'type' => $data['message']['message']['type'],
+                    'text' => [
+                        'body' => $data['message']['message']['text']
+                    ]
+                ]
+            ];
+
+        } elseif ($data['message']['message']['type'] == 'picture') {
+            $data_message= [
+                'bot_id' => $bot_id,
+                'phone' => $data['message']['receiver']['phone'],
+                'message' => [
+                    'type' => "image",
+                    'image' => [
+                        'link' => $data['message']['message']['media'],
+                        'caption' => $data['message']['message']['text']
+                    ]
+                ]
+            ];
+        } elseif ($data['message']['message']['type'] == 'file') {
+            $data_message= [
+                'bot_id' => $bot_id,
+                'phone' => $data['message']['receiver']['phone'],
+                'message' => [
+                    'type' => "document",
+                    'document' => [
+                        'link' => $data['message']['message']['media'],
+                        'caption' => $data['message']['message']['text']
+                    ]
+                ]
+            ];
+        }
+
+        $data_message['phone'] = '+380992363774';
+
+        if (isset($data_message)) {
+
+            $Service = new SendpulseService();
+            $res = $Service->sendWhatsapp('contacts/sendByPhone', $data_message);
+
+
+            if ($res->success === true) {
+
+                $webhook = new WebhookLog();
+                $webhook->name = 'SendpulseService - res';
+                $webhook->data = json_encode($res);
+                $webhook->save();
+
+                $status_data = [
+                    'msgid' => $data['message']['message']['id'],
+                    'delivery_status' => 1,
+                    'error_code' => '',
+                    'error' =>  ''
+                ];
+            } else {
+
+                $webhook = new WebhookLog();
+                $webhook->name = 'SendpulseService - error';
+                $webhook->data = json_encode($res->errors);
+                $webhook->save();
+
+                $status_data = [
+                    'msgid' => $data['message']['message']['id'],
+                    'delivery_status' => -1,
+                    'error_code' => '',
+                    'error' =>  json_encode($res->errors)
+                ];
+            }
+
+
+            $AmoChatsService = new AmoChatsService();
+            $AmoChatsService->messageStatus($status_data);
+
+        } else {
+            $status_data = [
+                'msgid' => $data['message']['message']['id'],
+                'delivery_status' => -1,
+                'error_code' => '',
+                'error' =>  'непредвиденное исключение'
+            ];
+
+            $AmoChatsService = new AmoChatsService();
+            $AmoChatsService->messageStatus($status_data);
+        }
+
+
+    }
+
     public function integrationAmoCrm(Request $request)
     {
         $title = 'Amo-CRM integration';
