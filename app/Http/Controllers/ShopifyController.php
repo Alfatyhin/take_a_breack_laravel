@@ -12,6 +12,7 @@ use App\Services\OrderService;
 use App\Services\ShopifyClient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PhpParser\Node\Expr\Array_;
 
 class ShopifyController extends Controller
 {
@@ -36,15 +37,9 @@ class ShopifyController extends Controller
         if ($action == 'orders/create' || $action == 'orders/updated') {
 //            WebhookLog::addLog("Shopify new order webhook", $data);
 
-            $client_data = $data['customer'];
 
-            $client['clientName'] = $client_data['first_name'] . ' ' . $client_data['last_name'];
-            if (isset($client_data['email']))
-                $client['email'] = $client_data['email'];
-            else
-                $client['email'] = 'generate_'.time().'@site.com';
-            if (isset($client_data['phone']))
-                $client['phone'] = $client_data['phone'];
+            dd($data);
+            $client = $this->getContactData($data);
 
             $client = OrderService::clientCreateOrUpdate($client);
 
@@ -131,15 +126,8 @@ class ShopifyController extends Controller
 
 
                     if ($action == 'orders/create') {
-                        $client_data = $data['customer'];
 
-                        $client['clientName'] = $client_data['first_name'] . ' ' . $client_data['last_name'];
-                        if (isset($client_data['email']))
-                            $client['email'] = $client_data['email'];
-                        else
-                            $client['email'] = 'generate_'.time().'@site.com';
-                        if (isset($client_data['phone']))
-                            $client['phone'] = $client_data['phone'];
+                        $client = $this->getContactData($data);
 
                         $client = OrderService::clientCreateOrUpdate($client);
 
@@ -206,6 +194,32 @@ class ShopifyController extends Controller
             dd('not verification');
         }
     }
+
+
+    private function getContactData($data)
+    {
+        $client_data = $data['customer'];
+
+        $client['clientName'] = $client_data['first_name'] . ' ' . $client_data['last_name'];
+        if (isset($client_data['email']))
+            $client['email'] = $client_data['email'];
+        else
+            $client['email'] = 'generate_'.time().'@site.com';
+        if (isset($client_data['phone'])) {
+            $client['phone'] = $client_data['phone'];
+        } elseif (isset($data['phone'])) {
+            $client['phone'] = $data['phone'];
+        } elseif (isset($data['billing_address']['phone']) && !empty($data['billing_address']['phone'])) {
+
+            $client['phone'] = $data['billing_address']['phone'];
+            if (isset($data['billing_address']['country_code']) && !empty($data['billing_address']['country_code']) && $data['billing_address']['country_code'] == 'IL') {
+                $client['phone'] = '972-'.$client['phone'];
+            }
+        }
+
+        return $client;
+    }
+
 
     private function verifyWebhook($data, $header)
     {
