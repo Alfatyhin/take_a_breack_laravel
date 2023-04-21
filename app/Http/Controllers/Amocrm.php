@@ -350,78 +350,7 @@ class Amocrm extends Controller
                                 }
                             }
 
-                            if ($request->get('test') == 1) {
 
-                                
-                                $amoSService = new AmoCrmServise();
-                                $amo_lead = $amoSService->getOrderById($item['id']);
-
-                                $amo_contact_id = $amo_lead->getContacts()->first()->getId();
-                                $amo_contact = $amoSService->getContactBuId($amo_contact_id);
-
-                                $contact_data['name'] = $amo_contact->getName();
-
-                                $fields = $amo_contact->getCustomFieldsValues();
-
-                                foreach ($fields as $item_field) {
-                                    $name_field = $item_field->fieldName;
-                                    $value_field = $item_field->getValues()->first()->value;
-
-                                    if ($name_field == 'Email') {
-                                        $contact_data['email'] = $value_field;
-                                        $variables_data['email'] = $value_field;
-                                    } elseif ($name_field == 'Телефон') {
-                                        $contact_data['phone'] =  preg_replace('/[^0-9]/', '', $value_field);
-                                        $variables_data['﻿phone'] =  preg_replace('/[^0-9]/', '', $value_field);
-                                    } elseif ($name_field == 'Город') {
-                                        $contact_data['Город'] = $value_field;
-                                        $variables_data['Город'] = $value_field;
-                                    } elseif ($name_field == 'Язык') {
-                                        $contact_data['Язык'] = $value_field;
-                                        $variables_data['Язык'] = $value_field;
-                                    }
-                                }
-
-                                if (isset($contact_data['phone'])) {
-                                    $SendpulseService = new SendpulseService();
-
-                                    $bot_id = '64283d700269870cfd494252';
-                                    $test_contact = $SendpulseService->getWhatsapp("contacts/getByPhone?phone={$contact_data['phone']}&bot_id=$bot_id");
-
-                                    if ($test_contact->success === false) {
-                                        $contact_data_senpulse['name'] = $contact_data['name'];
-                                        $contact_data_senpulse['phone'] = $contact_data['phone'];
-                                        $contact_data_senpulse['bot_id'] = $bot_id;
-
-                                        $SendpulseService->sendWhatsapp('contacts', $contact_data_senpulse);
-                                        $test_contact = $SendpulseService->getWhatsapp("contacts/getByPhone?phone={$contact_data['phone']}&bot_id=$bot_id");
-                                    }
-
-                                    if ($test_contact->success === true) {
-                                        $contact_id = $test_contact->data->id;
-                                        foreach ($variables_data as $v_name => $variable) {
-                                            $variable_data = [
-                                                'contact_id' => $contact_id,
-                                                'variable_name' => $v_name,
-                                                'variable_value' => $variable,
-
-                                            ];
-                                            $SendpulseService->sendWhatsapp('contacts/setVariable', $variable_data);
-                                        }
-                                    }
-
-                                    $test_contact = $SendpulseService->getWhatsapp("contacts/getByPhone?phone={$contact_data['phone']}&bot_id=$bot_id");
-
-                                    dd($contact_data, $test_contact);
-                                }
-
-
-
-                                if ($item['status_id'] == '142') {
-
-                                }
-                                dd($api_mode, $item, $amo_contact);
-                            }
 
                             // если заказ с сайта
                             if (isset($orer_id)) {
@@ -458,7 +387,66 @@ class Amocrm extends Controller
                                     $order->amoId = $item['id'];
                                     $order->save();
 
+                                    if ($item['status_id'] == '142') {
+                                        $amoSService = new AmoCrmServise();
+                                        $amo_lead = $amoSService->getOrderById($item['id']);
 
+                                        $amo_contact_id = $amo_lead->getContacts()->first()->getId();
+                                        $amo_contact = $amoSService->getContactBuId($amo_contact_id);
+
+                                        $contact_data['name'] = $amo_contact->getName();
+
+                                        $fields = $amo_contact->getCustomFieldsValues();
+
+                                        foreach ($fields as $item_field) {
+                                            $name_field = $item_field->fieldName;
+                                            $value_field = $item_field->getValues()->first()->value;
+
+                                            if ($name_field == 'Email') {
+                                                $contact_data['email'] = $value_field;
+                                                $variables_data['email'] = $value_field;
+                                            } elseif ($name_field == 'Телефон') {
+                                                $contact_data['phone'] =  preg_replace('/[^0-9]/', '', $value_field);
+                                                $variables_data['﻿phone'] =  preg_replace('/[^0-9]/', '', $value_field);
+                                            } elseif ($name_field == 'Город') {
+                                                $contact_data['Город'] = $value_field;
+                                                $variables_data['Город'] = $value_field;
+                                            } elseif ($name_field == 'Язык') {
+                                                $contact_data['Язык'] = $value_field;
+                                                $variables_data['Язык'] = $value_field;
+                                            }
+                                        }
+
+                                        if (isset($contact_data['phone'])) {
+                                            $SendpulseService = new SendpulseService();
+
+                                            $bot_id = '64283d700269870cfd494252';
+                                            $test_contact = $SendpulseService->getWhatsapp("contacts/getByPhone?phone={$contact_data['phone']}&bot_id=$bot_id");
+
+                                            if ($test_contact->success === false) {
+                                                $contact_data_senpulse['name'] = $contact_data['name'];
+                                                $contact_data_senpulse['phone'] = $contact_data['phone'];
+                                                $contact_data_senpulse['bot_id'] = $bot_id;
+
+                                                $SendpulseService->sendWhatsapp('contacts', $contact_data_senpulse);
+                                                $test_contact = $SendpulseService->getWhatsapp("contacts/getByPhone?phone={$contact_data['phone']}&bot_id=$bot_id");
+                                            }
+
+                                            if ($test_contact->success === true) {
+                                                $contact_id = $test_contact->data->id;
+                                                foreach ($variables_data as $v_name => $variable) {
+                                                    $variable_data = [
+                                                        'contact_id' => $contact_id,
+                                                        'variable_name' => $v_name,
+                                                        'variable_value' => $variable,
+
+                                                    ];
+                                                    $SendpulseService->sendWhatsapp('contacts/setVariable', $variable_data);
+                                                }
+                                            }
+                                        }
+
+                                    }
 
                                     // отправка инвойса
                                     if ($statusPaidAmo == '436781'
