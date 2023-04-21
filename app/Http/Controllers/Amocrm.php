@@ -318,7 +318,7 @@ class Amocrm extends Controller
         $site = env('APP_NAME');
 
         if($request->get('test') == 1) {
-            $test = '{"leads":{"update":[{"id":"24370589","name":"#1005","status_id":"43924885","price":"31","responsible_user_id":"216744","last_modified":"1680763777","modified_user_id":"0","created_user_id":"0","date_create":"1680763777","pipeline_id":"4651807","account_id":"29039599","custom_fields":[{"id":"509001","name":"\u0410\u0434\u0440\u0435\u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":[{"value":"Holon Emanuel Ringellblum 3"}]},{"id":"514563","name":"\u0418\u043c\u044f \u0437\u0430\u043a\u0430\u0437\u0447\u0438\u043a\u0430","values":[{"value":"Evgeny Evgeny"}]},{"id":"308363","name":"\u041e\u043f\u043b\u0430\u0442\u0430","values":[{"value":"\u041e\u043f\u043b\u0430\u0447\u0435\u043d","enum":"436781"}]},{"id":"520559","name":"\u0414\u0430\u0442\u0430 \u0441\u0430\u043c\u043e\u0432\u044b\u0432\u043e\u0437\u0430\/\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":["1680728400"]},{"id":"520561","name":"\u0412\u0440\u0435\u043c\u044f","values":[{"value":"11:00-16:00"}]},{"id":"512455","name":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430","values":[{"value":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430: #1005\n1x - 1.00 \u0448\u0435\u043a \u0422\u0435\u0441\u0442 \n ---------------------- \n\u041a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0439 \u043f\u043e\u043a\u0443\u043f\u0430\u0442\u0435\u043b\u044f: \n\u041d\u0435\u0442 \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u044f \n ---------------------- \n\u0414\u043e\u0441\u0442\u0430\u0432\u043a\u0430: \n zip - 5880328\n city - Holon\n name - name last name\n country - Israel\n address1 - Emanuel Ringellblum 3\n address2 - 3\n last_name - last name\n first_name - name\n country_code - IL\n \u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c - 30.00\u0448\u0435\u043a\n ---------------------- \n\n \u0418\u0442\u043e\u0433\u043e: 31.00 \u0448\u0435\u043a"}]},{"id":"519327","name":"\u0440\u0430\u0441\u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0437\u0430\u043a\u0430\u0437 (\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430)","values":[{"value":"https:\/\/takeabreak.co.il\/api\/orders\/view-order\/#1005"}]},{"id":"489653","name":"Api order ID","values":[{"value":"#1005"}]},{"id":"511579","name":"Api mode","values":[{"value":"Shopyfi"}]}],"link_changed":"1","created_at":"1680763777","updated_at":"1680763777"}]},"account":{"subdomain":"takebreak","id":"29039599","_links":{"self":"https:\/\/takebreak.amocrm.ru"}}}';
+            $test = '{"leads":{"update":[{"id":"24527277","name":"#1019","status_id":"43924885","price":"210","responsible_user_id":"216744","last_modified":"1682059129","modified_user_id":"0","created_user_id":"0","date_create":"1682059128","pipeline_id":"4651807","account_id":"29039599","custom_fields":[{"id":"509001","name":"\u0410\u0434\u0440\u0435\u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":[{"value":"\u05e8\u05d0\u05e9\u05d5\u05df \u05dc\u05e6\u05d9\u05d5\u05df \u05d0\u05dc\u05d9\u05e8\u05d6 \u05e9\u05dc\u05de\u05d4 7"}]},{"id":"514563","name":"\u0418\u043c\u044f \u0437\u0430\u043a\u0430\u0437\u0447\u0438\u043a\u0430","values":[{"value":"\u05d0\u05dc\u05d5\u05e0\u05d4 \u05d1\u05d5\u05e8\u05d9\u05e1\u05e0\u05e7\u05d5"}]},{"id":"308363","name":"\u041e\u043f\u043b\u0430\u0442\u0430","values":[{"value":"\u041e\u043f\u043b\u0430\u0447\u0435\u043d","enum":"436781"}]},{"id":"520559","name":"\u0414\u0430\u0442\u0430 \u0441\u0430\u043c\u043e\u0432\u044b\u0432\u043e\u0437\u0430\/\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":["1682024400"]},{"id":"520561","name":"\u0412\u0440\u0435\u043c\u044f","values":[{"value":"9:00-21:00"}]},{"id":"512455","name":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430","values":[{"value":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430: #1019\n1x - 170.00 \u0448\u0435\u043a Gift Set RAW - Small \n ---------------------- \n\u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435: \n Store Pickup - Pick up-Emanuel Ringelblum 3, Holon \n ----------------------\n \u041a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0439 \u043f\u043e\u043a\u0443\u043f\u0430\u0442\u0435\u043b\u044f: \n\u041d\u0435\u0442 \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u044f \n ---------------------- \n\u0414\u043e\u0441\u0442\u0430\u0432\u043a\u0430: \n first_name - \u05d0\u05dc\u05d5\u05e0\u05d4\n address1 - \u05d0\u05dc\u05d9\u05e8\u05d6 \u05e9\u05dc\u05de\u05d4 7\n phone - 052-475-8596\n city - \u05e8\u05d0\u05e9\u05d5\u05df \u05dc\u05e6\u05d9\u05d5\u05df\n zip - 7533699\n country - Israel\n last_name - \u05d1\u05d5\u05e8\u05d9\u05e1\u05e0\u05e7\u05d5\n address2 - 38\n name - \u05d0\u05dc\u05d5\u05e0\u05d4 \u05d1\u05d5\u05e8\u05d9\u05e1\u05e0\u05e7\u05d5\n country_code - IL\n \u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c - 40.00\u0448\u0435\u043a\n ---------------------- \n\n \u0418\u0442\u043e\u0433\u043e: 210.00 \u0448\u0435\u043a"}]},{"id":"519327","name":"\u0440\u0430\u0441\u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0437\u0430\u043a\u0430\u0437 (\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430)","values":[{"value":"https:\/\/takeabreak.co.il\/api\/orders\/view-order\/#1019"}]},{"id":"489653","name":"Api order ID","values":[{"value":"#1019"}]},{"id":"511579","name":"Api mode","values":[{"value":"Shopyfi"}]}],"link_changed":"1","created_at":"1682059128","updated_at":"1682059129"}]},"account":{"subdomain":"takebreak","id":"29039599","_links":{"self":"https:\/\/takebreak.amocrm.ru"}}}';
 
 
             $post = json_decode($test, true);
@@ -348,6 +348,78 @@ class Amocrm extends Controller
                                 if ($field['id'] == 511579) {
                                     $api_mode = $field['values']['0']['value'];
                                 }
+                            }
+
+                            if ($request->get('test') == 1) {
+
+                                $amoSService = new AmoCrmServise();
+                                $amo_lead = $amoSService->getOrderById($item['id']);
+
+                                $amo_contact_id = $amo_lead->getContacts()->first()->getId();
+                                $amo_contact = $amoSService->getContactBuId($amo_contact_id);
+
+                                $contact_data['name'] = $amo_contact->getName();
+
+                                $fields = $amo_contact->getCustomFieldsValues();
+
+                                foreach ($fields as $item_field) {
+                                    $name_field = $item_field->fieldName;
+                                    $value_field = $item_field->getValues()->first()->value;
+
+                                    if ($name_field == 'Email') {
+                                        $contact_data['email'] = $value_field;
+                                        $variables_data['email'] = $value_field;
+                                    } elseif ($name_field == 'Телефон') {
+                                        $contact_data['phone'] =  preg_replace('/[^0-9]/', '', $value_field);
+                                        $variables_data['﻿phone'] =  preg_replace('/[^0-9]/', '', $value_field);
+                                    } elseif ($name_field == 'Город') {
+                                        $contact_data['Город'] = $value_field;
+                                        $variables_data['Город'] = $value_field;
+                                    } elseif ($name_field == 'Язык') {
+                                        $contact_data['Язык'] = $value_field;
+                                        $variables_data['Язык'] = $value_field;
+                                    }
+                                }
+
+                                if (isset($contact_data['phone'])) {
+                                    $SendpulseService = new SendpulseService();
+
+                                    $bot_id = '64283d700269870cfd494252';
+                                    $test_contact = $SendpulseService->getWhatsapp("contacts/getByPhone?phone={$contact_data['phone']}&bot_id=$bot_id");
+
+                                    if ($test_contact->success === false) {
+                                        $contact_data_senpulse['name'] = $contact_data['name'];
+                                        $contact_data_senpulse['phone'] = $contact_data['phone'];
+                                        $contact_data_senpulse['bot_id'] = $bot_id;
+
+                                        $SendpulseService->sendWhatsapp('contacts', $contact_data_senpulse);
+                                        $test_contact = $SendpulseService->getWhatsapp("contacts/getByPhone?phone={$contact_data['phone']}&bot_id=$bot_id");
+                                    }
+
+                                    if ($test_contact->success === true) {
+                                        $contact_id = $test_contact->data->id;
+                                        foreach ($variables_data as $v_name => $variable) {
+                                            $variable_data = [
+                                                'contact_id' => $contact_id,
+                                                'variable_name' => $v_name,
+                                                'variable_value' => $variable,
+
+                                            ];
+                                            $SendpulseService->sendWhatsapp('contacts/setVariable', $variable_data);
+                                        }
+                                    }
+
+                                    $test_contact = $SendpulseService->getWhatsapp("contacts/getByPhone?phone={$contact_data['phone']}&bot_id=$bot_id");
+
+                                    dd($contact_data, $test_contact);
+                                }
+
+
+
+                                if ($item['status_id'] == '142') {
+
+                                }
+                                dd($api_mode, $item, $amo_contact);
                             }
 
                             // если заказ с сайта
