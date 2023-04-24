@@ -378,6 +378,8 @@ class AppServise
 
     public static function getCityNameByLang($name, $lang)
     {
+        $name = str_replace('-', ' ', $name);
+        $name = trim($name);
 
         $cityes = self::getAllCityes();
         $city_names['en'] = array_column($cityes, 'en');

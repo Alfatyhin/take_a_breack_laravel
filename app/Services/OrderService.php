@@ -1943,13 +1943,8 @@ class OrderService
         }
 
         if (isset($data['phones']) && $phone) {
-            dd($phone);
-            $phones = $data['phones'];
-            $test_phones = array_reverse($phones);
-            if (!isset($test_phones[$phone])) {
-                $phones[] = $phone;
-            }
-            $data['phones'] = $phones;
+            $data['phones'][] = $phone;
+            $data['phones'] = array_unique($data['phones']);
         } else {
             if(isset($data['phones'])) {
                 $data['phones'] = array_unique($data['phones']);

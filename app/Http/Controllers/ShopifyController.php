@@ -34,11 +34,11 @@ class ShopifyController extends Controller
 
         $action = $data['action'];
 
-        if ($action == 'orders/create' || $action == 'orders/updated') {
+        dd($data);
+        if ($action == 'orders/create') {
 //            WebhookLog::addLog("Shopify new order webhook", $data);
 
 
-            dd($data);
             $client = $this->getContactData($data);
 
             $client = OrderService::clientCreateOrUpdate($client);
@@ -60,6 +60,8 @@ class ShopifyController extends Controller
             $amoNotes = $this->AmoNotesPrepeare($data);
             $amoData['text_note'] = $amoNotes;
             $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
+
+            dd($amo_contact, $amoData);
 
             if ($amo_contact->id != $client->amoId) {
                 $client->amoId = $amo_contact->id;
@@ -442,7 +444,15 @@ class ShopifyController extends Controller
             $contactData['city'] = AppServise::getCityNameByLang($orderData['customer']['default_address']['city'], 'ru');
         }
 
-        if (isset($orderData['client_details']['accept_language'])) {
+        if (isset($orderData['customer_locale'])) {
+            if ($orderData['customer_locale'] == 'en') {
+                $contactData['lang'] = 'Английский';
+            } elseif ($orderData['customer_locale'] == 'ru') {
+                $contactData['lang'] = 'Русский';
+            } elseif ($orderData['customer_locale'] == 'il') {
+                $contactData['lang'] = 'Иврит';
+            }
+        } elseif (isset($orderData['client_details']['accept_language'])) {
             if ($orderData['client_details']['accept_language'] == 'en-IL') {
                 $contactData['lang'] = 'Английский';
             } elseif ($orderData['client_details']['accept_language'] == 'ru-IL') {
