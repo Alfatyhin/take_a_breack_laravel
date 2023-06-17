@@ -135,6 +135,7 @@ class ShopifyController extends Controller
 
             $amoData['order name'] = 'test - '.$amoData['order name'];
 //            $lead = $amoCrmService->createNewLead($amoData);
+
             dd($amo_contact, $amoData, $amoNotes);
 
             if ($amo_contact->id != $client->amoId) {
