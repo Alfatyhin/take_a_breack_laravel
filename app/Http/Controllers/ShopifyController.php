@@ -9,9 +9,12 @@ use App\Models\WebhookLog;
 use App\Services\AmoCrmServise;
 use App\Services\AppServise;
 use App\Services\OrderService;
+use App\Services\SendpulseService;
 use App\Services\ShopifyClient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use PhpParser\Node\Expr\Array_;
 
 class ShopifyController extends Controller
@@ -20,9 +23,79 @@ class ShopifyController extends Controller
     public function test(Request $request)
     {
 
-        $Client = new ShopifyClient();
-        $test = $Client->get('products');
-        dd($test);
+//        $Client = new ShopifyClient();
+//        $test = $Client->get('products');
+//        dd($test);
+
+        $func = function ($data) {
+            return str_getcsv($data, ',');
+        };
+        $path = Storage::path('csv-import/senpulse.csv');
+//        dd(file($path));
+        $csv = array_map($func, file($path));
+        $csv[0][0] = Str::ascii($csv[0][0]);
+        array_walk($csv, function(&$a) use ($csv) {
+            $a = array_combine($csv[0], $a);
+        });
+        array_shift($csv);
+
+        $max_size = sizeof($csv);
+        $offset = 200;
+        $upd_count = 2;
+
+        if ($request->get('offset'))
+            $offset = $request->get('offset');
+        if ($request->get('upd_count'))
+            $upd_count = $request->get('upd_count');
+
+        $csv_test = array_splice($csv, $offset, 51);
+        $AmoService = new AmoCrmServise();
+        $SendpulseService = new SendpulseService();
+
+        foreach ($csv_test as $k => $item) {
+            $phone = $item['phone'];
+
+            $amo_clients = $AmoService->searchContactByPhone($phone);
+            if ($amo_clients) {
+                foreach ($amo_clients as $client) {
+
+                    $variable_data = false;
+                    if (isset($client['custom_fields_values']) && !empty($client['custom_fields_values'])) {
+                       foreach ($client['custom_fields_values'] as $field) {
+
+                           if ($field['field_name'] == "Телефон") {
+                               $client_phone = preg_replace('/[^0-9]/', '', $field['values'][0]['value']);
+                           }
+                           if ($field['field_name'] == "Город") {
+                               $city = $field['values'][0]['value'];
+                               if ( empty($item['Город']) || (!empty($item['Город']) && $item['Город'] != $city) ) {
+
+                                   $variable_data = [
+                                       'contact_id' => $item['id'],
+                                       'variable_name' => 'Город',
+                                       'variable_value' => $city,
+
+                                   ];
+                               }
+                           }
+
+                       }
+                       if (isset($client_phone)  && $variable_data && $client_phone == $item['phone'])  {
+
+                           $SendpulseService->sendWhatsapp('contacts/setVariable', $variable_data);
+                           $upd_count++;
+                       }
+                    }
+                }
+            }
+        }
+        $offset_size = $offset + 50;
+        $url = route('shopify_test', ['offset' => $offset_size, 'upd_count' => $upd_count]);
+        if ($offset_size < 1450) {
+           return redirect(route('shopify_test', ['offset' => $offset_size, 'upd_count' => $upd_count]));
+        }
+        print_r("<p><a href='$url'>|$offset_size / $upd_count|</a> </p>");
+        dd("done $offset_size / $max_size | upd_count - $upd_count");
 
     }
 
@@ -34,7 +107,6 @@ class ShopifyController extends Controller
 
         $action = $data['action'];
 
-        dd($data);
         if ($action == 'orders/create') {
 //            WebhookLog::addLog("Shopify new order webhook", $data);
 
@@ -52,8 +124,8 @@ class ShopifyController extends Controller
             if ($data['financial_status'] == 'paid')
                 $order->paymentStatus = 4;
             $order->invoiceStatus = 1;
-            $order->save();
-
+//            $order->save();
+//
 
             $amoCrmService = new AmoCrmServise();
             $amoData = $this->AmoOrderPrepeare($data);
@@ -61,7 +133,9 @@ class ShopifyController extends Controller
             $amoData['text_note'] = $amoNotes;
             $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
 
-            dd($amo_contact, $amoData);
+            $amoData['order name'] = 'test - '.$amoData['order name'];
+//            $lead = $amoCrmService->createNewLead($amoData);
+            dd($amo_contact, $amoData, $amoNotes);
 
             if ($amo_contact->id != $client->amoId) {
                 $client->amoId = $amo_contact->id;
@@ -263,10 +337,11 @@ class ShopifyController extends Controller
 
         $tags[] = $data['customer_locale'];
 
+//        dd($data['note_attributes']);
         foreach ($data['note_attributes'] as $item) {
-            if($item['name'] == 'delivery_date_origin') {
+            if($item['name'] == 'Choose Date') {
                 $date = $item['value'];
-            } elseif($item['name'] == 'Delivery Time') {
+            } elseif($item['name'] == 'Choose Time') {
                 $time = $item['value'];
             } else {
 
@@ -285,10 +360,11 @@ class ShopifyController extends Controller
             $date = $date->format('Y-m-d');
         }
 
-        $time = str_replace(':00', '', $time);
-        $time = str_replace('-', ':', $time);
-        $delivery_date_time = $date . ' ' . $time . ':00 +0000';
-        $date = Carbon::parse($delivery_date_time);
+//        $time = str_replace(':00', '', $time);
+//        $time = str_replace('-', ':', $time);
+        $delivery_date_time = $date . ' ' . $time;
+        $date = Carbon::parse($date);
+//        dd($date);
         $dateOrder = strtotime($date->format('Y-m-d H:i:s'));
 
         if(!isset($data['note'])) {
@@ -445,19 +521,20 @@ class ShopifyController extends Controller
         }
 
         if (isset($orderData['customer_locale'])) {
-            if ($orderData['customer_locale'] == 'en') {
+            if (preg_match('/^en/', $orderData['customer_locale'])) {
                 $contactData['lang'] = 'Английский';
-            } elseif ($orderData['customer_locale'] == 'ru') {
+            } elseif (preg_match('/^ru/', $orderData['customer_locale'])) {
                 $contactData['lang'] = 'Русский';
-            } elseif ($orderData['customer_locale'] == 'il') {
+            } elseif (preg_match('/^il/', $orderData['customer_locale'])) {
                 $contactData['lang'] = 'Иврит';
             }
+
         } elseif (isset($orderData['client_details']['accept_language'])) {
-            if ($orderData['client_details']['accept_language'] == 'en-IL') {
+            if (preg_match('/^en/', $orderData['client_details']['accept_language'])) {
                 $contactData['lang'] = 'Английский';
-            } elseif ($orderData['client_details']['accept_language'] == 'ru-IL') {
+            } elseif (preg_match('/^ru/', $orderData['client_details']['accept_language'])) {
                 $contactData['lang'] = 'Русский';
-            } elseif ($orderData['client_details']['accept_language'] == 'il-IL') {
+            } elseif (preg_match('/^il/', $orderData['client_details']['accept_language'])) {
                 $contactData['lang'] = 'Иврит';
             }
         }
