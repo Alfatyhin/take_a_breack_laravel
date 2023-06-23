@@ -1043,6 +1043,13 @@ class Orders extends Controller
         ]);
     }
 
+    public function googleShetAdd()
+    {
+        $url = 'https://docs.google.com/spreadsheets/d/19hUlBIvUImnHuxMKGKIS7bm9_ZMN7IoapUAHljpI-Xk/edit?usp=sharing';
+
+
+    }
+
     public function setOrderPaidStatus(Request $request, OrdersModel $order)
     {
         $status = $request->get('status');
