@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class GClientService
 {
+    
     private $client;
 
     public function __construct()
