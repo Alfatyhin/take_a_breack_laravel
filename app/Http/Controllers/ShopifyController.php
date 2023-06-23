@@ -23,79 +23,13 @@ class ShopifyController extends Controller
     public function test(Request $request)
     {
 
-//        $Client = new ShopifyClient();
-//        $test = $Client->get('products');
-//        dd($test);
+        $Client = new ShopifyClient();
+        $test = $Client->get('customers');
 
-        $func = function ($data) {
-            return str_getcsv($data, ',');
-        };
-        $path = Storage::path('csv-import/senpulse.csv');
-//        dd(file($path));
-        $csv = array_map($func, file($path));
-        $csv[0][0] = Str::ascii($csv[0][0]);
-        array_walk($csv, function(&$a) use ($csv) {
-            $a = array_combine($csv[0], $a);
-        });
-        array_shift($csv);
+        dd($test);
+        $response = $Client->createClient();
+        dd($response);
 
-        $max_size = sizeof($csv);
-        $offset = 200;
-        $upd_count = 2;
-
-        if ($request->get('offset'))
-            $offset = $request->get('offset');
-        if ($request->get('upd_count'))
-            $upd_count = $request->get('upd_count');
-
-        $csv_test = array_splice($csv, $offset, 51);
-        $AmoService = new AmoCrmServise();
-        $SendpulseService = new SendpulseService();
-
-        foreach ($csv_test as $k => $item) {
-            $phone = $item['phone'];
-
-            $amo_clients = $AmoService->searchContactByPhone($phone);
-            if ($amo_clients) {
-                foreach ($amo_clients as $client) {
-
-                    $variable_data = false;
-                    if (isset($client['custom_fields_values']) && !empty($client['custom_fields_values'])) {
-                       foreach ($client['custom_fields_values'] as $field) {
-
-                           if ($field['field_name'] == "Телефон") {
-                               $client_phone = preg_replace('/[^0-9]/', '', $field['values'][0]['value']);
-                           }
-                           if ($field['field_name'] == "Город") {
-                               $city = $field['values'][0]['value'];
-                               if ( empty($item['Город']) || (!empty($item['Город']) && $item['Город'] != $city) ) {
-
-                                   $variable_data = [
-                                       'contact_id' => $item['id'],
-                                       'variable_name' => 'Город',
-                                       'variable_value' => $city,
-
-                                   ];
-                               }
-                           }
-
-                       }
-                       if (isset($client_phone)  && $variable_data && $client_phone == $item['phone'])  {
-
-                           $SendpulseService->sendWhatsapp('contacts/setVariable', $variable_data);
-                           $upd_count++;
-                       }
-                    }
-                }
-            }
-        }
-        $offset_size = $offset + 50;
-        $url = route('shopify_test', ['offset' => $offset_size, 'upd_count' => $upd_count]);
-        if ($offset_size < 1450) {
-           return redirect(route('shopify_test', ['offset' => $offset_size, 'upd_count' => $upd_count]));
-        }
-        print_r("<p><a href='$url'>|$offset_size / $upd_count|</a> </p>");
-        dd("done $offset_size / $max_size | upd_count - $upd_count");
 
     }
 
@@ -111,7 +45,7 @@ class ShopifyController extends Controller
 //            WebhookLog::addLog("Shopify new order webhook", $data);
 
 
-            $client = $this->getContactData($data);
+            $client = $this->getAmoContactData($data);
 
             $client = OrderService::clientCreateOrUpdate($client);
 
@@ -179,6 +113,7 @@ class ShopifyController extends Controller
 
     }
 
+
     public function webhook(Request $request)
     {
 
@@ -204,7 +139,7 @@ class ShopifyController extends Controller
 
                     if ($action == 'orders/create') {
 
-                        $client = $this->getContactData($data);
+                        $client = $this->getAmoContactData($data);
 
                         $client = OrderService::clientCreateOrUpdate($client);
 
@@ -273,7 +208,7 @@ class ShopifyController extends Controller
     }
 
 
-    private function getContactData($data)
+    private function getAmoContactData($data)
     {
         $client_data = $data['customer'];
 
@@ -305,6 +240,7 @@ class ShopifyController extends Controller
         $calculated_hmac = base64_encode(hash_hmac('sha256', $data, $secret, true));
         return hash_equals($calculated_hmac, $header);
     }
+
 
     private function AmoOrderPrepeare($data)
     {
@@ -392,6 +328,7 @@ class ShopifyController extends Controller
 
         return $dataOrderAmo;
     }
+
 
     private function AmoNotesPrepeare($data)
     {
@@ -554,6 +491,7 @@ class ShopifyController extends Controller
 
         return $contact;
     }
+
 
     private function searchAmoContact(AmoCrmServise $amoCrmService, Clients $client)
     {
