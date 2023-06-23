@@ -52,6 +52,7 @@
 
 
         <table>
+            <caption>test</caption>
             @if ($orderSearch)
 
                 <tr>
@@ -332,6 +333,12 @@
                            <a class="hide button" href="{{ route('delete_order', ['id' => $item->order_id]) }}" >delete</a><br>
                            <a class="hide button" href="{{ route('orders_test_mail', ['id' => $item->order_id]) }}" >test mail</a>
                            <br>
+                           <hr><br>
+                           <a class="button" href="{{ route('google_add_delivery', ['id' => $item->order_id]) }}" >
+                               google_add_delivery
+                           </a>
+
+
 {{--                           <a class="hide button" href="{{ route('amo.create.lead', ['id' => $item->order_id]) }}" >--}}
 {{--                               new amo lead--}}
 {{--                           </a> <br>--}}
@@ -344,6 +351,7 @@
                                    test paypal button
                                </a>
                            </div>
+
 
                            @if ($item->paymentMethod == 1 && $item->paymentStatus != 4)
                                <hr>

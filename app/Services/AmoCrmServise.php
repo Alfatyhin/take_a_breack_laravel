@@ -1042,6 +1042,10 @@ class AmoCrmServise
             $leadCustomFieldsValues = $this->addTextCustomFieldValuesModel($leadCustomFieldsValues, 520561, $amoData['time']);
         }
 
+        if (!empty($amoData['id'])) {
+            $leadCustomFieldsValues = $this->addUrlCustomFieldValuesModel($leadCustomFieldsValues, 525199, "https://takeabreak.co.il/crm/tools/google-sheet/add-delivery/" . $amoData['id']);
+        }
+
         if (!empty($amoData['tags'])) {
             $lead->getTags($amoData['tags']);
         }

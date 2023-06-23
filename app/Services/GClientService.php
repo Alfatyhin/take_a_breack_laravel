@@ -11,11 +11,13 @@ class GClientService
 {
 
 
+
     private $client;
 
     public function __construct()
     {
-        $path = Storage::path('gapi/gdocs.json');
+        $path = Storage::path('gapi/laravelshop.json');
+
         $client = new Client();
         $client->setAuthConfig($path);
 

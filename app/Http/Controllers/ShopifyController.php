@@ -157,6 +157,7 @@ class ShopifyController extends Controller
 
                         $amoCrmService = new AmoCrmServise();
                         $amoData = $this->AmoOrderPrepeare($data);
+                        $amoData['id'] = $order->id;
                         $amoNotes = $this->AmoNotesPrepeare($data);
                         $amoData['text_note'] = $amoNotes;
                         $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);

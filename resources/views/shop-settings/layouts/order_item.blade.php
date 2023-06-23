@@ -282,7 +282,16 @@
                 <a class="button" href="{{ route('crm_lost_cart', ['lang' => 'ru', 'step' => 3, 'order_id' => $item->order_id]) }}" >
                     проверить корзину
                 </a>
-            </div>
+            </div><br>
+
+
+            <div class="">
+                <a class="button" href="{{ route('google_add_delivery', ['order' => $item->id]) }}" >
+                    google_add_delivery
+                </a>
+            </div> <br>
+
+
 
         @endif
 
