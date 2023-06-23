@@ -801,17 +801,19 @@ class Amocrm extends Controller
         $post = $request->post();
 
         if ($post) {
-            dd($post);
             if (!empty($post['contact']) && !empty($post['merge'])) {
                 $contact_id = $post['contact'];
                 $contact = $amoCrmService->getContactBuId($contact_id);
                 if (!isset($post['merge'][$contact_id])) {
                     foreach ($post['merge'] as $item) {
                         $double = $amoCrmService->getContactBuId($item);
-                        $new_contact = $amoCrmService->mergeContacts($contact_id, $item);
-                        $test = $amoCrmService->getContactBuId($contact_id);
-                        dd($contact, $double, $new_contact, $test);
+
+                        if (!empty($doubles)) {
+                            $new_contact = $amoCrmService->mergeContacts($contact_id, $item);
+                        }
+
                     }
+                    dd('done');
                 } else {
                     dd('нельзя соединить контакт сам с собой' );
                 }
@@ -844,7 +846,7 @@ class Amocrm extends Controller
             }
             $size = 0;
 
-            while ($size < $stop) {
+//            while ($size < $stop) {
 
                 if ($next_page && $x > 0) {
                     $contacts = $amoCrmService->getContacts($contacts);
@@ -860,48 +862,54 @@ class Amocrm extends Controller
                 }
 
                 foreach ($contacts_data as $item) {
-                    $id = $item['id'];
-                    $item_data = [];
-                    if ($item['custom_fields_values']) {
-                        foreach ($item['custom_fields_values'] as $field) {
-                            if ($field['field_code'] == 'PHONE') {
-                                foreach ($field['values'] as $value) {
-                                    $item_data['phones'][] = $value['value'];
-                                }
-                            }
-                            if ($field['field_code'] == 'EMAIL') {
-                                foreach ($field['values'] as $value) {
-                                    $item_data['emails'][] = $value['value'];
-                                }
-                            }
-                        }
-                        if (!empty($item_data['emails'])) {
-                            foreach ($item_data['emails'] as $email) {
-                                $doubles_search = $amoCrmService->getContactDoubles($email);
-                                foreach ($doubles_search as $item_search) {
-                                    if ($item_search['id'] != $id && !isset($doubles_search[$item_search['id']])) {
-                                        $doubles_search[$item_search['id']]= $item_search['id'];
-                                        $doubles[$id]['emails'][] = $item_search;
-                                    }
-                                }
-                            }
-                        }
-                        if (!empty($item_data['phones'])) {
-                            foreach ($item_data['phones'] as $phone) {
-                                $doubles_search = $amoCrmService->getContactDoubles($phone);
-                                foreach ($doubles_search as $item_search) {
-                                    if ($item_search['id'] != $id && !isset($doubles_search[$item_search['id']])) {
-                                        $doubles_search[$item_search['id']]= $item_search['id'];
-                                        $doubles[$id]['phones'][] = $item_search;
-                                    }
-                                }
-                            }
-                        }
-                        if (isset($doubles[$id])) {
-                            $doubles_search[$item_search['id']]= $item_search['id'];
-                            $doubles_contacts[$id] = $item;
-                        }
-                    }
+
+                    dd($item);
+
+
+
+
+//                    $id = $item['id'];
+//                    $item_data = [];
+//                    if ($item['custom_fields_values']) {
+//                        foreach ($item['custom_fields_values'] as $field) {
+//                            if ($field['field_code'] == 'PHONE') {
+//                                foreach ($field['values'] as $value) {
+//                                    $item_data['phones'][] = $value['value'];
+//                                }
+//                            }
+//                            if ($field['field_code'] == 'EMAIL') {
+//                                foreach ($field['values'] as $value) {
+//                                    $item_data['emails'][] = $value['value'];
+//                                }
+//                            }
+//                        }
+//                        if (!empty($item_data['emails'])) {
+//                            foreach ($item_data['emails'] as $email) {
+//                                $doubles_search = $amoCrmService->getContactDoubles($email);
+//                                foreach ($doubles_search as $item_search) {
+//                                    if ($item_search['id'] != $id && !isset($doubles_search[$item_search['id']])) {
+//                                        $doubles_search[$item_search['id']]= $item_search['id'];
+//                                        $doubles[$id]['emails'][] = $item_search;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        if (!empty($item_data['phones'])) {
+//                            foreach ($item_data['phones'] as $phone) {
+//                                $doubles_search = $amoCrmService->getContactDoubles($phone);
+//                                foreach ($doubles_search as $item_search) {
+//                                    if ($item_search['id'] != $id && !isset($doubles_search[$item_search['id']])) {
+//                                        $doubles_search[$item_search['id']]= $item_search['id'];
+//                                        $doubles[$id]['phones'][] = $item_search;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        if (isset($doubles[$id])) {
+//                            $doubles_search[$item_search['id']]= $item_search['id'];
+//                            $doubles_contacts[$id] = $item;
+//                        }
+//                    }
                 }
 
                 $x++;
@@ -921,7 +929,7 @@ class Amocrm extends Controller
                     }
                 }
 
-            }
+//            }
 
         }
 
@@ -931,7 +939,7 @@ class Amocrm extends Controller
 
         return view('amocrm.contacts', [
             'error_log'     => $request->error_log,
-            'contacts_data' => $doubles_contacts,
+            'contacts_data' => $contacts_data,
             'doubles'       => $doubles,
             'next_page'     => $next_page,
             'prev_page'     => $prev_page,
