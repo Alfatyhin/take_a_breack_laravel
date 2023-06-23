@@ -1061,7 +1061,7 @@ class Orders extends Controller
 //        $data = $service->spreadsheets_values->get('19hUlBIvUImnHuxMKGKIS7bm9_ZMN7IoapUAHljpI-Xk', $range)->getValues();
 
         $values_data = [
-            'test', // номер заказа
+            '', // номер заказа
             '', // дата заказа
             '', // дата доставки
             "", // имя клиента
