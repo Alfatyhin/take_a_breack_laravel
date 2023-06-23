@@ -1075,6 +1075,8 @@ class Orders extends Controller
             "", // доп сумма
         ];
 
+        $values_data[0] = $order->order_id;
+
         $amoCrmService = new AmoCrmServise();
 
         try {
