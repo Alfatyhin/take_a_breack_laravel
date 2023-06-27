@@ -292,6 +292,13 @@
             </div> <br>
 
 
+            <div class="">
+                <a class="button" href="{{ route('google_add_delivery2', ['order' => $item->id]) }}" >
+                    google_add_delivery 2
+                </a>
+            </div> <br>
+
+
 
         @endif
 

@@ -15,6 +15,7 @@ use App\Services\EcwidService;
 use App\Services\GreenInvoiceService;
 use App\Services\OrderService;
 use App\Services\SendpulseService;
+use App\Services\ShopifyClient;
 use Carbon\Carbon;
 use Egulias\EmailValidator\Exception\InvalidEmail;
 use Illuminate\Http\Request;
@@ -950,15 +951,105 @@ class Amocrm extends Controller
 
     public function pipelineTest(Request $request)
     {
-        $test = '{"id": 960, "clientId": 331, "order_id": "S-ZQOJ", "orderData": "{\"_token\":\"UTN4tM9EyHipP189iVS6qBkysGzd3MfB2LfXWAlf\",\"lang\":\"en\",\"delivery\":\"delivery\",\"clientName\":\"\\u05de\\u05d9\\u05ea\\u05e8 \\u05de\\u05e6\\u05e0\\u05e8\",\"city_id\":\"49\",\"city\":\"\\u05e4\\u05ea\\u05d7 \\u05ea\\u05e7\\u05d5\\u05d5\\u05d4\",\"street\":\"\\u05d0\\u05d7\\u05d3 \\u05d4\\u05e2\\u05dd\",\"house\":\"22\",\"flat\":null,\"floor\":\"6\",\"phone\":\"+972 052-687-2887\",\"nameOtherPerson\":null,\"phoneOtherPerson\":null,\"email\":\"meitarmatzner16@gmail.com\",\"clientBirthDay\":null,\"date\":\"2022-6-28\",\"time\":\"11:00-14:00\",\"methodPay\":\"4\",\"client_comment\":null,\"premium\":\"0\",\"order_data\":{\"products\":{\"1-0-71\":{\"id\":71,\"stock_count\":\"0\",\"variant\":\"0\",\"options\":[{\"key\":\"0\",\"value\":{\"text\":\"S\",\"priceModifier\":\"0\",\"textTranslated\":{\"en\":\"Mini\",\"he\":null,\"ru\":\"\\u041c\\u0438\\u043d\\u0438\"},\"priceModifierType\":\"ABSOLUTE\"},\"name\":{\"en\":\"Size\",\"he\":\"\\u05d2\\u05d5\\u05d3\\u05dc\",\"ru\":\"\\u0420\\u0430\\u0437\\u043c\\u0435\\u0440\"}}],\"count\":\"1\",\"price\":\"199\",\"sku\":\"00043S1\",\"name\":{\"en\":\"Tiramisu\",\"he\":\"\\u05e2\\u05d5\\u05d2\\u05ea \\u05e7\\u05e4\\u05d4 - \\u05d2\\u05dc\\u05d9\\u05d3\\u05d4 (\\u05d8\\u05d9\\u05e8\\u05de\\u05d9\\u05e1\\u05d5)\",\"ru\":\"\\u0422\\u0438\\u0440\\u0430\\u043c\\u0438\\u0441\\u0443\"}}},\"delivery_price\":30,\"items\":{\"1-0-71\":{\"id\":71,\"stock_count\":\"0\",\"variant\":\"0\",\"options\":[{\"key\":\"0\",\"value\":{\"text\":\"S\",\"priceModifier\":\"0\",\"textTranslated\":{\"en\":\"Mini\",\"he\":null,\"ru\":\"\\u041c\\u0438\\u043d\\u0438\"},\"priceModifierType\":\"ABSOLUTE\"},\"name\":{\"en\":\"Size\",\"he\":\"\\u05d2\\u05d5\\u05d3\\u05dc\",\"ru\":\"\\u0420\\u0430\\u0437\\u043c\\u0435\\u0440\"}}],\"count\":\"1\",\"price\":\"199\",\"sku\":\"00043S1\",\"name\":{\"en\":\"Tiramisu\",\"he\":\"\\u05e2\\u05d5\\u05d2\\u05ea \\u05e7\\u05e4\\u05d4 - \\u05d2\\u05dc\\u05d9\\u05d3\\u05d4 (\\u05d8\\u05d9\\u05e8\\u05de\\u05d9\\u05e1\\u05d5)\",\"ru\":\"\\u0422\\u0438\\u0440\\u0430\\u043c\\u0438\\u0441\\u0443\"}}},\"products_total\":199,\"order_total\":229}}", "created_at": "2022-06-26T13:04:03.000000Z", "orderPrice": 229, "updated_at": "2022-06-26T13:04:03.000000Z", "paymentMethod": "4", "paymentStatus": 3}';
-
-        $test = json_decode($test, true);
-
-        dd(json_decode($test['orderData'], true));
+//        $test = '{"id": 960, "clientId": 331, "order_id": "S-ZQOJ", "orderData": "{\"_token\":\"UTN4tM9EyHipP189iVS6qBkysGzd3MfB2LfXWAlf\",\"lang\":\"en\",\"delivery\":\"delivery\",\"clientName\":\"\\u05de\\u05d9\\u05ea\\u05e8 \\u05de\\u05e6\\u05e0\\u05e8\",\"city_id\":\"49\",\"city\":\"\\u05e4\\u05ea\\u05d7 \\u05ea\\u05e7\\u05d5\\u05d5\\u05d4\",\"street\":\"\\u05d0\\u05d7\\u05d3 \\u05d4\\u05e2\\u05dd\",\"house\":\"22\",\"flat\":null,\"floor\":\"6\",\"phone\":\"+972 052-687-2887\",\"nameOtherPerson\":null,\"phoneOtherPerson\":null,\"email\":\"meitarmatzner16@gmail.com\",\"clientBirthDay\":null,\"date\":\"2022-6-28\",\"time\":\"11:00-14:00\",\"methodPay\":\"4\",\"client_comment\":null,\"premium\":\"0\",\"order_data\":{\"products\":{\"1-0-71\":{\"id\":71,\"stock_count\":\"0\",\"variant\":\"0\",\"options\":[{\"key\":\"0\",\"value\":{\"text\":\"S\",\"priceModifier\":\"0\",\"textTranslated\":{\"en\":\"Mini\",\"he\":null,\"ru\":\"\\u041c\\u0438\\u043d\\u0438\"},\"priceModifierType\":\"ABSOLUTE\"},\"name\":{\"en\":\"Size\",\"he\":\"\\u05d2\\u05d5\\u05d3\\u05dc\",\"ru\":\"\\u0420\\u0430\\u0437\\u043c\\u0435\\u0440\"}}],\"count\":\"1\",\"price\":\"199\",\"sku\":\"00043S1\",\"name\":{\"en\":\"Tiramisu\",\"he\":\"\\u05e2\\u05d5\\u05d2\\u05ea \\u05e7\\u05e4\\u05d4 - \\u05d2\\u05dc\\u05d9\\u05d3\\u05d4 (\\u05d8\\u05d9\\u05e8\\u05de\\u05d9\\u05e1\\u05d5)\",\"ru\":\"\\u0422\\u0438\\u0440\\u0430\\u043c\\u0438\\u0441\\u0443\"}}},\"delivery_price\":30,\"items\":{\"1-0-71\":{\"id\":71,\"stock_count\":\"0\",\"variant\":\"0\",\"options\":[{\"key\":\"0\",\"value\":{\"text\":\"S\",\"priceModifier\":\"0\",\"textTranslated\":{\"en\":\"Mini\",\"he\":null,\"ru\":\"\\u041c\\u0438\\u043d\\u0438\"},\"priceModifierType\":\"ABSOLUTE\"},\"name\":{\"en\":\"Size\",\"he\":\"\\u05d2\\u05d5\\u05d3\\u05dc\",\"ru\":\"\\u0420\\u0430\\u0437\\u043c\\u0435\\u0440\"}}],\"count\":\"1\",\"price\":\"199\",\"sku\":\"00043S1\",\"name\":{\"en\":\"Tiramisu\",\"he\":\"\\u05e2\\u05d5\\u05d2\\u05ea \\u05e7\\u05e4\\u05d4 - \\u05d2\\u05dc\\u05d9\\u05d3\\u05d4 (\\u05d8\\u05d9\\u05e8\\u05de\\u05d9\\u05e1\\u05d5)\",\"ru\":\"\\u0422\\u0438\\u0440\\u0430\\u043c\\u0438\\u0441\\u0443\"}}},\"products_total\":199,\"order_total\":229}}", "created_at": "2022-06-26T13:04:03.000000Z", "orderPrice": 229, "updated_at": "2022-06-26T13:04:03.000000Z", "paymentMethod": "4", "paymentStatus": 3}';
+//
+//        $test = json_decode($test, true);
+//
+//        dd(json_decode($test['orderData'], true));
 
         $AmoCrmService = $this->amoService;
         $test = $AmoCrmService->getPipelines();
-        dd($test);
+
+        $post = '{"leads":{"update":[{"id":"25157743","name":"#1103","status_id":"43471465","old_status_id":"50746495","price":"325","responsible_user_id":"216744","last_modified":"1687429626","modified_user_id":"216744","created_user_id":"0","date_create":"1687065261","pipeline_id":"4651807","account_id":"29039599","custom_fields":[{"id":"509001","name":"\u0410\u0434\u0440\u0435\u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":[{"value":"Petah Tikva Y.L. Perets 3"}]},{"id":"514563","name":"\u0418\u043c\u044f \u0437\u0430\u043a\u0430\u0437\u0447\u0438\u043a\u0430","values":[{"value":"\u0421\u043e\u0444\u0438\u044f \u0422\u0430\u0442\u0430\u0440\u0438\u043d\u043e\u0432\u0430"}]},{"id":"308363","name":"\u041e\u043f\u043b\u0430\u0442\u0430","values":[{"value":"\u041e\u043f\u043b\u0430\u0447\u0435\u043d","enum":"436781"}]},{"id":"520559","name":"\u0414\u0430\u0442\u0430 \u0441\u0430\u043c\u043e\u0432\u044b\u0432\u043e\u0437\u0430\/\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0438","values":["1687381200"]},{"id":"520561","name":"\u0412\u0440\u0435\u043c\u044f","values":[{"value":"09:00 AM - 01:00 PM"}]},{"id":"512455","name":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430","values":[{"value":"\u0414\u0435\u0442\u0430\u043b\u0438 \u0437\u0430\u043a\u0430\u0437\u0430: #1103\n1x - 270.00 \u0448\u0435\u043a Raspberry vanilla biscuit cake - Mini. 4-6 servings (750 g) \n1x - 15.00 \u0448\u0435\u043a Inscription on the cake - Add an inscription on the cake \n ---------------------- \n\u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435: \n Gift Message - Happy Birthday! \u2665\ufe0f\n Order Type - Shipping\n Choose Date - 22-06-2023\n Choose Time - 09:00 AM - 01:00 PM\n Choose Day - Thursday\n Date Format - dd-mm-yy \n ----------------------\n \u041a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0439 \u043f\u043e\u043a\u0443\u043f\u0430\u0442\u0435\u043b\u044f: \n\u041d\u0435\u0442 \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u044f \n ---------------------- \n\u0414\u043e\u0441\u0442\u0430\u0432\u043a\u0430: \n first_name - \u0421\u043e\u0444\u0438\u044f\n address1 - Y.L. Perets 3\n phone - 052-453-9823\n city - Petah Tikva\n zip - 4920633\n country - Israel\n last_name - \u0422\u0430\u0442\u0430\u0440\u0438\u043d\u043e\u0432\u0430\n name - \u0421\u043e\u0444\u0438\u044f \u0422\u0430\u0442\u0430\u0440\u0438\u043d\u043e\u0432\u0430\n country_code - IL\n \u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c - 40.00\u0448\u0435\u043a\n ---------------------- \n\n \u0418\u0442\u043e\u0433\u043e: 325.00 \u0448\u0435\u043a"}]},{"id":"519327","name":"\u0440\u0430\u0441\u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0437\u0430\u043a\u0430\u0437 (\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430)","values":[{"value":"https:\/\/takeabreak.co.il\/api\/orders\/view-order\/#1103"}]},{"id":"489653","name":"Api order ID","values":[{"value":"#1103"}]},{"id":"511579","name":"Api mode","values":[{"value":"Shopyfi"}]}],"created_at":"1687065261","updated_at":"1687429626"}]},"account":{"subdomain":"takebreak","id":"29039599","_links":{"self":"https:\/\/takebreak.amocrm.ru"}}}';
+
+        $post = json_decode($post, true);
+
+        if (!empty($post['leads'])) {
+
+
+            foreach ($post['leads'] as $event => $items) {
+
+
+                if ($event == 'status' || $event == 'update') { // изменение статуса
+                    foreach ($items as $item) {
+
+                        if (isset($item['custom_fields'])) {
+                            foreach ($item['custom_fields'] as $field) {
+                                if ($field['id'] == 489653) {
+                                    $orer_id = $field['values'][0]['value'];
+                                }
+                                if ($field['id'] == 308363) {
+                                    $statusPaidAmo = $field['values']['0']['enum'];
+                                }
+                                if ($field['id'] == 511579) {
+                                    $api_mode = $field['values']['0']['value'];
+                                }
+                            }
+
+
+
+                            // если заказ с сайта
+                            if (isset($orer_id)) {
+
+                                $order = Orders::withTrashed()->where('order_id', $orer_id)->first();
+                                if ($order->trashed()) {
+                                    $order->restore();
+                                }
+                                $status_id = $item['status_id'];
+
+                                // меняем статус
+                                if($status_id && isset($statusPaidAmo) ) {
+
+
+                                    $paymentStatusArray = array_flip(AppServise::getOrderPaymentStatus());
+
+                                    switch ($statusPaidAmo) {
+                                        case 436781:
+                                            $paymentStatus = 'PAID';
+                                            break;
+                                        case 436783:
+                                            $paymentStatus = 'AWAITING_PAYMENT';
+                                            break;
+                                        case 547421:
+                                            $paymentStatus = 'AWAITING_PAYMENT';
+                                            break;
+                                        default:
+                                            $paymentStatus = 'INCOMPLETE';
+                                            break;
+                                    }
+
+
+                                    if ($api_mode == 'Shopyfi') {
+
+                                        $order_shopy_id = str_replace('#', '', $orer_id);
+                                        $Client = new ShopifyClient();
+
+                                        $orderSopy = $Client->getOrderById(5338916880687);
+                                        dd($orderSopy);
+
+
+                                        if ($status_id == '43471465') {
+                                            // заказ готов к упаковке
+                                        }
+                                        if ($status_id == '50746498') {
+                                            // готов к самовывозу
+                                        }
+                                        dd($test, $item);
+                                    }
+
+                                }
+                            }
+                        }
+
+
+                    }
+
+                } else { // не обновление статуса
+                    //
+                }
+            }
+        }
+        dd($test, $post);
     }
 
 }

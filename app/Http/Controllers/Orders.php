@@ -1047,9 +1047,6 @@ class Orders extends Controller
 
     public function googleShetAddDelivery(Request $request, OrdersModel $order)
     {
-        $url = 'https://docs.google.com/spreadsheets/d/19hUlBIvUImnHuxMKGKIS7bm9_ZMN7IoapUAHljpI-Xk/edit?usp=sharing';
-
-        $table_id = '19hUlBIvUImnHuxMKGKIS7bm9_ZMN7IoapUAHljpI';
 
         $sheetServive = new GoogleSheets();
         $service = $sheetServive->getService();
@@ -1169,6 +1166,141 @@ class Orders extends Controller
 
 
             return redirect('https://docs.google.com/spreadsheets/d/19hUlBIvUImnHuxMKGKIS7bm9_ZMN7IoapUAHljpI-Xk/');
+
+
+        } catch (Exeption $e) {
+          dd($e->getMessage());
+        }
+
+
+
+
+
+
+
+    }
+
+    public function googleShetAddDelivery2(Request $request, OrdersModel $order)
+    {
+
+        $sheetServive = new GoogleSheets();
+        $service = $sheetServive->getService();
+        $range = 'A:Z';
+
+
+
+//
+//        $data = $service->spreadsheets_values->get('19hUlBIvUImnHuxMKGKIS7bm9_ZMN7IoapUAHljpI-Xk', $range)->getValues();
+
+        $values_data = [
+            '', // номер заказа
+            '', // дата заказа
+            '', // дата доставки
+            "", // имя клиента
+            "", // телефон
+            "", // адрес доставки
+            "", // дом
+            "", // єтаж
+            "", // квартира
+            "", // комментариии
+            "", // отметка доставки
+            "", // доп сумма
+        ];
+
+        $values_data[0] = $order->order_id;
+
+        $amoCrmService = new AmoCrmServise();
+
+        try {
+            $amoData = $amoCrmService->getOrderById($order->amoId);
+
+
+            $amoData = $amoData->getCustomFieldsValues();
+
+            $values = $amoData->getBy('fieldName', "Дата самовывоза/доставки");
+
+            if ($values) {
+                $time = $values->getValues()->first()->toArray();
+                $dDate = Carbon::createFromTimestamp($time['value']);
+                $values_data[2] = $dDate->format('d-m-Y');
+
+            } else {
+                $values_data[2] = 'not found';
+            }
+
+
+//            $values = $amoData->getBy('fieldName', "Время");
+//            if ($values) {
+//                $value = $values->getValues()->first()->toArray();
+//                $values_data[2] .= " {$value['value']}";
+//            }
+
+
+            $values = $amoData->getBy('fieldName', "Имя заказчика");
+            if ($values) {
+                $value = $values->getValues()->first()->toArray();
+                $values_data[3] = $value['value'];
+            }
+
+
+            $values = $amoData->getBy('fieldName', "Имя получателя");
+            if ($values) {
+                $value = $values->getValues()->first()->toArray();
+                $values_data[3] = $value['value'];
+            }
+
+
+            $values = $amoData->getBy('fieldName', "Телефон заказчика");
+            if ($values) {
+                $value = $values->getValues()->first()->toArray();
+                $values_data[4] = $value['value'];
+            }
+
+
+            $values = $amoData->getBy('fieldName', "Телефон получателя");
+            if ($values) {
+                $value = $values->getValues()->first()->toArray();
+                $values_data[4] = $value['value'];
+            }
+
+
+            $values = $amoData->getBy('fieldName', "Адрес доставки");
+            if ($values) {
+                $value = $values->getValues()->first()->toArray();
+                $values_data[5] = $value['value'];
+            }
+
+
+            $values = $amoData->getBy('fieldName', "Этаж");
+            if ($values) {
+                $value = $values->getValues()->first()->toArray();
+                $values_data[7] = $value['value'];
+            }
+
+
+            $values = $amoData->getBy('fieldName', "Номер квартиры/офиса");
+            if ($values) {
+                $value = $values->getValues()->first()->toArray();
+                $values_data[8] = $value['value'];
+            }
+
+
+
+
+            $values = new ValueRange();
+            $values->setValues([$values_data]);
+
+
+            $inset = [
+                "insertDataOption" => "INSERT_ROWS",
+                'valueInputOption' => 'USER_ENTERED'
+            ];
+
+
+            $service->spreadsheets_values->append('1C5AwUJv64LKlcX-nvIwBGBhT6DB8S2Xtz2_Ao_qbHv8', $range , $values, $inset);
+
+
+            return redirect('https://docs.google.com/spreadsheets/d/1C5AwUJv64LKlcX-nvIwBGBhT6DB8S2Xtz2_Ao_qbHv8/');
 
 
         } catch (Exeption $e) {

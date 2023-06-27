@@ -51,6 +51,30 @@ class ShopifyClient
         return $this->getGraphql($reguest);
     }
 
+
+    public function getOrderById($id)
+    {
+
+        $reguest['query'] = 'query {
+     order(id: "gid://shopify/Order/'.$id.'") {
+        note
+    }
+  }';
+        return $this->getGraphql($reguest);
+    }
+
+
+    public function setOrderNote($id)
+    {
+
+        $reguest['query'] = 'query {
+     order(id: "gid://shopify/Order/'.$id.'") {
+        note
+    }
+  }';
+        return $this->getGraphql($reguest);
+    }
+
     public function createClient()
     {
         $query = 'mutation customerCreate($input: CustomerInput!) 

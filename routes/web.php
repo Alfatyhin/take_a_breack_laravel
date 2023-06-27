@@ -82,6 +82,13 @@ Route::get('/api/orders/view-order/{order_id}', [ApiController::class, 'OrderVie
 
 
 
+Route::any('api/tools/google-sheet/add-delivery/{order}', [Orders::class, 'googleShetAddDelivery'])
+    ->name('google_add_delivery');
+
+
+Route::any('api/tools/google-sheet/add-delivery2/{order}', [Orders::class, 'googleShetAddDelivery2'])
+    ->name('google_add_delivery2');
+
 
 Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group(function () {
 
@@ -109,8 +116,6 @@ Route::prefix('crm')->middleware(['isAdmin', "ShopSetting", "ip_bloked"])->group
         ->name('json_decode');
 
 
-    Route::any('/tools/google-sheet/add-delivery/{order}', [Orders::class, 'googleShetAddDelivery'])
-        ->name('google_add_delivery');
 
 
     Route::get('/amocrm/users/duplicate/{client?}', [Amocrm::class, 'UsersDuplicateCollaps'])
