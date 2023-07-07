@@ -334,7 +334,7 @@
                            <a class="hide button" href="{{ route('orders_test_mail', ['id' => $item->order_id]) }}" >test mail</a>
                            <br>
                            <hr><br>
-                           <a class="button" href="{{ route('google_add_delivery', ['id' => $item->order_id]) }}" >
+                           <a class="button" href="{{ route('google_add_delivery2', ['id' => $item->order_id]) }}" >
                                google_add_delivery
                            </a>
 

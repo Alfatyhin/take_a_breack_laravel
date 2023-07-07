@@ -86,6 +86,7 @@ Route::any('api/tools/google-sheet/add-delivery/{order}', [Orders::class, 'googl
     ->name('google_add_delivery');
 
 
+
 Route::any('api/tools/google-sheet/add-delivery2/{order}', [Orders::class, 'googleShetAddDelivery2'])
     ->name('google_add_delivery2');
 
