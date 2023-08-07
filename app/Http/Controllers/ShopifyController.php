@@ -109,6 +109,24 @@ class ShopifyController extends Controller
                 return false;
             }
 
+        } elseif ($action == 'checkouts/update' || $action == 'checkouts/create') {
+
+            if (isset($data['customer'])) {
+
+                $client = $this->getAmoContactData($data);
+
+                $client = OrderService::clientCreateOrUpdate($client);
+
+                $amoCrmService = new AmoCrmServise();
+                $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
+
+                $amo_data = $amo_contact->toArray();
+                WebhookLog::addLog("add/update amo contact id " . $amo_data['id'], $amo_data);
+
+                dd($amo_contact->toArray());
+            } else {
+                dd('not data', $data);
+            }
         }
 
     }
@@ -129,6 +147,8 @@ class ShopifyController extends Controller
                 $action = $request->header('X-Shopify-Topic');
 
                 $test = WebhookLog::where('name', "ShopifyWebhook - |$action|".$id)->first();
+
+                WebhookLog::addLog("ShopifyWebhook - |$action|".$id, $data);
 
                 if (!$test) {
                     $webhook = new WebhookLog();
@@ -197,6 +217,19 @@ class ShopifyController extends Controller
 
                     }
 
+                }  elseif ($action == 'checkouts/update' || $action == 'checkouts/create') {
+
+                    if (isset($data['customer'])) {
+                        $client = $this->getAmoContactData($data);
+
+                        $client = OrderService::clientCreateOrUpdate($client);
+
+                        $amoCrmService = new AmoCrmServise();
+                        $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
+                        $amo_data = $amo_contact->toArray();
+                        WebhookLog::addLog("add/update amo contact id " . $amo_data['id'], $amo_data);
+
+                    }
                 }
 
 
