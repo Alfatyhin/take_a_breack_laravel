@@ -219,6 +219,7 @@ class ShopifyController extends Controller
 
                 }  elseif ($action == 'checkouts/update' || $action == 'checkouts/create') {
 
+
                     if (isset($data['customer'])) {
                         $client = $this->getAmoContactData($data);
 
