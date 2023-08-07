@@ -21,8 +21,10 @@ class ShopMidleware
     public function handle(Request $request, Closure $next)
     {
 
-//        if (!Auth::user())
-//        return redirect('https://takeabreakdesserts.co.il', '301');
+        if (!Auth::user()) {
+            return redirect('https://takeabreakdesserts.co.il', '301');
+        }
+
 
         if (!empty($request->query())) {
             $request->noindex = true;
