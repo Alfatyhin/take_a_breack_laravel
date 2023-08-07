@@ -148,8 +148,6 @@ class ShopifyController extends Controller
 
                 $test = WebhookLog::where('name', "ShopifyWebhook - |$action|".$id)->first();
 
-                WebhookLog::addLog("ShopifyWebhook - |$action|".$id, $data);
-
                 if (!$test) {
                     $webhook = new WebhookLog();
                     $webhook->name = "ShopifyWebhook - |$action|".$id;
@@ -218,7 +216,7 @@ class ShopifyController extends Controller
                     }
 
                 }  elseif ($action == 'checkouts/update' || $action == 'checkouts/create') {
-                    
+
                     if (isset($data['customer'])) {
                         $client = $this->getAmoContactData($data);
 
