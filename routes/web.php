@@ -75,7 +75,8 @@ Route::any('/api/amo/chat/{score_id}', [Amocrm::class, 'incommingChatMessage']);
 
 Route::any('/api/senpulse/chat', [SenpulseController::class, 'incommingChatMessage']);
 
-Route::any('/api/shopify/webhook', [ShopifyController::class, 'webhook']);
+Route::any('/api/shopify/webhook', [ShopifyController::class, 'webhook'])
+    ->name('shopify_webhook');
 
 Route::get('/api/orders/view-order/{order_id}', [ApiController::class, 'OrderView'])
     ->name('api_order_view');
