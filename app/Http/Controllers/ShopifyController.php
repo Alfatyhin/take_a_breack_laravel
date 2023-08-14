@@ -328,9 +328,16 @@ class ShopifyController extends Controller
 
 
             } else {
+
+                $data = $request->json()->all();
+                WebhookLog::addLog("not verification" , $data);
+
                 dd('not verification');
             }
         } else {
+
+            $data = $request->json()->all();
+            WebhookLog::addLog("not verification header" , $data);
             dd('not verification');
         }
     }
