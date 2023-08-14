@@ -131,6 +131,103 @@ class ShopifyController extends Controller
 
     }
 
+    public function workWebhook(Request $request)
+    {
+        $data = $request->post('json');
+        $data = json_decode($data, true);
+
+
+        $action = $data['action'];
+
+        if ($action == 'orders/create') {
+//            WebhookLog::addLog("Shopify new order webhook", $data);
+
+
+            $client = $this->getAmoContactData($data);
+
+            $client = OrderService::clientCreateOrUpdate($client);
+
+            $order = Orders::firstOrCreate([
+                'order_id' => $data['name']
+            ]);
+            $order->clientId = $client->id;
+            $order->orderPrice = $data['total_price'];
+            $order->orderData = json_encode($data);
+            if ($data['financial_status'] == 'paid')
+                $order->paymentStatus = 4;
+            $order->invoiceStatus = 1;
+//            $order->save();
+//
+
+            $amoCrmService = new AmoCrmServise();
+            $amoData = $this->AmoOrderPrepeare($data);
+            $amoNotes = $this->AmoNotesPrepeare($data);
+            $amoData['text_note'] = $amoNotes;
+            $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
+
+            $amoData['order name'] = 'test - '.$amoData['order name'];
+//            $lead = $amoCrmService->createNewLead($amoData);
+
+
+            if ($amo_contact->id != $client->amoId) {
+                $client->amoId = $amo_contact->id;
+                $client->save();
+            }
+
+
+            $open_lead = $amoCrmService->searchOpenLeadByContactId($client->amoId);
+
+            if ($open_lead) {
+                $lead = $amoCrmService->updateLead($open_lead, $amoData);
+            } else {
+
+                $lead = $amoCrmService->createNewLead($amoData);
+                $amoCrmService->addContactToLead($amo_contact, $lead);
+            }
+
+            if ($lead) {
+                $amoCrmService->addTextNotesToLead($lead->id, $amoNotes);
+
+                $amoProducts = $this->getShopAmoProducts($amoCrmService, $data);
+                $amoCrmService->addSopProductsToLead($lead->id, $amoProducts);
+
+                $amo_invoice_id = $amoCrmService->addInvoiceToLead($amo_contact->id, $order->order_id, $lead->id, (float) $order->orderPrice, $order->paymentStatus);
+                $amoData['invoice_id'] = $amo_invoice_id;
+
+                $order->amoData = json_encode($amoData);
+                $order->amoId =$lead->id;
+                $order->save();
+
+                dd('завершено');
+            } else {
+
+                dd('нет лида');
+                AppErrors::addError('error create amo lead', $amoData);
+                return false;
+            }
+
+        } elseif ($action == 'checkouts/update' || $action == 'checkouts/create') {
+
+            if (isset($data['customer'])) {
+
+                $client = $this->getAmoContactData($data);
+
+                $client = OrderService::clientCreateOrUpdate($client);
+
+                $amoCrmService = new AmoCrmServise();
+                $amo_contact = $this->searchOrCreateAmoContact($amoCrmService, $client, $data);
+
+                $amo_data = $amo_contact->toArray();
+                WebhookLog::addLog("add/update amo contact id " . $amo_data['id'], $amo_data);
+
+                dd($amo_contact->toArray());
+            } else {
+                dd('not data', $data);
+            }
+        }
+
+    }
+
 
     public function webhook(Request $request)
     {
@@ -237,6 +334,8 @@ class ShopifyController extends Controller
             dd('not verification');
         }
     }
+
+
 
 
     private function getAmoContactData($data)
