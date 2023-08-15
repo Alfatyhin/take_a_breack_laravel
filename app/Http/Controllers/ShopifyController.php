@@ -242,6 +242,7 @@ class ShopifyController extends Controller
                 $data['action'] = $request->header('X-Shopify-Topic');
                 $id = $request->header('X-Shopify-Webhook-Id');
                 $action = $request->header('X-Shopify-Topic');
+                $test = WebhookLog::where('name', "ShopifyWebhook - |$action|".$id)->first();
 
 
                 if (!$test) {
