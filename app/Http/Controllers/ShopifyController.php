@@ -232,6 +232,7 @@ class ShopifyController extends Controller
     public function webhook(Request $request)
     {
 
+
         if ($request->hasHeader('X-Shopify-Hmac-Sha256')) {
 
             if($this->verifyWebhook(file_get_contents('php://input'), $request->header('X-Shopify-Hmac-Sha256'))) {

@@ -54,7 +54,6 @@ class ShopifyClient
 
     public function getOrderById($id)
     {
-
         $reguest['query'] = 'query {
      order(id: "gid://shopify/Order/'.$id.'") {
         note
