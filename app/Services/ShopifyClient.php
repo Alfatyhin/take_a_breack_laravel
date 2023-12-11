@@ -64,6 +64,17 @@ class ShopifyClient
     }
 
 
+    public function closeOrder($id)
+    {
+
+        $url = "https://$this->shop/admin/api/2023-04/$id/close.json";
+
+        $response = Http::withHeaders($this->headers)->acceptJson()->post($url);
+
+        return $response;
+    }
+
+
     public function setOrderNote($id)
     {
 

@@ -245,6 +245,7 @@ class ShopifyController extends Controller
                 $test = WebhookLog::where('name', "ShopifyWebhook - |$action|".$id)->first();
 
 
+
                 if (!$test) {
                     $webhook = new WebhookLog();
                     $webhook->name = "ShopifyWebhook - |$action|".$id;
@@ -407,7 +408,7 @@ class ShopifyController extends Controller
 
 //        dd($data['note_attributes']);
         foreach ($data['note_attributes'] as $item) {
-            if($item['name'] == 'Choose Date') {
+            if($item['name'] == 'delivery_date_origin') {
                 $date = $item['value'];
             } elseif($item['name'] == 'Choose Time') {
                 $time = $item['value'];
