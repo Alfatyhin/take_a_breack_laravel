@@ -23,7 +23,7 @@
         @if ($date_pre)
             <a class="button" href="{{ route($route, ['date' => $date_pre->format('Y-m-d')]) }}">{{  $date_pre->format('Y-m-d') }}</a>
         @endif
-         <span class="error" style="color: brown" >error count - {{ $error_count }} test 6</span>
+         <span class="error" style="color: brown" >error count - {{ $error_count }} test 6 </span>
     </p>
 
 
